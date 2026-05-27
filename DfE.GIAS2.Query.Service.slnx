@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/DfE.EducationProviderRegistry.Query.Service.Application/DfE.GIAS2.Query.Service.Core.csproj" />
-    <Project Path="src/DfE.EducationProviderRegistry.Query.Service.Persistence/DfE.EducationProviderRegistry.Query.Service.Persistence.csproj" />
+    <Project Path="src/DfE.GIAS2.Query.Service.Core/DfE.GIAS2.Query.Service.Core.csproj" />
+    <Project Path="src/DfE.GIAS2.Query.Service.Persistence/DfE.GIAS2.Query.Service.Persistence.csproj" />
+    <Project Path="src/DfE.GIAS2.Query.Service.Presentation.API/DfE.GIAS2.Query.Service.Presentation.API.csproj" />
   </Folder>
 </Solution>

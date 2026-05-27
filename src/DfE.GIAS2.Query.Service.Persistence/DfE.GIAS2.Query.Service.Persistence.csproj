@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DfE.EducationProviderRegistry.Query.Service.Application\DfE.GIAS2.Query.Service.Core.csproj" />
+    <ProjectReference Include="..\DfE.GIAS2.Query.Service.Core\DfE.GIAS2.Query.Service.Core.csproj" />
   </ItemGroup>
 
 </Project>

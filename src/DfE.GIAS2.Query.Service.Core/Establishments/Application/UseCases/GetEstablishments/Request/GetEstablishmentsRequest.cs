@@ -13,4 +13,15 @@ namespace DfE.GIAS2.Query.Service.Core.Establishments.Application.UseCases.GetEs
 /// read‑only collection of <see cref="Establishment"/> instances.
 /// </remarks>
 public sealed record GetEstablishmentsRequest :
-    IUseCaseRequest<UseCaseResponse<IReadOnlyCollection<Establishment>>>;
+    IUseCaseRequest<UseCaseResponse<IReadOnlyCollection<Establishment>>>
+{
+    /// <summary>
+    /// Creates a new <see cref="GetEstablishmentsRequest"/> instance.
+    /// This factory method provides a clear, intention‑revealing way
+    /// to construct the request.
+    /// </summary>
+    /// <returns>
+    /// A new <see cref="GetEstablishmentsRequest"/> instance.
+    /// </returns>
+    public static GetEstablishmentsRequest Create() => new();
+}
