@@ -26,20 +26,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Add DfE-Digital GitHub NuGet Feed
-      run: |
-        # Remove from all possible config scopes
-        dotnet nuget remove source dfedigital --configfile /etc/nuget/NuGet.Config || true
-        dotnet nuget remove source dfedigital --configfile ~/.nuget/NuGet/NuGet.Config || true
-        dotnet nuget remove source dfedigital || true
-
-        # Add cleanly
-        dotnet nuget add source \
-          --username DFE-Digital \
-          --password ${{ secrets.GITHUB_TOKEN }} \
-          --store-password-in-clear-text \
-          --name dfedigital \
-          "https://nuget.pkg.github.com/DFE-Digital/index.json"
+    # Removed the entire "Add NuGet Feed" step — your nuget.config already handles it
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
@@ -66,9 +53,10 @@ jobs:
         echo "VERSION_PATCH=${{ steps.version_step.outputs.patch }}" >> $GITHUB_ENV
 
     - name: Restore Dependencies
-      run: dotnet restore
+      run: dotnet restore --configfile nuget.config
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_USERNAME: DFE-Digital
 
     - name: Build with Semantic Versioning
       run: dotnet build --configuration Release /p:Version=${{ env.VERSION }} /p:AssemblyVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.0.0 /p:FileVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}.0 /p:InformationalVersion=${{ env.VERSION }}
