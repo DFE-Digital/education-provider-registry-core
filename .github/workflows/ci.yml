@@ -28,7 +28,12 @@ jobs:
 
     - name: Add DfE-Digital GitHub NuGet Feed
       run: |
+        # Remove from all possible config scopes
+        dotnet nuget remove source dfedigital --configfile /etc/nuget/NuGet.Config || true
+        dotnet nuget remove source dfedigital --configfile ~/.nuget/NuGet/NuGet.Config || true
         dotnet nuget remove source dfedigital || true
+
+        # Add cleanly
         dotnet nuget add source \
           --username DFE-Digital \
           --password ${{ secrets.GITHUB_TOKEN }} \
