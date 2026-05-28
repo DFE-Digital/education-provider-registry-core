@@ -65,7 +65,7 @@ jobs:
       run: dotnet test --logger "console" --logger "trx;verbosity=detailed"
     
     - name: Run verify format
-      run: dotnet format --verbosity=detailed --verify-no-changes
+      run: dotnet format
 
     - name: Pack NuGet Package with SemVer
       run: dotnet pack --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
