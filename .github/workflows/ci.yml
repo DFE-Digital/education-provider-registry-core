@@ -53,7 +53,7 @@ jobs:
         echo "VERSION_PATCH=${{ steps.version_step.outputs.patch }}" >> $GITHUB_ENV
 
     - name: Restore Dependencies
-      run: dotnet restore --configfile nuget.config
+      run: dotnet restore --configfile NuGet.config
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USERNAME: DFE-Digital
