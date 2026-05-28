@@ -1,0 +1,97 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build_test_pack:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.0.x'
+
+    - name: Determine Generated Version Number
+      id: version_step
+      uses: gittools/actions/gitversion/execute@v3.0.0
+
+    - name: Debug GitVersion Output
+      run: |
+        echo "FullSemVer: ${{ steps.version_step.outputs.fullSemVer }}"
+        echo "SemVer: ${{ steps.version_step.outputs.semVer }}"
+        echo "Major: ${{ steps.version_step.outputs.major }}"
+        echo "Minor: ${{ steps.version_step.outputs.minor }}"
+        echo "Patch: ${{ steps.version_step.outputs.patch }}"
+
+    - name: Set Version Variables for Build
+      run: |
+        echo "VERSION=${{ steps.version_step.outputs.semVer }}" >> $GITHUB_ENV
+        echo "VERSION_MAJOR=${{ steps.version_step.outputs.major }}" >> $GITHUB_ENV
+        echo "VERSION_MINOR=${{ steps.version_step.outputs.minor }}" >> $GITHUB_ENV
+        echo "VERSION_PATCH=${{ steps.version_step.outputs.patch }}" >> $GITHUB_ENV
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build with Semantic Versioning
+      run: dotnet build --configuration Release /p:Version=${{ env.VERSION }} /p:AssemblyVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.0.0 /p:FileVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}.0 /p:InformationalVersion=${{ env.VERSION }}
+
+    - name: Run .NET Tests
+      run: dotnet test --logger "console" --logger "trx;verbosity=detailed"
+    
+    - name: Run verify format
+      run: dotnet format --verbosity=detailed --verify-no-changes
+
+    - name: Pack NuGet Package with SemVer
+      run: dotnet pack --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
+
+    - name: Upload NuGet Package Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nupkg
+        path: ./nupkg/*.nupkg
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build_test_pack
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Download NuGet Package
+      uses: actions/download-artifact@v4
+      with:
+        name: nupkg
+        path: ./nupkg
+
+    - name: Publish to GitHub Packages
+      env:
+        NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source "https://nuget.pkg.github.com/DFE-Digital/index.json"
+
+    ## Uncomment to publish stable releases to NuGet.org
+    ## - name: Publish to NuGet.org
+    ##   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    ##   env:
+    ##     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    ##   run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source "https://api.nuget.org/v3/index.json"
