@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DfE.GIAS2.Query.Service.Core\DfE.GIAS2.Query.Service.Core.csproj" />
-    <ProjectReference Include="..\DfE.GIAS2.Query.Service.Persistence\DfE.GIAS2.Query.Service.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace DfE.GIAS2.Query.Service.Core.Establishments.Application.Model;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
 /// <summary>
 /// Represents an establishment within the system.

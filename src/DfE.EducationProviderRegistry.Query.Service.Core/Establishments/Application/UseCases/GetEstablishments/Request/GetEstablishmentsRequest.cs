@@ -1,7 +1,7 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
-using DfE.GIAS2.Query.Service.Core.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-namespace DfE.GIAS2.Query.Service.Core.Establishments.Application.UseCases.GetEstablishments.Request;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 
 /// <summary>
 /// Represents a request to retrieve all establishments from the

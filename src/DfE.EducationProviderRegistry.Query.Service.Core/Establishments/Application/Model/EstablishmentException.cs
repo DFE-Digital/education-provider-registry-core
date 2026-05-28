@@ -1,5 +1,4 @@
-﻿namespace DfE.GIAS2
-    .Query.Service.Core.Establishments.Application.Model;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
 /// <summary>
 /// Exception type used for establishment‑related validation or domain errors.

@@ -1,10 +1,16 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
-using DfE.GIAS2.Query.Service.Core.Establishments.Application.Model;
-using DfE.GIAS2.Query.Service.Core.Establishments.Application.UseCases.GetEstablishments;
-using DfE.GIAS2.Query.Service.Core.Establishments.Application.UseCases.GetEstablishments.Request;
+using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persistence.Mappers;
+using DfE.EducationProviderRegistry.Query.Service.Persistence.Establishments;
+using DfE.GIAS2.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DfE.GIAS2.Query.Service.Core.Establishments;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments;
 
 /// <summary>
 /// Provides extension methods for registering all Establishment-related
@@ -54,5 +60,40 @@ public static class CompositionRoot
                     GetEstablishmentsRequest,
                     UseCaseResponse<IReadOnlyCollection<Establishment>>>,
                 GetEstablishmentsUseCase>();
+    }
+
+    /// <summary>
+    /// Registers Establishments‑related infrastructure dependencies with the
+    /// application's dependency injection container.
+    /// </summary>
+    /// <param name="services">
+    /// The service collection to which the dependencies will be added.
+    /// </param>
+    /// <returns>
+    /// The updated <see cref="IServiceCollection"/> instance, enabling
+    /// fluent configuration.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="services"/> is <c>null</c>.
+    /// </exception>
+    public static IServiceCollection AddEstablishmentsInfrastructureDependencies(
+        this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        return services
+            // Establishment repository.
+            .AddScoped<IEstablishmentsRepository, EstablishmentsRepository>()
+
+            // Collection mapper: DTO → application read model.
+            .AddSingleton<IMapper<
+                IEnumerable<EstablishmentDataTransferObject>,
+                IReadOnlyCollection<Establishment>>,
+                    EstablishmentsDtoToModelMapper>()
+
+            // Single‑item mapper: DTO → application read model model.
+            .AddSingleton<IMapper<
+                EstablishmentDataTransferObject, Establishment>,
+                    EstablishmentDtoToModelMapper>();
     }
 }

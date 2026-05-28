@@ -1,10 +1,10 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
-using DfE.GIAS2.Query.Service.Core.Establishments.Application.Model;
-using DfE.GIAS2.Query.Service.Core.Establishments.Application.UseCases.GetEstablishments.Request;
-using DfE.GIAS2.Query.Service.Core.Establishments.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.GIAS2.Query.Service.Core.Establishments.Application.UseCases.GetEstablishments;
+namespace DfE.GIAS2.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 
 /// <summary>
 /// Executes the retrieval of establishment data using the

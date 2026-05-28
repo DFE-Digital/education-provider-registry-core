@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DfE.EducationProviderRegistry.Query.Service.Core/DfE.EducationProviderRegistry.Core.Query.csproj" />
+  </Folder>
+</Solution>

@@ -1,6 +1,6 @@
-﻿using DfE.GIAS2.Query.Service.Core.Establishments.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-namespace DfE.GIAS2.Query.Service.Core.Establishments.Infrastructure;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 
 /// <summary>
 /// Defines the contract for accessing establishment data from a persistence layer.
