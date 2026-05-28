@@ -1,5 +1,9 @@
 name: CI/CD
 
+permissions:
+  contents: read
+  packages: read
+
 on:
   push:
     branches:
@@ -21,6 +25,14 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
+    - name: Add DfE-Digital GitHub NuGet Feed
+      run: dotnet nuget add source \
+          --username DFE-Digital \
+          --password ${{ secrets.GITHUB_TOKEN }} \
+          --store-password-in-clear-text \
+          --name dfedigital \
+          "https://nuget.pkg.github.com/DFE-Digital/index.json"
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
@@ -48,6 +60,8 @@ jobs:
 
     - name: Restore Dependencies
       run: dotnet restore
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build with Semantic Versioning
       run: dotnet build --configuration Release /p:Version=${{ env.VERSION }} /p:AssemblyVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.0.0 /p:FileVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}.0 /p:InformationalVersion=${{ env.VERSION }}
@@ -88,10 +102,3 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
       run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source "https://nuget.pkg.github.com/DFE-Digital/index.json"
-
-    ## Uncomment to publish stable releases to NuGet.org
-    ## - name: Publish to NuGet.org
-    ##   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    ##   env:
-    ##     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-    ##   run: dotnet nuget push ./nupkg/*.nupkg --api-key $NUGET_API_KEY --source "https://api.nuget.org/v3/index.json"
