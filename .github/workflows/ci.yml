@@ -28,6 +28,7 @@ jobs:
 
     - name: Add DfE-Digital GitHub NuGet Feed
       run: |
+        dotnet nuget remove source dfedigital || true
         dotnet nuget add source \
           --username DFE-Digital \
           --password ${{ secrets.GITHUB_TOKEN }} \
