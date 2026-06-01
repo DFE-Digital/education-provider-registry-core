@@ -2,7 +2,7 @@ name: CI/CD
 
 permissions:
   contents: read
-  packages: read
+  packages: write
 
 on:
   push:
