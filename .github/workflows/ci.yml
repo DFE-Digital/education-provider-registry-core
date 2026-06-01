@@ -10,6 +10,7 @@ on:
       - main
     tags:
       - 'v*'
+  pull_request:
 
 jobs:
   build_test_pack:
