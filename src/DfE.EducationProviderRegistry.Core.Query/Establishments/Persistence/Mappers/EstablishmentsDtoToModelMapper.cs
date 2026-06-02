@@ -1,7 +1,7 @@
-﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+﻿using System.Buffers;
+using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
-using System.Buffers;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persistence.Mappers;
 
