@@ -1,6 +1,6 @@
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests;
 
-public class EstablishmentDtoToModelMapperUnitTests
+public class EstablishmentsRepositoryUnitTests
 {
     [Fact]
     public void Test1()

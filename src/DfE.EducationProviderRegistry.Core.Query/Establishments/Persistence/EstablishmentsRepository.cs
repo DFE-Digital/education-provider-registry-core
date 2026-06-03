@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 
-namespace DfE.EducationProviderRegistry.Query.Service.Persistence.Establishments;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 
 /// <summary>
 /// Provides access to establishment data for the GIAS2 query service.
@@ -11,27 +11,22 @@ namespace DfE.EducationProviderRegistry.Query.Service.Persistence.Establishments
 /// feature, retrieving data transfer objects and mapping them into domain
 /// models for use by the application layer.
 /// </summary>
-public sealed class EstablishmentsRepository : IEstablishmentsRepository
+/// <remarks>
+/// Initializes a new instance of the <see cref="EstablishmentsRepository"/> class.
+/// </remarks>
+/// <param name="establishmentsMapper">
+/// The mapper responsible for converting collections of
+/// <see cref="EstablishmentDataTransferObject"/> instances into
+/// domain <see cref="Establishment"/> models.
+/// </param>
+public sealed class EstablishmentsRepository(
+    IMapper<
+        IEnumerable<EstablishmentDataTransferObject>,
+        IReadOnlyCollection<Establishment>> establishmentsMapper) : IEstablishmentsRepository
 {
     private readonly IMapper<
         IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> _establishmentsMapper;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EstablishmentsRepository"/> class.
-    /// </summary>
-    /// <param name="establishmentsMapper">
-    /// The mapper responsible for converting collections of
-    /// <see cref="EstablishmentDataTransferObject"/> instances into
-    /// domain <see cref="Establishment"/> models.
-    /// </param>
-    public EstablishmentsRepository(
-        IMapper<
-            IEnumerable<EstablishmentDataTransferObject>,
-            IReadOnlyCollection<Establishment>> establishmentsMapper)
-    {
-        _establishmentsMapper = establishmentsMapper;
-    }
+        IReadOnlyCollection<Establishment>> _establishmentsMapper = establishmentsMapper;
 
     /// <summary>
     /// Retrieves all establishments from the persistence layer.
