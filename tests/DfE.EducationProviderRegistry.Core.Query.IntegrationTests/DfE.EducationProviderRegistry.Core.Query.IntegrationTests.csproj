@@ -20,4 +20,9 @@
     <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IntegrationTests.Abstractions\IntegrationTests.Abstractions.csproj" />
+    <ProjectReference Include="..\IntegrationTests.Database.Server.Abstractions\IntegrationTests.Database.Server.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
