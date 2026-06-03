@@ -16,8 +16,6 @@ public sealed class GetEstablishmentsReturnsResultsTests : UseCaseIntegrationTes
     protected override void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
     {
         services
-            // TODO temporary until we have custom logger-provider set up in application-logging, COULD register IObservationHandler? on logging ITestOutputHelper / IMessageSink
-            .AddLogging()
             .AddGetEstablishments();
     }
 

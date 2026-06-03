@@ -10,6 +10,8 @@ internal static class GetEstablishmentServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
+            // TODO temporary until we have custom logger-provider set up in application-logging, COULD register IObservationHandler? on logging ITestOutputHelper / IMessageSink
+            .AddLogging()
             .AddEstablishmentsUseCaseDependencies()
             .AddEstablishmentsInfrastructureDependencies();
 
