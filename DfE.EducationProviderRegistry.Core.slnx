@@ -3,6 +3,18 @@
     <Project Path="src/DfE.EducationProviderRegistry.Core.Query/DfE.EducationProviderRegistry.Core.Query.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/DfE.EducationProviderRegistry.Core.Query.IntegrationTests/DfE.EducationProviderRegistry.Core.Query.IntegrationTests.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
     <Project Path="tests/DfE.EducationProviderRegistry.Core.Query.UnitTests/DfE.EducationProviderRegistry.Core.Query.UnitTests.csproj" />
+    <Project Path="tests/IntegrationTests.Abstractions/IntegrationTests.Abstractions.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="tests/IntegrationTests.Database.Server.Abstractions/IntegrationTests.Database.Server.Abstractions.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="tests/IntegrationTests.Database.Server.Postgres/IntegrationTests.Database.Server.Postgres.csproj" Id="68013e16-e095-4900-bb23-48fc8af43b34">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
   </Folder>
 </Solution>
