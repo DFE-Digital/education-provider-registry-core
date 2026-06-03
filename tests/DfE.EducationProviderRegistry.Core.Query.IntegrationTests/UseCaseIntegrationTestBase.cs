@@ -1,4 +1,5 @@
-﻿using IntegrationTests.Abstractions;
+﻿using DfE.Core.Libraries.CleanArchitecture.Application;
+using IntegrationTests.Abstractions;
 using IntegrationTests.Database.Server.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,17 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     public async ValueTask InitializeAsync()
     {
         await StartTestAsync(ct: TestContext.Current.CancellationToken);
+    }
+
+    protected Task<UseCaseResponse<TModel>> ExecuteUseCase<TRequest, TModel>(TRequest request) where TRequest : IUseCaseRequest<UseCaseResponse<TModel>>
+    {
+        return RunScopedAsync<
+            IUseCase<TRequest, UseCaseResponse<TModel>>,
+            UseCaseResponse<TModel>>(
+                (usecase) =>
+                    usecase.HandleRequestAsync(
+                        request,
+                        TestContext.Current.CancellationToken));
     }
 
     protected override async Task StartTestDependenciesAsync(CancellationToken ct = default)
