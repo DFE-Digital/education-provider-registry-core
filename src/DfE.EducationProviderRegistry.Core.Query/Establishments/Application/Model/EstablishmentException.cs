@@ -10,7 +10,8 @@ public sealed class EstablishmentException : ApplicationException
     /// </summary>
     /// <param name="message">A description of the validation or domain failure.</param>
     public EstablishmentException(string message)
-        : base(message){
+        : base(message)
+    {
     }
 
     /// <summary>
@@ -19,6 +20,7 @@ public sealed class EstablishmentException : ApplicationException
     /// <param name="message">A description of the validation or domain failure.</param>
     /// <param name="innerException">The underlying exception that caused this error.</param>
     public EstablishmentException(string message, Exception innerException)
-        : base(message, innerException){
+        : base(message, innerException)
+    {
     }
 }
