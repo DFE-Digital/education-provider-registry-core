@@ -18,10 +18,8 @@ public sealed class EstablishmentsRepositoryTests
             new EstablishmentDtoToModelMapper();
 
         // Real collection mapper
-        IMapper<
-            IEnumerable<EstablishmentDataTransferObject>,
-            IReadOnlyCollection<Establishment>> collectionMapper =
-                new EstablishmentsDtoToModelMapper(singleMapper);
+        IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>> collectionMapper =
+            new EstablishmentsDtoToModelMapper(singleMapper);
 
         _sut = new EstablishmentsRepository(collectionMapper);
     }
@@ -35,7 +33,7 @@ public sealed class EstablishmentsRepositoryTests
 
         // Act
         IReadOnlyCollection<Establishment> result =
-            await _sut.GetEstablishments(TestContext.Current.CancellationToken);
+            await _sut.GetEstablishments(CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
@@ -43,18 +41,24 @@ public sealed class EstablishmentsRepositoryTests
 
         foreach (Establishment establishment in result)
         {
-            Assert.NotNull(establishment.Identifier.Urn);
-            Assert.Equal(6, establishment.Identifier.Urn.Length);
-            Assert.True(establishment.Identifier.Urn.All(char.IsDigit));
+            string urn = establishment.Identifier.Urn;
+
+            Assert.NotNull(urn);
+            Assert.Equal(6, urn.Length);
+            Assert.True(urn.All(char.IsDigit));
         }
     }
 
     [Fact]
     public async Task GetEstablishments_ShouldRespectCancellationToken()
     {
+        // Arrange
+        using CancellationTokenSource cts = new();
+        CancellationToken token = cts.Token;
+
         // Act
         IReadOnlyCollection<Establishment> result =
-            await _sut.GetEstablishments(TestContext.Current.CancellationToken);
+            await _sut.GetEstablishments(token);
 
         // Assert
         Assert.NotNull(result);

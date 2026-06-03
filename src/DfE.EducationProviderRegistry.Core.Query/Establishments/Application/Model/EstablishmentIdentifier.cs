@@ -54,7 +54,7 @@ public sealed partial record EstablishmentIdentifier
     /// The regular expression pattern used to validate URN values.
     /// Accepts either <c>UNDEFINED</c> or a 5–7 digit numeric string.
     /// </summary>
-    private const string UrnPattern = @"^UNDEFINED|\d{5,7}$";
+    private const string UrnPattern = @"^\d{5,7}$";
 
     /// <summary>
     /// Creates a compiled regular expression used to validate URN values.

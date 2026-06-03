@@ -10,16 +10,13 @@ using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Application.UseCases;
 
-public class GetEstablishmentsUseCaseUnitTests
+public sealed class GetEstablishmentsUseCaseUnitTests
 {
-    private readonly CancellationToken _token = TestContext.Current.CancellationToken;
+    private readonly CancellationToken _token = CancellationToken.None;
 
     private static GetEstablishmentsUseCase CreateSut(
         Mock<ILogger<GetEstablishmentsUseCase>> loggerMock,
-        Mock<IEstablishmentsRepository> repoMock)
-    {
-        return new GetEstablishmentsUseCase(loggerMock.Object, repoMock.Object);
-    }
+        Mock<IEstablishmentsRepository> repoMock) => new(loggerMock.Object, repoMock.Object);
 
     [Fact]
     public async Task HandleRequestAsync_ReturnsMappedEstablishments()
@@ -165,7 +162,6 @@ public class GetEstablishmentsUseCaseUnitTests
         loggerMock.VerifyErrorContains("encountered an unexpected error");
     }
 }
-
 
 internal static class LoggerVerifyExtensions
 {
