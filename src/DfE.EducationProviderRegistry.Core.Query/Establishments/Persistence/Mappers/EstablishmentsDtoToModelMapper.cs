@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using System.Buffers;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persistence.Mappers;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 
 /// <summary>
 /// Maps a collection of <see cref="EstablishmentDataTransferObject"/> instances
@@ -13,26 +13,21 @@ namespace DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persis
 /// Delegates single‑item mapping to <see cref="IMapper{TMapFrom, TMapTo}"/> and uses
 /// <see cref="ArrayPool{T}"/> to minimise allocations.
 /// </remarks>
-public sealed class EstablishmentsDtoToModelMapper :
+/// <remarks>
+/// Initializes a new instance of the <see cref="EstablishmentsDtoToModelMapper"/> class.
+/// </remarks>
+/// <param name="establishmentMapper">
+/// The mapper used to convert a single <see cref="EstablishmentDataTransferObject"/>
+/// into a domain <see cref="Establishment"/>.
+/// </param>
+public sealed class EstablishmentsDtoToModelMapper(
+    IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper) :
     IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>
 {
     /// <summary>
     /// The mapper responsible for converting individual DTOs into domain models.
     /// </summary>
-    private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EstablishmentsDtoToModelMapper"/> class.
-    /// </summary>
-    /// <param name="establishmentMapper">
-    /// The mapper used to convert a single <see cref="EstablishmentDataTransferObject"/>
-    /// into a domain <see cref="Establishment"/>.
-    /// </param>
-    public EstablishmentsDtoToModelMapper(
-        IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
-    {
-        _establishmentMapper = establishmentMapper;
-    }
+    private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper = establishmentMapper;
 
     /// <summary>
     /// Maps the supplied DTO collection into a corresponding collection of domain models.
