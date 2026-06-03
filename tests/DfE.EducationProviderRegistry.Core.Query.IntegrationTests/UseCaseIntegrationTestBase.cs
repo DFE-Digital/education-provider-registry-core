@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests;
 
-internal abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLifetime
+public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLifetime
 {
     private readonly IDatabaseFactory _databaseFactory;
 
