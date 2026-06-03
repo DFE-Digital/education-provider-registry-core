@@ -32,7 +32,10 @@ internal abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsync
     protected override Task<IConfiguration> GetApplicationConfigurationAsync()
     {
         // TODO options from application to set DatabaseConnection
-        return Task.FromResult<IConfiguration>(new ConfigurationBuilder().Build());
+        return Task.FromResult<IConfiguration>(
+            DefaultConfigurationBuilder
+                .Create()
+                .Build());
     }
 
     protected override async Task BeforeDisposeAsync()

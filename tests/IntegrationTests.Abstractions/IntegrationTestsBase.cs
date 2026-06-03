@@ -66,7 +66,7 @@ public abstract class IntegrationTestBase : IAsyncDisposable
     protected virtual void ConfigureApplicationConfiguration(IConfigurationBuilder builder) { }
     protected virtual Task<IConfiguration> GetApplicationConfigurationAsync()
         => Task.FromResult(
-            IConfigurationFactory.CreateEmpty());
+            DefaultConfiguration.Create());
 
     // BeforeDisposeAsync runs BEFORE application services are disposed.
     // Use this to clean up external resources (e.g., databases, containers).
@@ -78,16 +78,19 @@ public abstract class IntegrationTestBase : IAsyncDisposable
         return ApplicationServicesRootProvider.GetRequiredService<TSingletonService>();
     }
 
-    protected async Task<TResult> RunScopedApplicationServicesAsync<TResult>(Func<IServiceProvider, Task<TResult>> action)
+    protected async Task<TResult> RunScopedAsync<TService, TResult>(Func<TService, Task<TResult>> action) where TService : notnull
     {
-        using IServiceScope scope = CreateApplicationServiceScope();
-        return await action(scope.ServiceProvider);
+        using IServiceScope scope = ApplicationServicesRootProvider.CreateScope();
+
+        TService service = scope.ServiceProvider.GetRequiredService<TService>();
+
+        return await action(service);
     }
 
     private async Task<IConfiguration> MergeTestAndApplicationConfiguration()
     {
         IConfigurationBuilder builder =
-            IConfigurationBuilderFactory.CreateDefault()
+            DefaultConfigurationBuilder.Create()
         // add test config
             .AddConfiguration(TestServicesProvider.GetRequiredService<IConfiguration>())
         // add app config
@@ -98,14 +101,9 @@ public abstract class IntegrationTestBase : IAsyncDisposable
         return builder.Build();
     }
 
-    private IServiceScope CreateApplicationServiceScope()
-    {
-        return ApplicationServicesRootProvider.CreateScope();
-    }
-
     private static IServiceProvider BuildApplicationServices(IConfiguration configuration, Action<IServiceCollection, IConfiguration>? configure = null)
     {
-        IServiceCollection services = IServiceCollectionFactory.CreateDefault();
+        IServiceCollection services = DefaultServiceCollection.Create();
         configure?.Invoke(services, configuration);
         services.AddSingleton<IConfiguration>((sp) => configuration);
 
