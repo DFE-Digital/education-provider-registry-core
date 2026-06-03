@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -17,12 +17,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MartinCostello.Logging.XUnit.v3" Version="0.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.8" />
+    <PackageReference Include="Xunit.DependencyInjection" Version="11.2.1" />
+    <PackageReference Include="Xunit.DependencyInjection.Logging" Version="11.0.0" />
     <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IntegrationTests.Abstractions\IntegrationTests.Abstractions.csproj" />
     <ProjectReference Include="..\IntegrationTests.Database.Server.Abstractions\IntegrationTests.Database.Server.Abstractions.csproj" />
+    <ProjectReference Include="..\IntegrationTests.Database.Server.Postgres\IntegrationTests.Database.Server.Postgres.csproj" />
   </ItemGroup>
 
 </Project>
