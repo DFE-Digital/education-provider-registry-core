@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests;
 
 public class UnitTest1
