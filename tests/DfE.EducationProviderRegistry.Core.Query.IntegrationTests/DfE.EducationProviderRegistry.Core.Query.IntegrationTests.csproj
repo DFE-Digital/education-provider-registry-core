@@ -1,24 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <IsTestProject>true</IsTestProject>
     <OutputType>Exe</OutputType>
     <RootNamespace>DfE.EducationProviderRegistry.Core.Query.IntegrationTests</RootNamespace>
-    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="Xunit" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
@@ -27,6 +13,11 @@
     <PackageReference Include="Xunit.DependencyInjection" />
     <PackageReference Include="Xunit.DependencyInjection.Logging" />
     <PackageReference Include="xunit.v3.mtp-v2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Global using -->
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
