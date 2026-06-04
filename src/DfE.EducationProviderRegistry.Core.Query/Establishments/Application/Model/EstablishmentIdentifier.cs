@@ -26,8 +26,7 @@ public sealed partial record EstablishmentIdentifier
     /// record using the specified <paramref name="urn"/>.
     /// </summary>
     /// <param name="urn">
-    /// The URN value to assign. Must be either <c>UNDEFINED</c> or a
-    /// 5–7 digit numeric string.
+    /// The URN value to assign. Must be a 5–7 digit numeric string.
     /// </param>
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="urn"/> does not match the required format.
