@@ -18,7 +18,7 @@ internal sealed class EstablishmentCollectionBuilder
         List<Establishment> establishmentList = new(_count);
         HashSet<string> urns = GenerateUniqueUrns(_count);
 
-        foreach (var urn in urns)
+        foreach (string urn in urns)
         {
             establishmentList.Add(
                 new Establishment(
