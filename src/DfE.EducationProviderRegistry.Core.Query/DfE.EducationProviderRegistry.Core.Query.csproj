@@ -8,8 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.1" />
-	<PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.1" />
+    <PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DfE.EducationProviderRegistry.Core.Query.UnitTests" />
   </ItemGroup>
 
 </Project>

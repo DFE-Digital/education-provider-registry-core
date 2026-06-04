@@ -3,7 +3,7 @@
 /// <summary>
 /// Exception type used for establishment‑related validation or domain errors.
 /// </summary>
-public sealed class EstablishmentException : ApplicationException
+public sealed class EstablishmentException : Exception
 {
     /// <summary>
     /// Creates a new <see cref="EstablishmentException"/> with a message describing the error.
