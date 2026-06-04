@@ -1,4 +1,5 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
@@ -9,7 +10,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Pers
 
 public sealed class EstablishmentsRepositoryTests
 {
-    private readonly EstablishmentsRepository _sut;
+    private readonly IEstablishmentsRepository _sut;
 
     public EstablishmentsRepositoryTests()
     {

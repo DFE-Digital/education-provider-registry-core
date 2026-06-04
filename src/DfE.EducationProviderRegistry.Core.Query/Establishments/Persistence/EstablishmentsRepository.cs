@@ -19,14 +19,19 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 /// <see cref="EstablishmentDataTransferObject"/> instances into
 /// domain <see cref="Establishment"/> models.
 /// </param>
-public sealed class EstablishmentsRepository(
-    IMapper<
-        IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> establishmentsMapper) : IEstablishmentsRepository
+internal sealed class EstablishmentsRepository : IEstablishmentsRepository
 {
     private readonly IMapper<
         IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> _establishmentsMapper = establishmentsMapper;
+        IReadOnlyCollection<Establishment>> _establishmentsMapper;
+
+    public EstablishmentsRepository(IMapper<
+        IEnumerable<EstablishmentDataTransferObject>,
+        IReadOnlyCollection<Establishment>> establishmentsMapper)
+    {
+        ArgumentNullException.ThrowIfNull(establishmentsMapper);
+        _establishmentsMapper = establishmentsMapper;
+    }
 
     /// <summary>
     /// Retrieves all establishments from the persistence layer.
