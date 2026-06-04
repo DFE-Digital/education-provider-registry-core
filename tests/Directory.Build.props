@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Shared language/runtime settings -->
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Test projects -->
+    <IsTestProject>false</IsTestProject>
+
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('xunit.runner.json')" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <!-- Common appsettings pattern (safe for both unit + integration) -->
+    <Content Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('appsettings.json')" />
+  </ItemGroup>
+
+</Project>
