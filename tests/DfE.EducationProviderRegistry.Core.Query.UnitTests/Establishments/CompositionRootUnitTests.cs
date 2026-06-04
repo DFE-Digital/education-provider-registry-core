@@ -8,6 +8,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +34,7 @@ public sealed class CompositionRootTests
     public void AddEstablishmentsUseCaseDependencies_ShouldRegisterUseCase()
     {
         // Arrange
-        ServiceCollection services = new ServiceCollection();
+        IServiceCollection services = IServiceCollectionTestDoubles.Default();
 
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, DummyLogger<GetEstablishmentsUseCase>>();
@@ -58,7 +59,7 @@ public sealed class CompositionRootTests
     public void AddEstablishmentsInfrastructureDependencies_ShouldRegisterRepositoryAndMappers()
     {
         // Arrange
-        ServiceCollection services = new();
+        IServiceCollection services = IServiceCollectionTestDoubles.Default();
 
         // Act
         IServiceCollection updated = services.AddEstablishmentsInfrastructureDependencies();
@@ -90,7 +91,7 @@ public sealed class CompositionRootTests
     public void AddEstablishmentsInfrastructureDependencies_ShouldRegisterCorrectLifetimes()
     {
         // Arrange
-        ServiceCollection services = new();
+        IServiceCollection services = IServiceCollectionTestDoubles.Default();
 
         // Act
         IServiceCollection updated = services.AddEstablishmentsInfrastructureDependencies();
@@ -116,7 +117,7 @@ public sealed class CompositionRootTests
     public void CompositionRoot_ShouldResolveFullGraph()
     {
         // Arrange
-        ServiceCollection services = new();
+        IServiceCollection services = IServiceCollectionTestDoubles.Default();
 
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, DummyLogger<GetEstablishmentsUseCase>>();
@@ -138,39 +139,11 @@ public sealed class CompositionRootTests
         Assert.NotNull(useCase);
         Assert.IsType<GetEstablishmentsUseCase>(useCase);
     }
-}
 
-internal sealed class DummyRepository : IEstablishmentsRepository
-{
-    public Task<IReadOnlyCollection<Establishment>> GetEstablishments(
-        CancellationToken token) =>
-            Task.FromResult<IReadOnlyCollection<Establishment>>([]);
-}
-
-internal sealed class DummyLogger<TLogInstance> : ILogger<TLogInstance>
-{
-#pragma warning disable CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
-    public IDisposable BeginScope<TState>(TState state) => DummyScope.Instance;
-#pragma warning restore CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
-
-    public bool IsEnabled(LogLevel logLevel) => false;
-
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-    public void Log<TState>(
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-        LogLevel logLevel,
-        EventId eventId,
-        TState state,
-        Exception exception,
-        Func<TState, Exception, string> formatter)
+    private sealed class DummyRepository : IEstablishmentsRepository
     {
-        // no-op
-    }
-
-    private sealed class DummyScope : IDisposable
-    {
-        public static readonly DummyScope Instance = new();
-        public void Dispose() { }
+        public Task<IReadOnlyCollection<Establishment>> GetEstablishments(
+            CancellationToken cancellationToken = default) =>
+                Task.FromResult<IReadOnlyCollection<Establishment>>([]);
     }
 }
-

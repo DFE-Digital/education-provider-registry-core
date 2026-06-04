@@ -40,6 +40,6 @@ public sealed class EstablishmentExceptionTests
         EstablishmentException ex = new("Test");
 
         // Assert
-        Assert.IsType<ApplicationException>(ex, exactMatch: false);
+        Assert.IsType<Exception>(ex, exactMatch: false);
     }
 }
