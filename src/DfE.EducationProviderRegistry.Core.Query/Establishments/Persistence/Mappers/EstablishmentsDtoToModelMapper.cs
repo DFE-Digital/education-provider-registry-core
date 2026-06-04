@@ -20,14 +20,19 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Ma
 /// The mapper used to convert a single <see cref="EstablishmentDataTransferObject"/>
 /// into a domain <see cref="Establishment"/>.
 /// </param>
-public sealed class EstablishmentsDtoToModelMapper(
-    IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper) :
+public sealed class EstablishmentsDtoToModelMapper :
     IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>
 {
     /// <summary>
     /// The mapper responsible for converting individual DTOs into domain models.
     /// </summary>
-    private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper = establishmentMapper;
+    private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper;
+
+    public EstablishmentsDtoToModelMapper(IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
+    {
+        ArgumentNullException.ThrowIfNull(establishmentMapper);
+        _establishmentMapper = establishmentMapper;
+    }
 
     /// <summary>
     /// Maps the supplied DTO collection into a corresponding collection of domain models.
