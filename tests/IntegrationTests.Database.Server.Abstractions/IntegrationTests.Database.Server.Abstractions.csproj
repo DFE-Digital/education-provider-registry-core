@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<RootNamespace>IntegrationTests.Database.Server.Abstractions</RootNamespace>
+    <RootNamespace>IntegrationTests.Database.Server.Abstractions</RootNamespace>
   </PropertyGroup>
 
 </Project>

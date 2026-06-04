@@ -3,6 +3,7 @@
     <Project Path="src/DfE.EducationProviderRegistry.Core.Query/DfE.EducationProviderRegistry.Core.Query.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <File Path="tests/Directory.Packages.props" />
     <Project Path="tests/DfE.EducationProviderRegistry.Core.Query.IntegrationTests/DfE.EducationProviderRegistry.Core.Query.IntegrationTests.csproj" />
     <Project Path="tests/DfE.EducationProviderRegistry.Core.Query.UnitTests/DfE.EducationProviderRegistry.Core.Query.UnitTests.csproj" />
     <Project Path="tests/IntegrationTests.Abstractions/IntegrationTests.Abstractions.csproj" />
