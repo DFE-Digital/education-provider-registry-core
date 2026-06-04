@@ -8,6 +8,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Pers
 public sealed class EstablishmentsDtoToModelMapperUnitTests
 {
     [Fact]
+    public void Construct_WithNullMapper_ThrowsArgumentNullException()
+    {
+        // Arrange & Act & Assert
+        Func<EstablishmentsDtoToModelMapper> construct = () => new EstablishmentsDtoToModelMapper(null!);
+        Assert.Throws<ArgumentNullException>(construct);
+    }
+
+    [Fact]
     public void Map_WithValidDtos_MapsEachItemCorrectly()
     {
         // Arrange

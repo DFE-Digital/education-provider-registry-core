@@ -20,14 +20,19 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Ma
 /// The mapper used to convert a single <see cref="EstablishmentDataTransferObject"/>
 /// into a domain <see cref="Establishment"/>.
 /// </param>
-public sealed class EstablishmentsDtoToModelMapper(
-    IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper) :
+internal sealed class EstablishmentsDtoToModelMapper :
     IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>
 {
     /// <summary>
     /// The mapper responsible for converting individual DTOs into domain models.
     /// </summary>
-    private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper = establishmentMapper;
+    private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper;
+
+    public EstablishmentsDtoToModelMapper(IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
+    {
+        ArgumentNullException.ThrowIfNull(establishmentMapper);
+        _establishmentMapper = establishmentMapper;
+    }
 
     /// <summary>
     /// Maps the supplied DTO collection into a corresponding collection of domain models.
@@ -45,32 +50,8 @@ public sealed class EstablishmentsDtoToModelMapper(
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        ICollection<EstablishmentDataTransferObject> dtoList =
-            input as ICollection<EstablishmentDataTransferObject> ?? [.. input];
-
-        int count = dtoList.Count;
-
-        ArrayPool<Establishment> pool = ArrayPool<Establishment>.Shared;
-        Establishment[] buffer = pool.Rent(count);
-
-        int index = 0;
-
-        try
-        {
-            foreach (EstablishmentDataTransferObject? dto in dtoList)
-            {
-                buffer[index++] = _establishmentMapper.Map(dto);
-            }
-
-            Establishment[] result = new Establishment[index];
-            Array.Copy(buffer, result, index);
-
-            return result;
-        }
-        finally
-        {
-            Array.Clear(buffer, 0, index);
-            pool.Return(buffer);
-        }
+        return input
+            .Select(_establishmentMapper.Map)
+            .ToArray();
     }
 }
