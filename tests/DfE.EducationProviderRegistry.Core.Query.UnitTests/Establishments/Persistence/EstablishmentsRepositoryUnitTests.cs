@@ -2,7 +2,7 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers.TestDoubles.StubBuilders;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared;
 using Moq;
 
@@ -16,7 +16,10 @@ public sealed class EstablishmentsRepositoryTests
 
     public EstablishmentsRepositoryTests()
     {
-        _mappedResponseDtos = new EstablishmentReadModelBuilder().BuildMany(100);
+        _mappedResponseDtos =
+            new EstablishmentCollectionBuilder()
+                .WithCount(100)
+                .Build();
 
         _collectionMapper =
             IMapperTestDouble.For<
