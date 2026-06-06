@@ -7,6 +7,16 @@ internal static class MockTestDouble
 {
     internal static Mock<TMock> Default<TMock>() where TMock : class => new();
 
+    internal static Mock<TMock> For<TMock, TOutput>(Expression<Func<TMock, TOutput>> expression, TOutput response) where TMock : class
+    {
+        Mock<TMock> mock = Default<TMock>();
+        mock.Setup(expression)
+            .Returns(response)
+            .Verifiable();
+
+        return mock;
+    }
+
     internal static Mock<TMock> For<TMock, TOutput>(Expression<Func<TMock, Task<TOutput>>> expression, TOutput response) where TMock : class
     {
         Mock<TMock> mock = Default<TMock>();

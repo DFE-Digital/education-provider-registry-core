@@ -18,4 +18,19 @@ public sealed class EstablishmentReadModelBuilder
         EstablishmentIdentifier identifier = new(_urn);
         return new Establishment(identifier);
     }
+
+    public IReadOnlyCollection<Establishment> BuildMany(int count)
+    {
+        List<Establishment> establishments = [];
+
+        for (int i = 0; i < count; i++)
+        {
+            string urn = $"10000{i}";
+            EstablishmentIdentifier identifier = new(urn);
+            establishments.Add(
+                Establishment.Create(identifier));
+        }
+
+        return establishments;
+    }
 }
