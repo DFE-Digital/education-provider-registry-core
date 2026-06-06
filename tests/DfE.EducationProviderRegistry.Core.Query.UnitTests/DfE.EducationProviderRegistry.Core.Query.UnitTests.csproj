@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DfE.EducationProviderRegistry.Core.Query\DfE.EducationProviderRegistry.Core.Query.csproj" />
+    <ProjectReference Include="..\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 
 </Project>

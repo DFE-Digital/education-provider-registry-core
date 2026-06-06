@@ -3,6 +3,7 @@ using IntegrationTests.Abstractions;
 using IntegrationTests.Database.Server.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tests.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests;
 
@@ -45,9 +46,8 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     {
         // TODO options from application to set DatabaseConnection
         return Task.FromResult<IConfiguration>(
-            DefaultConfigurationBuilder
-                .Create()
-                .Build());
+            ConfigurationDefault
+                .Create());
     }
 
     protected override async Task BeforeDisposeAsync()

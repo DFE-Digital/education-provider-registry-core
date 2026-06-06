@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tests.Shared;
+using Tests.Shared.Services;
 
 namespace IntegrationTests.Abstractions;
 
@@ -64,9 +66,9 @@ public abstract class IntegrationTestBase : IAsyncDisposable
     protected virtual Task AfterStartTestDependenciesAsync(CancellationToken ct = default) => Task.CompletedTask;
     protected virtual void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration) { }
     protected virtual void ConfigureApplicationConfiguration(IConfigurationBuilder builder) { }
-    protected virtual Task<IConfiguration> GetApplicationConfigurationAsync()
-        => Task.FromResult(
-            DefaultConfiguration.Create());
+    protected virtual Task<IConfiguration> GetApplicationConfigurationAsync() =>
+        Task.FromResult(
+            ConfigurationDefault.Create());
 
     // BeforeDisposeAsync runs BEFORE application services are disposed.
     // Use this to clean up external resources (e.g., databases, containers).
@@ -90,7 +92,7 @@ public abstract class IntegrationTestBase : IAsyncDisposable
     private async Task<IConfiguration> MergeTestAndApplicationConfiguration()
     {
         IConfigurationBuilder builder =
-            DefaultConfigurationBuilder.Create()
+            ConfigurationDefault.CreateBuilder()
         // add test config
             .AddConfiguration(TestServicesProvider.GetRequiredService<IConfiguration>())
         // add app config
@@ -103,7 +105,7 @@ public abstract class IntegrationTestBase : IAsyncDisposable
 
     private static IServiceProvider BuildApplicationServices(IConfiguration configuration, Action<IServiceCollection, IConfiguration>? configure = null)
     {
-        IServiceCollection services = DefaultServiceCollection.Create();
+        IServiceCollection services = ServiceCollectionDefault.Create();
         configure?.Invoke(services, configuration);
         services.AddSingleton<IConfiguration>((sp) => configuration);
 

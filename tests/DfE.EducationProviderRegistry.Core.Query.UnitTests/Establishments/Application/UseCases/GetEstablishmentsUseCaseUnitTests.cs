@@ -4,9 +4,10 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Tests.Shared;
+using Tests.Shared.Logger;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Application.UseCases;
 

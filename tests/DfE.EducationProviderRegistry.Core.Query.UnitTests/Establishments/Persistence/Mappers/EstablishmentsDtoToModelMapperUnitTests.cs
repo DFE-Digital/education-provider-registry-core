@@ -1,7 +1,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers.TestDoubles.StubBuilders;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
 

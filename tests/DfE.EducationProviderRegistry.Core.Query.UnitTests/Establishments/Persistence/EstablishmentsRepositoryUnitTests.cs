@@ -3,8 +3,8 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared;
 using Moq;
+using Tests.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence;
 
@@ -26,7 +26,7 @@ public sealed class EstablishmentsRepositoryTests
                 IEnumerable<EstablishmentDataTransferObject>,
                 IReadOnlyCollection<Establishment>>(
                     output: _mappedResponseDtos);
-        
+
         _sut = new EstablishmentsRepository(_collectionMapper.Object);
     }
 

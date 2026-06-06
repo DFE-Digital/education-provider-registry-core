@@ -10,5 +10,6 @@
     <Project Path="tests/IntegrationTests.Abstractions/IntegrationTests.Abstractions.csproj" />
     <Project Path="tests/IntegrationTests.Database.Server.Abstractions/IntegrationTests.Database.Server.Abstractions.csproj" />
     <Project Path="tests/IntegrationTests.Database.Server.Postgres/IntegrationTests.Database.Server.Postgres.csproj" Id="68013e16-e095-4900-bb23-48fc8af43b34" />
+    <Project Path="tests/Tests.Shared/Tests.Shared.csproj" Id="36b20827-16b9-4471-9cac-b08e31cc16d2" />
   </Folder>
 </Solution>

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared;
+namespace Tests.Shared.Logger;
 
-internal static class LoggerVerifyExtensions
+public static class LoggerVerifyExtensions
 {
     public static void VerifyNoErrors<T>(this Mock<ILogger<T>> mock)
     {

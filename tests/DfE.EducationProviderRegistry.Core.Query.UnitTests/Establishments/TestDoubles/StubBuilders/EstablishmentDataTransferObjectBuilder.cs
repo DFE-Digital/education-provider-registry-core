@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers.TestDoubles.StubBuilders;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 
 public sealed class EstablishmentDataTransferObjectBuilder
 {
