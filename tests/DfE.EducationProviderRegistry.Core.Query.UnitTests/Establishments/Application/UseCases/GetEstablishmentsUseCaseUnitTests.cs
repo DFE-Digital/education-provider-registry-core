@@ -103,7 +103,7 @@ public sealed class GetEstablishmentsUseCaseUnitTests
     {
         // Arrange
         Mock<IEstablishmentsRepository> repoMock = CreateRepositoryThrowsOnGetEstablishments<OperationCanceledException>();
-        
+
         GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentsRequest request = new();

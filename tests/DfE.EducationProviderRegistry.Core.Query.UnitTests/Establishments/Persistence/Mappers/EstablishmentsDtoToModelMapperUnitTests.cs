@@ -90,7 +90,7 @@ public sealed class EstablishmentsDtoToModelMapperUnitTests
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
-        
+
         innerMapper.VerifyMapperCalled(count: 0);
     }
 }
