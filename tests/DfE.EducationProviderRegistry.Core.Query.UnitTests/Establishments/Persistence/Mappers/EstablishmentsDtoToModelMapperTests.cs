@@ -26,8 +26,10 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithNullInput_ThrowsArgumentNullException()
     {
         // Arrange
-        EstablishmentDtoToModelMapper innerMapper = new();
-        EstablishmentsDtoToModelMapper sut = new(innerMapper);
+        IMapper<EstablishmentDataTransferObject, Establishment> innerMapper =
+            MockTestDouble.Default<IMapper<EstablishmentDataTransferObject, Establishment>>().Object;
+
+        EstablishmentsDtoToModelMapper sut = new(establishmentMapper: innerMapper);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => sut.Map(null!));
