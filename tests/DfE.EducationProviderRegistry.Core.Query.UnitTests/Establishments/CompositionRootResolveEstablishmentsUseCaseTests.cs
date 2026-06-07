@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 using Tests.Shared.Logger;
 using Tests.Shared.Services;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
 
-public sealed class GetEstablishmentCompositionRootTests
+public sealed class CompositionRootResolveEstablishmentsUseCaseTests
 {
     [Fact]
     public void CompositionRoot_ShouldResolveFullGraph()

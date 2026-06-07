@@ -1,7 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments.Extensions;
 
 internal static class GetEstablishmentServiceCollectionExtensions
 {

@@ -9,7 +9,7 @@ using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
 
-public sealed class EstablishmentsDtoToModelMapperUnitTests
+public sealed class EstablishmentsDtoToModelMapperTests
 {
     [Fact]
     public void Construct_WithNullMapper_ThrowsArgumentNullException()

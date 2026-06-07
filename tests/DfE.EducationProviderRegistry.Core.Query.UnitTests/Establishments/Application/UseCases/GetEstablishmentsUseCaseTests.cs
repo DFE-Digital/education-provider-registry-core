@@ -3,7 +3,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -12,7 +11,7 @@ using Tests.Shared.Logger;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Application.UseCases;
 
-public sealed class GetEstablishmentsUseCaseUnitTests
+public sealed class GetEstablishmentsUseCaseTests
 {
     private static readonly CancellationToken _token = CancellationToken.None;
     private readonly Mock<ILogger<GetEstablishmentsUseCase>> _loggerMock;
@@ -34,7 +33,7 @@ public sealed class GetEstablishmentsUseCaseUnitTests
     }
 
 
-    public GetEstablishmentsUseCaseUnitTests()
+    public GetEstablishmentsUseCaseTests()
     {
         _loggerMock = MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>(MockBehavior.Loose);
     }

@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mapper
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
 
-public sealed class EstablishmentDtoToModelMapperUnitTests
+public sealed class EstablishmentDtoToModelMapperTests
 {
     [Fact]
     public void Map_WithValidDto_ReturnsMappedEstablishment()
