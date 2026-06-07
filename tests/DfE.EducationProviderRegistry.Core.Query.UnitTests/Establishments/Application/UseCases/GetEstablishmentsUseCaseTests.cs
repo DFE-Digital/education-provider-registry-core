@@ -32,7 +32,6 @@ public sealed class GetEstablishmentsUseCaseTests
         return repoMock;
     }
 
-
     public GetEstablishmentsUseCaseTests()
     {
         _loggerMock = MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>(MockBehavior.Loose);
