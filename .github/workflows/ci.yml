@@ -61,13 +61,13 @@ jobs:
 
     - name: .NET Tool restore
       run: dotnet tool restore
-      
+
     - name: Build with Semantic Versioning
       run: dotnet build --configuration Release /p:Version=${{ env.VERSION }} /p:AssemblyVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.0.0 /p:FileVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}.0 /p:InformationalVersion=${{ env.VERSION }}
 
     - name: Run .NET Tests with coverage
       run: |
-       dotnet-coverage collect "dotnet test --no-build --verbosity normal --report-xunit-trx" \
+       dotnet tool run dotnet-coverage collect "dotnet test --no-build --verbosity normal --report-xunit-trx" \
          -f cobertura \
          -o coverage.cobertura.xml \
          -s coverage.runsettings
