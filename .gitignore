@@ -39,6 +39,9 @@ bld/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
+# Code coverage
+*.cobertura.xml
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
