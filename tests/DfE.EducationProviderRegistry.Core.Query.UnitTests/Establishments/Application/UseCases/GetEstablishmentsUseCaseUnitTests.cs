@@ -3,6 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,11 +14,30 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Appl
 
 public sealed class GetEstablishmentsUseCaseUnitTests
 {
-    private readonly CancellationToken _token = CancellationToken.None;
+    private static readonly CancellationToken _token = CancellationToken.None;
+    private readonly Mock<ILogger<GetEstablishmentsUseCase>> _loggerMock;
 
     private static GetEstablishmentsUseCase CreateSut(
         Mock<ILogger<GetEstablishmentsUseCase>> loggerMock,
         Mock<IEstablishmentsRepository> repoMock) => new(loggerMock.Object, repoMock.Object);
+
+    private static Mock<IEstablishmentsRepository> CreateRepositoryThrowsOnGetEstablishments<TException>() where TException : Exception, new()
+    {
+        Mock<IEstablishmentsRepository> repoMock =
+             MockTestDouble.ThrowsExceptionFor<
+                 IEstablishmentsRepository,
+                 IReadOnlyCollection<Establishment>,
+                 TException>(
+                    (repo) => repo.GetEstablishments(_token));
+
+        return repoMock;
+    }
+
+
+    public GetEstablishmentsUseCaseUnitTests()
+    {
+        _loggerMock = MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>(MockBehavior.Loose);
+    }
 
     [Fact]
     public async Task HandleRequestAsync_ReturnsMappedEstablishments()
@@ -32,10 +52,7 @@ public sealed class GetEstablishmentsUseCaseUnitTests
             MockTestDouble.For<IEstablishmentsRepository, IReadOnlyCollection<Establishment>>(
                 (repo) => repo.GetEstablishments(_token), establishmentResults);
 
-        Mock<ILogger<GetEstablishmentsUseCase>> loggerMock =
-            MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>();
-
-        GetEstablishmentsUseCase sut = CreateSut(loggerMock, repoMock);
+        GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentsRequest request = new();
 
@@ -52,7 +69,7 @@ public sealed class GetEstablishmentsUseCaseUnitTests
             establishment => Assert.Equal(establishmentResults.ElementAt(1).Identifier.Urn, establishment.Identifier.Urn));
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
-        loggerMock.VerifyNoErrors();
+        _loggerMock.VerifyNoErrors();
     }
 
     [Fact]
@@ -65,10 +82,7 @@ public sealed class GetEstablishmentsUseCaseUnitTests
                     (repo) => repo.GetEstablishments(_token),
                     null!);
 
-        Mock<ILogger<GetEstablishmentsUseCase>> loggerMock =
-            MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>();
-
-        GetEstablishmentsUseCase sut = CreateSut(loggerMock, repoMock);
+        GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentsRequest request = new();
 
@@ -81,21 +95,16 @@ public sealed class GetEstablishmentsUseCaseUnitTests
         Assert.Null(result.Model);
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
-        loggerMock.VerifyNoErrors();
+        _loggerMock.VerifyNoErrors();
     }
 
     [Fact]
     public async Task HandleRequestAsync_ThrowsOperationCanceledException_ReturnsCorrectErrorResponse()
     {
         // Arrange
-        Mock<IEstablishmentsRepository> repoMock =
-            MockTestDouble.ThrowsExceptionFor<IEstablishmentsRepository, IReadOnlyCollection<Establishment>, OperationCanceledException>(
-                (repo) => repo.GetEstablishments(_token));
-
-        Mock<ILogger<GetEstablishmentsUseCase>> loggerMock =
-            MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>();
-
-        GetEstablishmentsUseCase sut = CreateSut(loggerMock, repoMock);
+        Mock<IEstablishmentsRepository> repoMock = CreateRepositoryThrowsOnGetEstablishments<OperationCanceledException>();
+        
+        GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentsRequest request = new();
 
@@ -108,7 +117,7 @@ public sealed class GetEstablishmentsUseCaseUnitTests
         Assert.Equal("The request was cancelled by the caller.", result.ErrorMessage);
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
-        loggerMock.VerifyErrorContains("execution was cancelled by the caller");
+        _loggerMock.VerifyErrorContains("execution was cancelled by the caller");
     }
 
     [Fact]
@@ -117,13 +126,10 @@ public sealed class GetEstablishmentsUseCaseUnitTests
         // Arrange
         Mock<IEstablishmentsRepository> repoMock =
             MockTestDouble.ThrowsExceptionFor<IEstablishmentsRepository, EstablishmentException>(
-                repo => repo.GetEstablishments(_token),
+                (repo) => repo.GetEstablishments(_token),
                 new EstablishmentException("establishment exception"));
 
-        Mock<ILogger<GetEstablishmentsUseCase>> loggerMock =
-            MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>();
-
-        GetEstablishmentsUseCase sut = CreateSut(loggerMock, repoMock);
+        GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentsRequest request = new();
 
@@ -136,21 +142,16 @@ public sealed class GetEstablishmentsUseCaseUnitTests
         Assert.Equal("Failed to retrieve establishment information from the repository.", result.ErrorMessage);
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
-        loggerMock.VerifyErrorContains("encountered a domain-specific error");
+        _loggerMock.VerifyErrorContains("encountered a domain-specific error");
     }
 
     [Fact]
     public async Task HandleRequestAsync_ThrowsException_ReturnsCorrectErrorResponse()
     {
         // Arrange
-        Mock<IEstablishmentsRepository> repoMock =
-            MockTestDouble.ThrowsExceptionFor<IEstablishmentsRepository, IReadOnlyCollection<Establishment>, Exception>(
-                repo => repo.GetEstablishments(_token));
+        Mock<IEstablishmentsRepository> repoMock = CreateRepositoryThrowsOnGetEstablishments<Exception>();
 
-        Mock<ILogger<GetEstablishmentsUseCase>> loggerMock =
-            MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>();
-
-        GetEstablishmentsUseCase sut = CreateSut(loggerMock, repoMock);
+        GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentsRequest request = new();
 
@@ -163,6 +164,6 @@ public sealed class GetEstablishmentsUseCaseUnitTests
         Assert.Equal("An unexpected error occurred while processing the request.", result.ErrorMessage);
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
-        loggerMock.VerifyErrorContains("encountered an unexpected error");
+        _loggerMock.VerifyErrorContains("encountered an unexpected error");
     }
 }

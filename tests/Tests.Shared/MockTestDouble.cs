@@ -1,11 +1,12 @@
 ﻿using System.Linq.Expressions;
+using DfE.Core.Libraries.CrossCutting.Mapper;
 using Moq;
 
 namespace Tests.Shared;
 
 public static class MockTestDouble
 {
-    public static Mock<TMock> Default<TMock>() where TMock : class => new();
+    public static Mock<TMock> Default<TMock>(MockBehavior behaviour = MockBehavior.Strict) where TMock : class => new(behaviour);
 
     public static Mock<TMock> For<TMock, TOutput>(Expression<Func<TMock, TOutput>> expression, TOutput response) where TMock : class
     {

@@ -1,7 +1,11 @@
+using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
+using Moq;
+using Tests.Shared;
+using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
 
@@ -10,9 +14,23 @@ public sealed class EstablishmentsDtoToModelMapperUnitTests
     [Fact]
     public void Construct_WithNullMapper_ThrowsArgumentNullException()
     {
-        // Arrange & Act & Assert
-        Func<EstablishmentsDtoToModelMapper> construct = () => new EstablishmentsDtoToModelMapper(null!);
+        // Arrange
+        Func<EstablishmentsDtoToModelMapper> construct =
+            () => new EstablishmentsDtoToModelMapper(null!);
+
+        // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
+    }
+
+    [Fact]
+    public void Map_WithNullInput_ThrowsArgumentNullException()
+    {
+        // Arrange
+        EstablishmentDtoToModelMapper innerMapper = new();
+        EstablishmentsDtoToModelMapper sut = new(innerMapper);
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(() => sut.Map(null!));
     }
 
     [Fact]
@@ -20,11 +38,24 @@ public sealed class EstablishmentsDtoToModelMapperUnitTests
     {
         // Arrange
         IReadOnlyCollection<EstablishmentDataTransferObject> dtos =
-            new EstablishmentDataTransferObjectBuilder()
-                .BuildMany(2);
+            new EstablishmentDataTransferObjectBuilder().BuildMany(2);
 
-        EstablishmentDtoToModelMapper innerMapper = new();
-        EstablishmentsDtoToModelMapper mapper = new(innerMapper);
+        IReadOnlyCollection<Establishment> establishments =
+            new EstablishmentCollectionBuilder()
+                .WithCount(2)
+                .Build();
+
+        KeyValuePair<EstablishmentDataTransferObject, Establishment>[] mappings =
+        [
+            new(dtos.ElementAt(0), establishments.ElementAt(index: 0)),
+            new(dtos.ElementAt(1), establishments.ElementAt(index: 1))
+        ];
+
+        Mock<IMapper<EstablishmentDataTransferObject, Establishment>> innerMapper =
+            IMapperTestDouble.MapMany(mappings);
+
+        EstablishmentsDtoToModelMapper mapper =
+            new(innerMapper.Object);
 
         // Act
         IReadOnlyCollection<Establishment> result = mapper.Map(dtos);
@@ -33,57 +64,33 @@ public sealed class EstablishmentsDtoToModelMapperUnitTests
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
 
-        Assert.Collection(
-            result,
-            establishment => Assert.Equal(dtos.ElementAt(0).URN, establishment.Identifier.Urn),
-            establishment => Assert.Equal(dtos.ElementAt(1).URN, establishment.Identifier.Urn));
+        Assert.Same(mappings[0].Value, result.ElementAt(0));
+        Assert.Same(mappings[1].Value, result.ElementAt(1));
+
+        innerMapper.VerifyMapperCalled(count: 2);
+        innerMapper.VerifyMapperCalledWith(mappings[0].Key, 1);
+        innerMapper.VerifyMapperCalledWith(mappings[1].Key, 1);
     }
 
     [Fact]
     public void Map_WithEmptyCollection_ReturnsEmptyCollection()
     {
         // Arrange
-        List<EstablishmentDataTransferObject> input = [];
-        EstablishmentDtoToModelMapper innerMapper = new();
-        EstablishmentsDtoToModelMapper mapper = new(innerMapper);
+        IReadOnlyCollection<EstablishmentDataTransferObject> input = [];
+
+        Mock<IMapper<EstablishmentDataTransferObject, Establishment>> innerMapper =
+            MockTestDouble.Default<
+                IMapper<EstablishmentDataTransferObject, Establishment>>();
+
+        EstablishmentsDtoToModelMapper sut = new(innerMapper.Object);
 
         // Act
-        IReadOnlyCollection<Establishment> result = mapper.Map(input);
+        IReadOnlyCollection<Establishment> result = sut.Map(input);
 
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
-    }
-
-    [Fact]
-    public void Map_WithNullInput_ThrowsArgumentNullException()
-    {
-        // Arrange
-        EstablishmentDtoToModelMapper innerMapper = new();
-        EstablishmentsDtoToModelMapper mapper = new(innerMapper);
-
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => mapper.Map(null!));
-    }
-
-    [Fact]
-    public void Map_UsesOnlyTheFilledPortionOfTheRentedBuffer()
-    {
-        // Arrange
-        EstablishmentDataTransferObject dto =
-            new EstablishmentDataTransferObjectBuilder()
-                .WithUrn("999999")
-                .Build();
-
-        List<EstablishmentDataTransferObject> input = [dto];
-        EstablishmentDtoToModelMapper innerMapper = new();
-        EstablishmentsDtoToModelMapper mapper = new(innerMapper);
-
-        // Act
-        IReadOnlyCollection<Establishment> result = mapper.Map(input);
-
-        // Assert
-        Assert.Single(result);
-        Assert.Equal("999999", result.First().Identifier.Urn);
+        
+        innerMapper.VerifyMapperCalled(count: 0);
     }
 }

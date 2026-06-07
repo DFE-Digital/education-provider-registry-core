@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Moq;
-using Tests.Shared;
+using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence;
 
@@ -22,7 +22,7 @@ public sealed class EstablishmentsRepositoryTests
                 .Build();
 
         _collectionMapper =
-            IMapperTestDouble.For<
+            IMapperTestDouble.Map<
                 IEnumerable<EstablishmentDataTransferObject>,
                 IReadOnlyCollection<Establishment>>(
                     output: _mappedResponseDtos);
