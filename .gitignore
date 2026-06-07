@@ -40,7 +40,7 @@ bld/
 Generated\ Files/
 
 # Code coverage
-*.cobertura.xml
+*.coverage.xml
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

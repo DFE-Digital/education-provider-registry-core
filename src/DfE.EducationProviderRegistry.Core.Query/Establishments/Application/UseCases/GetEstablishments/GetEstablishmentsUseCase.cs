@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.GIAS2.Core.Query.Establishments.Application.UseCases.GetEstablishments;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 
 /// <summary>
 /// Executes the retrieval of establishment data using the
@@ -17,28 +17,22 @@ namespace DfE.GIAS2.Core.Query.Establishments.Application.UseCases.GetEstablishm
 /// Structured logging is used throughout to record execution flow,
 /// cancellation events, and error conditions.
 /// </remarks>
-public sealed class GetEstablishmentsUseCase :
+/// <remarks>
+/// Initializes a new instance of the <see cref="GetEstablishmentsUseCase"/> class.
+/// </remarks>
+/// <param name="logger">The logger used for structured diagnostic logging.</param>
+/// <param name="establishmentsRepository">
+/// The repository responsible for retrieving establishment data.
+/// </param>
+public sealed class GetEstablishmentsUseCase(
+    ILogger<GetEstablishmentsUseCase> logger,
+    IEstablishmentsRepository establishmentsRepository) :
     IUseCase<
         GetEstablishmentsRequest,
         UseCaseResponse<IReadOnlyCollection<Establishment>>>
 {
-    private readonly ILogger<GetEstablishmentsUseCase> _logger;
-    private readonly IEstablishmentsRepository _establishmentsRepository;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GetEstablishmentsUseCase"/> class.
-    /// </summary>
-    /// <param name="logger">The logger used for structured diagnostic logging.</param>
-    /// <param name="establishmentsRepository">
-    /// The repository responsible for retrieving establishment data.
-    /// </param>
-    public GetEstablishmentsUseCase(
-        ILogger<GetEstablishmentsUseCase> logger,
-        IEstablishmentsRepository establishmentsRepository)
-    {
-        _logger = logger;
-        _establishmentsRepository = establishmentsRepository;
-    }
+    private readonly ILogger<GetEstablishmentsUseCase> _logger = logger;
+    private readonly IEstablishmentsRepository _establishmentsRepository = establishmentsRepository;
 
     /// <summary>
     /// Handles the request to retrieve establishments and returns the results
@@ -65,14 +59,19 @@ public sealed class GetEstablishmentsUseCase :
 
             return UseCaseResponse<IReadOnlyCollection<Establishment>>.Success(results);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            _logger.LogError(
-                "{UseCase} execution was cancelled by the caller.",
-                nameof(GetEstablishmentsUseCase));
+            const string message =
+                "The request was cancelled by the caller.";
 
-            return UseCaseResponse<IReadOnlyCollection<Establishment>>
-                .Failure("The request was cancelled.");
+            _logger.LogError(
+                ex,
+                "{UseCase} execution was cancelled by the caller: {Message}",
+                nameof(GetEstablishmentsUseCase),
+                message
+                );
+
+            return UseCaseResponse<IReadOnlyCollection<Establishment>>.Failure(message);
         }
         catch (EstablishmentException ex)
         {

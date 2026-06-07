@@ -2,12 +2,11 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Query.Service.Persistence.Establishments;
-using DfE.GIAS2.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments;

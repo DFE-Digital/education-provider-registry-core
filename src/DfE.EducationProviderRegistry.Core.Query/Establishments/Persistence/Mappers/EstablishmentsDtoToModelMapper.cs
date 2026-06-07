@@ -3,7 +3,7 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persistence.Mappers;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 
 /// <summary>
 /// Maps a collection of <see cref="EstablishmentDataTransferObject"/> instances
@@ -13,7 +13,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.Service.Establishments.Persis
 /// Delegates single‑item mapping to <see cref="IMapper{TMapFrom, TMapTo}"/> and uses
 /// <see cref="ArrayPool{T}"/> to minimise allocations.
 /// </remarks>
-public sealed class EstablishmentsDtoToModelMapper :
+/// <remarks>
+/// Initializes a new instance of the <see cref="EstablishmentsDtoToModelMapper"/> class.
+/// </remarks>
+/// <param name="establishmentMapper">
+/// The mapper used to convert a single <see cref="EstablishmentDataTransferObject"/>
+/// into a domain <see cref="Establishment"/>.
+/// </param>
+internal sealed class EstablishmentsDtoToModelMapper :
     IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>
 {
     /// <summary>
@@ -21,16 +28,9 @@ public sealed class EstablishmentsDtoToModelMapper :
     /// </summary>
     private readonly IMapper<EstablishmentDataTransferObject, Establishment> _establishmentMapper;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EstablishmentsDtoToModelMapper"/> class.
-    /// </summary>
-    /// <param name="establishmentMapper">
-    /// The mapper used to convert a single <see cref="EstablishmentDataTransferObject"/>
-    /// into a domain <see cref="Establishment"/>.
-    /// </param>
-    public EstablishmentsDtoToModelMapper(
-        IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
+    public EstablishmentsDtoToModelMapper(IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
     {
+        ArgumentNullException.ThrowIfNull(establishmentMapper);
         _establishmentMapper = establishmentMapper;
     }
 
@@ -50,32 +50,8 @@ public sealed class EstablishmentsDtoToModelMapper :
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        ICollection<EstablishmentDataTransferObject> dtoList =
-            input as ICollection<EstablishmentDataTransferObject> ?? [.. input];
-
-        int count = dtoList.Count;
-
-        ArrayPool<Establishment> pool = ArrayPool<Establishment>.Shared;
-        Establishment[] buffer = pool.Rent(count);
-
-        int index = 0;
-
-        try
-        {
-            foreach (EstablishmentDataTransferObject? dto in dtoList)
-            {
-                buffer[index++] = _establishmentMapper.Map(dto);
-            }
-
-            Establishment[] result = new Establishment[index];
-            Array.Copy(buffer, result, index);
-
-            return result;
-        }
-        finally
-        {
-            Array.Clear(buffer, 0, index);
-            pool.Return(buffer);
-        }
+        return input
+            .Select(_establishmentMapper.Map)
+            .ToArray();
     }
 }
