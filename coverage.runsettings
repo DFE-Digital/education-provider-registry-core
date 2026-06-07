@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <CodeCoverage>
+    
+    <ModulePaths>
+      <Include>
+        <!-- src assemblies -->
+        <ModulePath>.*DfE\.EducationProviderRegistry\..*</ModulePath>
+      </Include>
+
+      <Exclude>
+        <!-- Exclude test projects -->
+        <ModulePath>.*Tests.dll</ModulePath>
+
+        <!-- Exclude common external dependencies -->
+        <ModulePath>.*xunit.*</ModulePath>
+        <ModulePath>.*Xunit.*</ModulePath>
+        <ModulePath>.*Microsoft.*</ModulePath>
+        <ModulePath>.*System.*</ModulePath>
+        <ModulePath>.*Docker.*</ModulePath>
+        <ModulePath>.*Testcontainers.*</ModulePath>
+      </Exclude>
+    </ModulePaths>
+
+   <Attributes>
+      <Exclude>
+        <!-- compiler-generated (async, lambdas, closures, <>c etc) -->
+        <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
+
+        <!-- auto-generated code (tools, designers, etc) -->
+        <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
+
+        <!-- debugger-hidden methods (often generated) -->
+        <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
+
+        <!-- exclude explicitly ignored code if you use it -->
+        <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+      </Exclude>
+    </Attributes>
+
+    <Sources>
+      <Exclude>
+        <Source>.*\.g\.cs</Source>
+        <Source>.*\.generated\.cs</Source>
+        <Source>.*Designer\.cs</Source>
+      </Exclude>
+    </Sources>
+
+  </CodeCoverage>
+</Configuration>

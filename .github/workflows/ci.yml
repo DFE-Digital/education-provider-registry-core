@@ -62,8 +62,12 @@ jobs:
     - name: Build with Semantic Versioning
       run: dotnet build --configuration Release /p:Version=${{ env.VERSION }} /p:AssemblyVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.0.0 /p:FileVersion=${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}.0 /p:InformationalVersion=${{ env.VERSION }}
 
-    - name: Run .NET Tests
-      run: dotnet test --output Detailed --report-xunit-trx
+    - name: Run .NET Tests with coverage
+      run: |
+       dotnet-coverage collect "dotnet test --no-build --verbosity normal --report-xunit-trx" \
+         -f cobertura \
+         -o coverage.cobertura.xml \
+         -s coverage.runsettings
     
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
