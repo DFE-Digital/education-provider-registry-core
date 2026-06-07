@@ -27,7 +27,7 @@ public sealed class GetEstablishmentCompositionRootTests
         services.AddEstablishmentsUseCaseDependencies();
         services.AddEstablishmentsInfrastructureDependencies();
 
-        ServiceProvider provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider(ServiceProviderOptionsDefaults.Default);
 
         // Act Assert
 

@@ -109,11 +109,7 @@ public abstract class IntegrationTestBase : IAsyncDisposable
         configure?.Invoke(services, configuration);
         services.AddSingleton<IConfiguration>((sp) => configuration);
 
-        IServiceProvider provider = services.BuildServiceProvider(new ServiceProviderOptions()
-        {
-            ValidateScopes = true,
-            ValidateOnBuild = true
-        });
+        IServiceProvider provider = services.BuildServiceProvider(ServiceProviderOptionsDefaults.Default);
 
         return provider;
     }
