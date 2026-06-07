@@ -28,12 +28,13 @@ public sealed class GetEstablishmentCompositionRootTests
         services.AddEstablishmentsInfrastructureDependencies();
 
         ServiceProvider provider = services.BuildServiceProvider(ServiceProviderOptionsDefaults.Default);
+        using IServiceScope scope = provider.CreateScope();
 
         // Act Assert
 
 #pragma warning disable CS8600
         IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>> useCase =
-            provider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>>();
+            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>>();
 #pragma warning restore CS8600
 
         // Assert
