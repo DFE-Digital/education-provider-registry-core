@@ -72,6 +72,15 @@ jobs:
          -o coverage.cobertura.xml \
          -s coverage.runsettings
     
+    - name: SonarCloud scan
+      if: github.actor != 'dependabot[bot]'
+      uses: aahmed-dfe/github-actions/sonarscan-dotnet@aa/sonar-scanner
+      with:
+          sonarcloud-project-key: DFE-Digital_education-provider-registry-core
+          sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
+          use-global-json: true
+          coverage-report-path: coverage.cobertura.xml
+
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
 
