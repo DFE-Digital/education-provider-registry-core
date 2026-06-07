@@ -67,7 +67,7 @@ jobs:
 
     - name: Run .NET Tests with coverage
       run: |
-       dotnet tool run dotnet-coverage collect "dotnet test --no-build --verbosity normal --report-xunit-trx" \
+       dotnet tool run dotnet-coverage collect "dotnet test --verbosity normal --report-xunit-trx" \
          -f cobertura \
          -o coverage.cobertura.xml \
          -s coverage.runsettings
