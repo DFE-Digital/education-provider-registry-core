@@ -11,6 +11,8 @@
       <Exclude>
         <!-- Exclude test projects -->
         <ModulePath>.*Tests.dll</ModulePath>
+        <ModulePath>.*IntegrationTests.*</ModulePath>
+        <ModulePath>.*Tests.Shared.*</ModulePath>
 
         <!-- Exclude common external dependencies -->
         <ModulePath>.*xunit.*</ModulePath>
