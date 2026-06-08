@@ -167,3 +167,6 @@ This solution provides:
 * Enterprise‑grade test infrastructure
 
 It is a complete, production‑ready Clean Architecture implementation with a robust, container‑based testing pipeline.
+
+## Dependencies
+- .NET 10 required
