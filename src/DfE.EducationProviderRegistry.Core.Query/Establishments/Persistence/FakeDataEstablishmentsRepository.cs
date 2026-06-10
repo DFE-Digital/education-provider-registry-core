@@ -12,25 +12,52 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 /// models for use by the application layer.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="EstablishmentsRepository"/> class.
+/// Initializes a new instance of the <see cref="FakeDataEstablishmentsRepository"/> class.
 /// </remarks>
 /// <param name="establishmentsMapper">
 /// The mapper responsible for converting collections of
 /// <see cref="EstablishmentDataTransferObject"/> instances into
 /// domain <see cref="Establishment"/> models.
 /// </param>
-internal sealed class EstablishmentsRepository : IEstablishmentsRepository
+internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsRepository
 {
     private readonly IMapper<
-        IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> _establishmentsMapper;
+        IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>> _establishmentsMapper;
+    private readonly IMapper<
+        EstablishmentDataTransferObject, Establishment> _establishmentMapper;
 
-    public EstablishmentsRepository(IMapper<
-        IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> establishmentsMapper)
+    public FakeDataEstablishmentsRepository(
+        IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>> establishmentsMapper,
+        IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(establishmentsMapper);
+        ArgumentNullException.ThrowIfNull(establishmentMapper);
         _establishmentsMapper = establishmentsMapper;
+        _establishmentMapper = establishmentMapper;
+    }
+
+    /// <summary>
+    /// Retrieves a single establishment by its identifier from the persistence layer.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>
+    /// A read‑only collection of mapped <see cref="Establishment"/> domain models
+    /// or <see langword="null"/> if no matching establishment is found.
+    /// </returns>
+    public async Task<Establishment?> GetEstablishmentById(
+        EstablishmentIdentifier identifier,
+        CancellationToken cancellationToken = default)
+    {
+        EstablishmentDataTransferObject? dto =
+            FakeEstablishmentDataGenerator
+            .Generate(1)
+            .FirstOrDefault();
+
+        if (dto is null)
+            return null;
+
+        return _establishmentMapper.Map(dto);
     }
 
     /// <summary>

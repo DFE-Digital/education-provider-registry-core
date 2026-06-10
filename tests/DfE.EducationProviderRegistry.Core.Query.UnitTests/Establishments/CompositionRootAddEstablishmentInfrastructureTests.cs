@@ -29,7 +29,7 @@ public sealed class CompositionRootAddInfrastructureTests
         IServiceCollection updated = services.AddEstablishmentsInfrastructureDependencies();
 
         // Assert lifetimes
-        updated.ShouldContain<IEstablishmentsRepository, EstablishmentsRepository>(ServiceLifetime.Scoped);
+        updated.ShouldContain<IEstablishmentsRepository, FakeDataEstablishmentsRepository>(ServiceLifetime.Scoped);
         updated.ShouldContain<IMapper<EstablishmentDataTransferObject, Establishment>, EstablishmentDtoToModelMapper>(ServiceLifetime.Singleton);
         updated.ShouldContain<IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>, EstablishmentsDtoToModelMapper>(ServiceLifetime.Singleton);
     }

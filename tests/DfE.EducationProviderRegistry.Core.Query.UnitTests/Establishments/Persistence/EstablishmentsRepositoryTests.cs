@@ -12,7 +12,7 @@ public sealed class EstablishmentsRepositoryTests
 {
     private readonly Mock<IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>> _collectionMapper;
     private readonly IReadOnlyCollection<Establishment> _mappedResponseDtos;
-    private readonly EstablishmentsRepository _sut;
+    private readonly FakeDataEstablishmentsRepository _sut;
 
     public EstablishmentsRepositoryTests()
     {
@@ -27,7 +27,7 @@ public sealed class EstablishmentsRepositoryTests
                 IReadOnlyCollection<Establishment>>(
                     output: _mappedResponseDtos);
 
-        _sut = new EstablishmentsRepository(_collectionMapper.Object);
+        _sut = new FakeDataEstablishmentsRepository(_collectionMapper.Object);
     }
 
     [Fact]

@@ -82,7 +82,7 @@ public static class CompositionRoot
 
         return services
             // Establishment repository.
-            .AddScoped<IEstablishmentsRepository, EstablishmentsRepository>()
+            .AddScoped<IEstablishmentsRepository, FakeDataEstablishmentsRepository>()
 
             // Collection mapper: DTO → application read model.
             .AddSingleton<IMapper<
