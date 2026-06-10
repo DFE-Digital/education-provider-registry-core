@@ -10,6 +10,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Pers
 
 public sealed class EstablishmentsRepositoryTests
 {
+    private readonly Mock<IMapper<EstablishmentDataTransferObject, Establishment>> _singleMapper;
     private readonly Mock<IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>> _collectionMapper;
     private readonly IReadOnlyCollection<Establishment> _mappedResponseDtos;
     private readonly FakeDataEstablishmentsRepository _sut;
@@ -21,13 +22,19 @@ public sealed class EstablishmentsRepositoryTests
                 .WithCount(100)
                 .Build();
 
+        _singleMapper =
+            IMapperTestDouble.Map<EstablishmentDataTransferObject, Establishment>(
+                output: _mappedResponseDtos.First());
+
         _collectionMapper =
             IMapperTestDouble.Map<
                 IEnumerable<EstablishmentDataTransferObject>,
                 IReadOnlyCollection<Establishment>>(
                     output: _mappedResponseDtos);
 
-        _sut = new FakeDataEstablishmentsRepository(_collectionMapper.Object);
+        _sut = new FakeDataEstablishmentsRepository(
+            establishmentMapper: _singleMapper.Object,
+            establishmentsMapper: _collectionMapper.Object);
     }
 
     [Fact]
