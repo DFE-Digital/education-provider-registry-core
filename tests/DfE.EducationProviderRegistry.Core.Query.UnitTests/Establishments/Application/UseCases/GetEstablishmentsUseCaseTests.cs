@@ -38,6 +38,30 @@ public sealed class GetEstablishmentsUseCaseTests
     }
 
     [Fact]
+    public void Constructor_WithNullLogger_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Mock<IEstablishmentsRepository> repoMock =
+            MockTestDouble.Default<IEstablishmentsRepository>();
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(
+            () => new GetEstablishmentsUseCase(null!, repoMock.Object));
+    }
+
+    [Fact]
+    public void Constructor_WithNullRepository_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Mock<ILogger<GetEstablishmentsUseCase>> loggerMock =
+            MockTestDouble.Default<ILogger<GetEstablishmentsUseCase>>();
+
+        // Act & Assert
+        Assert.Throws<ArgumentNullException>(
+            () => new GetEstablishmentsUseCase(loggerMock.Object, null!));
+    }
+
+    [Fact]
     public async Task HandleRequestAsync_ReturnsMappedEstablishments()
     {
         // Arrange

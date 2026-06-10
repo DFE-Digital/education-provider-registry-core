@@ -24,15 +24,22 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Us
 /// <param name="establishmentsRepository">
 /// The repository responsible for retrieving establishment data.
 /// </param>
-public sealed class GetEstablishmentsUseCase(
-    ILogger<GetEstablishmentsUseCase> logger,
-    IEstablishmentsRepository establishmentsRepository) :
-    IUseCase<
-        GetEstablishmentsRequest,
-        UseCaseResponse<IReadOnlyCollection<Establishment>>>
+public sealed class GetEstablishmentsUseCase :
+    IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>
 {
-    private readonly ILogger<GetEstablishmentsUseCase> _logger = logger;
-    private readonly IEstablishmentsRepository _establishmentsRepository = establishmentsRepository;
+    private readonly ILogger<GetEstablishmentsUseCase> _logger;
+    private readonly IEstablishmentsRepository _establishmentsRepository;
+
+    public GetEstablishmentsUseCase(
+        ILogger<GetEstablishmentsUseCase> logger,
+        IEstablishmentsRepository establishmentsRepository)
+    {
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(establishmentsRepository);
+
+        _logger = logger;
+        _establishmentsRepository = establishmentsRepository;
+    }
 
     /// <summary>
     /// Handles the request to retrieve establishments and returns the results
