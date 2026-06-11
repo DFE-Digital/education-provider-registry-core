@@ -32,6 +32,11 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdReque
         GetGroupByGroupIdRequest request,
         CancellationToken cancellationToken = default)
     {
+        if(request is null)
+        {
+            return UseCaseResponse<GroupDto>.Failure("The request cannot be null.");
+        }
+
         try
         {
             GroupIdentifier identifier = new(request.GroupId);
