@@ -18,7 +18,7 @@ internal static class AcademyTestDouble
         {
             academies.Add(CreateWith(
                 urn: GenerateUrn(faker),
-                name:  $"{AcademyNamePrefix} {i}"));
+                name: $"{AcademyNamePrefix} {i}"));
         }
 
         return academies.AsReadOnly();

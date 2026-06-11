@@ -1,6 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+
 internal sealed class GroupBuilder
 {
     private string _groupId = "G1";
