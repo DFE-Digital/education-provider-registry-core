@@ -34,7 +34,7 @@ public sealed partial record EstablishmentIdentifier
     public EstablishmentIdentifier(string urn)
     {
         if (!UrnValidation().IsMatch(urn))
-            throw new ArgumentException(
+            throw new EstablishmentException(
                 "URN must be a valid 5–7 digit numeric value.",
                 nameof(urn));
 
