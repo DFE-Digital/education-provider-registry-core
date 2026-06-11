@@ -12,6 +12,4 @@ public sealed record GroupIdentifier
     public string Value { get; }
 
     public override string ToString() => Value;
-
-    public static GroupIdentifier Create(string groupId) => new(groupId);
 }
