@@ -3,10 +3,10 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroups.DataTransferObjects;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroups;
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 
 internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdRequest, UseCaseResponse<GroupDto>>
 {
