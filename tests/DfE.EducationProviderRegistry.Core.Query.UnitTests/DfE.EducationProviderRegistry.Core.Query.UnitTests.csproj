@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Search\Application\UseCases\" />
+  </ItemGroup>
+
 </Project>
