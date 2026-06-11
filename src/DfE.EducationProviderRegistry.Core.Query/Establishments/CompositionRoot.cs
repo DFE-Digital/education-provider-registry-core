@@ -89,13 +89,13 @@ public static class CompositionRoot
 
             // Collection mapper: DTO → application read model.
             .AddSingleton<IMapper<
-                IEnumerable<EstablishmentDataTransferObject>,
+                IEnumerable<EstablishmentDto>,
                 IReadOnlyCollection<Establishment>>,
                     EstablishmentsDtoToModelMapper>()
 
             // Single‑item mapper: DTO → application read model model.
             .AddSingleton<IMapper<
-                EstablishmentDataTransferObject, Establishment>,
+                EstablishmentDto, Establishment>,
                     EstablishmentDtoToModelMapper>();
     }
 }

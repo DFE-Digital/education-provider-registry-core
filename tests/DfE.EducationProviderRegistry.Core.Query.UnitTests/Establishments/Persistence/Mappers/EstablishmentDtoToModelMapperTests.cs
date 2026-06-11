@@ -10,7 +10,7 @@ public sealed class EstablishmentDtoToModelMapperTests
     public void Map_WithValidDto_ReturnsMappedEstablishment()
     {
         // Arrange
-        EstablishmentDataTransferObject dto =
+        EstablishmentDto dto =
             new()
             {
                 URN = "123456"

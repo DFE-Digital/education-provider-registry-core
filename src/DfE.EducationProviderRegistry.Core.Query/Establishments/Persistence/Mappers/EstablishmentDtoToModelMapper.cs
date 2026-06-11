@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTr
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 
 /// <summary>
-/// Maps a single <see cref="EstablishmentDataTransferObject"/> into a fully
+/// Maps a single <see cref="EstablishmentDto"/> into a fully
 /// constructed domain <see cref="Establishment"/> instance.
 /// </summary>
 /// <remarks>
@@ -14,11 +14,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Ma
 /// or repository operations.
 /// </remarks>
 public sealed class EstablishmentDtoToModelMapper :
-    IMapper<EstablishmentDataTransferObject, Establishment>
+    IMapper<EstablishmentDto, Establishment>
 {
 
     /// <summary>
-    /// Maps the supplied <see cref="EstablishmentDataTransferObject"/> into a corresponding
+    /// Maps the supplied <see cref="EstablishmentDto"/> into a corresponding
     /// <see cref="Establishment"/> domain model.
     /// </summary>
     /// <param name="dto">
@@ -30,7 +30,7 @@ public sealed class EstablishmentDtoToModelMapper :
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="dto"/> is <c>null</c>.
     /// </exception>
-    public Establishment Map(EstablishmentDataTransferObject dto)
+    public Establishment Map(EstablishmentDto dto)
     {
         ArgumentNullException.ThrowIfNull(dto);
 

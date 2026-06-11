@@ -16,19 +16,17 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 /// </remarks>
 /// <param name="establishmentsMapper">
 /// The mapper responsible for converting collections of
-/// <see cref="EstablishmentDataTransferObject"/> instances into
+/// <see cref="EstablishmentDto"/> instances into
 /// domain <see cref="Establishment"/> models.
 /// </param>
 internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsRepository
 {
-    private readonly IMapper<
-        IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>> _establishmentsMapper;
-    private readonly IMapper<
-        EstablishmentDataTransferObject, Establishment> _establishmentMapper;
+    private readonly IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>> _establishmentsMapper;
+    private readonly IMapper<EstablishmentDto, Establishment> _establishmentMapper;
 
     public FakeDataEstablishmentsRepository(
-        IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>> establishmentsMapper,
-        IMapper<EstablishmentDataTransferObject, Establishment> establishmentMapper)
+        IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>> establishmentsMapper,
+        IMapper<EstablishmentDto, Establishment> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(establishmentsMapper);
         ArgumentNullException.ThrowIfNull(establishmentMapper);
@@ -49,7 +47,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         EstablishmentIdentifier identifier,
         CancellationToken cancellationToken = default)
     {
-        EstablishmentDataTransferObject? dto =
+        EstablishmentDto? dto =
             FakeEstablishmentDataGenerator
             .Generate(1)
             .FirstOrDefault();
@@ -77,7 +75,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         CancellationToken cancellationToken = default)
     {
         // TEMPORARY: Fake data until SQL is wired up
-        IEnumerable<EstablishmentDataTransferObject> dtos =
+        IEnumerable<EstablishmentDto> dtos =
             FakeEstablishmentDataGenerator.Generate(100);
 
         return _establishmentsMapper.Map(dtos);
@@ -91,7 +89,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
     internal static class FakeEstablishmentDataGenerator
     {
         /// <summary>
-        /// Generates a collection of fake <see cref="EstablishmentDataTransferObject"/>
+        /// Generates a collection of fake <see cref="EstablishmentDto"/>
         /// instances with unique 6‑digit URNs.
         /// </summary>
         /// <param name="count">
@@ -100,14 +98,14 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         /// <returns>
         /// A read‑only collection of generated DTOs.
         /// </returns>
-        public static IReadOnlyCollection<EstablishmentDataTransferObject> Generate(int count)
+        public static IReadOnlyCollection<EstablishmentDto> Generate(int count)
         {
             HashSet<string> urns = GenerateUniqueUrns(count);
-            List<EstablishmentDataTransferObject> dtos = [];
+            List<EstablishmentDto> dtos = [];
 
             foreach (string urn in urns)
             {
-                EstablishmentDataTransferObject dto = new()
+                EstablishmentDto dto = new()
                 {
                     URN = urn
                 };

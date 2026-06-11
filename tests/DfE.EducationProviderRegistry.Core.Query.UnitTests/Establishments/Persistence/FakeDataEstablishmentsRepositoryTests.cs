@@ -10,8 +10,8 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Pers
 
 public sealed class FakeDataEstablishmentsRepositoryTests
 {
-    private readonly Mock<IMapper<EstablishmentDataTransferObject, Establishment>> _singleMapper;
-    private readonly Mock<IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>> _collectionMapper;
+    private readonly Mock<IMapper<EstablishmentDto, Establishment>> _singleMapper;
+    private readonly Mock<IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>>> _collectionMapper;
     private readonly IReadOnlyCollection<Establishment> _mappedResponseDtos;
     private readonly FakeDataEstablishmentsRepository _sut;
 
@@ -23,12 +23,12 @@ public sealed class FakeDataEstablishmentsRepositoryTests
                 .Build();
 
         _singleMapper =
-            IMapperTestDouble.Map<EstablishmentDataTransferObject, Establishment>(
+            IMapperTestDouble.Map<EstablishmentDto, Establishment>(
                 output: _mappedResponseDtos.First());
 
         _collectionMapper =
             IMapperTestDouble.Map<
-                IEnumerable<EstablishmentDataTransferObject>,
+                IEnumerable<EstablishmentDto>,
                 IReadOnlyCollection<Establishment>>(
                     output: _mappedResponseDtos);
 
@@ -46,7 +46,7 @@ public sealed class FakeDataEstablishmentsRepositoryTests
 
         // Assert
         _collectionMapper.Verify(
-            (mapper) => mapper.Map(It.IsAny<IEnumerable<EstablishmentDataTransferObject>>()),
+            (mapper) => mapper.Map(It.IsAny<IEnumerable<EstablishmentDto>>()),
                 Times.Once);
 
         Assert.NotNull(result);
