@@ -39,4 +39,16 @@ public sealed class EstablishmentException : Exception
         : base(message, innerException)
     {
     }
+
+    /// <summary>
+    /// Creates a new <see cref="EstablishmentException"/> with a message, the name of the parameter that caused the error, and an inner exception.
+    /// </summary>
+    /// <param name="message">A description of the validation or domain failure.</param>
+    /// <param name="parameter">The name of the parameter that caused the error.</param>
+    /// <param name="innerException">The underlying exception that caused this error.</param>
+    public EstablishmentException(string message, string? parameter, Exception innerException)
+        : base(message, innerException)
+    {
+        Parameter = parameter;
+    }
 }
