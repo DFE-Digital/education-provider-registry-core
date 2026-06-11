@@ -8,14 +8,14 @@ using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence;
 
-public sealed class EstablishmentsRepositoryTests
+public sealed class FakeDataEstablishmentsRepositoryTests
 {
     private readonly Mock<IMapper<EstablishmentDataTransferObject, Establishment>> _singleMapper;
     private readonly Mock<IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>> _collectionMapper;
     private readonly IReadOnlyCollection<Establishment> _mappedResponseDtos;
     private readonly FakeDataEstablishmentsRepository _sut;
 
-    public EstablishmentsRepositoryTests()
+    public FakeDataEstablishmentsRepositoryTests()
     {
         _mappedResponseDtos =
             new EstablishmentCollectionBuilder()
