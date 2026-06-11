@@ -6,10 +6,10 @@ public sealed record Academy
     {
         ArgumentNullException.ThrowIfNull(id);
         ArgumentNullException.ThrowIfNull(name);
-        Identifier = id;
+        Id = id;
         Name = name;
     }
 
-    public AcademyIdentifier Identifier { get; }
+    public AcademyIdentifier Id { get; }
     public AcademyName Name { get; }
 }

@@ -2,7 +2,6 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 
-
 internal sealed class EstablishmentCollectionBuilder
 {
     private int _count = 10;
@@ -22,7 +21,7 @@ internal sealed class EstablishmentCollectionBuilder
         {
             establishmentList.Add(
                 new Establishment(
-                    new EstablishmentIdentifier(urn)));
+                    EstablishmentIdentifier.Create(urn)));
         }
 
         return establishmentList.AsReadOnly();

@@ -6,6 +6,7 @@ public sealed record Group
         GroupIdentifier id,
         GroupUniqueIdentifier uid,
         CompaniesHouseIdentifier companiesHouseId,
+        IEnumerable<Academy> academies,
         IEnumerable<Member>? members,
         IEnumerable<Trustee>? trustees)
     {
@@ -15,12 +16,15 @@ public sealed record Group
         GroupId = id;
         GroupUID = uid;
         CompaniesHouseId = companiesHouseId;
+
+        Academies = academies?.ToList() ?? [];
         Members = members?.ToList() ?? [];
         Trustees = trustees?.ToList() ?? [];
     }
     public GroupIdentifier GroupId { get; }
     public GroupUniqueIdentifier GroupUID { get; }
     public CompaniesHouseIdentifier CompaniesHouseId { get; }
+    public IReadOnlyCollection<Academy> Academies { get; }
     public IReadOnlyCollection<Member> Members { get; }
     public IReadOnlyCollection<Trustee> Trustees { get; }
 }

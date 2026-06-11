@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Application.Model;
 
@@ -15,7 +16,9 @@ public sealed class EstablishmentTests
     public void Constructor_ShouldSetIdentifier()
     {
         // Arrange
-        EstablishmentIdentifier identifier = new("123456");
+        UniqueReferenceNumber urn = new("123456");
+
+        EstablishmentIdentifier identifier = new(urn);
 
         // Act
         Establishment establishment = new(identifier);
@@ -28,7 +31,9 @@ public sealed class EstablishmentTests
     public void Create_ShouldReturnNewInstanceWithIdentifier()
     {
         // Arrange
-        EstablishmentIdentifier identifier = new("654321");
+        UniqueReferenceNumber urn = new("654321");
+
+        EstablishmentIdentifier identifier = new(urn);
 
         // Act
         Establishment establishment = Establishment.Create(identifier);

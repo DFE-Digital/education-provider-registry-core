@@ -1,9 +1,14 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-public record AcademyIdentifier
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+
+public sealed record AcademyIdentifier
 {
-    public AcademyIdentifier(string urn) // Share validation with establishment for URN?
+    public AcademyIdentifier(UniqueReferenceNumber urn)
     {
-
+        ArgumentNullException.ThrowIfNull(urn);
+        Value = urn.Value;
     }
+
+    public string Value { get; }
 }
