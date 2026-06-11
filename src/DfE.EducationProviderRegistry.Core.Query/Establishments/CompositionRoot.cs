@@ -2,6 +2,7 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
@@ -55,10 +56,12 @@ public static class CompositionRoot
 
         return services
             .AddScoped<
-                IUseCase<
-                    GetEstablishmentsRequest,
-                    UseCaseResponse<IReadOnlyCollection<Establishment>>>,
-                GetEstablishmentsUseCase>();
+                IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>,
+                GetEstablishmentsUseCase>()
+
+            .AddScoped<
+                IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>>,
+                GetEstablishmentByIdUseCase>();
     }
 
     /// <summary>

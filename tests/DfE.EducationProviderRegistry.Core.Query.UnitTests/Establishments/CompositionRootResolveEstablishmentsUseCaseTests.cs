@@ -2,6 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
 
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, DummyLogger<GetEstablishmentsUseCase>>();
+        services.AddSingleton<ILogger<GetEstablishmentByIdUseCase>, DummyLogger<GetEstablishmentByIdUseCase>>();
         services.AddSingleton<IEstablishmentsRepository, DummyRepository>();
 
         // Register module dependencies
@@ -33,13 +35,17 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         // Act Assert
 
 #pragma warning disable CS8600
-        IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>> useCase =
+        IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>> getEstablishmentsUseCase =
             scope.ServiceProvider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>>();
+        IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>> getEstablishmentByIdUseCase =
+            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>>>();
 #pragma warning restore CS8600
 
         // Assert
-        Assert.NotNull(useCase);
-        Assert.IsType<GetEstablishmentsUseCase>(useCase);
+        Assert.NotNull(getEstablishmentsUseCase);
+        Assert.NotNull(getEstablishmentByIdUseCase);
+        Assert.IsType<GetEstablishmentsUseCase>(getEstablishmentsUseCase);
+        Assert.IsType<GetEstablishmentByIdUseCase>(getEstablishmentByIdUseCase);
     }
 
     private sealed class DummyRepository : IEstablishmentsRepository
