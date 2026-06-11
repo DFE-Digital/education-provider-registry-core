@@ -27,7 +27,7 @@ public sealed class EstablishmentIdentifierTests
     public void Constructor_ShouldThrow_WhenUrnIsInvalid(string urn)
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new EstablishmentIdentifier(urn));
+        Assert.Throws<EstablishmentException>(() => new EstablishmentIdentifier(urn));
     }
 
     [Fact]
