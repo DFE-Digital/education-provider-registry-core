@@ -28,7 +28,7 @@ internal sealed class GroupToGroupDtoMapper : IMapper<Group, GroupDto>
             GroupId = input.GroupId.Value,
             GroupUID = input.GroupUID.Value,
             CompaniesHouseId = input.CompaniesHouseId.Value,
-            Academies = input.Academies.OrderBy(t => t.Name).ToArray(),
+            Academies = input.Academies.OrderBy(t => t.Name.Value).ToArray(),
             Members = _memberToDtoMapper.Map(input.Members),
             Trustees = _trusteeToDtoMapper.Map(input.Trustees)
         };

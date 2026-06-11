@@ -5,8 +5,8 @@ public sealed record AcademyName
     public AcademyName(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        Name = name;
+        Value = name;
     }
 
-    public string Name { get; }
+    public string Value { get; }
 }
