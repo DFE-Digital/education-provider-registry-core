@@ -28,7 +28,7 @@ public sealed record TrusteeTitle
             return TrusteeTitleType.CFO;
         }
 
-        if (normalised.Contains("accounting officer"))
+        if (normalised.Contains("accounting"))
         {
             return TrusteeTitleType.AccountingOfficer;
         }

@@ -15,7 +15,7 @@ internal static class TrusteeTestDouble
         for (int i = 0; i < count; i++)
         {
             trustees.Add(CreateWith(
-                id: faker.Random.Guid().ToString(),
+                id: faker.Random.Guid(),
                 name: faker.Person.FullName,
                 startDate: faker.Date.Past()));
         }
@@ -24,23 +24,27 @@ internal static class TrusteeTestDouble
     }
 
     public static Trustee CreateWith(
-        string id = "trustee-1",
+        Guid? id = null,
         string name = "Test Trustee",
-        DateTime? startDate = null)
+        DateTime? startDate = null,
+        TrusteeTitleType titleType = TrusteeTitleType.Other)
     {
+        string identifier = id?.ToString() ?? Guid.NewGuid().ToString();
+
         return new(
-            new GroupMemberIdentifier(id),
+            new GroupMemberIdentifier(identifier),
             new GroupMemberName(name),
-            startDate ?? DateTime.UtcNow
+            startDate ?? DateTime.UtcNow,
+            CreateTrusteeTitle(titleType)
         );
     }
 
     public static IReadOnlyCollection<Trustee> CreateWith(
-        params (string Id, string Name, DateTime StartDate)[] inputs)
+        params (Guid Id, string Name, DateTime StartDate)[] inputs)
     {
         List<Trustee> trustees = new(inputs.Length);
 
-        foreach ((string id, string name, DateTime startDate) in inputs)
+        foreach ((Guid id, string name, DateTime startDate) in inputs)
         {
             trustees.Add(
                 CreateWith(
@@ -48,5 +52,16 @@ internal static class TrusteeTestDouble
         }
 
         return trustees.AsReadOnly();
+    }
+
+    private static TrusteeTitle CreateTrusteeTitle(TrusteeTitleType type)
+    {
+        return type switch
+        {
+            TrusteeTitleType.Chair => new("chair"),
+            TrusteeTitleType.CFO => new("cfo"),
+            TrusteeTitleType.AccountingOfficer => new("accounting"),
+            _ => new("other")
+        };
     }
 }
