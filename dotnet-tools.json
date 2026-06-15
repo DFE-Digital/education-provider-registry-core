@@ -8,6 +8,13 @@
         "dotnet-coverage"
       ],
       "rollForward": false
+    },
+    "dotnet-sonarscanner": {
+      "version": "11.2.1",
+      "commands": [
+        "dotnet-sonarscanner"
+      ],
+      "rollForward": false
     }
   }
 }
