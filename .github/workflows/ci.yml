@@ -77,7 +77,8 @@ jobs:
         dotnet tool run reportgenerator \
           -reports:coverage.cobertura.xml \
           -targetdir:coverage-sonar \
-          -reporttypes:SonarQube
+          -reporttypes:SonarQube \
+          -sourcedirs:$GITHUB_WORKSPACE
     
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
