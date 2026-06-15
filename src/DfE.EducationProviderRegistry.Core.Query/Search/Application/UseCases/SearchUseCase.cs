@@ -83,7 +83,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
         {
             const string message = "The search request was cancelled by the caller.";
 
-            _logger.LogError(
+            _logger.LogWarning(
                 ex,
                 "{UseCase} execution cancelled: {Message}",
                 nameof(SearchUseCase),
