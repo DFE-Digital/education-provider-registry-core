@@ -80,6 +80,12 @@ jobs:
           -reporttypes:SonarQube \
           -sourcedirs:$GITHUB_WORKSPACE
     
+    - name: Upload Sonar coverage report
+      uses: actions/upload-artifact@v7
+      with:
+        name: sonar-coverage-report
+        path: coverage-sonar/SonarQube.xml
+
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
       uses: DFE-Digital/github-actions/sonarscan-dotnet@fb860bd4a4ec0741de4858926f9379f50d542ff8
