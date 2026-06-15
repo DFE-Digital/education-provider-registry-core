@@ -71,6 +71,14 @@ jobs:
          -f cobertura \
          -o coverage.cobertura.xml \
          -s coverage.runsettings
+
+    - name: Convert coverage to SonarQube format
+      run: |
+        dotnet tool run dotnet-reportgenerator-globaltool
+        reportgenerator \
+          -reports:coverage.cobertura.xml \
+          -targetdir:coverage-sonar \
+          -reporttypes:SonarQube
     
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
@@ -79,7 +87,7 @@ jobs:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
-          coverage-report-path: coverage.cobertura.xml
+          coverage-report-path: SonarQube.xml
 
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
