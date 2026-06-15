@@ -11,13 +11,7 @@ internal sealed class TrusteeToTrusteeDtoMapper : IMapper<IEnumerable<Trustee>, 
         return input?
             .OrderBy((trustee) => GetOrderPriority(trustee.Title?.Type))
             .ThenByDescending(trustee => trustee.StartDate)
-            .Select((trustee) => new TrusteeDto
-            {
-                Id = trustee.Id.Value,
-                FullName = trustee.Name.FullName,
-                StartDate = trustee.StartDate,
-                Title = trustee.Title?.Type
-            })
+            .Select(MapToDto)
             .ToArray() ?? [];
     }
 
@@ -29,4 +23,12 @@ internal sealed class TrusteeToTrusteeDtoMapper : IMapper<IEnumerable<Trustee>, 
             TrusteeTitleType.AccountingOfficer => 2,
             _ => 99
         };
+
+    private static TrusteeDto MapToDto(Trustee trustee) => new()
+    {
+        Id = trustee.Id.Value,
+        FullName = trustee.Name.FullName,
+        StartDate = trustee.StartDate,
+        Title = trustee.Title?.Type
+    };
 }

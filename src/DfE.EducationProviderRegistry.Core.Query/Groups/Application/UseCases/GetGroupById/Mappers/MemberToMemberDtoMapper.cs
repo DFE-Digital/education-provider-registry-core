@@ -10,12 +10,14 @@ internal sealed class MemberToMemberDtoMapper : IMapper<IEnumerable<Member>, IRe
     {
         return input?
             .OrderByDescending(member => member.StartDate)
-            .Select((member) => new MemberDto
-            {
-                Identifier = member.Id.Value,
-                FullName = member.Name.FullName,
-                StartDate = member.StartDate,
-            })
+            .Select(MapToDto)
             .ToArray() ?? [];
     }
+
+    private static MemberDto MapToDto(Member member) => new()
+    {
+        Identifier = member.Id.Value,
+        FullName = member.Name.FullName,
+        StartDate = member.StartDate,
+    };
 }
