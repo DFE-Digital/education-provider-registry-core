@@ -86,7 +86,7 @@ jobs:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
-          coverage-report-path: SonarQube.xml
+          coverage-report-path: coverage-sonar/SonarQube.xml
 
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
