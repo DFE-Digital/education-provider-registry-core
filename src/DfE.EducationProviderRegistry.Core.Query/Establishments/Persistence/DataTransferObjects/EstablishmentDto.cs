@@ -9,11 +9,17 @@ public sealed class EstablishmentDto
 {
     public required string URN { get; set; }
     public string UKPRN { get; set; }
-    public string DfENumber { get; set; }
+    public string UPPN { get; set; }
 
     public string Name { get; set; }
+    public string Number { get; set; }
+    public string DfENumber { get; set; }
     public string Status { get; set; }
+
     public DateTime? OpenDate { get; set; }
+    public string ReasonEstablishmentOpened { get; set; }
+    public DateTime? CloseDate { get; set; }
+    public string ReasonEstablishmentClosed { get; set; }
 
     public AddressDto Address { get; set; }
 
