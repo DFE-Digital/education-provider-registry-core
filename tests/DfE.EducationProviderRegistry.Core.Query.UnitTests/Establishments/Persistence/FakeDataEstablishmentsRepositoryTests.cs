@@ -8,26 +8,33 @@ using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence;
 
-public sealed class EstablishmentsRepositoryTests
+public sealed class FakeDataEstablishmentsRepositoryTests
 {
-    private readonly Mock<IMapper<IEnumerable<EstablishmentDataTransferObject>, IReadOnlyCollection<Establishment>>> _collectionMapper;
+    private readonly Mock<IMapper<EstablishmentDto, Establishment>> _singleMapper;
+    private readonly Mock<IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>>> _collectionMapper;
     private readonly IReadOnlyCollection<Establishment> _mappedResponseDtos;
-    private readonly EstablishmentsRepository _sut;
+    private readonly FakeDataEstablishmentsRepository _sut;
 
-    public EstablishmentsRepositoryTests()
+    public FakeDataEstablishmentsRepositoryTests()
     {
         _mappedResponseDtos =
             new EstablishmentCollectionBuilder()
                 .WithCount(100)
                 .Build();
 
+        _singleMapper =
+            IMapperTestDouble.Map<EstablishmentDto, Establishment>(
+                output: _mappedResponseDtos.First());
+
         _collectionMapper =
             IMapperTestDouble.Map<
-                IEnumerable<EstablishmentDataTransferObject>,
+                IEnumerable<EstablishmentDto>,
                 IReadOnlyCollection<Establishment>>(
                     output: _mappedResponseDtos);
 
-        _sut = new EstablishmentsRepository(_collectionMapper.Object);
+        _sut = new FakeDataEstablishmentsRepository(
+            establishmentMapper: _singleMapper.Object,
+            establishmentsMapper: _collectionMapper.Object);
     }
 
     [Fact]
@@ -39,7 +46,7 @@ public sealed class EstablishmentsRepositoryTests
 
         // Assert
         _collectionMapper.Verify(
-            (mapper) => mapper.Map(It.IsAny<IEnumerable<EstablishmentDataTransferObject>>()),
+            (mapper) => mapper.Map(It.IsAny<IEnumerable<EstablishmentDto>>()),
                 Times.Once);
 
         Assert.NotNull(result);

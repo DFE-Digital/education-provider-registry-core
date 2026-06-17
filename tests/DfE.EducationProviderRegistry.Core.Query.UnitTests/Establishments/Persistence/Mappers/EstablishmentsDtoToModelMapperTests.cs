@@ -26,8 +26,8 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithNullInput_ThrowsArgumentNullException()
     {
         // Arrange
-        IMapper<EstablishmentDataTransferObject, Establishment> innerMapper =
-            MockTestDouble.Default<IMapper<EstablishmentDataTransferObject, Establishment>>().Object;
+        IMapper<EstablishmentDto, Establishment> innerMapper =
+            MockTestDouble.Default<IMapper<EstablishmentDto, Establishment>>().Object;
 
         EstablishmentsDtoToModelMapper sut = new(establishmentMapper: innerMapper);
 
@@ -39,21 +39,21 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithValidDtos_MapsEachItemCorrectly()
     {
         // Arrange
-        IReadOnlyCollection<EstablishmentDataTransferObject> dtos =
-            new EstablishmentDataTransferObjectBuilder().BuildMany(2);
+        IReadOnlyCollection<EstablishmentDto> dtos =
+            new EstablishmentDtoBuilder().BuildMany(2);
 
         IReadOnlyCollection<Establishment> establishments =
             new EstablishmentCollectionBuilder()
                 .WithCount(2)
                 .Build();
 
-        KeyValuePair<EstablishmentDataTransferObject, Establishment>[] mappings =
+        KeyValuePair<EstablishmentDto, Establishment>[] mappings =
         [
             new(dtos.ElementAt(0), establishments.ElementAt(index: 0)),
             new(dtos.ElementAt(1), establishments.ElementAt(index: 1))
         ];
 
-        Mock<IMapper<EstablishmentDataTransferObject, Establishment>> innerMapper =
+        Mock<IMapper<EstablishmentDto, Establishment>> innerMapper =
             IMapperTestDouble.MapMany(mappings);
 
         EstablishmentsDtoToModelMapper mapper =
@@ -78,11 +78,11 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithEmptyCollection_ReturnsEmptyCollection()
     {
         // Arrange
-        IReadOnlyCollection<EstablishmentDataTransferObject> input = [];
+        IReadOnlyCollection<EstablishmentDto> input = [];
 
-        Mock<IMapper<EstablishmentDataTransferObject, Establishment>> innerMapper =
+        Mock<IMapper<EstablishmentDto, Establishment>> innerMapper =
             MockTestDouble.Default<
-                IMapper<EstablishmentDataTransferObject, Establishment>>();
+                IMapper<EstablishmentDto, Establishment>>();
 
         EstablishmentsDtoToModelMapper sut = new(innerMapper.Object);
 
