@@ -29,7 +29,7 @@ internal static class AcademyTestDouble
         string name = AcademyNamePrefix)
     {
         return new(
-            new AcademyIdentifier(
+            new AcademyId(
                 new UniqueReferenceNumber(urn)),
             new AcademyName(name)
         );

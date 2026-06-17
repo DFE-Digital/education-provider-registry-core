@@ -91,7 +91,8 @@ public sealed class GroupToGroupDtoMapperTests
 
         Assert.NotEmpty(result.Academies);
 
-        IEnumerable<Academy> expectaAcademiesSortedByNameAsc = input.Academies.OrderBy(t => t.Name.Value);
+        IEnumerable<Academy> expectaAcademiesSortedByNameAsc = input.Academies.OrderBy(t => t.Name.ToString());
+
         Assert.Equivalent(
             expectaAcademiesSortedByNameAsc,
             result.Academies);

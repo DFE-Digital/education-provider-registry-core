@@ -15,7 +15,7 @@ internal static class TrusteeTestDoubles
         for (int i = 0; i < count; i++)
         {
             trustees.Add(CreateWith(
-                id: faker.Random.Guid(),
+                id: $"{i}".PadRight(7, '0'),
                 name: faker.Person.FullName,
                 startDate: faker.Date.Past()));
         }
@@ -24,15 +24,13 @@ internal static class TrusteeTestDoubles
     }
 
     public static Trustee CreateWith(
-        Guid? id = null,
+        string id = "1234567",
         string name = "Test Trustee",
         DateTime? startDate = null,
         TrusteeTitleType titleType = TrusteeTitleType.Other)
     {
-        string identifier = id?.ToString() ?? Guid.NewGuid().ToString();
-
         return new(
-            new GovernanceIdentifier(identifier),
+            new GovernanceIdentifier(id),
             new Name(name),
             startDate ?? DateTime.UtcNow,
             CreateTrusteeTitle(titleType)
@@ -40,11 +38,11 @@ internal static class TrusteeTestDoubles
     }
 
     public static IReadOnlyCollection<Trustee> CreateWith(
-        params (Guid Id, string Name, DateTime StartDate)[] inputs)
+        params (string Id, string Name, DateTime StartDate)[] inputs)
     {
         List<Trustee> trustees = new(inputs.Length);
 
-        foreach ((Guid id, string name, DateTime startDate) in inputs)
+        foreach ((string id, string name, DateTime startDate) in inputs)
         {
             trustees.Add(
                 CreateWith(

@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
 internal sealed class GroupBuilder
 {
-    private string _groupId = "G1";
+    private string _groupId = "1234567";
     private int _groupUid = 1234;
     private string _companiesHouseId = "CH1";
 
