@@ -7,6 +7,7 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGr
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups;
 
@@ -23,9 +24,9 @@ public static class CompositionRoot
                 UseCaseResponse<GroupDto>>,
             GetGroupByGroupIdUseCase>();
 
-        services.AddSingleton<IMapper<Group, GroupDto>, GroupToGroupDtoMapper>();
-        services.AddSingleton<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>, MemberToMemberDtoMapper>();
-        services.AddSingleton<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>, TrusteeToTrusteeDtoMapper>();
+        services.TryAddSingleton<IMapper<Group, GroupDto>, GroupToGroupDtoMapper>();
+        services.TryAddSingleton<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>, MemberToMemberDtoMapper>();
+        services.TryAddSingleton<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>, TrusteeToTrusteeDtoMapper>();
 
         return services;
     }
@@ -35,7 +36,9 @@ public static class CompositionRoot
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        return services
-            .AddScoped<IGroupsRepository, FakeGroupsRepository>();
+        services
+            .TryAddScoped<IGroupsRepository, FakeGroupsRepository>();
+
+        return services;
     }
 }
