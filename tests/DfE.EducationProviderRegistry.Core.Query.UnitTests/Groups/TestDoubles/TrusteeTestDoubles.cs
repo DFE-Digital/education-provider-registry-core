@@ -54,7 +54,7 @@ internal static class TrusteeTestDoubles
         return trustees.AsReadOnly();
     }
 
-    private static TrusteeTitle CreateTrusteeTitle(TrusteeTitleType type)
+    public static TrusteeTitle CreateTrusteeTitle(TrusteeTitleType type = TrusteeTitleType.CFO)
     {
         return type switch
         {

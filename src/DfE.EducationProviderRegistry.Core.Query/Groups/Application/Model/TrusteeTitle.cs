@@ -13,7 +13,6 @@ public sealed record TrusteeTitle
         Type = Normalise(Value);
     }
 
-
     private static TrusteeTitleType Normalise(string value)
     {
         string normalised = value.Trim().ToLowerInvariant();
@@ -35,13 +34,4 @@ public sealed record TrusteeTitle
 
         return TrusteeTitleType.Other;
     }
-
-}
-
-public enum TrusteeTitleType
-{
-    Other = 0,
-    Chair,
-    CFO,
-    AccountingOfficer
 }
