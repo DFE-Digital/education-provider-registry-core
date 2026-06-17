@@ -2,7 +2,7 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
-public static class AcademyNameTestDoubles
+internal static class AcademyNameTestDoubles
 {
     public static AcademyName Create(string value = "Academy")
     {
