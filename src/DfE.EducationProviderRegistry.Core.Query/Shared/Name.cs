@@ -27,4 +27,6 @@ public sealed record Name
     {
         return StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
     }
+
+    public override string ToString() => Value;
 }
