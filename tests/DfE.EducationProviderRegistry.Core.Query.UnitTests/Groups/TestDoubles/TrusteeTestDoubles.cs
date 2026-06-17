@@ -32,7 +32,7 @@ internal static class TrusteeTestDoubles
         string identifier = id?.ToString() ?? Guid.NewGuid().ToString();
 
         return new(
-            new GroupMemberIdentifier(identifier),
+            new GovernanceIdentifier(identifier),
             new Name(name),
             startDate ?? DateTime.UtcNow,
             CreateTrusteeTitle(titleType)
