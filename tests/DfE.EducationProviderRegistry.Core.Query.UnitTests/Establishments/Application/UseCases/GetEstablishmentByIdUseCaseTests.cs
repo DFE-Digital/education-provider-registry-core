@@ -101,9 +101,9 @@ public sealed class GetEstablishmentByIdUseCaseTests
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Equal("Failed to retrieve establishment details.", result.ErrorMessage);
+        Assert.Equal("An unexpected error occurred while processing the request.", result.ErrorMessage);
 
-        _loggerMock.VerifyErrorContains("domain-specific error");
+        _loggerMock.VerifyErrorContains("unexpected error");
     }
 
     [Fact]

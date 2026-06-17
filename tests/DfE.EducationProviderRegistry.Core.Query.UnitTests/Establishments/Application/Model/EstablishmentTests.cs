@@ -8,7 +8,7 @@ public sealed class EstablishmentTests
     [Fact]
     public void Urn_ShouldThrow_WhenInvalid()
     {
-        Assert.Throws<EstablishmentException>(() => new EstablishmentUrn(new UniqueReferenceNumber("ABC")));
+        Assert.Throws<ArgumentException>(() => new EstablishmentUrn(new UniqueReferenceNumber("ABC")));
     }
 
     [Fact]

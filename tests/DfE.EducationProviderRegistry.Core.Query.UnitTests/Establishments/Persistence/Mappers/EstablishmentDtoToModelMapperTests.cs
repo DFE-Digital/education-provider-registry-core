@@ -57,10 +57,10 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Null(result.CloseDate);
         Assert.Null(result.ReasonEstablishmentClosed);
 
-        Assert.Equal("Street", result.Address.Street);
-        Assert.Equal("Town", result.Address.Town);
-        Assert.Equal("County", result.Address.County);
-        Assert.Equal("AB1 2CD", result.Address.Postcode);
+        Assert.Equal("Street", result.Address?.Street);
+        Assert.Equal("Town", result.Address?.Town);
+        Assert.Equal("County", result.Address?.County);
+        Assert.Equal("AB1 2CD", result.Address?.Postcode);
     }
 
     [Fact]

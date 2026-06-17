@@ -50,10 +50,10 @@ public sealed class EstablishmentDtoToModelMapper :
             CloseDate = dto.CloseDate is not null ? new EstablishmentCloseDate(dto.CloseDate) : null,
             ReasonEstablishmentClosed = dto.ReasonEstablishmentClosed is not null ? new EstablishmentCloseReason(dto.ReasonEstablishmentClosed) : null,
             Address = new Address(
-                    dto.Address.Street,
-                    dto.Address.Town,
-                    dto.Address.County,
-                    dto.Address.Postcode),
+                    dto.Address?.Street,
+                    dto.Address?.Town,
+                    dto.Address?.County,
+                    dto.Address?.Postcode),
             Governors = dto.Governors?.Select(g => new Governor(
                 new GovernancePersonInfo(
                 new GovernanceIdentifier(g.Identifier),

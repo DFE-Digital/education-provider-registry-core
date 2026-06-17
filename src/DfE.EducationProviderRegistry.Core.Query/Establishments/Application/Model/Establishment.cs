@@ -10,7 +10,7 @@ public sealed record Establishment
 
     public EstablishmentName Name { get; init; }
     public EstablishmentNumber Number { get; init; }
-    public Address Address { get; init; }
+    public Address? Address { get; init; }
 
     public EstablishmentStatus Status { get; init; }
     public EstablishmentType Type { get; init; }

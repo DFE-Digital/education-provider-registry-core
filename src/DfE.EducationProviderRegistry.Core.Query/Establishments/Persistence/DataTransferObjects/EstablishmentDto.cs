@@ -20,7 +20,7 @@ public sealed class EstablishmentDto
     public DateTime? CloseDate { get; set; }
     public string? ReasonEstablishmentClosed { get; set; }
 
-    public AddressDto Address { get; set; }
+    public AddressDto? Address { get; set; }
 
     public string Type { get; set; }
     public string PhaseOfEducation { get; set; }
