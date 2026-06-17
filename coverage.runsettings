@@ -48,5 +48,6 @@
       </Exclude>
     </Sources>
 
+    <UseSourceLink>true</UseSourceLink>
   </CodeCoverage>
 </Configuration>
