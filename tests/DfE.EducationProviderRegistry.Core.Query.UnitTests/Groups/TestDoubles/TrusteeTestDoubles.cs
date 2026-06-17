@@ -3,9 +3,8 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
-internal static class TrusteeTestDouble
+internal static class TrusteeTestDoubles
 {
-
     public static IReadOnlyCollection<Trustee> Create(int count = 1)
     {
         Faker faker = new();

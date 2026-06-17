@@ -5,7 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;
 
 internal sealed class FakeGroupsRepository : IGroupsRepository
 {
-    public Task<Group?> GetGroupByGroupIdAsync(GroupIdentifier groupId, CancellationToken cancellationToken = default)
+    public Task<Group?> GetGroupByGroupIdAsync(GroupId groupId, CancellationToken cancellationToken = default)
     {
         return null!;
     }

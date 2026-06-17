@@ -41,7 +41,7 @@ public sealed class MemberToMemberDtoMapperTests
     public void Map_Should_Map_All_Properties()
     {
         // Arrange
-        Member member = MemberTestDouble.Create(1).Single();
+        Member member = MemberTestDoubles.Create(1).Single();
 
         MemberToMemberDtoMapper sut = new();
 
@@ -60,8 +60,8 @@ public sealed class MemberToMemberDtoMapperTests
     public void Map_Should_Order_By_StartDate_Descending()
     {
         // Arrange
-        Member older = MemberTestDouble.CreateWith(startDate: new DateTime(2020, 1, 1));
-        Member newer = MemberTestDouble.CreateWith(startDate: new DateTime(2025, 1, 1));
+        Member older = MemberTestDoubles.CreateWith(startDate: new DateTime(2020, 1, 1));
+        Member newer = MemberTestDoubles.CreateWith(startDate: new DateTime(2025, 1, 1));
 
         MemberToMemberDtoMapper sut = new();
 
@@ -77,7 +77,7 @@ public sealed class MemberToMemberDtoMapperTests
     public void Map_Should_Map_All_Items()
     {
         // Arrange
-        IReadOnlyCollection<Member> members = MemberTestDouble.Create(50);
+        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(50);
 
         MemberToMemberDtoMapper sut = new();
 

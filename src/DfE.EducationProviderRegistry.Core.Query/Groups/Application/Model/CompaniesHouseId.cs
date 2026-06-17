@@ -4,9 +4,9 @@ using System.Text;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-public sealed record CompaniesHouseIdentifier
+public sealed record CompaniesHouseId
 {
-    public CompaniesHouseIdentifier(string value)
+    public CompaniesHouseId(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
         Value = value.Trim();

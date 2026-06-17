@@ -74,8 +74,8 @@ public sealed class GroupToGroupDtoMapperTests
             .WithGroupUid(123)
             .WithCompaniesHouseId("Corpo")
             .WithAcademies(AcademyTestDouble.Create(3))
-            .WithMembers(MemberTestDouble.Create(5))
-            .WithTrustees(TrusteeTestDouble.Create(7))
+            .WithMembers(MemberTestDoubles.Create(5))
+            .WithTrustees(TrusteeTestDoubles.Create(7))
             .Build();
 
         // Act
@@ -102,7 +102,7 @@ public sealed class GroupToGroupDtoMapperTests
     public void Map_Should_Call_MemberMapper()
     {
         // Arrange
-        IReadOnlyCollection<Member> members = MemberTestDouble.Create(count: 10);
+        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(count: 10);
 
         Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>> memberMapper = CreateMemberMapperMock();
 
@@ -123,7 +123,7 @@ public sealed class GroupToGroupDtoMapperTests
     public void Map_Should_Call_TrusteeMapper()
     {
         // Arrange
-        IReadOnlyCollection<Trustee> trustees = TrusteeTestDouble.Create(count: 20);
+        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(count: 20);
 
         Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>> trusteeMapperMock = CreateTrusteeMapperMock();
 

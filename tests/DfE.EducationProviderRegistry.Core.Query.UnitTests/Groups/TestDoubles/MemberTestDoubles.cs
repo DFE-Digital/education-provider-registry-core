@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
-internal static class MemberTestDouble
+internal static class MemberTestDoubles
 {
     public static IReadOnlyCollection<Member> Create(int count = 1)
     {

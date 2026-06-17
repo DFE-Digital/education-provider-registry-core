@@ -1,8 +1,8 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-public sealed record GroupIdentifier
+public sealed record GroupId
 {
-    public GroupIdentifier(string groupId)
+    public GroupId(string groupId)
     {
         // TODO validation on GroupId?
         ArgumentException.ThrowIfNullOrWhiteSpace(groupId);

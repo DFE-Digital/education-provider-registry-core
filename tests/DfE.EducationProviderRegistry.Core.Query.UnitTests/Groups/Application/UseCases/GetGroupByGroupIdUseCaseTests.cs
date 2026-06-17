@@ -88,7 +88,7 @@ public sealed class GetGroupByGroupIdUseCaseTests
     {
         // Arrange
         Mock<IGroupsRepository> repository = MockTestDouble.For<IGroupsRepository, Group?>(
-            (repo) => repo.GetGroupByGroupIdAsync(It.IsAny<GroupIdentifier>(), It.IsAny<CancellationToken>()),
+            (repo) => repo.GetGroupByGroupIdAsync(It.IsAny<GroupId>(), It.IsAny<CancellationToken>()),
             null!);
 
         GetGroupByGroupIdUseCase sut = CreateSut(
@@ -115,7 +115,7 @@ public sealed class GetGroupByGroupIdUseCaseTests
         Group stubGroup = new GroupBuilder().Build();
 
         Mock<IGroupsRepository> repository = MockTestDouble.For<IGroupsRepository, Group?>(
-            (repo) => repo.GetGroupByGroupIdAsync(It.IsAny<GroupIdentifier>(), It.IsAny<CancellationToken>()),
+            (repo) => repo.GetGroupByGroupIdAsync(It.IsAny<GroupId>(), It.IsAny<CancellationToken>()),
             stubGroup);
 
         GroupDto dto = StubGroupDto();
@@ -141,7 +141,7 @@ public sealed class GetGroupByGroupIdUseCaseTests
         // Assert - control flow
         repository.Verify(
             (repo) => repo.GetGroupByGroupIdAsync(
-                It.Is<GroupIdentifier>((identifier) => identifier.Value == request.GroupId),
+                It.Is<GroupId>((identifier) => identifier.Value == request.GroupId),
                 _ctx));
 
         mapper.Verify(m => m.Map(stubGroup), Times.Once);

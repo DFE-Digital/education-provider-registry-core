@@ -39,7 +39,7 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdReque
 
         try
         {
-            GroupIdentifier identifier = new(request.GroupId);
+            GroupId identifier = new(request.GroupId);
 
             Group? group = await _groupsRepository
                 .GetGroupByGroupIdAsync(identifier, cancellationToken);

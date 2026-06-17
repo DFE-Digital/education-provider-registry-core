@@ -41,7 +41,7 @@ public sealed class TrusteeToTrusteeDtoMapperTests
     public void Map_Should_Map_All_Properties()
     {
         // Arrange
-        Trustee trustee = TrusteeTestDouble.Create(1).Single();
+        Trustee trustee = TrusteeTestDoubles.Create(1).Single();
 
         TrusteeToTrusteeDtoMapper sut = new();
 
@@ -61,10 +61,10 @@ public sealed class TrusteeToTrusteeDtoMapperTests
     public void Map_Should_Order_By_Title_Priority()
     {
         // Arrange
-        Trustee chair = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.Chair);
-        Trustee cfo = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.CFO);
-        Trustee accounting = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
-        Trustee other = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.Other);
+        Trustee chair = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Chair);
+        Trustee cfo = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO);
+        Trustee accounting = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
+        Trustee other = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Other);
 
         TrusteeToTrusteeDtoMapper sut = new();
 
@@ -84,8 +84,8 @@ public sealed class TrusteeToTrusteeDtoMapperTests
     public void Map_Should_Then_Order_By_StartDate_Descending_When_Same_Title()
     {
         // Arrange
-        Trustee older = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2020, 1, 1));
-        Trustee newer = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2025, 1, 1));
+        Trustee older = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2020, 1, 1));
+        Trustee newer = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2025, 1, 1));
 
         TrusteeToTrusteeDtoMapper sut = new();
 
@@ -103,10 +103,10 @@ public sealed class TrusteeToTrusteeDtoMapperTests
     public void Map_Should_Map_All_Items()
     {
         // Arrange
-        Trustee chair = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.Chair);
-        Trustee cfo = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.CFO);
-        Trustee accounting = TrusteeTestDouble.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
-        IReadOnlyCollection<Trustee> otherTrustees = TrusteeTestDouble.Create(30);
+        Trustee chair = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Chair);
+        Trustee cfo = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO);
+        Trustee accounting = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
+        IReadOnlyCollection<Trustee> otherTrustees = TrusteeTestDoubles.Create(30);
 
         IReadOnlyCollection<Trustee> inputMapTrustees = [.. otherTrustees, chair, cfo, accounting];
 
