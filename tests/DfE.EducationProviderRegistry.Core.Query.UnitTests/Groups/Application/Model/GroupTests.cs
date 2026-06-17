@@ -11,7 +11,7 @@ public sealed class GroupTests
         // Arrange
         Func<Group> construct = () => CreateSut(
             groupId: null!,
-            groupUid: GroupUidTestDoubles.Create(),
+            groupUid: GroupUIDTestDoubles.Create(),
             companiesHouseId: CompaniesHouseIdTestDoubles.Create(),
             academies: [],
             trustees: [],
@@ -27,7 +27,7 @@ public sealed class GroupTests
         // Arrange
         Func<Group> construct = () => CreateSut(
             groupId: GroupIdTestDoubles.Create(),
-            groupUid: GroupUidTestDoubles.Create(),
+            groupUid: GroupUIDTestDoubles.Create(),
             companiesHouseId: null!,
             academies: [],
             trustees: [],
@@ -42,7 +42,7 @@ public sealed class GroupTests
     {
         // Arrange
         GroupId id = GroupIdTestDoubles.Create();
-        GroupUid uid = GroupUidTestDoubles.Create();
+        GroupUID uid = GroupUIDTestDoubles.Create();
         CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create();
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(2);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(2);
@@ -146,7 +146,7 @@ public sealed class GroupTests
 
     private static Group CreateSut(
         GroupId groupId,
-        GroupUid groupUid,
+        GroupUID groupUid,
         CompaniesHouseId companiesHouseId,
         IReadOnlyCollection<Academy> academies,
         IReadOnlyCollection<Member> members,
@@ -163,7 +163,7 @@ public sealed class GroupTests
 
     private static Group CreateValidSut(
         GroupId? groupId = null,
-        GroupUid? groupUid = null,
+        GroupUID? groupUid = null,
         CompaniesHouseId? companiesHouseId = null,
         IReadOnlyCollection<Academy>? academies = null,
         IReadOnlyCollection<Member>? members = null,
@@ -171,7 +171,7 @@ public sealed class GroupTests
     {
         return CreateSut(
             groupId ?? GroupIdTestDoubles.Create(),
-            groupUid ?? GroupUidTestDoubles.Create(),
+            groupUid ?? GroupUIDTestDoubles.Create(),
             companiesHouseId ?? CompaniesHouseIdTestDoubles.Create(),
             academies ?? [],
             members ?? [],

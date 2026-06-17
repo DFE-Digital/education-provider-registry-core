@@ -4,7 +4,7 @@ public sealed record Group
 {
     public Group(
         GroupId id,
-        GroupUid uid,
+        GroupUID uid,
         CompaniesHouseId companiesHouseId,
         IEnumerable<Academy> academies,
         IEnumerable<Member>? members,
@@ -22,7 +22,7 @@ public sealed record Group
         Trustees = trustees?.ToList() ?? [];
     }
     public GroupId GroupId { get; }
-    public GroupUid GroupUID { get; }
+    public GroupUID GroupUID { get; }
     public CompaniesHouseId CompaniesHouseId { get; }
     public IReadOnlyCollection<Academy> Academies { get; }
     public IReadOnlyCollection<Member> Members { get; }
