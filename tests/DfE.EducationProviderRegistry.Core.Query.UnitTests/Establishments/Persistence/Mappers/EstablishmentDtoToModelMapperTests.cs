@@ -23,7 +23,7 @@ public sealed class EstablishmentDtoToModelMapperTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal("123456", result.Identifier.Urn);
+        Assert.Equal("123456", result.Identifier.Value);
     }
 
     [Fact]

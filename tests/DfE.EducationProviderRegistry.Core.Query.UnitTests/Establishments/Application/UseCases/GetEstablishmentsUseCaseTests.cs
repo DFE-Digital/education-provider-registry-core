@@ -87,8 +87,8 @@ public sealed class GetEstablishmentsUseCaseTests
 
         Assert.Collection(
             result.Model!,
-            establishment => Assert.Equal(establishmentResults.ElementAt(0).Identifier.Urn, establishment.Identifier.Urn),
-            establishment => Assert.Equal(establishmentResults.ElementAt(1).Identifier.Urn, establishment.Identifier.Urn));
+            establishment => Assert.Equal(establishmentResults.ElementAt(0).Identifier.Value, establishment.Identifier.Value),
+            establishment => Assert.Equal(establishmentResults.ElementAt(1).Identifier.Value, establishment.Identifier.Value));
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
         _loggerMock.VerifyNoErrors();
