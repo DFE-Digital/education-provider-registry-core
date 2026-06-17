@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 public sealed record CompaniesHouseId
 {
@@ -13,4 +9,6 @@ public sealed record CompaniesHouseId
     }
 
     public string Value { get; }
+
+    public override string ToString() => Value;
 }
