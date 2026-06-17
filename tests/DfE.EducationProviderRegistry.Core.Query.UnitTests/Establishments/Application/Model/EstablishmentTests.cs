@@ -8,13 +8,13 @@ public sealed class EstablishmentTests
     [Fact]
     public void Urn_ShouldThrow_WhenInvalid()
     {
-        Assert.Throws<EstablishmentException>(() => new EstablishmentUrn("ABC"));
+        Assert.Throws<EstablishmentException>(() => new EstablishmentUrn(new UniqueReferenceNumber("ABC")));
     }
 
     [Fact]
     public void ShouldSetUrn_WhenInitialized()
     {
-        EstablishmentUrn urn = new EstablishmentUrn("123456");
+        EstablishmentUrn urn = new EstablishmentUrn(new UniqueReferenceNumber("123456"));
 
         Establishment establishment = new Establishment
         {
@@ -29,12 +29,12 @@ public sealed class EstablishmentTests
     {
         Establishment establishment = new Establishment
         {
-            Urn = new EstablishmentUrn("123456"),
-            Ukprn = new EstablishmentUkprn("10000123"),
+            Urn = new EstablishmentUrn(new UniqueReferenceNumber("123456")),
+            Ukprn = new Ukprn("10000123"),
             Uprn = new EstablishmentUprn("20000234"),
             Name = new EstablishmentName("Test School"),
             Number = new EstablishmentNumber("123"),
-            Address = new EstablishmentAddress("Street", "Town", "County", "AB1 2CD"),
+            Address = new Address("Street", "Town", "County", "AB1 2CD"),
             Status = new EstablishmentStatus("Open"),
             Type = new EstablishmentType("Academy"),
             Phase = new PhaseOfEducation("Primary"),

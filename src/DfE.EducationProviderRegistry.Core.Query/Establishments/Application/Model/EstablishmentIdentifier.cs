@@ -25,7 +25,7 @@ public sealed partial record EstablishmentUrn
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="urn"/> does not match the required format.
     /// </exception>
-    public EstablishmentIdentifier(UniqueReferenceNumber urn)
+    public EstablishmentUrn(UniqueReferenceNumber urn)
     {
         ArgumentNullException.ThrowIfNull(urn);
         Value = urn.Value;
@@ -46,9 +46,9 @@ public sealed partial record EstablishmentUrn
     public override string ToString() => Value;
 
 
-    public static EstablishmentIdentifier Create(string urn)
+    public static EstablishmentUrn Create(string urn)
     {
         UniqueReferenceNumber validated = new(urn?.Trim() ?? null!);
-        return new EstablishmentIdentifier(validated);
+        return new EstablishmentUrn(validated);
     }
 }

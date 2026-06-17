@@ -1,6 +1,6 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared;
 
 public sealed record GovernancePersonInfo(
-    string Identifier, // Governance Identifier (7 digit numeric)
-    string FullName,
+    GovernanceIdentifier Identifier,
+    Name FullName,
     DateTime StartDate);

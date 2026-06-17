@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
@@ -28,7 +29,7 @@ public class GetEstablishmentByIdUseCase :
     {
         try
         {
-            EstablishmentUrn establishmentId = new(request.Urn);
+            EstablishmentUrn establishmentId = EstablishmentUrn.Create(request.Urn);
             Establishment? establishment = await _establishmentRepository
                 .GetEstablishmentById(establishmentId, cancellationToken);
 

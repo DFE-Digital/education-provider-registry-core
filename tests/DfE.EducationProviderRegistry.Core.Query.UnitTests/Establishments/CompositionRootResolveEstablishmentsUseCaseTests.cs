@@ -21,8 +21,8 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         IServiceCollection services = ServiceCollectionDefault.Create();
 
         // Register dummy dependencies required by the use case
-        services.AddSingleton<ILogger<GetEstablishmentsUseCase>, DummyLogger<GetEstablishmentsUseCase>>();
-        services.AddSingleton<ILogger<GetEstablishmentByIdUseCase>, DummyLogger<GetEstablishmentByIdUseCase>>();
+        services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();
+        services.AddSingleton<ILogger<GetEstablishmentByIdUseCase>, InMemoryLogger<GetEstablishmentByIdUseCase>>();
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();
         services.AddSingleton<IEstablishmentsRepository, DummyRepository>();
 

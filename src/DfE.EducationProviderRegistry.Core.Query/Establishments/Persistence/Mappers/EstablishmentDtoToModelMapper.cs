@@ -1,7 +1,7 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Models;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 
@@ -37,8 +37,8 @@ public sealed class EstablishmentDtoToModelMapper :
 
         return new Establishment
         {
-            Urn = new EstablishmentUrn(dto.URN),
-            Ukprn = new EstablishmentUkprn(dto.UKPRN),
+            Urn = EstablishmentUrn.Create(dto.URN),
+            Ukprn = new Ukprn(dto.UKPRN),
             Uprn = new EstablishmentUprn(dto.UPPN),
             Name = new EstablishmentName(dto.Name),
             Number = new EstablishmentNumber(dto.Number),
@@ -49,15 +49,15 @@ public sealed class EstablishmentDtoToModelMapper :
             ReasonEstablishmentOpened = new EstablishmentOpenReason(dto.ReasonEstablishmentOpened),
             CloseDate = dto.CloseDate is not null ? new EstablishmentCloseDate(dto.CloseDate) : null,
             ReasonEstablishmentClosed = dto.ReasonEstablishmentClosed is not null ? new EstablishmentCloseReason(dto.ReasonEstablishmentClosed) : null,
-            Address = new EstablishmentAddress(
+            Address = new Address(
                     dto.Address.Street,
                     dto.Address.Town,
                     dto.Address.County,
                     dto.Address.Postcode),
             Governors = dto.Governors?.Select(g => new Governor(
                 new GovernancePersonInfo(
-                g.Identifier,
-                g.FullName,
+                new GovernanceIdentifier(g.Identifier),
+                new Name(g.FullName),
                 g.StartDate))).ToList() ?? new List<Governor>()
         };
     }

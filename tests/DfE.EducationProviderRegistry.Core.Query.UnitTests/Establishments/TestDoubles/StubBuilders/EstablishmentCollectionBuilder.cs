@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 
@@ -23,7 +24,7 @@ internal sealed class EstablishmentCollectionBuilder
             establishmentList.Add(
                 new Establishment()
                 {
-                    Urn = new EstablishmentUrn(urn),
+                    Urn = new EstablishmentUrn(new UniqueReferenceNumber(urn)),
                 });
         }
 
