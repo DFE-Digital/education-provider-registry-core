@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
 internal static class GovernanceIdentifierTestDoubles
 {
-    public static GovernanceIdentifier Create(string value = "test-id")
+    public static GovernanceIdentifier Create(string value = "1234567")
     {
         return new GovernanceIdentifier(value);
     }

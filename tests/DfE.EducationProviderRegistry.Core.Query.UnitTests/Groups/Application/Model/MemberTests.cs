@@ -73,12 +73,12 @@ public sealed class MemberTests
     {
         // Arrange
         Member first = new(
-            GovernanceIdentifierTestDoubles.Create("A"),
+            GovernanceIdentifierTestDoubles.Create("1234567"),
             NameTestDoubles.Create("Name"),
             new DateTime(2024, 01, 01));
 
         Member second = new(
-            GovernanceIdentifierTestDoubles.Create("B"),
+            GovernanceIdentifierTestDoubles.Create("7654321"),
             NameTestDoubles.Create("Name"),
             new DateTime(2024, 01, 01));
 
@@ -91,12 +91,12 @@ public sealed class MemberTests
     {
         // Arrange
         Member first = new(
-            GovernanceIdentifierTestDoubles.Create("A"),
+            GovernanceIdentifierTestDoubles.Create("1234567"),
             NameTestDoubles.Create("Name1"),
             new DateTime(2024, 01, 01));
 
         Member second = new(
-            GovernanceIdentifierTestDoubles.Create("A"),
+            GovernanceIdentifierTestDoubles.Create("1234567"),
             NameTestDoubles.Create("Name2"),
             new DateTime(2024, 01, 01));
 
@@ -109,12 +109,12 @@ public sealed class MemberTests
     {
         // Arrange
         Member first = new(
-            GovernanceIdentifierTestDoubles.Create("A"),
+            GovernanceIdentifierTestDoubles.Create("1234567"),
             NameTestDoubles.Create("Name"),
             new DateTime(2024, 01, 01));
 
         Member second = new(
-            GovernanceIdentifierTestDoubles.Create("A"),
+            GovernanceIdentifierTestDoubles.Create("1234567"),
             NameTestDoubles.Create("Name"),
             new DateTime(2025, 01, 01));
 
