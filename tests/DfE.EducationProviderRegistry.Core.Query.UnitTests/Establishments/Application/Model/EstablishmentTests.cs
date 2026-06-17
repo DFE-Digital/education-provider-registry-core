@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Application.Model;
 
@@ -46,4 +47,3 @@ public sealed class EstablishmentTests
         Assert.Equal("Test School", establishment.Name.Value);
     }
 }
-

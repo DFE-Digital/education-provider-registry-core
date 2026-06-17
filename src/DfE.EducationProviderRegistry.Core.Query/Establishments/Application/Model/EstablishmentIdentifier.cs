@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
@@ -16,13 +16,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Mo
 public sealed partial record EstablishmentUrn
 {
     /// <summary>
-    /// Gets the establishment's URN (Unique Reference Number).
-    /// Guaranteed to be valid according to the defined URN pattern.
-    /// </summary>
-    public string Value { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EstablishmentUrn"/>
+    /// Initializes a new instance of the <see cref="EstablishmentIdentifier"/>
     /// record using the specified <paramref name="urn"/>.
     /// </summary>
     /// <param name="urn">
@@ -31,15 +25,17 @@ public sealed partial record EstablishmentUrn
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="urn"/> does not match the required format.
     /// </exception>
-    public EstablishmentUrn(string urn)
+    public EstablishmentIdentifier(UniqueReferenceNumber urn)
     {
-        if (!UrnValidation().IsMatch(urn))
-            throw new EstablishmentException(
-                "URN must be a valid 5–7 digit numeric value.",
-                nameof(urn));
-
-        Value = urn;
+        ArgumentNullException.ThrowIfNull(urn);
+        Value = urn.Value;
     }
+
+    /// <summary>
+    /// Gets the establishment's URN (Unique Reference Number).
+    /// Guaranteed to be valid according to the defined URN pattern.
+    /// </summary>
+    public string Value { get; }
 
     /// <summary>
     /// Returns the URN as a string.
@@ -49,21 +45,10 @@ public sealed partial record EstablishmentUrn
     /// </returns>
     public override string ToString() => Value;
 
-    /// <summary>
-    /// The regular expression pattern used to validate URN values.
-    /// Accepts either <c>UNDEFINED</c> or a 5–7 digit numeric string.
-    /// </summary>
-    private const string UrnPattern = @"^\d{5,7}$";
 
-    /// <summary>
-    /// Creates a compiled regular expression used to validate URN values.
-    /// This method is generated at compile time for optimal performance.
-    /// </summary>
-    private static Regex UrnValidation() => ValidateUrn();
-
-    /// <summary>
-    /// Source‑generated regular expression for URN validation.
-    /// </summary>
-    [GeneratedRegex(UrnPattern, RegexOptions.Compiled)]
-    private static partial Regex ValidateUrn();
+    public static EstablishmentIdentifier Create(string urn)
+    {
+        UniqueReferenceNumber validated = new(urn?.Trim() ?? null!);
+        return new EstablishmentIdentifier(validated);
+    }
 }
