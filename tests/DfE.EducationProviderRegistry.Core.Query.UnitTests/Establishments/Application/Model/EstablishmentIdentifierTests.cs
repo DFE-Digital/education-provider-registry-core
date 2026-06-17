@@ -11,10 +11,10 @@ public sealed class EstablishmentIdentifierTests
     public void Constructor_ShouldAcceptValidUrns(string urn)
     {
         // Act
-        EstablishmentIdentifier identifier = new(urn);
+        EstablishmentUrn identifier = new(urn);
 
         // Assert
-        Assert.Equal(urn, identifier.Urn);
+        Assert.Equal(urn, identifier.Value);
     }
 
     [Theory]
@@ -27,14 +27,14 @@ public sealed class EstablishmentIdentifierTests
     public void Constructor_ShouldThrow_WhenUrnIsInvalid(string urn)
     {
         // Act & Assert
-        Assert.Throws<EstablishmentException>(() => new EstablishmentIdentifier(urn));
+        Assert.Throws<EstablishmentException>(() => new EstablishmentUrn(urn));
     }
 
     [Fact]
     public void ToString_ShouldReturnUrn()
     {
         // Arrange
-        EstablishmentIdentifier identifier = new("123456");
+        EstablishmentUrn identifier = new("123456");
 
         // Act
         string result = identifier.ToString();
@@ -47,9 +47,9 @@ public sealed class EstablishmentIdentifierTests
     public void Identifier_ShouldBeValueObject_AndSupportEquality()
     {
         // Arrange
-        EstablishmentIdentifier a = new("123456");
-        EstablishmentIdentifier b = new("123456");
-        EstablishmentIdentifier c = new("654321");
+        EstablishmentUrn a = new("123456");
+        EstablishmentUrn b = new("123456");
+        EstablishmentUrn c = new("654321");
 
         // Act & Assert
         Assert.Equal(a, b);

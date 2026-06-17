@@ -51,7 +51,7 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
     private sealed class DummyRepository : IEstablishmentsRepository
     {
         public Task<Establishment?> GetEstablishmentById(
-            EstablishmentIdentifier identifier,
+            EstablishmentUrn identifier,
             CancellationToken cancellationToken = default) =>
             Task.FromResult<Establishment?>(null);
 

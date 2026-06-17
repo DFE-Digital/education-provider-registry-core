@@ -28,7 +28,7 @@ public class GetEstablishmentByIdUseCase :
     {
         try
         {
-            EstablishmentIdentifier establishmentId = new(request.Urn);
+            EstablishmentUrn establishmentId = new(request.Urn);
             Establishment? establishment = await _establishmentRepository
                 .GetEstablishmentById(establishmentId, cancellationToken);
 

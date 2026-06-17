@@ -1,47 +1,46 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared.Models;
 
-/// <summary>
-/// Represents an establishment within the system.
-/// This record provides a strongly‑typed wrapper around the
-/// <see cref="EstablishmentIdentifier"/> value object and forms
-/// the root entity for establishment‑related operations.
-/// </summary>
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+
 public sealed record Establishment
 {
-    /// <summary>
-    /// Gets the unique identifier for the establishment.
-    /// This value is guaranteed to be non‑null and validated
-    /// at construction time.
-    /// </summary>
-    public EstablishmentIdentifier Identifier { get; }
+    public EstablishmentUrn Urn { get; init; }
+    public EstablishmentUkprn Ukprn { get; init; }
+    public EstablishmentUprn Uprn { get; init; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Establishment"/> record
-    /// using the specified <paramref name="identifier"/>.
-    /// </summary>
-    /// <param name="identifier">
-    /// The strongly‑typed identifier representing the establishment.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="identifier"/> is <c>null</c>.
-    /// </exception>
-    public Establishment(EstablishmentIdentifier identifier)
-    {
-        ArgumentNullException.ThrowIfNull(identifier);
-        Identifier = identifier;
-    }
+    public EstablishmentName Name { get; init; }
+    public EstablishmentNumber Number { get; init; }
+    public EstablishmentAddress Address { get; init; }
 
-    /// <summary>
-    /// Creates a new <see cref="Establishment"/> instance using the provided
-    /// <paramref name="identifier"/>. This factory method offers a clear,
-    /// intention‑revealing way to construct an establishment.
-    /// </summary>
-    /// <param name="identifier">
-    /// The identifier to associate with the new establishment.
-    /// </param>
-    /// <returns>
-    /// A new <see cref="Establishment"/> instance.
-    /// </returns>
-    public static Establishment Create(EstablishmentIdentifier identifier)
-        => new(identifier);
+    public EstablishmentStatus Status { get; init; }
+    public EstablishmentType Type { get; init; }
+    public PhaseOfEducation Phase { get; init; }
+
+    public EstablishmentOpenDate OpenDate { get; init; }
+    public EstablishmentOpenReason ReasonEstablishmentOpened { get; init; }
+    public EstablishmentCloseDate? CloseDate { get; init; }
+    public EstablishmentCloseReason? ReasonEstablishmentClosed { get; init; }
+
+    public IEnumerable<Governor> Governors { get; init; }
 }
+
+
+public sealed record EstablishmentUkprn(string Value);
+public sealed record EstablishmentUprn(string Value);
+public sealed record EstablishmentName(string Value);
+public sealed record EstablishmentNumber(string Value);
+public sealed record EstablishmentStatus(string Value);
+public sealed record EstablishmentType(string Value);
+public sealed record PhaseOfEducation(string Value);
+public sealed record EstablishmentOpenDate(DateTime Value);
+public sealed record EstablishmentCloseDate(DateTime? Value);
+public sealed record EstablishmentOpenReason(string Value);
+public sealed record EstablishmentCloseReason(string? Value);
+
+public sealed record EstablishmentAddress(
+    string Street,
+    string Town,
+    string County,
+    string Postcode);
+
+public sealed record Governor(GovernancePersonInfo Info);

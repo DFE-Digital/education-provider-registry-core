@@ -13,16 +13,16 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Mo
 /// construction, guaranteeing that all instances represent well‑formed
 /// identifiers.
 /// </remarks>
-public sealed partial record EstablishmentIdentifier
+public sealed partial record EstablishmentUrn
 {
     /// <summary>
     /// Gets the establishment's URN (Unique Reference Number).
     /// Guaranteed to be valid according to the defined URN pattern.
     /// </summary>
-    public string Urn { get; }
+    public string Value { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EstablishmentIdentifier"/>
+    /// Initializes a new instance of the <see cref="EstablishmentUrn"/>
     /// record using the specified <paramref name="urn"/>.
     /// </summary>
     /// <param name="urn">
@@ -31,14 +31,14 @@ public sealed partial record EstablishmentIdentifier
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="urn"/> does not match the required format.
     /// </exception>
-    public EstablishmentIdentifier(string urn)
+    public EstablishmentUrn(string urn)
     {
         if (!UrnValidation().IsMatch(urn))
             throw new EstablishmentException(
                 "URN must be a valid 5–7 digit numeric value.",
                 nameof(urn));
 
-        Urn = urn;
+        Value = urn;
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public sealed partial record EstablishmentIdentifier
     /// <returns>
     /// The URN value represented by this identifier.
     /// </returns>
-    public override string ToString() => Urn;
+    public override string ToString() => Value;
 
     /// <summary>
     /// The regular expression pattern used to validate URN values.

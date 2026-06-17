@@ -5,36 +5,45 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Appl
 public sealed class EstablishmentTests
 {
     [Fact]
-    public void Constructor_ShouldThrow_WhenIdentifierIsNull()
+    public void Urn_ShouldThrow_WhenInvalid()
     {
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new Establishment(null!));
+        Assert.Throws<EstablishmentException>(() => new EstablishmentUrn("ABC"));
     }
 
     [Fact]
-    public void Constructor_ShouldSetIdentifier()
+    public void ShouldSetUrn_WhenInitialized()
     {
-        // Arrange
-        EstablishmentIdentifier identifier = new("123456");
+        EstablishmentUrn urn = new EstablishmentUrn("123456");
 
-        // Act
-        Establishment establishment = new(identifier);
+        Establishment establishment = new Establishment
+        {
+            Urn = urn
+        };
 
-        // Assert
-        Assert.Equal(identifier, establishment.Identifier);
+        Assert.Equal(urn, establishment.Urn);
     }
 
     [Fact]
-    public void Create_ShouldReturnNewInstanceWithIdentifier()
+    public void ShouldPopulateAllFields()
     {
-        // Arrange
-        EstablishmentIdentifier identifier = new("654321");
+        Establishment establishment = new Establishment
+        {
+            Urn = new EstablishmentUrn("123456"),
+            Ukprn = new EstablishmentUkprn("10000123"),
+            Uprn = new EstablishmentUprn("20000234"),
+            Name = new EstablishmentName("Test School"),
+            Number = new EstablishmentNumber("123"),
+            Address = new EstablishmentAddress("Street", "Town", "County", "AB1 2CD"),
+            Status = new EstablishmentStatus("Open"),
+            Type = new EstablishmentType("Academy"),
+            Phase = new PhaseOfEducation("Primary"),
+            OpenDate = new EstablishmentOpenDate(DateTime.UtcNow),
+            ReasonEstablishmentOpened = new EstablishmentOpenReason("New school"),
+            CloseDate = null,
+            ReasonEstablishmentClosed = null
+        };
 
-        // Act
-        Establishment establishment = Establishment.Create(identifier);
-
-        // Assert
-        Assert.Equal(identifier, establishment.Identifier);
+        Assert.Equal("Test School", establishment.Name.Value);
     }
 }
 

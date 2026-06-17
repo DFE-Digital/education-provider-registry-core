@@ -44,7 +44,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
     /// or <see langword="null"/> if no matching establishment is found.
     /// </returns>
     public async Task<Establishment?> GetEstablishmentById(
-        EstablishmentIdentifier identifier,
+        EstablishmentUrn identifier,
         CancellationToken cancellationToken = default)
     {
         EstablishmentDto? dto =

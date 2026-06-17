@@ -13,24 +13,17 @@ public sealed class EstablishmentDto
 
     public string Name { get; set; }
     public string Number { get; set; }
-    public string DfENumber { get; set; }
     public string Status { get; set; }
 
-    public DateTime? OpenDate { get; set; }
+    public DateTime OpenDate { get; set; }
     public string ReasonEstablishmentOpened { get; set; }
     public DateTime? CloseDate { get; set; }
-    public string ReasonEstablishmentClosed { get; set; }
+    public string? ReasonEstablishmentClosed { get; set; }
 
     public AddressDto Address { get; set; }
 
-    public string LocalAuthority { get; set; }
-    public string? PartOfTrust { get; set; }
-
     public string Type { get; set; }
     public string PhaseOfEducation { get; set; }
-    public string Gender { get; set; }
-    public string? ReligiousCharacter { get; set; }
 
     public IReadOnlyCollection<GovernorDto> Governors { get; set; }
-    public IReadOnlyCollection<EstablishmentHistoryDto> History { get; set; }
 }

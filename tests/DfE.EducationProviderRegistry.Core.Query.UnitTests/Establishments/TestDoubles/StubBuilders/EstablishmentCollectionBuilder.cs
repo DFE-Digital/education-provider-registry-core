@@ -21,8 +21,10 @@ internal sealed class EstablishmentCollectionBuilder
         foreach (string urn in urns)
         {
             establishmentList.Add(
-                new Establishment(
-                    new EstablishmentIdentifier(urn)));
+                new Establishment()
+                {
+                    Urn = new EstablishmentUrn(urn),
+                });
         }
 
         return establishmentList.AsReadOnly();

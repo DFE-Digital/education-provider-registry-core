@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 
@@ -34,10 +35,30 @@ public sealed class EstablishmentDtoToModelMapper :
     {
         ArgumentNullException.ThrowIfNull(dto);
 
-        // Construct identifier
-        EstablishmentIdentifier identifier = new(dto.URN);
-
-        // Construct final aggregate
-        return new Establishment(identifier);
+        return new Establishment
+        {
+            Urn = new EstablishmentUrn(dto.URN),
+            Ukprn = new EstablishmentUkprn(dto.UKPRN),
+            Uprn = new EstablishmentUprn(dto.UPPN),
+            Name = new EstablishmentName(dto.Name),
+            Number = new EstablishmentNumber(dto.Number),
+            Status = new EstablishmentStatus(dto.Status),
+            Type = new EstablishmentType(dto.Type),
+            Phase = new PhaseOfEducation(dto.PhaseOfEducation),
+            OpenDate = new EstablishmentOpenDate(dto.OpenDate),
+            ReasonEstablishmentOpened = new EstablishmentOpenReason(dto.ReasonEstablishmentOpened),
+            CloseDate = dto.CloseDate is not null ? new EstablishmentCloseDate(dto.CloseDate) : null,
+            ReasonEstablishmentClosed = dto.ReasonEstablishmentClosed is not null ? new EstablishmentCloseReason(dto.ReasonEstablishmentClosed) : null,
+            Address = new EstablishmentAddress(
+                    dto.Address.Street,
+                    dto.Address.Town,
+                    dto.Address.County,
+                    dto.Address.Postcode),
+            Governors = dto.Governors?.Select(g => new Governor(
+                new GovernancePersonInfo(
+                g.Identifier,
+                g.FullName,
+                g.StartDate))).ToList() ?? new List<Governor>()
+        };
     }
 }

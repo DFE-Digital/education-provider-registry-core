@@ -37,6 +37,6 @@ public interface IEstablishmentsRepository
     /// or <see langword="null"/> if no matching establishment is found.
     /// </returns>
     Task<Establishment?> GetEstablishmentById(
-        EstablishmentIdentifier identifier,
+        EstablishmentUrn identifier,
         CancellationToken cancellationToken = default);
 }
