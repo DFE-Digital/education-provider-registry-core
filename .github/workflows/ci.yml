@@ -71,20 +71,12 @@ jobs:
          -f cobertura \
          -o coverage.cobertura.xml \
          -s coverage.runsettings
-
-    - name: Convert coverage to SonarQube format
-      run: |
-        dotnet tool run reportgenerator \
-          -reports:coverage.cobertura.xml \
-          -targetdir:coverage-sonar \
-          -reporttypes:SonarQube \
-          -sourcedirs:$GITHUB_WORKSPACE
     
-    - name: Upload Sonar coverage report
+    - name: Upload Cobertura coverage report
       uses: actions/upload-artifact@v7
       with:
         name: sonar-coverage-report
-        path: coverage-sonar/SonarQube.xml
+        path: coverage.cobertura.xml
 
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
@@ -93,7 +85,7 @@ jobs:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
-          coverage-report-path: coverage-sonar/SonarQube.xml
+          coverage-report-path: coverage.cobertura.xml
 
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
