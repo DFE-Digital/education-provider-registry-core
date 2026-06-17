@@ -29,7 +29,7 @@ internal static class MemberTestDoubles
         DateTime? startDate = null)
     {
         return new(
-            new GroupMemberIdentifier(id),
+            new GovernanceIdentifier(id),
             new Name(name),
             startDate ?? DateTime.UtcNow
         );

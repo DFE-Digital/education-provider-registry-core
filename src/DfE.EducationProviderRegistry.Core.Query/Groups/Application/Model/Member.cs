@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 public sealed record Member
 {
-    public Member(GroupMemberIdentifier id, Name name, DateTime startDate)
+    public Member(GovernanceIdentifier id, Name name, DateTime startDate)
     {
         ArgumentNullException.ThrowIfNull(id);
         ArgumentNullException.ThrowIfNull(name);
@@ -14,7 +14,7 @@ public sealed record Member
         StartDate = startDate;
     }
 
-    public GroupMemberIdentifier Id { get; }
+    public GovernanceIdentifier Id { get; }
     public Name Name { get; }
     public DateTime StartDate { get; }
 }
