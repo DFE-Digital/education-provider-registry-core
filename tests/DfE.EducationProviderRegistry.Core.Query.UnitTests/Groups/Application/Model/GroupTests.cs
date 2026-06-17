@@ -7,27 +7,20 @@ using Xunit;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
-using System;
-using System.Collections.Generic;
-using Xunit;
 
 public sealed class GroupTests
 {
-    // ----------------------------
-    // Guard clauses
-    // ----------------------------
-
     [Fact]
     public void Constructor_WhenGroupIdIsNull_ThrowsArgumentNullException()
     {
         // Arrange
         Func<Group> construct = () => CreateSut(
-            null,
+            null!,
             GroupUidTestDoubles.Create(),
             CompaniesHouseIdTestDoubles.Create(),
-            NoAcademies(),
-            MemberTestDoubles.Empty(),
-            TrusteeTestDoubles.Empty());
+            [],
+            [],
+            []);
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -40,7 +33,7 @@ public sealed class GroupTests
         Func<Group> construct = () => CreateSut(
             GroupIdTestDoubles.Create(),
             GroupUidTestDoubles.Create(),
-            null,
+            null!,
             [],
             [],
             []);
@@ -185,7 +178,7 @@ public sealed class GroupTests
             groupId ?? GroupIdTestDoubles.Create(),
             groupUid ?? GroupUidTestDoubles.Create(),
             companiesHouseId ?? CompaniesHouseIdTestDoubles.Create(),
-            academies ?? NoAcademies(),
+            academies ?? [],
             members ?? [],
             trustees ?? []);
     }
