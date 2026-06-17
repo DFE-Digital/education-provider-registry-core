@@ -66,11 +66,19 @@ jobs:
 
     - name: Run .NET Tests with coverage
       run: |
-       dotnet tool run dotnet-coverage collect "dotnet test --verbosity normal --report-xunit-trx" \
-         -f cobertura \
-         -o coverage.cobertura.xml \
-         -s coverage.runsettings \
-         -ll Verbose
+        dotnet test \
+          --verbosity normal \
+          --report-xunit-trx \
+          --coverage \
+          --coverage-output coverage.cobertura.xml \
+          --coverage-output-format cobertura \
+          --coverage-settings coverage.runsettings
+
+      #  dotnet tool run dotnet-coverage collect "dotnet test --verbosity normal --report-xunit-trx" \
+      #    -f cobertura \
+      #    -o coverage.cobertura.xml \
+      #    -s coverage.runsettings \
+      #    -ll Verbose
 
     - name: Convert coverage to SonarQube format
       run: |
