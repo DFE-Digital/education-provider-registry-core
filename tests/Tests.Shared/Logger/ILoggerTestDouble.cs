@@ -5,6 +5,8 @@ namespace Tests.Shared.Logger;
 
 public static class ILoggerTestDouble
 {
+    public static InMemoryLogger<TCategory> Default<TCategory>() => new();
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging", Justification = "<Pending>")]
     public static Mock<ILogger<TLogCategory>> Mock<TLogCategory>(string expectedMessage)
     {
