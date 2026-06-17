@@ -8,6 +8,8 @@ public sealed class CompaniesHouseIdTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
+    [InlineData("\r\n")]
+    [InlineData("  \n  ")]
     public void Constructor_GivenNullOrWhitespace_ShouldThrowArgumentException(string? value)
     {
         // Arrange
