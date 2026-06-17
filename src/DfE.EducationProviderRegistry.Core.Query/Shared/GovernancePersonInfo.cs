@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared.Models;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared;
 
 public sealed record GovernancePersonInfo(
     string Identifier, // Governance Identifier (7 digit numeric)
