@@ -52,7 +52,7 @@ public sealed class MemberToMemberDtoMapperTests
 
         // Assert
         Assert.Equal(member.Id.Value, dto.Identifier);
-        Assert.Equal(member.Name.FullName, dto.FullName);
+        Assert.Equal(member.Name.Value, dto.FullName);
         Assert.Equal(member.StartDate, dto.StartDate);
     }
 

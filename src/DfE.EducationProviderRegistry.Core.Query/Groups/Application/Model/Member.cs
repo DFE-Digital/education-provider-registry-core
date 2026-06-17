@@ -1,8 +1,10 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 public sealed record Member
 {
-    public Member(GroupMemberIdentifier id, GroupMemberName name, DateTime startDate)
+    public Member(GroupMemberIdentifier id, Name name, DateTime startDate)
     {
         ArgumentNullException.ThrowIfNull(id);
         ArgumentNullException.ThrowIfNull(name);
@@ -13,6 +15,6 @@ public sealed record Member
     }
 
     public GroupMemberIdentifier Id { get; }
-    public GroupMemberName Name { get; }
+    public Name Name { get; }
     public DateTime StartDate { get; }
 }

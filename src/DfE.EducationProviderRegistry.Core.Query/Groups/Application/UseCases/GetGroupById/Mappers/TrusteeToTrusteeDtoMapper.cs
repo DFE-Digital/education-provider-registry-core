@@ -27,7 +27,7 @@ internal sealed class TrusteeToTrusteeDtoMapper : IMapper<IEnumerable<Trustee>, 
     private static TrusteeDto MapToDto(Trustee trustee) => new()
     {
         Id = trustee.Id.Value,
-        FullName = trustee.Name.FullName,
+        FullName = trustee.Name.Value,
         StartDate = trustee.StartDate,
         Title = trustee.Title?.Type
     };

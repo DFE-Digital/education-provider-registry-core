@@ -17,7 +17,7 @@ internal sealed class MemberToMemberDtoMapper : IMapper<IEnumerable<Member>, IRe
     private static MemberDto MapToDto(Member member) => new()
     {
         Identifier = member.Id.Value,
-        FullName = member.Name.FullName,
+        FullName = member.Name.Value,
         StartDate = member.StartDate,
     };
 }

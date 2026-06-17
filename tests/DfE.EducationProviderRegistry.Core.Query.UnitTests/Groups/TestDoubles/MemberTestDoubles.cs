@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
@@ -29,7 +30,7 @@ internal static class MemberTestDoubles
     {
         return new(
             new GroupMemberIdentifier(id),
-            new GroupMemberName(name),
+            new Name(name),
             startDate ?? DateTime.UtcNow
         );
     }

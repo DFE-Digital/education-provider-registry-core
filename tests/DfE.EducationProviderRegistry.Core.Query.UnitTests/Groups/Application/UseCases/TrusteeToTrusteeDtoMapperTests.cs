@@ -52,7 +52,7 @@ public sealed class TrusteeToTrusteeDtoMapperTests
 
         // Assert
         Assert.Equal(trustee.Id.Value, dto.Id);
-        Assert.Equal(trustee.Name.FullName, dto.FullName);
+        Assert.Equal(trustee.Name.Value, dto.FullName);
         Assert.Equal(trustee.StartDate, dto.StartDate);
         Assert.Equal(trustee.Title?.Type, dto.Title);
     }

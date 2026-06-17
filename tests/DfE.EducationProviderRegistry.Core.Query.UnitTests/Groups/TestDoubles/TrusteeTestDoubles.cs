@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
@@ -32,7 +33,7 @@ internal static class TrusteeTestDoubles
 
         return new(
             new GroupMemberIdentifier(identifier),
-            new GroupMemberName(name),
+            new Name(name),
             startDate ?? DateTime.UtcNow,
             CreateTrusteeTitle(titleType)
         );
