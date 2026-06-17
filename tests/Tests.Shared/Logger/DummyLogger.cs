@@ -2,29 +2,28 @@
 
 namespace Tests.Shared.Logger;
 
-public sealed class DummyLogger<TLogInstance> : ILogger<TLogInstance>
+public sealed class InMemoryLogger<TLogCategory> : ILogger<TLogCategory>
 {
-    public static readonly DummyScope Instance = new();
-#pragma warning disable CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
-    public IDisposable BeginScope<TState>(TState state) => Instance;
-#pragma warning restore CS8633 // Nullability in constraints for type parameter doesn't match the constraints for type parameter in implicitly implemented interface method'.
+    public List<string> Logs { get; } = [];
 
-    public bool IsEnabled(LogLevel logLevel) => false;
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull => NullScope.Instance;
 
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+    public bool IsEnabled(LogLevel logLevel) => true;
+
     public void Log<TState>(
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         LogLevel logLevel,
         EventId eventId,
         TState state,
-        Exception exception,
-        Func<TState, Exception, string> formatter)
+        Exception? exception,
+        Func<TState, Exception?,
+        string> formatter)
     {
-        // no-op
+        Logs.Add(formatter(state, exception));
     }
 
-    public sealed class DummyScope : IDisposable
+    private class NullScope : IDisposable
     {
+        public static NullScope Instance { get; } = new();
         public void Dispose() { }
     }
 }
