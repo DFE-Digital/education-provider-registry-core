@@ -42,4 +42,3 @@ public sealed class EstablishmentTests
         Assert.Equal(identifier, establishment.Identifier);
     }
 }
-

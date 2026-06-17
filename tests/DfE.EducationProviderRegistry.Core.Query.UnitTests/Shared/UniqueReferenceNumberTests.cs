@@ -20,6 +20,7 @@ public sealed class UniqueReferenceNumberTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
+    [InlineData("\n")]
     [InlineData("ABC123")]
     [InlineData("1234")]      // too short
     [InlineData("12345678")]  // too long
