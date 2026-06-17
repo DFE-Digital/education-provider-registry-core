@@ -83,7 +83,7 @@ jobs:
     - name: Convert coverage to SonarQube format
       run: |
         dotnet tool run reportgenerator \
-          -reports:coverage.cobertura.xml \
+          -reports:**/TestResults/coverage.cobertura.xml \
           -targetdir:coverage-sonar \
           -reporttypes:SonarQube \
           -sourcedirs:.
