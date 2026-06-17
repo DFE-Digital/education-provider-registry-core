@@ -29,13 +29,13 @@ jobs:
       run: git config --global --add safe.directory "*"
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.0.0
+      uses: gittools/actions/gitversion/setup@sha265:a94a3b62ee018ef5346cb08fd0d63d93811fe691
       with:
         versionSpec: '6.0.x'
 
     - name: Determine Generated Version Number
       id: version_step
-      uses: gittools/actions/gitversion/execute@v3.0.0
+      uses: gittools/actions/gitversion/execute@sha265:a94a3b62ee018ef5346cb08fd0d63d93811fe691
 
     - name: Debug GitVersion Output
       run: |
