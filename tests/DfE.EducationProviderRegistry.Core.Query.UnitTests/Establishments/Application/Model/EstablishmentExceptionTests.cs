@@ -19,6 +19,22 @@ public sealed class EstablishmentExceptionTests
     }
 
     [Fact]
+    public void Constructor_WithMessageAndParameter_ShouldSetBoth()
+    {
+        // Arrange
+        string message = "Invalid URN";
+        string paramName = "urn";
+
+        // Act
+        EstablishmentException ex = new(message, paramName);
+
+        // Assert
+        Assert.Equal(message, ex.Message);
+        Assert.Equal(paramName, ex.Parameter);
+        Assert.Null(ex.InnerException);
+    }
+
+    [Fact]
     public void Constructor_WithMessageAndInnerException_ShouldSetBoth()
     {
         // Arrange
@@ -32,6 +48,24 @@ public sealed class EstablishmentExceptionTests
         Assert.Equal(message, ex.Message);
         Assert.Equal(inner, ex.InnerException);
     }
+
+    [Fact]
+    public void Constructor_WithMessageParameterAndInnerException_ShouldSetAll()
+    {
+        // Arrange
+        string message = "Invalid URN";
+        string paramName = "urn";
+        Exception inner = new InvalidOperationException("Inner");
+
+        // Act
+        EstablishmentException ex = new(message, paramName, inner);
+
+        // Assert
+        Assert.Equal(message, ex.Message);
+        Assert.Equal(paramName, ex.Parameter);
+        Assert.Equal(inner, ex.InnerException);
+    }
+
 
     [Fact]
     public void Exception_ShouldInheritFromApplicationException()

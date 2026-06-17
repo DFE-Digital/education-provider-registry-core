@@ -12,25 +12,50 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 /// models for use by the application layer.
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="EstablishmentsRepository"/> class.
+/// Initializes a new instance of the <see cref="FakeDataEstablishmentsRepository"/> class.
 /// </remarks>
 /// <param name="establishmentsMapper">
 /// The mapper responsible for converting collections of
-/// <see cref="EstablishmentDataTransferObject"/> instances into
+/// <see cref="EstablishmentDto"/> instances into
 /// domain <see cref="Establishment"/> models.
 /// </param>
-internal sealed class EstablishmentsRepository : IEstablishmentsRepository
+internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsRepository
 {
-    private readonly IMapper<
-        IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> _establishmentsMapper;
+    private readonly IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>> _establishmentsMapper;
+    private readonly IMapper<EstablishmentDto, Establishment> _establishmentMapper;
 
-    public EstablishmentsRepository(IMapper<
-        IEnumerable<EstablishmentDataTransferObject>,
-        IReadOnlyCollection<Establishment>> establishmentsMapper)
+    public FakeDataEstablishmentsRepository(
+        IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>> establishmentsMapper,
+        IMapper<EstablishmentDto, Establishment> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(establishmentsMapper);
+        ArgumentNullException.ThrowIfNull(establishmentMapper);
         _establishmentsMapper = establishmentsMapper;
+        _establishmentMapper = establishmentMapper;
+    }
+
+    /// <summary>
+    /// Retrieves a single establishment by its identifier from the persistence layer.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>
+    /// A read‑only collection of mapped <see cref="Establishment"/> domain models
+    /// or <see langword="null"/> if no matching establishment is found.
+    /// </returns>
+    public async Task<Establishment?> GetEstablishmentById(
+        EstablishmentUrn identifier,
+        CancellationToken cancellationToken = default)
+    {
+        EstablishmentDto? dto =
+            FakeEstablishmentDataGenerator
+            .Generate(1)
+            .FirstOrDefault();
+
+        if (dto is null)
+            return null;
+
+        return _establishmentMapper.Map(dto);
     }
 
     /// <summary>
@@ -50,7 +75,7 @@ internal sealed class EstablishmentsRepository : IEstablishmentsRepository
         CancellationToken cancellationToken = default)
     {
         // TEMPORARY: Fake data until SQL is wired up
-        IEnumerable<EstablishmentDataTransferObject> dtos =
+        IEnumerable<EstablishmentDto> dtos =
             FakeEstablishmentDataGenerator.Generate(100);
 
         return _establishmentsMapper.Map(dtos);
@@ -64,7 +89,7 @@ internal sealed class EstablishmentsRepository : IEstablishmentsRepository
     internal static class FakeEstablishmentDataGenerator
     {
         /// <summary>
-        /// Generates a collection of fake <see cref="EstablishmentDataTransferObject"/>
+        /// Generates a collection of fake <see cref="EstablishmentDto"/>
         /// instances with unique 6‑digit URNs.
         /// </summary>
         /// <param name="count">
@@ -73,14 +98,14 @@ internal sealed class EstablishmentsRepository : IEstablishmentsRepository
         /// <returns>
         /// A read‑only collection of generated DTOs.
         /// </returns>
-        public static IReadOnlyCollection<EstablishmentDataTransferObject> Generate(int count)
+        public static IReadOnlyCollection<EstablishmentDto> Generate(int count)
         {
             HashSet<string> urns = GenerateUniqueUrns(count);
-            List<EstablishmentDataTransferObject> dtos = [];
+            List<EstablishmentDto> dtos = [];
 
             foreach (string urn in urns)
             {
-                EstablishmentDataTransferObject dto = new()
+                EstablishmentDto dto = new()
                 {
                     URN = urn
                 };

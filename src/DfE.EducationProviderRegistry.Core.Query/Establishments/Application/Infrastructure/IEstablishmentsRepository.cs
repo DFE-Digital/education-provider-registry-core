@@ -26,4 +26,17 @@ public interface IEstablishmentsRepository
     /// </remarks>
     Task<IReadOnlyCollection<Establishment>> GetEstablishments(
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves a single establishment by its unique identifier.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>
+    /// A task that resolves to the requested <see cref="Establishment"/> instance
+    /// or <see langword="null"/> if no matching establishment is found.
+    /// </returns>
+    Task<Establishment?> GetEstablishmentById(
+        EstablishmentUrn identifier,
+        CancellationToken cancellationToken = default);
 }
