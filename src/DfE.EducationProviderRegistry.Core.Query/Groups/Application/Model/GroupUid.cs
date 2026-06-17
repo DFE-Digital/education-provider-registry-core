@@ -1,8 +1,12 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-public readonly record struct GroupUid
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+
+public readonly record struct GroupUID
 {
-    public GroupUid(int groupId)
+    public GroupUID(int groupId)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(groupId);
         Value = groupId;

@@ -2,7 +2,6 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
-
 public sealed class GroupUIDTests
 {
     [Theory]
@@ -12,7 +11,7 @@ public sealed class GroupUIDTests
     public void Constructor_WhenGroupIdIsZeroOrNegative_ThrowsArgumentOutOfRangeException(int input)
     {
         // Act & Assert
-        Assert.ThrowsAny<ArgumentOutOfRangeException>(() => new GroupUid(input));
+        Assert.ThrowsAny<ArgumentOutOfRangeException>(() => new GroupUID(input));
     }
 
     [Fact]
@@ -22,7 +21,7 @@ public sealed class GroupUIDTests
         int input = 123;
 
         // Act
-        GroupUid result = new(input);
+        GroupUID result = new(input);
 
         // Assert
         Assert.Equal(123, result.Value);
@@ -32,8 +31,8 @@ public sealed class GroupUIDTests
     public void Equality_WhenValuesAreSame_ShouldBeEqual()
     {
         // Arrange
-        GroupUid left = new(123);
-        GroupUid right = new(123);
+        GroupUID left = new(123);
+        GroupUID right = new(123);
 
         // Act & Assert
         Assert.Equal(left, right);
@@ -45,8 +44,8 @@ public sealed class GroupUIDTests
     public void Equality_WhenValuesDiffer_ShouldNotBeEqual()
     {
         // Arrange
-        GroupUid left = new(123);
-        GroupUid right = new(456);
+        GroupUID left = new(123);
+        GroupUID right = new(456);
 
         // Act & Assert
         Assert.NotEqual(left, right);
@@ -58,8 +57,8 @@ public sealed class GroupUIDTests
     public void Equality_WhenComparedWithDefault_ShouldBehaveCorrectly()
     {
         // Arrange
-        GroupUid value = new(123);
-        GroupUid defaultValue = default;
+        GroupUID value = new(123);
+        GroupUID defaultValue = default;
 
         // Act & Assert
         Assert.NotEqual(value, defaultValue);
@@ -70,8 +69,8 @@ public sealed class GroupUIDTests
     public void GetHashCode_WhenEqual_ShouldReturnSameValue()
     {
         // Arrange
-        GroupUid left = new(123);
-        GroupUid right = new(123);
+        GroupUID left = new(123);
+        GroupUID right = new(123);
 
         // Act
         int leftHash = left.GetHashCode();

@@ -2,15 +2,12 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
-internal static class GroupUidTestDoubles
+internal static class GroupUIDTestDoubles
 {
-    public static GroupUid Create()
-    {
-        return new GroupUid(1);
-    }
+    public static GroupUID Create() => Create(1);
 
-    public static GroupUid Create(int value)
+    public static GroupUID Create(int value)
     {
-        return new GroupUid(value);
+        return new GroupUID(value);
     }
 }
