@@ -1,20 +1,19 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 
-internal sealed class MemberToMemberDtoMapper : IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>
+internal sealed class MemberToMemberReadModelMapper : IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>
 {
-    public IReadOnlyCollection<MemberDto> Map(IEnumerable<Member> input)
+    public IReadOnlyCollection<MemberReadModel> Map(IEnumerable<Member> input)
     {
         return input?
             .OrderByDescending(member => member.StartDate)
-            .Select(MapToDto)
+            .Select(MapToReadModel)
             .ToArray() ?? [];
     }
 
-    private static MemberDto MapToDto(Member member) => new()
+    private static MemberReadModel MapToReadModel(Member member) => new()
     {
         Identifier = member.Id.Value,
         FullName = member.Name.Value,

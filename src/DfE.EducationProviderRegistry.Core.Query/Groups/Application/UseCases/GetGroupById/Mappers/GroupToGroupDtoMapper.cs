@@ -7,16 +7,16 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.G
 internal sealed class GroupToGroupDtoMapper : IMapper<Group, GroupDto>
 {
     private readonly IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>> _trusteeToDtoMapper;
-    private readonly IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>> _memberToDtoMapper;
+    private readonly IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> _memberToReadModelMapper;
 
     public GroupToGroupDtoMapper(
-        IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>> memberToDtoMapper,
+        IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> memberToDtoMapper,
         IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>> trusteeToDtoMapper)
     {
         ArgumentNullException.ThrowIfNull(memberToDtoMapper);
         ArgumentNullException.ThrowIfNull(trusteeToDtoMapper);
         _trusteeToDtoMapper = trusteeToDtoMapper;
-        _memberToDtoMapper = memberToDtoMapper;
+        _memberToReadModelMapper = memberToDtoMapper;
     }
 
     public GroupDto Map(Group input)
@@ -29,7 +29,7 @@ internal sealed class GroupToGroupDtoMapper : IMapper<Group, GroupDto>
             GroupUID = input.GroupUID.Value,
             CompaniesHouseId = input.CompaniesHouseId.Value,
             Academies = input.Academies.OrderBy(t => t.Name.ToString()).ToArray(),
-            Members = _memberToDtoMapper.Map(input.Members),
+            Members = _memberToReadModelMapper.Map(input.Members),
             Trustees = _trusteeToDtoMapper.Map(input.Trustees)
         };
     }

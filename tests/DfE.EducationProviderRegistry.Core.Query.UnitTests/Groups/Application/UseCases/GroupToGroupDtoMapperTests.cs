@@ -15,9 +15,9 @@ public sealed class GroupToGroupDtoMapperTests
         return IMapperTestDouble.Map<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>(mapOut ?? []);
     }
 
-    private static Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>> CreateMemberMapperMock(MemberDto[]? mapOut = null)
+    private static Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> CreateMemberMapperMock(MemberReadModel[]? mapOut = null)
     {
-        return IMapperTestDouble.Map<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>(mapOut ?? []);
+        return IMapperTestDouble.Map<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>(mapOut ?? []);
     }
 
 
@@ -60,10 +60,10 @@ public sealed class GroupToGroupDtoMapperTests
     public void Map_Should_Map_All_Properties()
     {
         // Arrange
-        MemberDto[] memberDtos = [];
+        MemberReadModel[] memberDtos = [];
         TrusteeDto[] trusteeDtos = [];
 
-        Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>> memberMapper = CreateMemberMapperMock(memberDtos);
+        Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> memberMapper = CreateMemberMapperMock(memberDtos);
 
         Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>> trusteeMapper = CreateTrusteeMapperMock(trusteeDtos);
 
@@ -105,7 +105,7 @@ public sealed class GroupToGroupDtoMapperTests
         // Arrange
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(count: 10);
 
-        Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberDto>>> memberMapper = CreateMemberMapperMock();
+        Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> memberMapper = CreateMemberMapperMock();
 
         GroupToGroupDtoMapper sut = new(memberMapper.Object, CreateTrusteeMapperMock().Object);
 

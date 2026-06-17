@@ -1,7 +1,6 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 
-
-public sealed record MemberDto
+public sealed record MemberReadModel
 {
     public required string Identifier { get; init; }
     public required string FullName { get; init; }
