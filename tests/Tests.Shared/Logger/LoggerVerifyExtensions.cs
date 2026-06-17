@@ -17,13 +17,19 @@ public static class LoggerVerifyExtensions
             Times.Never);
     }
 
-    public static void VerifyErrorContains<T>(
+    public static void VerifyErrorContains<T>(this Mock<ILogger<T>> mock, string expected)
+        => mock.VerifyLogContains(LogLevel.Error, expected);
+
+    public static void VerifyWarningContains<T>(this Mock<ILogger<T>> mock, string expected)
+        => mock.VerifyLogContains(LogLevel.Warning, expected);
+
+    private static void VerifyLogContains<T>(
         this Mock<ILogger<T>> mock,
-        string expected)
-    {
+        LogLevel level,
+        string expected){
         mock.Verify(
             logger => logger.Log(
-                LogLevel.Error,
+                level,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((state, _) =>
                     state.ToString()!.Contains(expected)),

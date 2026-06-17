@@ -9,233 +9,267 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseC
 using Microsoft.Extensions.Logging;
 using Moq;
 using Tests.Shared;
+using Tests.Shared.Logger;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases;
 
 public sealed class SearchUseCaseTests
 {
-    private readonly SearchResults<EstablishmentSearchResults, SearchFacets> _searchResults;
-    private readonly SearchCriteria _searchCriteriaStub = SearchCriteriaTestDouble.Stub();
-    private readonly Mock<ILogger<SearchUseCase>> _loggerMock;
+    private readonly SearchCriteria _criteria;
+    private readonly SearchResults<EstablishmentSearchResults, SearchFacets> _results;
+    private readonly Mock<ILogger<SearchUseCase>> _logger;
 
     public SearchUseCaseTests()
     {
-        // arrange
-        _searchResults = SearchResultsTestDouble.Stub();
-        _loggerMock = MockTestDouble.Default<ILogger<SearchUseCase>>(MockBehavior.Loose);
+        _criteria = SearchCriteriaTestDouble.Stub();
+        _results = SearchResultsTestDouble.Stub();
+        _logger = MockTestDouble.Default<ILogger<SearchUseCase>>(MockBehavior.Loose);
     }
 
+    private static SearchUseCase CreateSut(
+        Mock<ILogger<SearchUseCase>> loggerMock,
+        SearchCriteria criteria,
+        ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets> adapter) =>
+            new(loggerMock.Object, criteria, adapter);
+
     [Fact]
-    public async Task HandleRequest_ValidRequest_CallsAdapterWithMappedRequestParams()
+    public async Task HandleRequest_ValidRequest_MapsParametersCorrectly()
     {
         // arrange
-        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> mockSearchServiceAdapter =
-            new SearchServiceAdapterTestDouble().MockFor(_searchResults);
-
-        SearchServiceAdapterRequest? adapterRequest = null;
-
-        mockSearchServiceAdapter
-            .Setup(adapter =>
-                adapter.SearchAsync(
-                    It.IsAny<SearchServiceAdapterRequest>(),
-                    It.IsAny<CancellationToken>()))
-            .Callback<SearchServiceAdapterRequest, CancellationToken>((req, token) =>
-            {
-                adapterRequest = req;
-            })
-            .ReturnsAsync(_searchResults);
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.CapturingAndReturning(_results);
 
         SearchRequest request =
             new(
-                searchIndexKey: "stubIndexKey",
-                searchKeywords: "searchkeyword",
-                filterRequests: [FilterRequestTestDouble.Fake()],
-                sortOrder: SortOrderTestDouble.Stub()
-            );
+                "stubIndexKey",
+                "searchkeyword",
+                new[] { FilterRequestTestDouble.Fake() },
+                SortOrderTestDouble.Stub());
 
-        SearchUseCase useCase =
-            new(_loggerMock.Object,
-                _searchCriteriaStub,
-                mockSearchServiceAdapter.Object);
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
 
         // act
         UseCaseResponse<SearchResponse> response =
-            await useCase.HandleRequestAsync(
-                request,
-                TestContext.Current.CancellationToken);
-
-        // verify
-        mockSearchServiceAdapter.Verify(searchServiceAdapter =>
-            searchServiceAdapter.SearchAsync(
-                It.IsAny<SearchServiceAdapterRequest>(),
-                It.IsAny<CancellationToken>()), Times.Once());
+            await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal(request.SearchKeywords, adapterRequest!.SearchKeyword);
-        Assert.Equal(_searchCriteriaStub.SearchFields, adapterRequest.SearchFields);
-        Assert.Equal(_searchCriteriaStub.Facets, adapterRequest.Facets);
-        Assert.Equal(request.FilterRequests, adapterRequest.SearchFilterRequests);
+        adapter.Verify(adapter =>
+            adapter.SearchAsync(
+                It.IsAny<SearchServiceAdapterRequest>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        _logger.VerifyNoErrors();
+
+        Assert.NotNull(adapterDouble.CapturedRequest);
+        Assert.Equal(request.SearchKeywords, adapterDouble.CapturedRequest!.SearchKeyword);
+        Assert.Equal(_criteria.SearchFields, adapterDouble.CapturedRequest.SearchFields);
+        Assert.Equal(_criteria.Facets, adapterDouble.CapturedRequest.Facets);
+        Assert.Equal(request.FilterRequests, adapterDouble.CapturedRequest.SearchFilterRequests);
     }
 
     [Fact]
-    public async Task HandleRequest_ValidRequest_ReturnsResponse()
+    public async Task HandleRequest_ValidRequest_ReturnsSuccess()
     {
         // arrange
-        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> mockSearchServiceAdapter =
-            new SearchServiceAdapterTestDouble().MockFor(_searchResults);
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.Returning(_results);
 
         SearchRequest request =
             new(
-                searchIndexKey: "stubIndexKey",
-                searchKeywords: "searchkeyword",
-                sortOrder: SortOrderTestDouble.Stub());
+                "stubIndexKey",
+                "searchkeyword",
+                SortOrderTestDouble.Stub());
 
-        SearchUseCase useCase =
-            new(
-                _loggerMock.Object,
-                _searchCriteriaStub,
-                mockSearchServiceAdapter.Object);
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
 
         // act
         UseCaseResponse<SearchResponse> response =
-            await useCase.HandleRequestAsync(
-                request,
-                TestContext.Current.CancellationToken);
-
-        // verify
-        mockSearchServiceAdapter.Verify(searchServiceAdapter =>
-            searchServiceAdapter.SearchAsync(
-                It.IsAny<SearchServiceAdapterRequest>(),
-                It.IsAny<CancellationToken>()), Times.Once());
+            await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
         // assert
+        adapter.Verify(adapter =>
+            adapter.SearchAsync(
+                It.IsAny<SearchServiceAdapterRequest>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
         Assert.NotNull(response.Model);
         Assert.Equal(SearchResponseStatus.Success, response.Model.Status);
-        Assert.NotNull(response.Model.EstablishmentResults);
-        Assert.NotNull(response.Model.EstablishmentResults.EstablishmentCollection);
-        Assert.NotNull(_searchResults.Results);
-        Assert.Subset(
-            new HashSet<EstablishmentSearchResult>(_searchResults.Results.EstablishmentCollection),
-            new HashSet<EstablishmentSearchResult>(response.Model.EstablishmentResults.EstablishmentCollection));
 
-        Assert.NotNull(response.Model.FacetedResults);
-        Assert.NotNull(response.Model.FacetedResults.Facets);
-        Assert.NotNull(_searchResults.FacetResults);
-        Assert.NotNull(_searchResults.FacetResults.Facets);
-        Assert.Subset(
-            new HashSet<SearchFacet>(_searchResults.FacetResults.Facets),
-            new HashSet<SearchFacet>(response.Model.FacetedResults.Facets));
+        HashSet<EstablishmentSearchResult> expected = [.. _results.Results!.EstablishmentCollection];
+        HashSet<EstablishmentSearchResult> actual = [.. response.Model.EstablishmentResults!.EstablishmentCollection];
+
+        Assert.Subset(expected, actual);
+
+        HashSet<SearchFacet> expectedFacets = [.. _results.FacetResults!.Facets];
+        HashSet<SearchFacet> actualFacets = [.. response.Model.FacetedResults!.Facets];
+
+        Assert.Subset(expectedFacets, actualFacets);
     }
 
     [Fact]
-    public async Task HandleRequest_NullSearchByKeywordRequest_ReturnsErrorStatus()
+    public async Task HandleRequest_NullRequest_Throws()
     {
         // arrange
-        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> mockSearchServiceAdapter =
-            new SearchServiceAdapterTestDouble().MockFor(_searchResults);
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.Returning(_results);
 
-        SearchUseCase useCase =
-            new(
-                _loggerMock.Object,
-                _searchCriteriaStub,
-                mockSearchServiceAdapter.Object);
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
 
         // act
         UseCaseResponse<SearchResponse> response =
-            await useCase.HandleRequestAsync(
-                null!,
-                TestContext.Current.CancellationToken);
+            await sut.HandleRequestAsync(
+                request: null!,
+                cancellationToken: TestContext.Current.CancellationToken);
 
         // verify
-        mockSearchServiceAdapter.Verify(searchServiceAdapter =>
-            searchServiceAdapter.SearchAsync(It.IsAny<SearchServiceAdapterRequest>()), Times.Never());
+        adapter.Verify(adapter =>
+            adapter.SearchAsync(
+                It.IsAny<SearchServiceAdapterRequest>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+
+        _logger.VerifyErrorContains("unexpected error");
+        _logger.VerifyErrorContains("An unexpected error occurred while processing the search request.");
 
         // assert
-        Assert.NotNull(response.Model);
-        Assert.Equal(SearchResponseStatus.InvalidRequest, response.Model.Status);
-
-        // TODO: ensure the correct logging occurs for invalid requests, possibly by using a logging test double or mock.
-
+        Assert.Null(response.Model);
+        Assert.False(response.SuccessfulRequest);
+        Assert.Equal(
+            "An unexpected error occurred while processing the search request.",
+            response.ErrorMessage);
     }
 
     [Fact]
-    public async Task HandleRequest_ServiceAdapterThrowsException_ReturnsErrorStatus()
+    public async Task HandleRequest_AdapterThrowsException_ReturnsError()
     {
         // arrange
-        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> mockSearchServiceAdapter =
-            new SearchServiceAdapterTestDouble().MockFor(_searchResults);
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.Throwing(new ApplicationException());
 
         SearchRequest request =
             new(
-                searchIndexKey: "stubIndexKey",
-                searchKeywords: "searchkeyword",
-                sortOrder: SortOrderTestDouble.Stub());
+                "stubIndexKey",
+                "searchkeyword",
+                SortOrderTestDouble.Stub());
 
-        Mock.Get(mockSearchServiceAdapter.Object)
-            .Setup(adapter => adapter.SearchAsync(It.IsAny<SearchServiceAdapterRequest>()))
-            .ThrowsAsync(new ApplicationException());
-
-        SearchUseCase useCase =
-            new(
-                _loggerMock.Object,
-                _searchCriteriaStub,
-                mockSearchServiceAdapter.Object);
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
 
         // act
         UseCaseResponse<SearchResponse> response =
-            await useCase.HandleRequestAsync(
-                null!,
-                TestContext.Current.CancellationToken);
+            await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
         // verify
-        mockSearchServiceAdapter.Verify(searchServiceAdapter =>
-            searchServiceAdapter.SearchAsync(It.IsAny<SearchServiceAdapterRequest>()), Times.Once());
+        _logger.VerifyErrorContains("unexpected error");
+        _logger.VerifyErrorContains("An unexpected error occurred while processing the search request.");
 
         // assert
-        Assert.NotNull(response.Model);
-        Assert.Equal(SearchResponseStatus.SearchServiceError, response.Model.Status);
-
-        // TODO: ensure the correct logging occurs for invalid requests, possibly by using a logging test double or mock.
+        Assert.Null(response.Model);
+        Assert.False(response.SuccessfulRequest);
+        Assert.Equal("An unexpected error occurred while processing the search request.", response.ErrorMessage);
     }
 
     [Fact]
-    public async Task HandleRequest_NoResults_ReturnsSuccess()
+    public async Task HandleRequest_NoResults_ReturnsSuccessWithEmptyCollections()
     {
         // arrange
-        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> mockSearchServiceAdapter =
-            new SearchServiceAdapterTestDouble().MockFor(_searchResults);
+        SearchResults<EstablishmentSearchResults, SearchFacets> empty =
+            SearchResultsTestDouble.StubWithNoResults();
+
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.Returning(empty);
 
         SearchRequest request =
             new(
-                searchIndexKey: "stubIndexKey",
-                searchKeywords: "searchkeyword",
-                sortOrder: SortOrderTestDouble.Stub());
+                "stubIndexKey",
+                "searchkeyword",
+                SortOrderTestDouble.Stub());
 
-        Mock.Get(mockSearchServiceAdapter.Object)
-            .Setup(adapter =>
-                adapter.SearchAsync(It.IsAny<SearchServiceAdapterRequest>()))
-            .ReturnsAsync(SearchResultsTestDouble.StubWithNoResults);
-
-        SearchUseCase useCase =
-            new(
-                _loggerMock.Object,
-                _searchCriteriaStub,
-                mockSearchServiceAdapter.Object);
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
 
         // act
         UseCaseResponse<SearchResponse> response =
-            await useCase.HandleRequestAsync(
-                null!,
-                TestContext.Current.CancellationToken);
+            await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
         // verify
-        mockSearchServiceAdapter.Verify(searchServiceAdapter =>
-            searchServiceAdapter.SearchAsync(It.IsAny<SearchServiceAdapterRequest>()), Times.Once());
+        _logger.VerifyNoErrors();
 
         // assert
         Assert.NotNull(response.Model);
         Assert.Equal(SearchResponseStatus.NoResultsFound, response.Model.Status);
+        Assert.Empty(response.Model.EstablishmentResults!.EstablishmentCollection);
+    }
 
-        // TODO: ensure the correct logging occurs for invalid requests, possibly by using a logging test double or mock.
+    [Fact]
+    public async Task HandleRequest_AdapterThrowsSearchException_ReturnsDomainSpecificError()
+    {
+        // arrange
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.Throwing(new SearchException("boom"));
+
+        SearchRequest request =
+            new(
+                "stubIndexKey",
+                "searchkeyword",
+                SortOrderTestDouble.Stub());
+
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
+
+        // act
+        UseCaseResponse<SearchResponse> response =
+            await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
+
+        // verify
+        _logger.VerifyErrorContains("SearchUseCase domain-specific error");
+        _logger.VerifyErrorContains("A domain-specific error occurred during search.");
+
+        // assert
+        Assert.Null(response.Model);
+        Assert.False(response.SuccessfulRequest);
+        Assert.Equal("A domain-specific error occurred during search.", response.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task HandleRequest_AdapterThrowsOperationCanceledException_ReturnsCancelledError()
+    {
+        // arrange
+        SearchServiceAdapterTestDouble adapterDouble = new();
+        Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> adapter =
+            adapterDouble.Throwing(new OperationCanceledException());
+
+        SearchRequest request =
+            new(
+                "stubIndexKey",
+                "searchkeyword",
+                SortOrderTestDouble.Stub());
+
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
+
+        // act
+        UseCaseResponse<SearchResponse> response =
+            await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
+
+        // verify
+        _logger.VerifyWarningContains("SearchUseCase execution cancelled");
+        _logger.VerifyWarningContains("The search request was cancelled by the caller.");
+
+        // assert
+        Assert.Null(response.Model);
+        Assert.False(response.SuccessfulRequest);
+        Assert.Equal("The search request was cancelled by the caller.", response.ErrorMessage);
     }
 }

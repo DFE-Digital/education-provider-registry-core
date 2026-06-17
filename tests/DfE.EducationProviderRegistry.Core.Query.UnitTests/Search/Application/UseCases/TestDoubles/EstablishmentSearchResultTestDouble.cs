@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establi
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-public static class EstablishmentSearchResultTestDouble
+internal static class EstablishmentSearchResultTestDouble
 {
     private static int FakeUrn(Faker faker) => faker.Random.Int(10000, 999999);
     private static string FakeName(Faker faker) => faker.Company.CompanyName();

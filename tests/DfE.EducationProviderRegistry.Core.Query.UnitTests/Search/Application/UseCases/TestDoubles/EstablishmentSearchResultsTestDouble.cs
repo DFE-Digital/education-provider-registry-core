@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establi
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-public static class EstablishmentSearchResultsTestDouble
+internal static class EstablishmentSearchResultsTestDouble
 {
     public static EstablishmentSearchResults Stub()
     {

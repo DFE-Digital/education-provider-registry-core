@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-public static class SearchCriteriaTestDouble
+internal static class SearchCriteriaTestDouble
 {
     public static SearchCriteria Stub() => new()
     {
