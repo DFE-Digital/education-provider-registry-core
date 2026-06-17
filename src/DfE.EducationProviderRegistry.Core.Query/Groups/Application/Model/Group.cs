@@ -53,12 +53,12 @@ public sealed record Group
         {
             hash.Add(academy);
         }
-            
+
         foreach (Member member in Members)
         {
             hash.Add(member);
         }
-            
+
 
         foreach (Trustee trustee in Trustees)
         {
