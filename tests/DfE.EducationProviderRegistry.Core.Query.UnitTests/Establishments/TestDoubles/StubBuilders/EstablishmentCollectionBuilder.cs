@@ -22,7 +22,7 @@ internal sealed class EstablishmentCollectionBuilder
         {
             establishmentList.Add(
                 new Establishment(
-                    new EstablishmentIdentifier(urn)));
+                    EstablishmentIdentifier.Create(urn)));
         }
 
         return establishmentList.AsReadOnly();

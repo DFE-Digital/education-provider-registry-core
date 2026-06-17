@@ -35,7 +35,7 @@ public sealed class EstablishmentDtoToModelMapper :
         ArgumentNullException.ThrowIfNull(dto);
 
         // Construct identifier
-        EstablishmentIdentifier identifier = new(dto.URN);
+        EstablishmentIdentifier identifier = EstablishmentIdentifier.Create(dto.URN);
 
         // Construct final aggregate
         return new Establishment(identifier);
