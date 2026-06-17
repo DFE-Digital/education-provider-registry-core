@@ -13,7 +13,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Mo
 /// construction, guaranteeing that all instances represent well‑formed
 /// identifiers.
 /// </remarks>
-public sealed partial record EstablishmentIdentifier
+public sealed partial record EstablishmentUrn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="EstablishmentIdentifier"/>
@@ -25,7 +25,7 @@ public sealed partial record EstablishmentIdentifier
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="urn"/> does not match the required format.
     /// </exception>
-    public EstablishmentIdentifier(UniqueReferenceNumber urn)
+    public EstablishmentUrn(UniqueReferenceNumber urn)
     {
         ArgumentNullException.ThrowIfNull(urn);
         Value = urn.Value;
@@ -46,9 +46,9 @@ public sealed partial record EstablishmentIdentifier
     public override string ToString() => Value;
 
 
-    public static EstablishmentIdentifier Create(string urn)
+    public static EstablishmentUrn Create(string urn)
     {
         UniqueReferenceNumber validated = new(urn?.Trim() ?? null!);
-        return new EstablishmentIdentifier(validated);
+        return new EstablishmentUrn(validated);
     }
 }
