@@ -15,7 +15,7 @@ internal static class MemberTestDoubles
         for (int i = 0; i < count; i++)
         {
             members.Add(CreateWith(
-                id: faker.Random.Guid().ToString(),
+                id: faker.Random.Number(1000000, 7777777).ToString(),
                 name: faker.Person.FullName,
                 startDate: faker.Date.Past()));
         }
@@ -24,7 +24,7 @@ internal static class MemberTestDoubles
     }
 
     public static Member CreateWith(
-        string id = "member-1",
+        string id = "1234567",
         string name = "Test Member",
         DateTime? startDate = null)
     {
