@@ -5,6 +5,7 @@ namespace Tests.Shared.Mapper;
 
 public static class IMapperTestDouble
 {
+    public static IMapper<TIn, TOut> Default<TIn, TOut>() => MockTestDouble.Default<IMapper<TIn, TOut>>().Object;
     public static Mock<IMapper<TIn, TOut>> Map<TIn, TOut>(TOut output)
     {
         return MockTestDouble.For<IMapper<TIn, TOut>, TOut>(
