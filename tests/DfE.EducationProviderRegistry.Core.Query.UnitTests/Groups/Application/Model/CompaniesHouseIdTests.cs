@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -49,8 +50,8 @@ public sealed class CompaniesHouseIdTests
     public void Equality_GivenSameValues_ShouldBeEqual()
     {
         // Arrange
-        CompaniesHouseId first = new("12345678");
-        CompaniesHouseId second = new("12345678");
+        CompaniesHouseId first = CompaniesHouseIdTestDoubles.Create("12345678");
+        CompaniesHouseId second = CompaniesHouseIdTestDoubles.Create("12345678");
 
         // Act & Assert
         Assert.Equal(first, second);
@@ -60,8 +61,8 @@ public sealed class CompaniesHouseIdTests
     public void Equality_GivenDifferentValues_ShouldNotBeEqual()
     {
         // Arrange
-        CompaniesHouseId first = new("12345678");
-        CompaniesHouseId second = new("87654321");
+        CompaniesHouseId first = CompaniesHouseIdTestDoubles.Create("12345678");
+        CompaniesHouseId second = CompaniesHouseIdTestDoubles.Create("87654321");
 
         // Act & Assert
         Assert.NotEqual(first, second);
@@ -71,8 +72,8 @@ public sealed class CompaniesHouseIdTests
     public void Equality_GivenTrimmedEquivalentValues_ShouldBeEqual()
     {
         // Arrange
-        CompaniesHouseId first = new("12345678");
-        CompaniesHouseId second = new(" 12345678 ");
+        CompaniesHouseId first = CompaniesHouseIdTestDoubles.Create("12345678");
+        CompaniesHouseId second = CompaniesHouseIdTestDoubles.Create(" 12345678 ");
 
         // Act & Assert
         Assert.Equal(first, second);
@@ -83,7 +84,7 @@ public sealed class CompaniesHouseIdTests
     public void ToString_ShouldReturnExpectedFormat()
     {
         // Arrange
-        CompaniesHouseId id = new("12345678");
+        CompaniesHouseId id = CompaniesHouseIdTestDoubles.Create("12345678");
 
         // Act
         string result = id.ToString();
