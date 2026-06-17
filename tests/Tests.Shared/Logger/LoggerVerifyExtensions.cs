@@ -26,7 +26,8 @@ public static class LoggerVerifyExtensions
     private static void VerifyLogContains<T>(
         this Mock<ILogger<T>> mock,
         LogLevel level,
-        string expected){
+        string expected)
+    {
         mock.Verify(
             logger => logger.Log(
                 level,

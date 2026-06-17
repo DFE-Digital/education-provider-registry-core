@@ -14,7 +14,8 @@ public sealed class SearchException : Exception
     /// A descriptive message explaining the reason for the exception.
     /// </param>
     public SearchException(string message)
-        : base(message){
+        : base(message)
+    {
     }
 
     /// <summary>
@@ -29,6 +30,7 @@ public sealed class SearchException : Exception
     /// The exception that triggered this error, providing additional context.
     /// </param>
     public SearchException(string message, Exception innerException)
-        : base(message, innerException){
+        : base(message, innerException)
+    {
     }
 }
