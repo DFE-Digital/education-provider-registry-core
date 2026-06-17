@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -50,7 +50,7 @@ public sealed class GroupIdTests
     public void ToString_ReturnsValue()
     {
         // Arrange
-        GroupId groupId = new("group3");
+        GroupId groupId = GroupIdTestDoubles.Create("group3");
 
         // Act
         string result = groupId.ToString();
@@ -63,8 +63,8 @@ public sealed class GroupIdTests
     public void Equality_WhenValuesAreSame_ShouldBeEqual()
     {
         // Arrange
-        GroupId left = new("group4");
-        GroupId right = new("group4");
+        GroupId left = GroupIdTestDoubles.Create("group4");
+        GroupId right = GroupIdTestDoubles.Create("group4");
 
         // Act & Assert
         Assert.Equal(left, right);
@@ -76,8 +76,8 @@ public sealed class GroupIdTests
     public void Equality_WhenValuesDiffer_ShouldNotBeEqual()
     {
         // Arrange
-        GroupId left = new("group5");
-        GroupId right = new("group6");
+        GroupId left = GroupIdTestDoubles.Create("group5");
+        GroupId right = GroupIdTestDoubles.Create("group6");
 
         // Act & Assert
         Assert.NotEqual(left, right);
@@ -89,8 +89,8 @@ public sealed class GroupIdTests
     public void Equality_WhenValuesDifferOnlyByWhitespace_ShouldBeEqual()
     {
         // Arrange
-        GroupId left = new("group7");
-        GroupId right = new("   group7 ");
+        GroupId left = GroupIdTestDoubles.Create("group7");
+        GroupId right = GroupIdTestDoubles.Create("   group7 ");
 
         // Act & Assert
         Assert.Equal(left, right);
@@ -101,7 +101,7 @@ public sealed class GroupIdTests
     public void Equality_WhenComparedWithNull_ShouldBeFalse()
     {
         // Arrange
-        GroupId groupId = new("group");
+        GroupId groupId = GroupIdTestDoubles.Create("group");
 
         // Act
         bool result = groupId.Equals(null);
@@ -114,8 +114,8 @@ public sealed class GroupIdTests
     public void GetHashCode_WhenEqual_ShouldReturnSameValue()
     {
         // Arrange
-        GroupId left = new("group9");
-        GroupId right = new("group9");
+        GroupId left = GroupIdTestDoubles.Create("group9");
+        GroupId right = GroupIdTestDoubles.Create("group9");
 
         // Act
         int leftHash = left.GetHashCode();
