@@ -114,9 +114,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         // Arrange
         Group stubGroup = new GroupBuilder().Build();
 
-        Mock<IGroupsRepository> repository = MockTestDouble.For<IGroupsRepository, Group?>(
-            (repo) => repo.GetGroupByGroupIdAsync(It.IsAny<GroupId>(), It.IsAny<CancellationToken>()),
-            stubGroup);
+        Mock<IGroupsRepository> repository =
+            MockTestDouble.For<
+                IGroupsRepository, Group?>(
+                    (repo) => repo.GetGroupByGroupIdAsync(
+                        It.IsAny<GroupId>(), It.IsAny<CancellationToken>()),
+                    stubGroup);
 
         GroupDto dto = StubGroupDto();
 
@@ -147,30 +150,32 @@ public sealed class GetGroupByGroupIdUseCaseTests
         mapper.Verify(m => m.Map(stubGroup), Times.Once);
     }
 
-    //[Fact]
-    //public async Task HandleRequestAsync_Should_Return_Failure_When_Operation_Cancelled()
-    //{
-    //    // Arrange
-    //    Mock<IGroupsRepository> repository = CreateRepository();
+    [Fact]
+    public async Task HandleRequestAsync_Should_Return_Failure_When_Operation_Cancelled()
+    {
+        // Arrange
+        Mock<IGroupsRepository> repository =
+            MockTestDouble.ThrowsExceptionFor<
+                IGroupsRepository, Group?, OperationCanceledException>(
+                    (repo) => repo.GetGroupByGroupIdAsync(
+                        It.IsAny<GroupId>(), It.IsAny<CancellationToken>()));
 
-    //    repository
-    //        .Setup(r => r.GetGroupByGroupIdAsync(It.IsAny<GroupIdentifier>(), It.IsAny<CancellationToken>()))
-    //        .ThrowsAsync(new OperationCanceledException());
+        GetGroupByGroupIdUseCase sut = new(
+            ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
+            repository.Object,
+            IMapperTestDouble.Default<Group, GroupDto>());
 
-    //    GetGroupByGroupIdUseCase sut = new(
-    //        CreateLogger().Object,
-    //        repository.Object,
-    //        CreateMapper().Object);
+        GetGroupByGroupIdRequest request = StubRequest();
 
-    //    GetGroupByGroupIdRequest request = new("test-id");
+        // Act
+        UseCaseResponse<GroupDto> result =
+            await sut.HandleRequestAsync(request, _ctx);
 
-    //    // Act
-    //    UseCaseResponse<GroupDto> result =
-    //        await sut.HandleRequestAsync(request);
-
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //}
+        // Assert
+        Assert.False(result.SuccessfulRequest);
+        Assert.Null(result.Model);
+        Assert.Equal("The operation was cancelled.", result.ErrorMessage);
+    }
 
     //[Fact]
     //public async Task HandleRequestAsync_Should_Return_Failure_When_Invalid_GroupIdentifier()
