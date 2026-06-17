@@ -102,6 +102,19 @@ public sealed class NameTests
     }
 
     [Fact]
+    public void Equals_Should_Return_False_For_Null()
+    {
+        // Arrange
+        Name left = new("Jane Doe");
+
+        // Act
+        bool result = left.Equals(null);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
     public void GetHashCode_Should_Be_Equal_For_Same_Value()
     {
         // Arrange
