@@ -77,8 +77,7 @@ jobs:
         dotnet tool run reportgenerator \
           -reports:coverage.cobertura.xml \
           -targetdir:coverage-sonar \
-          -reporttypes:SonarQube \
-          -sourcedirs:$GITHUB_WORKSPACE
+          -reporttypes:SonarQube
     
     - name: Upload Sonar coverage report
       uses: actions/upload-artifact@v7
