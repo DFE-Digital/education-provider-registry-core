@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
-using Xunit;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
-
 
 public sealed class GroupTests
 {
@@ -15,12 +10,12 @@ public sealed class GroupTests
     {
         // Arrange
         Func<Group> construct = () => CreateSut(
-            null!,
-            GroupUidTestDoubles.Create(),
-            CompaniesHouseIdTestDoubles.Create(),
-            [],
-            [],
-            []);
+            groupId: null!,
+            groupUid: GroupUidTestDoubles.Create(),
+            companiesHouseId: CompaniesHouseIdTestDoubles.Create(),
+            academies: [],
+            trustees: [],
+            members: []);
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -31,12 +26,12 @@ public sealed class GroupTests
     {
         // Arrange
         Func<Group> construct = () => CreateSut(
-            GroupIdTestDoubles.Create(),
-            GroupUidTestDoubles.Create(),
-            null!,
-            [],
-            [],
-            []);
+            groupId: GroupIdTestDoubles.Create(),
+            groupUid: GroupUidTestDoubles.Create(),
+            companiesHouseId: null!,
+            academies: [],
+            trustees: [],
+            members: []);
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -181,46 +176,5 @@ public sealed class GroupTests
             academies ?? [],
             members ?? [],
             trustees ?? []);
-    }
-}
-
-
-
-internal static class GroupIdTestDoubles
-{
-    public static GroupId Create()
-    {
-        return new GroupId("group-1");
-    }
-
-    public static GroupId Create(string value)
-    {
-        return new GroupId(value);
-    }
-}
-
-internal static class GroupUidTestDoubles
-{
-    public static GroupUid Create()
-    {
-        return new GroupUid(1);
-    }
-
-    public static GroupUid Create(int value)
-    {
-        return new GroupUid(value);
-    }
-}
-
-internal static class CompaniesHouseIdTestDoubles
-{
-    public static CompaniesHouseId Create()
-    {
-        return new CompaniesHouseId("CH123");
-    }
-
-    public static CompaniesHouseId Create(string value)
-    {
-        return new CompaniesHouseId(value);
     }
 }
