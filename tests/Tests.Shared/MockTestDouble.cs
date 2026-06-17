@@ -47,6 +47,17 @@ public static class MockTestDouble
         return mock;
     }
 
+    public static Mock<TMock> ThrowsExceptionFor<TMock, TOutput, TException>(Expression<Func<TMock, Task<TOutput>>> expression, TException ex)
+        where TMock : class
+        where TException : Exception
+    {
+        Mock<TMock> mock = Default<TMock>();
+        mock.Setup(expression)
+            .ThrowsAsync(ex)
+            .Verifiable();
+        return mock;
+    }
+
     public static Mock<TMock> ThrowsExceptionFor<TMock, TException>(Expression<Action<TMock>> expression, TException exception)
         where TMock : class
         where TException : Exception
