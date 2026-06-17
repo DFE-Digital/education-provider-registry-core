@@ -4,10 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
 internal static class GroupIdTestDoubles
 {
-    public static GroupId Create()
-    {
-        return new GroupId("group-1");
-    }
+    public static GroupId Create() => Create("group-1");
 
     public static GroupId Create(string value)
     {
