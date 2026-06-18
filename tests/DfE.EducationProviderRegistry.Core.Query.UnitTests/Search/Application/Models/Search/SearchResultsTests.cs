@@ -1,11 +1,28 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 using Tests.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Search;
 
 public sealed class SearchResultsTests
 {
+    private static EstablishmentSearchResult CreateMockEstablishment(int urn, string name)
+    {
+        return EstablishmentSearchResult.Create(
+            urn: new UniqueReferenceNumber(urn.ToString("D5")),
+            name: new Name(name),
+            address: new Address(
+                Street: "123 Example Street",
+                Town: "Testville",
+                County: "Testshire",
+                Postcode: "TE5 7ST"),
+            type: EstablishmentType.Create("Academy"),
+            group: GroupDetail.Create("Mock Trust", "TRUST001"),
+            localAuthority: LocalAuthority.Create("Test LA", "LA001")
+        );
+    }
+
     [Fact]
     public void Properties_CanBeInitializedViaObjectInitializer()
     {
@@ -14,8 +31,8 @@ public sealed class SearchResultsTests
             new(
                 new List<EstablishmentSearchResult>
                 {
-                    new(123, "Test School 1"),
-                    new(456, "Test School 2")
+                    CreateMockEstablishment(123, "Test School 1"),
+                    CreateMockEstablishment(456, "Test School 2")
                 });
 
         SearchFacets facets =
@@ -36,7 +53,7 @@ public sealed class SearchResultsTests
                 FacetResults = facets
             };
 
-        // Assert
+        // assert
         Assert.Same(establishmentSearchResults, result.Results);
         Assert.Same(facets, result.FacetResults);
     }
@@ -47,7 +64,7 @@ public sealed class SearchResultsTests
         // act
         SearchResults<EstablishmentSearchResults, SearchFacets> result = new();
 
-        // Assert
+        // assert
         Assert.Null(result.Results);
         Assert.Null(result.FacetResults);
     }
@@ -71,7 +88,7 @@ public sealed class SearchResultsTests
                 FacetResults = dummyFacets
             };
 
-        // Assert
+        // assert
         Assert.Equal(dummyResults.Count, result.Results.Count);
         Assert.Equal(dummyFacets.Count, result.FacetResults.Count);
         Assert.True(dummyResults.CollectionsMatch(result.Results));
