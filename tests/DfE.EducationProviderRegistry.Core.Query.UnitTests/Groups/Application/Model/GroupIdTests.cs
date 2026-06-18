@@ -11,13 +11,13 @@ public sealed class GroupIdTests
     [InlineData(" ")]
     [InlineData("  \n ")]
     [InlineData("\r\n")]
-    public void Constructor_WhenGroupIdIsNullOrWhitespace_ThrowsArgumentException(string? input)
+    public void Constructor_WhenGroupIdIsNullOrWhitespace_ThrowsInvalidGroupIdentifierException(string? input)
     {
         // Arrange
         Func<GroupId> construct = () => new GroupId(input!);
 
         // Act & Assert
-        Assert.ThrowsAny<ArgumentException>(construct);
+        Assert.Throws<InvalidGroupIdentifierException>(construct);
     }
 
     [Fact]
