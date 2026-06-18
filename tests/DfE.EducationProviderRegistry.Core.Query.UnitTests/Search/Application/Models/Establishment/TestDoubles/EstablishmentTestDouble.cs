@@ -1,8 +1,10 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+﻿using System.Diagnostics.CodeAnalysis;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 
+[ExcludeFromCodeCoverage]
 internal static class EstablishmentTestDouble
 {
     public static UniqueReferenceNumber ValidUrn => new("12345");

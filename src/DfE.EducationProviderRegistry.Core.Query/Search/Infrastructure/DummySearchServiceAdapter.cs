@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
+﻿using System.Diagnostics.CodeAnalysis;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
@@ -10,6 +11,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 /// that returns deterministic mock data for development, UI prototyping,
 /// and integration testing.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class DummySearchServiceAdapter
     : ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>
 {

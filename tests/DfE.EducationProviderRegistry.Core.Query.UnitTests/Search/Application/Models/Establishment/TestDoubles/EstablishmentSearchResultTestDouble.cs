@@ -8,7 +8,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 [ExcludeFromCodeCoverage]
 public static class EstablishmentSearchResultTestDouble
 {
-    private static readonly Faker _faker = new Faker();
+    private static readonly Faker _faker = new();
 
     public static EstablishmentSearchResult Create()
     {
