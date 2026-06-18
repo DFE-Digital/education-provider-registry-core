@@ -48,7 +48,7 @@ public sealed partial record EstablishmentUrn
 
     public static EstablishmentUrn Create(string urn)
     {
-        UniqueReferenceNumber validated = new(urn?.Trim() ?? null!);
+        UniqueReferenceNumber validated = new(urn);
         return new EstablishmentUrn(validated);
     }
 }

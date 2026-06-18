@@ -55,10 +55,9 @@ public sealed class EstablishmentDtoToModelMapper :
                     dto.Address?.County,
                     dto.Address?.Postcode),
             Governors = dto.Governors?.Select(g => new Governor(
-                new GovernancePersonInfo(
                 new GovernanceIdentifier(g.Identifier),
                 new Name(g.FullName),
-                g.StartDate))).ToList() ?? new List<Governor>()
+                g.StartDate)).ToList() ?? new List<Governor>()
         };
     }
 }

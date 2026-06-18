@@ -49,19 +49,6 @@ public class GetEstablishmentByIdUseCase :
 
             return UseCaseResponse<Establishment?>.Failure(message);
         }
-        catch (EstablishmentException ex)
-        {
-            const string message =
-                "Failed to retrieve establishment details.";
-
-            _logger.LogError(
-                ex,
-                "{UseCase} encountered a domain-specific error: {Message}",
-                nameof(GetEstablishmentByIdUseCase),
-                message);
-
-            return UseCaseResponse<Establishment?>.Failure(message);
-        }
         catch (Exception ex)
         {
             const string message =
