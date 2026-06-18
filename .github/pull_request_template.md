@@ -1,3 +1,17 @@
-# TODO
+## Summary
+<!-- Briefly explain what this pull request does. -->
 
-[example](https://github.com/DFE-Digital/get-information-about-pupils/blob/main/.github/pull_request_template.md)
+## Type of Change
+#### Select all that apply:
+- [ ] feat – New feature
+- [ ] fix – Bug fix
+- [ ] docs – Documentation updates
+- [ ] refactor – Code restructuring
+- [ ] chore – Maintenance / tooling
+- [ ] pipeline – CI/CD changes
+- [ ] tests – Test updates
+- [ ] other – Explain below
+
+## Changes
+- List the key changes introduced.
+- Keep each item short and clear.
