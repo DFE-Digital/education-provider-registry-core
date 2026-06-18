@@ -1,7 +1,6 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;

@@ -40,7 +40,7 @@ public sealed class EstablishmentsDtoToModelMapperTests
     {
         // Arrange
         IReadOnlyCollection<EstablishmentDto> dtos =
-            new EstablishmentDtoBuilder().BuildMany(2);
+            EstablishmentDtoFactory.CreateMany(2);
 
         IReadOnlyCollection<Establishment> establishments =
             new EstablishmentCollectionBuilder()
