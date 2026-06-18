@@ -3,7 +3,6 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 
-
 internal sealed class EstablishmentCollectionBuilder
 {
     private int _count = 10;

@@ -1,4 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 

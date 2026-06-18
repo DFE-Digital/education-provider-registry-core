@@ -29,7 +29,6 @@ internal static class TrusteeTestDoubles
         DateTime? startDate = null,
         TrusteeTitleType titleType = TrusteeTitleType.Other)
     {
-
         return new(
             new GovernanceIdentifier(id),
             new Name(name),

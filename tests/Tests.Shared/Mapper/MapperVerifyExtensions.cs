@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DfE.Core.Libraries.CrossCutting.Mapper;
+﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using Moq;
 
 namespace Tests.Shared.Mapper;

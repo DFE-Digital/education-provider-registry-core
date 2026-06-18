@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 
 public sealed record MemberReadModel
 {

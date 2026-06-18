@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases;
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 
 public sealed record TrusteeReadModel
 {

@@ -2,7 +2,6 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-
 public sealed record Trustee
 {
     public Trustee(GovernanceIdentifier id, Name name, DateTime startDate, TrusteeTitle? title = null)

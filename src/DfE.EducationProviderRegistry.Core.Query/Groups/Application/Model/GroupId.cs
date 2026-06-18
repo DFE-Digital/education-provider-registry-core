@@ -5,7 +5,11 @@ public sealed record GroupId
     public GroupId(string groupId)
     {
         // TODO validation on GroupId?
-        ArgumentException.ThrowIfNullOrWhiteSpace(groupId);
+        if (string.IsNullOrWhiteSpace(groupId))
+        {
+            throw new InvalidGroupIdentifierException(groupId);
+        }
+
         Value = groupId.Trim();
     }
 

@@ -59,12 +59,12 @@ public sealed class GroupTests
             trustees: trustees);
 
         // Assert
-        Assert.Equal(id, result.GroupId);
         Assert.Equal(uid, result.GroupUID);
         Assert.Equal(companiesHouseId, result.CompaniesHouseId);
 
-        Assert.Equal(members.Count, result.Members.Count);
-        Assert.Equal(trustees.Count, result.Trustees.Count);
+        Assert.Equivalent(academies, result.Academies);
+        Assert.Equivalent(members, result.Members);
+        Assert.Equivalent(trustees, result.Trustees);
     }
 
     [Fact]
@@ -79,6 +79,7 @@ public sealed class GroupTests
             trustees: null);
 
         // Assert
+        Assert.Empty(result.Academies);
         Assert.Empty(result.Members);
         Assert.Empty(result.Trustees);
     }
