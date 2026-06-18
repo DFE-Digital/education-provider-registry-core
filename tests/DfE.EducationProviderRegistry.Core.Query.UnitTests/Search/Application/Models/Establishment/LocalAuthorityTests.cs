@@ -1,6 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment;
+
 public sealed class LocalAuthorityTests
 {
     [Fact]
