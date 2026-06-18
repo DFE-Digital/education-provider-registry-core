@@ -14,14 +14,14 @@ public sealed class CompositionRootGetGroupsByIdAddUseCaseTests
 {
 
     [Fact]
-    public void AddEstablishmentsUseCaseDependencies_ShouldThrow_WhenServicesIsNull()
+    public void AddGroupsUseCaseDependencies_ShouldThrow_WhenServicesIsNull()
     {
         Assert.Throws<ArgumentNullException>(() =>
             CompositionRoot.AddGroupsUseCaseDependencies(null!));
     }
 
     [Fact]
-    public void AddEstablishmentsUseCaseDependencies_ShouldRegisterCorrectDependencyDescriptors()
+    public void AddGroupsUseCaseDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
         IServiceCollection services = ServiceCollectionDefault.Create();

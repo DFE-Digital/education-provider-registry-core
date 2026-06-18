@@ -9,14 +9,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups;
 public sealed class CompositionRootGetGroupsByIdAddInfrastructureTests
 {
     [Fact]
-    public void AddEstablishmentsInfrastructureDependencies_ShouldThrow_WhenServicesIsNull()
+    public void AddGroupsInfrastructureDependencies_ShouldThrow_WhenServicesIsNull()
     {
         Assert.Throws<ArgumentNullException>(() =>
             CompositionRoot.AddGroupsInfrastructureDependencies(null!));
     }
 
     [Fact]
-    public void AddEstablishmentsInfrastructureDependencies_ShouldRegisterCorrectDependencyDescriptors()
+    public void AddGroupsInfrastructureDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
         IServiceCollection services = ServiceCollectionDefault.Create();
