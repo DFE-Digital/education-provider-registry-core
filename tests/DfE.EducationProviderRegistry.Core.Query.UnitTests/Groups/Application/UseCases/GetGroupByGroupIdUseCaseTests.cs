@@ -2,8 +2,8 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -29,7 +29,7 @@ public sealed class GetGroupByGroupIdUseCaseTests
             () => new(
                     null!,
                     MockTestDouble.Default<IGroupsRepository>().Object,
-                    IMapperTestDouble.Default<Group, GroupDto>());
+                    IMapperTestDouble.Default<Group, GroupReadModel>());
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -43,7 +43,7 @@ public sealed class GetGroupByGroupIdUseCaseTests
             () => new(
                     ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
                     null!,
-                    IMapperTestDouble.Default<Group, GroupDto>());
+                    IMapperTestDouble.Default<Group, GroupReadModel>());
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -70,10 +70,10 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupIdUseCase sut = CreateSut(
             ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
             MockTestDouble.Default<IGroupsRepository>().Object,
-            IMapperTestDouble.Default<Group, GroupDto>());
+            IMapperTestDouble.Default<Group, GroupReadModel>());
 
         // Act
-        UseCaseResponse<GroupDto> result =
+        UseCaseResponse<GroupReadModel> result =
             await sut.HandleRequestAsync(null!, _ct);
 
         // Assert
@@ -97,12 +97,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupIdUseCase sut = CreateSut(
             ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
             repository.Object,
-            IMapperTestDouble.Default<Group, GroupDto>());
+            IMapperTestDouble.Default<Group, GroupReadModel>());
 
         // Act
         GetGroupByGroupIdRequest request = StubRequest();
 
-        UseCaseResponse<GroupDto> result =
+        UseCaseResponse<GroupReadModel> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
@@ -125,9 +125,9 @@ public sealed class GetGroupByGroupIdUseCaseTests
                         It.IsAny<CancellationToken>()),
                     stubGroup);
 
-        GroupDto dto = GroupDtoTestDoubles.StubGroupDto();
+        GroupReadModel dto = GroupReadModelTestDoubles.Stub();
 
-        Mock<IMapper<Group, GroupDto>> mapper = IMapperTestDouble.Map<Group, GroupDto>(dto);
+        Mock<IMapper<Group, GroupReadModel>> mapper = IMapperTestDouble.Map<Group, GroupReadModel>(dto);
 
         GetGroupByGroupIdUseCase sut = CreateSut(
             ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
@@ -137,7 +137,7 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupIdRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupDto> result =
+        UseCaseResponse<GroupReadModel> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
@@ -168,12 +168,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupIdUseCase sut = new(
             ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
             repository.Object,
-            IMapperTestDouble.Default<Group, GroupDto>());
+            IMapperTestDouble.Default<Group, GroupReadModel>());
 
         GetGroupByGroupIdRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupDto> result =
+        UseCaseResponse<GroupReadModel> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
@@ -199,12 +199,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupIdUseCase sut = new(
             ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
             repository.Object,
-            IMapperTestDouble.Default<Group, GroupDto>());
+            IMapperTestDouble.Default<Group, GroupReadModel>());
 
         GetGroupByGroupIdRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupDto> result =
+        UseCaseResponse<GroupReadModel> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
@@ -227,12 +227,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupIdUseCase sut = new(
             ILoggerTestDouble.Default<GetGroupByGroupIdUseCase>(),
             repository.Object,
-            IMapperTestDouble.Default<Group, GroupDto>());
+            IMapperTestDouble.Default<Group, GroupReadModel>());
 
         GetGroupByGroupIdRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupDto> result =
+        UseCaseResponse<GroupReadModel> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
@@ -246,5 +246,5 @@ public sealed class GetGroupByGroupIdUseCaseTests
     private static GetGroupByGroupIdUseCase CreateSut(
         ILogger<GetGroupByGroupIdUseCase> logger,
         IGroupsRepository repository,
-        IMapper<Group, GroupDto> mapper) => new(logger, repository, mapper);
+        IMapper<Group, GroupReadModel> mapper) => new(logger, repository, mapper);
 }

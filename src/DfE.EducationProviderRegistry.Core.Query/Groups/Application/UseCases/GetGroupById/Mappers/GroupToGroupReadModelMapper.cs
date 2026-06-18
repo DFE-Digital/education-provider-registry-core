@@ -1,15 +1,14 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 
-internal sealed class GroupToGroupDtoMapper : IMapper<Group, GroupDto>
+internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadModel>
 {
     private readonly IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> _trusteeToDtoMapper;
     private readonly IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> _memberToReadModelMapper;
 
-    public GroupToGroupDtoMapper(
+    public GroupToGroupReadModelMapper(
         IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> memberToDtoMapper,
         IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> trusteeToDtoMapper)
     {
@@ -19,11 +18,11 @@ internal sealed class GroupToGroupDtoMapper : IMapper<Group, GroupDto>
         _memberToReadModelMapper = memberToDtoMapper;
     }
 
-    public GroupDto Map(Group input)
+    public GroupReadModel Map(Group input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        return new GroupDto
+        return new GroupReadModel
         {
             GroupId = input.GroupId.Value,
             GroupUID = input.GroupUID.Value,
