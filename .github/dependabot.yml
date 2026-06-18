@@ -8,13 +8,22 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major" # updates to the major .NET version should be planned
+    commit-message:
+      prefix: "[chore]"
+    labels: [ ]
 
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "[chore]"
+    labels: [ ]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    commit-message:
+      prefix: "[chore]"
+    labels: [ ]
