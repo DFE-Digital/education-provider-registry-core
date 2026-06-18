@@ -6,7 +6,7 @@ public sealed record Group
         GroupId id,
         GroupUID uid,
         CompaniesHouseId companiesHouseId,
-        IEnumerable<Academy> academies,
+        IEnumerable<Academy>? academies,
         IEnumerable<Member>? members,
         IEnumerable<Trustee>? trustees)
     {
