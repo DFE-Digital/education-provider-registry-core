@@ -59,4 +59,3 @@ internal sealed class GroupBuilder
             trustees: _trustees);
     }
 }
-
