@@ -132,10 +132,26 @@ public sealed class GroupTests
     public void GetHashCode_WhenEqual_ShouldReturnSameValue()
     {
         // Arrange
-        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(1);
+        GroupId id = GroupIdTestDoubles.Create();
+        GroupUID uid = GroupUIDTestDoubles.Create();
+        CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create();
+        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(7);
+        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(9);
 
-        Group left = CreateValidSut(members: members);
-        Group right = CreateValidSut(members: members);
+        // Act
+        Group left = CreateValidSut(
+            groupId: id,
+            groupUid: uid,
+            companiesHouseId: companiesHouseId,
+            members: members,
+            trustees: trustees);
+
+        Group right = CreateValidSut(
+            groupId: id,
+            groupUid: uid,
+            companiesHouseId: companiesHouseId,
+            members: members,
+            trustees: trustees);
 
         // Act
         int leftHash = left.GetHashCode();
