@@ -23,17 +23,3 @@ public sealed record Establishment
 
     public IEnumerable<Governor> Governors { get; init; }
 }
-
-
-public sealed record EstablishmentUprn(string Value);
-public sealed record EstablishmentName(string Value);
-public sealed record EstablishmentNumber(string Value); // Contact number? Challenge this with Simon.
-public sealed record EstablishmentStatus(string Value);
-public sealed record EstablishmentType(string Value);
-public sealed record PhaseOfEducation(string Value);
-public sealed record EstablishmentOpenDate(DateTime Value);
-public sealed record EstablishmentCloseDate(DateTime? Value);
-public sealed record EstablishmentOpenReason(string Value);
-public sealed record EstablishmentCloseReason(string? Value);
-
-public sealed record Governor(GovernancePersonInfo Info);
