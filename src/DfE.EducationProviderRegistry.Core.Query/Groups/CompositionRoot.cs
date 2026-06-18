@@ -26,7 +26,7 @@ public static class CompositionRoot
 
         services.TryAddSingleton<IMapper<Group, GroupDto>, GroupToGroupDtoMapper>();
         services.TryAddSingleton<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>, MemberToMemberReadModelMapper>();
-        services.TryAddSingleton<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>, TrusteeToTrusteeDtoMapper>();
+        services.TryAddSingleton<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>, TrusteeToTrusteeReadModelMapper>();
 
         return services;
     }

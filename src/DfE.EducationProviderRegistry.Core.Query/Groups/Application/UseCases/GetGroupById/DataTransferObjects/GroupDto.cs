@@ -10,5 +10,5 @@ public sealed record GroupDto
     public required string CompaniesHouseId { get; init; }
     public required IReadOnlyCollection<Academy> Academies { get; init; }
     public required IReadOnlyCollection<MemberReadModel> Members { get; init; }
-    public required IReadOnlyCollection<TrusteeDto> Trustees { get; init; }
+    public required IReadOnlyCollection<TrusteeReadModel> Trustees { get; init; }
 }

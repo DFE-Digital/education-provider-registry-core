@@ -15,7 +15,7 @@ internal static class TrusteeTestDoubles
         for (int i = 0; i < count; i++)
         {
             trustees.Add(CreateWith(
-                id: $"{i}".PadRight(7, '0'),
+                id: faker.Random.Number(1000000, 7777777).ToString(),
                 name: faker.Person.FullName,
                 startDate: faker.Date.Past()));
         }

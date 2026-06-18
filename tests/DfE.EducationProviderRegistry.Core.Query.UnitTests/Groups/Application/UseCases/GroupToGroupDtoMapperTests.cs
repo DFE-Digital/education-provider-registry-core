@@ -10,9 +10,9 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.
 
 public sealed class GroupToGroupDtoMapperTests
 {
-    private static Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>> CreateTrusteeMapperMock(TrusteeDto[]? mapOut = null)
+    private static Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>> CreateTrusteeMapperMock(TrusteeReadModel[]? mapOut = null)
     {
-        return IMapperTestDouble.Map<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>(mapOut ?? []);
+        return IMapperTestDouble.Map<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>(mapOut ?? []);
     }
 
     private static Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> CreateMemberMapperMock(MemberReadModel[]? mapOut = null)
@@ -61,11 +61,11 @@ public sealed class GroupToGroupDtoMapperTests
     {
         // Arrange
         MemberReadModel[] memberDtos = [];
-        TrusteeDto[] trusteeDtos = [];
+        TrusteeReadModel[] trusteeDtos = [];
 
         Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> memberMapper = CreateMemberMapperMock(memberDtos);
 
-        Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>> trusteeMapper = CreateTrusteeMapperMock(trusteeDtos);
+        Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>> trusteeMapper = CreateTrusteeMapperMock(trusteeDtos);
 
         GroupToGroupDtoMapper sut = new(memberMapper.Object, trusteeMapper.Object);
 
@@ -126,7 +126,7 @@ public sealed class GroupToGroupDtoMapperTests
         // Arrange
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(count: 20);
 
-        Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>> trusteeMapperMock = CreateTrusteeMapperMock();
+        Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>> trusteeMapperMock = CreateTrusteeMapperMock();
 
         GroupToGroupDtoMapper sut = new(CreateMemberMapperMock().Object, trusteeMapperMock.Object);
 

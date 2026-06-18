@@ -1,17 +1,16 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 
-internal sealed class TrusteeToTrusteeDtoMapper : IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>>
+internal sealed class TrusteeToTrusteeReadModelMapper : IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>
 {
-    public IReadOnlyCollection<TrusteeDto> Map(IEnumerable<Trustee> input)
+    public IReadOnlyCollection<TrusteeReadModel> Map(IEnumerable<Trustee> input)
     {
         return input?
             .OrderBy((trustee) => GetOrderPriority(trustee.Title?.Type))
             .ThenByDescending(trustee => trustee.StartDate)
-            .Select(MapToDto)
+            .Select(MapToReadModel)
             .ToArray() ?? [];
     }
 
@@ -24,7 +23,7 @@ internal sealed class TrusteeToTrusteeDtoMapper : IMapper<IEnumerable<Trustee>, 
             _ => 99
         };
 
-    private static TrusteeDto MapToDto(Trustee trustee) => new()
+    private static TrusteeReadModel MapToReadModel(Trustee trustee) => new()
     {
         Id = trustee.Id.Value,
         FullName = trustee.Name.Value,

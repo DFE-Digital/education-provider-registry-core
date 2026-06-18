@@ -6,12 +6,12 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.G
 
 internal sealed class GroupToGroupDtoMapper : IMapper<Group, GroupDto>
 {
-    private readonly IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>> _trusteeToDtoMapper;
+    private readonly IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> _trusteeToDtoMapper;
     private readonly IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> _memberToReadModelMapper;
 
     public GroupToGroupDtoMapper(
         IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> memberToDtoMapper,
-        IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeDto>> trusteeToDtoMapper)
+        IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> trusteeToDtoMapper)
     {
         ArgumentNullException.ThrowIfNull(memberToDtoMapper);
         ArgumentNullException.ThrowIfNull(trusteeToDtoMapper);

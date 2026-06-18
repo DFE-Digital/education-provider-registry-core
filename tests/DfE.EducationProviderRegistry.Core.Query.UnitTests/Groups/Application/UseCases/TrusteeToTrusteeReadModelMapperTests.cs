@@ -1,20 +1,19 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 
-public sealed class TrusteeToTrusteeDtoMapperTests
+public sealed class TrusteeToTrusteeReadModelMapperTests
 {
     [Fact]
     public void Map_Should_Return_Empty_When_Input_Is_Null()
     {
         // Arrange
-        TrusteeToTrusteeDtoMapper sut = new();
+        TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeDto> result = sut.Map(null!);
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(null!);
 
         // Assert
         Assert.NotNull(result);
@@ -25,12 +24,12 @@ public sealed class TrusteeToTrusteeDtoMapperTests
     public void Map_Should_Return_Empty_When_Input_Is_Empty()
     {
         // Arrange
-        TrusteeToTrusteeDtoMapper sut = new();
+        TrusteeToTrusteeReadModelMapper sut = new();
 
         IEnumerable<Trustee> input = [];
 
         // Act
-        IReadOnlyCollection<TrusteeDto> result = sut.Map(input);
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(input);
 
         // Assert
         Assert.NotNull(result);
@@ -43,12 +42,12 @@ public sealed class TrusteeToTrusteeDtoMapperTests
         // Arrange
         Trustee trustee = TrusteeTestDoubles.Create(1).Single();
 
-        TrusteeToTrusteeDtoMapper sut = new();
+        TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeDto> result = sut.Map(new[] { trustee });
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(new[] { trustee });
 
-        TrusteeDto dto = Assert.Single(result);
+        TrusteeReadModel dto = Assert.Single(result);
 
         // Assert
         Assert.Equal(trustee.Id.Value, dto.Id);
@@ -66,12 +65,12 @@ public sealed class TrusteeToTrusteeDtoMapperTests
         Trustee accounting = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
         Trustee other = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Other);
 
-        TrusteeToTrusteeDtoMapper sut = new();
+        TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeDto> result = sut.Map(new[] { other, cfo, chair, accounting });
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(new[] { other, cfo, chair, accounting });
 
-        TrusteeDto[] ordered = [.. result];
+        TrusteeReadModel[] ordered = [.. result];
 
         // Assert
         Assert.Equal(TrusteeTitleType.Chair, ordered[0].Title);
@@ -87,12 +86,12 @@ public sealed class TrusteeToTrusteeDtoMapperTests
         Trustee older = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2020, 1, 1));
         Trustee newer = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2025, 1, 1));
 
-        TrusteeToTrusteeDtoMapper sut = new();
+        TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeDto> result = sut.Map(new[] { older, newer });
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(new[] { older, newer });
 
-        TrusteeDto[] ordered = [.. result];
+        TrusteeReadModel[] ordered = [.. result];
 
         // Assert
         Assert.Equal(newer.Id.Value, ordered[0].Id);
@@ -110,10 +109,10 @@ public sealed class TrusteeToTrusteeDtoMapperTests
 
         IReadOnlyCollection<Trustee> inputMapTrustees = [.. otherTrustees, chair, cfo, accounting];
 
-        TrusteeToTrusteeDtoMapper sut = new();
+        TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeDto> result = sut.Map(inputMapTrustees);
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(inputMapTrustees);
 
         // Assert
         Assert.Equal(inputMapTrustees.Count, result.Count);
