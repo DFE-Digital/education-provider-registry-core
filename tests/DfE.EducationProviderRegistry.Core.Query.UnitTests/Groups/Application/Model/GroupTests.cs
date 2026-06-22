@@ -13,7 +13,8 @@ public sealed class GroupTests
         Func<Group> construct = () => CreateSut(
             id: null!,
             externalIds: GroupExternalIdentifiersTestDoubles.Create(),
-            composition: GroupCompositionTestDoubles.Create());
+            composition: GroupCompositionTestDoubles.Create(),
+            characteristics: GroupCharacteristicsTestDoubles.Create());
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -26,7 +27,8 @@ public sealed class GroupTests
         Func<Group> construct = () => CreateSut(
             id: GroupIdentityTestDoubles.Create(),
             externalIds: null!,
-            composition: GroupCompositionTestDoubles.Create());
+            composition: GroupCompositionTestDoubles.Create(),
+            characteristics: GroupCharacteristicsTestDoubles.Create());
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -39,7 +41,22 @@ public sealed class GroupTests
         Func<Group> construct = () => CreateSut(
             id: GroupIdentityTestDoubles.Create(),
             externalIds: GroupExternalIdentifiersTestDoubles.Create(),
-            composition: null!);
+            composition: null!,
+            characteristics: GroupCharacteristicsTestDoubles.Create());
+
+        // Act & Assert
+        Assert.ThrowsAny<ArgumentNullException>(construct);
+    }
+
+    [Fact]
+    public void Constructor_WhenCharacteristics_IsNull_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Func<Group> construct = () => CreateSut(
+            id: GroupIdentityTestDoubles.Create(),
+            externalIds: GroupExternalIdentifiersTestDoubles.Create(),
+            composition: GroupCompositionTestDoubles.Create(),
+            characteristics: null!);
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -58,11 +75,14 @@ public sealed class GroupTests
                 members: MemberTestDoubles.Create(9),
                 trustees: TrusteeTestDoubles.Create(13));
 
+        GroupCharacteristics characteristics = GroupCharacteristicsTestDoubles.Create();
+
         // Act
         Group result = CreateValidSut(
             id: identity,
             externalIds: externalIds,
-            composition: composition);
+            composition: composition,
+            characteristics: characteristics);
 
         // Assert
         Assert.Equal(identity.Id, result.GroupId);
@@ -168,19 +188,22 @@ public sealed class GroupTests
     private static Group CreateSut(
         GroupIdentity id,
         GroupExternalIdentifiers externalIds,
-        GroupComposition composition)
+        GroupComposition composition,
+        GroupCharacteristics characteristics)
     {
         return new Group(
                 id,
                 externalIds,
-                composition
+                composition,
+                characteristics
             );
     }
 
     private static Group CreateValidSut(
         GroupIdentity? id = null,
         GroupExternalIdentifiers? externalIds = null,
-        GroupComposition? composition = null)
+        GroupComposition? composition = null,
+        GroupCharacteristics? characteristics = null)
     {
         return CreateSut(
             id ?? GroupIdentityTestDoubles.Create(),
@@ -188,7 +211,8 @@ public sealed class GroupTests
                 new(
                     UkprnTestDoubles.Create(),
                     CompaniesHouseIdTestDoubles.Create()),
-            composition ?? GroupCompositionTestDoubles.Create()
+            composition ?? GroupCompositionTestDoubles.Create(),
+            characteristics ?? GroupCharacteristicsTestDoubles.Create()
         );
     }
 }

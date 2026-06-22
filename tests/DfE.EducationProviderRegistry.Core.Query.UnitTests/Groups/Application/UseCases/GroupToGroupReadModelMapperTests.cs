@@ -1,10 +1,14 @@
-﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+﻿using Bogus.DataSets;
+using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 using Moq;
 using Tests.Shared.Mapper;
+using Address = DfE.EducationProviderRegistry.Core.Query.Shared.Address;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 
@@ -69,11 +73,16 @@ public sealed class GroupToGroupReadModelMapperTests
 
         GroupToGroupReadModelMapper sut = new(memberMapper.Object, trusteeMapper.Object);
 
+        Address stubAddress = AddressTestDoubles.Generate();
+
         Group input = new GroupBuilder()
             .WithGroupId("Test group")
             .WithGroupUid(123)
             .WithCompaniesHouseId("Corpo")
             .WithUkprn("test-ukprn")
+            .WithAddress(stubAddress.Street, stubAddress.Town, stubAddress.County, stubAddress.Postcode)
+            .WithGroupStatus(GroupOpenState.Closed, new(2020, 10, 10))
+            .WithType("mat")
             .WithAcademies(AcademyTestDouble.Create(3))
             .WithMembers(MemberTestDoubles.Create(5))
             .WithTrustees(TrusteeTestDoubles.Create(7))
@@ -87,6 +96,10 @@ public sealed class GroupToGroupReadModelMapperTests
         Assert.Equal(123, result.GroupUID);
         Assert.Equal("test-ukprn", result.UKPRN);
         Assert.Equal("Corpo", result.CompaniesHouseId);
+        Assert.Equal($"{stubAddress.Street}, {stubAddress.Town}, {stubAddress.County}, {stubAddress.Postcode}", result.Address);
+        Assert.Equal("mat", result.Type);
+        Assert.Equal("Closed on 10 October 2020", result.Status);
+
 
         Assert.Same(memberDtos, result.Members);
         Assert.Same(trusteeDtos, result.Trustees);
