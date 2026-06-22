@@ -5,6 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.G
 
 public sealed record GroupReadModel
 {
+    public required string Name { get; init; }
     public required string GroupId { get; init; }
     public required int GroupUID { get; init; }
     public required string UKPRN { get; init; }

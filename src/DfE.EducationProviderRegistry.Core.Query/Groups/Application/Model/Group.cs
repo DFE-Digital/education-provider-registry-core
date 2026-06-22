@@ -28,6 +28,7 @@ public sealed record Group
         Ukprn = externalIds.Ukprn ?? Ukprn.CreateNoValue();
         CompaniesHouseId = externalIds.CompaniesHouseId;
 
+        Name = characteristics.Name;
         Address = characteristics.Address;
         GroupType = characteristics.Type;
         Status = characteristics.Status;
@@ -37,6 +38,7 @@ public sealed record Group
     public GroupUID GroupUID => _identity.Uid;
     public Ukprn Ukprn { get; }
     public CompaniesHouseId? CompaniesHouseId { get; }
+    public Name Name { get; }
     public Address Address { get; }
     public GroupType GroupType { get; }
     public GroupStatus Status { get; }
