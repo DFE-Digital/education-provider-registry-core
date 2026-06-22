@@ -5,21 +5,20 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Mo
 public sealed record Establishment
 {
     public EstablishmentUrn Urn { get; init; }
-    public Ukprn Ukprn { get; init; }
-    public EstablishmentUprn Uprn { get; init; }
 
     public EstablishmentName Name { get; init; }
     public EstablishmentNumber Number { get; init; }
-    public Address? Address { get; init; }
 
     public EstablishmentStatus Status { get; init; }
     public EstablishmentType Type { get; init; }
+
     public PhaseOfEducation Phase { get; init; }
-
-    public EstablishmentOpenDate OpenDate { get; init; }
-    public EstablishmentOpenReason ReasonEstablishmentOpened { get; init; }
-    public EstablishmentCloseDate? CloseDate { get; init; }
-    public EstablishmentCloseReason? ReasonEstablishmentClosed { get; init; }
-
+    public EstablishmentAdmissions Admissions { get; init; }
+    public IEnumerable<SiteAddress> Addresses { get; init; }
     public IEnumerable<Governor> Governors { get; init; }
+
+    public Establishment()
+    {
+
+    }
 }

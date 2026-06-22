@@ -8,6 +8,8 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments;
@@ -79,13 +81,20 @@ public static class CompositionRoot
     /// Thrown when <paramref name="services"/> is <c>null</c>.
     /// </exception>
     public static IServiceCollection AddEstablishmentsInfrastructureDependencies(
-        this IServiceCollection services)
+        this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+
+        services.AddDbContext<AppDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString("EprDbConnection"));
+        });
 
         return services
             // Establishment repository.
             .AddScoped<IEstablishmentsRepository, FakeDataEstablishmentsRepository>()
+            .AddScoped<IEstablishmentsRepository, EfPostgresEstablishmensRepository>()
 
             // Collection mapper: DTO → application read model.
             .AddSingleton<IMapper<

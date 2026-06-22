@@ -38,22 +38,11 @@ public sealed class EstablishmentDtoToModelMapper :
         return new Establishment
         {
             Urn = EstablishmentUrn.Create(dto.URN),
-            Ukprn = new Ukprn(dto.UKPRN),
-            Uprn = new EstablishmentUprn(dto.UPPN),
             Name = new EstablishmentName(dto.Name),
             Number = new EstablishmentNumber(dto.Number),
             Status = new EstablishmentStatus(dto.Status),
             Type = new EstablishmentType(dto.Type),
             Phase = new PhaseOfEducation(dto.PhaseOfEducation),
-            OpenDate = new EstablishmentOpenDate(dto.OpenDate),
-            ReasonEstablishmentOpened = new EstablishmentOpenReason(dto.ReasonEstablishmentOpened),
-            CloseDate = dto.CloseDate is not null ? new EstablishmentCloseDate(dto.CloseDate) : null,
-            ReasonEstablishmentClosed = dto.ReasonEstablishmentClosed is not null ? new EstablishmentCloseReason(dto.ReasonEstablishmentClosed) : null,
-            Address = new Address(
-                    dto.Address?.Street,
-                    dto.Address?.Town,
-                    dto.Address?.County,
-                    dto.Address?.Postcode),
             Governors = dto.Governors?.Select(g => new Governor(
                 new GovernanceIdentifier(g.Identifier),
                 new Name(g.FullName),
