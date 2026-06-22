@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
@@ -13,7 +14,7 @@ public sealed class GroupTests
         Func<Group> construct = () => CreateSut(
             groupId: null!,
             groupUid: GroupUIDTestDoubles.Create(),
-            companiesHouseId: CompaniesHouseIdTestDoubles.Create(),
+            registrations: GroupRegistrationsTestDoubles.Create(),
             academies: [],
             trustees: [],
             members: []);
@@ -23,13 +24,13 @@ public sealed class GroupTests
     }
 
     [Fact]
-    public void Constructor_WhenCompaniesHouseIdIsNull_ThrowsArgumentNullException()
+    public void Constructor_WhenGroupRegistrationsIsNull_ThrowsArgumentNullException()
     {
         // Arrange
         Func<Group> construct = () => CreateSut(
             groupId: GroupIdTestDoubles.Create(),
             groupUid: GroupUIDTestDoubles.Create(),
-            companiesHouseId: null!,
+            registrations: null!,
             academies: [],
             trustees: [],
             members: []);
@@ -44,7 +45,7 @@ public sealed class GroupTests
         // Arrange
         GroupId id = GroupIdTestDoubles.Create();
         GroupUID uid = GroupUIDTestDoubles.Create();
-        CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create();
+        GroupRegistrations registrations = GroupRegistrationsTestDoubles.Create();
         IReadOnlyCollection<Academy> academies = AcademyTestDouble.Create(7);
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(9);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(13);
@@ -53,14 +54,15 @@ public sealed class GroupTests
         Group result = CreateValidSut(
             groupId: id,
             groupUid: uid,
-            companiesHouseId: companiesHouseId,
+            registrations: registrations,
             academies: academies,
             members: members,
             trustees: trustees);
 
         // Assert
         Assert.Equal(uid, result.GroupUID);
-        Assert.Equal(companiesHouseId, result.CompaniesHouseId);
+        Assert.Same(registrations.Ukprn, result.Ukprn);
+        Assert.Same(registrations.CompaniesHouseId, result.CompaniesHouseId);
 
         Assert.Equivalent(academies, result.Academies);
         Assert.Equivalent(members, result.Members);
@@ -149,7 +151,7 @@ public sealed class GroupTests
         // Arrange
         GroupId id = GroupIdTestDoubles.Create();
         GroupUID uid = GroupUIDTestDoubles.Create();
-        CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create();
+        GroupRegistrations registrations = GroupRegistrationsTestDoubles.Create();
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(7);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(9);
         IReadOnlyCollection<Academy> academies = AcademyTestDouble.Create(13);
@@ -158,7 +160,7 @@ public sealed class GroupTests
         Group left = CreateValidSut(
             groupId: id,
             groupUid: uid,
-            companiesHouseId: companiesHouseId,
+            registrations: registrations,
             academies: academies,
             members: members,
             trustees: trustees);
@@ -166,7 +168,7 @@ public sealed class GroupTests
         Group right = CreateValidSut(
             groupId: id,
             groupUid: uid,
-            companiesHouseId: companiesHouseId,
+            registrations: registrations,
             academies: academies,
             members: members,
             trustees: trustees);
@@ -182,14 +184,14 @@ public sealed class GroupTests
     private static Group CreateSut(
         GroupId groupId,
         GroupUID groupUid,
-        CompaniesHouseId companiesHouseId,
+        GroupRegistrations registrations,
         IReadOnlyCollection<Academy> academies,
         IReadOnlyCollection<Member> members,
         IReadOnlyCollection<Trustee> trustees)
     {
         return new Group(
             new(groupId, groupUid),
-            companiesHouseId,
+            registrations,
             academies,
             members,
             trustees);
@@ -198,7 +200,7 @@ public sealed class GroupTests
     private static Group CreateValidSut(
         GroupId? groupId = null,
         GroupUID? groupUid = null,
-        CompaniesHouseId? companiesHouseId = null,
+        GroupRegistrations? registrations = null,
         IReadOnlyCollection<Academy>? academies = null,
         IReadOnlyCollection<Member>? members = null,
         IReadOnlyCollection<Trustee>? trustees = null)
@@ -206,9 +208,26 @@ public sealed class GroupTests
         return CreateSut(
             groupId ?? GroupIdTestDoubles.Create(),
             groupUid ?? GroupUIDTestDoubles.Create(),
-            companiesHouseId ?? CompaniesHouseIdTestDoubles.Create(),
+            registrations ??
+                new(
+                    UkprnTestDoubles.Create(),
+                    CompaniesHouseIdTestDoubles.Create()),
             academies ?? [],
             members ?? [],
             trustees ?? []);
     }
+}
+
+internal static class UkprnTestDoubles
+{
+    internal static Ukprn Create() => Create("ukprn-1");
+    internal static Ukprn Create(string value) => new(value);
+}
+
+internal static class GroupRegistrationsTestDoubles
+{
+    internal static GroupRegistrations Create()
+        => new(
+            UkprnTestDoubles.Create(),
+            CompaniesHouseIdTestDoubles.Create());
 }

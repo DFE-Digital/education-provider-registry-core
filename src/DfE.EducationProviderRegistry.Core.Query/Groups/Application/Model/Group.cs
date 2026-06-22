@@ -1,20 +1,23 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 public sealed record Group
 {
     public Group(
         GroupIdentity identity,
-        CompaniesHouseId companiesHouseId,
+        GroupRegistrations registrations,
         IEnumerable<Academy>? academies,
         IEnumerable<Member>? members,
         IEnumerable<Trustee>? trustees)
     {
         ArgumentNullException.ThrowIfNull(identity);
-        ArgumentNullException.ThrowIfNull(companiesHouseId);
+        ArgumentNullException.ThrowIfNull(registrations);
 
         GroupId = identity.Id;
         GroupUID = identity.Uid;
-        CompaniesHouseId = companiesHouseId;
+        Ukprn = registrations.Ukprn;
+        CompaniesHouseId = registrations.CompaniesHouseId;
         Academies = academies?.ToList() ?? [];
         Members = members?.ToList() ?? [];
         Trustees = trustees?.ToList() ?? [];
@@ -22,8 +25,8 @@ public sealed record Group
 
     public GroupId GroupId { get; }
     public GroupUID GroupUID { get; }
-    //public Ukprn Ukprn { get; }
-    public CompaniesHouseId CompaniesHouseId { get; }
+    public Ukprn? Ukprn { get; }
+    public CompaniesHouseId? CompaniesHouseId { get; }
     //public GroupStatus Status { get; }
     public IReadOnlyCollection<Academy> Academies { get; }
     public IReadOnlyCollection<Member> Members { get; }
@@ -32,11 +35,14 @@ public sealed record Group
 
     public bool Equals(Group? other)
     {
-        if (other is null) return false;
+        if (other is null)
+        {
+            return false;
+        }
 
         return GroupId == other.GroupId
             && GroupUID == other.GroupUID
-            //&& Ukprn == other.Ukprn
+            && Ukprn == other.Ukprn
             && CompaniesHouseId == other.CompaniesHouseId
             && Academies.SequenceEqual(other.Academies)
             && Members.SequenceEqual(other.Members)
@@ -49,6 +55,7 @@ public sealed record Group
         HashCode hash = new();
         hash.Add(GroupId);
         hash.Add(GroupUID);
+        hash.Add(Ukprn);
         hash.Add(CompaniesHouseId);
 
         foreach (Academy academy in Academies)
