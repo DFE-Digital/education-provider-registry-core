@@ -58,4 +58,17 @@ public sealed class AcademyIdTests
         // Act & Assert
         Assert.NotEqual(first, second);
     }
+
+    [Fact]
+    public void ToString_Returns_Value()
+    {
+        AcademyId sut = new(
+            UniqueReferenceNumberTestDoubles.Create("123456"));
+
+        //Act
+        string result = sut.ToString();
+
+        // Assert
+        Assert.Equal("123456", result);
+    }
 }

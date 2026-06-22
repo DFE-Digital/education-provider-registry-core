@@ -11,4 +11,6 @@ public sealed record AcademyId
     }
 
     public string Value { get; }
+
+    public override string ToString() => Value;
 }
