@@ -4,33 +4,35 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 public sealed record Group
 {
+    private readonly GroupIdentity _identity;
+    private readonly GroupExternalIdentifiers _externalIds;
+    private readonly GroupComposition _composition;
+
     public Group(
         GroupIdentity identity,
-        GroupRegistrations registrations,
-        IEnumerable<Academy>? academies,
-        IEnumerable<Member>? members,
-        IEnumerable<Trustee>? trustees)
+        GroupExternalIdentifiers externalIds,
+        GroupComposition composition)
     {
         ArgumentNullException.ThrowIfNull(identity);
-        ArgumentNullException.ThrowIfNull(registrations);
+        ArgumentNullException.ThrowIfNull(externalIds);
+        ArgumentNullException.ThrowIfNull(composition);
 
-        GroupId = identity.Id;
-        GroupUID = identity.Uid;
-        Ukprn = registrations.Ukprn;
-        CompaniesHouseId = registrations.CompaniesHouseId;
-        Academies = academies?.ToList() ?? [];
-        Members = members?.ToList() ?? [];
-        Trustees = trustees?.ToList() ?? [];
+        _identity = identity;
+        _externalIds = externalIds;
+        _composition = composition;
+
+        Ukprn = externalIds.Ukprn ?? Ukprn.CreateNoValue();
+        CompaniesHouseId = externalIds.CompaniesHouseId;
     }
 
-    public GroupId GroupId { get; }
-    public GroupUID GroupUID { get; }
-    public Ukprn? Ukprn { get; }
+    public GroupId GroupId => _identity.Id;
+    public GroupUID GroupUID => _identity.Uid;
+    public Ukprn Ukprn { get; }
     public CompaniesHouseId? CompaniesHouseId { get; }
     //public GroupStatus Status { get; }
-    public IReadOnlyCollection<Academy> Academies { get; }
-    public IReadOnlyCollection<Member> Members { get; }
-    public IReadOnlyCollection<Trustee> Trustees { get; }
+    public IReadOnlyCollection<Academy> Academies => _composition.Academies;
+    public IReadOnlyCollection<Member> Members => _composition.Members;
+    public IReadOnlyCollection<Trustee> Trustees => _composition.Trustees;
 
 
     public bool Equals(Group? other)
@@ -53,26 +55,9 @@ public sealed record Group
     public override int GetHashCode()
     {
         HashCode hash = new();
-        hash.Add(GroupId);
-        hash.Add(GroupUID);
-        hash.Add(Ukprn);
-        hash.Add(CompaniesHouseId);
-
-        foreach (Academy academy in Academies)
-        {
-            hash.Add(academy);
-        }
-
-        foreach (Member member in Members)
-        {
-            hash.Add(member);
-        }
-
-
-        foreach (Trustee trustee in Trustees)
-        {
-            hash.Add(trustee);
-        }
+        hash.Add(_identity);
+        hash.Add(_externalIds);
+        hash.Add(_composition);
 
         return hash.ToHashCode();
     }

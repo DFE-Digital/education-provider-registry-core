@@ -8,4 +8,6 @@ public sealed record Ukprn
     }
 
     public string Value { get; }
+
+    public static Ukprn CreateNoValue() => new(string.Empty);
 }
