@@ -217,17 +217,3 @@ public sealed class GroupTests
             trustees ?? []);
     }
 }
-
-internal static class UkprnTestDoubles
-{
-    internal static Ukprn Create() => Create("ukprn-1");
-    internal static Ukprn Create(string value) => new(value);
-}
-
-internal static class GroupRegistrationsTestDoubles
-{
-    internal static GroupRegistrations Create()
-        => new(
-            UkprnTestDoubles.Create(),
-            CompaniesHouseIdTestDoubles.Create());
-}

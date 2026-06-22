@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
 public sealed class GroupRegistrationsTests
 {
