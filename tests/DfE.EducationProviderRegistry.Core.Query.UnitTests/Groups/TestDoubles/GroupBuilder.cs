@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
@@ -6,11 +7,13 @@ internal sealed class GroupBuilder
 {
     private string _groupId = "1234567";
     private int _groupUid = 1234;
+    private string _ukprn = "UKPRN-1";
     private string _companiesHouseId = "CH1";
 
     private IEnumerable<Academy> _academies = [];
     private IEnumerable<Member>? _members = [];
     private IEnumerable<Trustee>? _trustees = [];
+
 
     public GroupBuilder WithGroupId(string value)
     {
@@ -21,6 +24,12 @@ internal sealed class GroupBuilder
     public GroupBuilder WithGroupUid(int value)
     {
         _groupUid = value;
+        return this;
+    }
+
+    public GroupBuilder WithUkprn(string value)
+    {
+        _ukprn = value;
         return this;
     }
 
@@ -55,7 +64,9 @@ internal sealed class GroupBuilder
                 new GroupIdentity(
                     new GroupId(_groupId),
                     new GroupUID(_groupUid)),
-            companiesHouseId: new(_companiesHouseId),
+            registrations: new GroupRegistrations(
+                new Ukprn(_ukprn),
+                new CompaniesHouseId(_companiesHouseId)),
             academies: _academies,
             members: _members,
             trustees: _trustees);
