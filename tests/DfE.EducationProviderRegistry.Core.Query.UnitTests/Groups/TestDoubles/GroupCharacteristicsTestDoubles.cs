@@ -11,6 +11,7 @@ internal static class GroupCharacteristicsTestDoubles
     internal static GroupCharacteristics Create()
     {
         return new(
+            NameTestDoubles.Create(),
             AddressTestDoubles.Stub(),
             GroupTypeTestDoubles.Create(),
             GroupStatusTestDoubles.Create());

@@ -6,6 +6,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
 internal sealed class GroupBuilder
 {
+    private string _name = "Test Group Name";
     private string _groupId = "1234567";
     private int _groupUid = 1234;
     private string _ukprn = "UKPRN-1";
@@ -18,6 +19,11 @@ internal sealed class GroupBuilder
     private IEnumerable<Member>? _members = [];
     private IEnumerable<Trustee>? _trustees = [];
 
+    public GroupBuilder WithName(string value)
+    {
+        _name = value;
+        return this;
+    }
 
     public GroupBuilder WithGroupId(string value)
     {
@@ -94,6 +100,7 @@ internal sealed class GroupBuilder
                 members: _members,
                 trustees: _trustees),
             characteristics: new GroupCharacteristics(
+                new(_name),
                 _address,
                 _type,
                 _status));

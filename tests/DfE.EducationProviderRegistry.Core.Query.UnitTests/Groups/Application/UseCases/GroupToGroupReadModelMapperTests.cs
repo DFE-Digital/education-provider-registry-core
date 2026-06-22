@@ -76,6 +76,7 @@ public sealed class GroupToGroupReadModelMapperTests
         Address stubAddress = AddressTestDoubles.Generate();
 
         Group input = new GroupBuilder()
+            .WithName("Test Group Name")
             .WithGroupId("Test group")
             .WithGroupUid(123)
             .WithCompaniesHouseId("Corpo")
@@ -92,6 +93,7 @@ public sealed class GroupToGroupReadModelMapperTests
         GroupReadModel result = sut.Map(input);
 
         // Assert
+        Assert.Equal("Test Group Name", result.Name);
         Assert.Equal("Test group", result.GroupId);
         Assert.Equal(123, result.GroupUID);
         Assert.Equal("test-ukprn", result.UKPRN);
@@ -99,7 +101,6 @@ public sealed class GroupToGroupReadModelMapperTests
         Assert.Equal($"{stubAddress.Street}, {stubAddress.Town}, {stubAddress.County}, {stubAddress.Postcode}", result.Address);
         Assert.Equal("mat", result.Type);
         Assert.Equal("Closed on 10 October 2020", result.Status);
-
 
         Assert.Same(memberDtos, result.Members);
         Assert.Same(trusteeDtos, result.Trustees);

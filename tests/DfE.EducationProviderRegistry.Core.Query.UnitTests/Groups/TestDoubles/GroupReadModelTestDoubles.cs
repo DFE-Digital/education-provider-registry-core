@@ -9,6 +9,7 @@ internal static class GroupReadModelTestDoubles
     {
         return new()
         {
+            Name = "Test Group",
             GroupId = "Id",
             GroupUID = 123,
             UKPRN = "ukprn",
