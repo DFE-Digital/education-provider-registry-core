@@ -3,9 +3,9 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
-internal static class GroupRegistrationsTestDoubles
+internal static class GroupExternalIdentifiersTestDoubles
 {
-    internal static GroupRegistrations Create()
+    internal static GroupExternalIdentifiers Create()
         => new(
             UkprnTestDoubles.Create(),
             CompaniesHouseIdTestDoubles.Create());

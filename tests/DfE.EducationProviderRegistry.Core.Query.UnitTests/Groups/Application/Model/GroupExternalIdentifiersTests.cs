@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
-public sealed class GroupRegistrationsTests
+public sealed class GroupExternalIdentifiersTests
 {
     [Fact]
     public void Constructor_Should_Assign_Values_When_All_Provided()
@@ -16,7 +16,7 @@ public sealed class GroupRegistrationsTests
         CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create("09876543");
 
         // Act
-        GroupRegistrations result = new(ukprn, companiesHouseId);
+        GroupExternalIdentifiers result = new(ukprn, companiesHouseId);
 
         // Assert
         Assert.Equal(ukprn, result.Ukprn);
@@ -31,7 +31,7 @@ public sealed class GroupRegistrationsTests
         CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create("09876543");
 
         // Act
-        GroupRegistrations result = new(ukprn, companiesHouseId);
+        GroupExternalIdentifiers result = new(ukprn, companiesHouseId);
 
         // Assert
         Assert.Null(result.Ukprn);
@@ -46,7 +46,7 @@ public sealed class GroupRegistrationsTests
         CompaniesHouseId? companiesHouseId = null;
 
         // Act
-        GroupRegistrations result = new(ukprn, companiesHouseId);
+        GroupExternalIdentifiers result = new(ukprn, companiesHouseId);
 
         // Assert
         Assert.Equal(ukprn, result.Ukprn);
@@ -61,7 +61,7 @@ public sealed class GroupRegistrationsTests
         CompaniesHouseId? companiesHouseId = null;
 
         // Act
-        GroupRegistrations result = new(ukprn, companiesHouseId);
+        GroupExternalIdentifiers result = new(ukprn, companiesHouseId);
 
         // Assert
         Assert.Null(result.Ukprn);
@@ -72,11 +72,11 @@ public sealed class GroupRegistrationsTests
     public void Equals_Should_Return_True_When_Values_Are_The_Same()
     {
         // Arrange
-        GroupRegistrations left = new(
+        GroupExternalIdentifiers left = new(
             UkprnTestDoubles.Create("12345678"),
             CompaniesHouseIdTestDoubles.Create("09876543"));
 
-        GroupRegistrations right = new(
+        GroupExternalIdentifiers right = new(
             UkprnTestDoubles.Create("12345678"),
             CompaniesHouseIdTestDoubles.Create("09876543"));
 
@@ -91,11 +91,11 @@ public sealed class GroupRegistrationsTests
     public void Equals_Should_Return_False_When_Ukprn_Differ()
     {
         // Arrange
-        GroupRegistrations left = new(
+        GroupExternalIdentifiers left = new(
             UkprnTestDoubles.Create("123"),
             CompaniesHouseIdTestDoubles.Create("1"));
 
-        GroupRegistrations right = new(
+        GroupExternalIdentifiers right = new(
             UkprnTestDoubles.Create("987"),
             CompaniesHouseIdTestDoubles.Create("1"));
 
@@ -110,11 +110,11 @@ public sealed class GroupRegistrationsTests
     public void Equals_Should_Return_False_When_Compared_Ukprn_IsNull()
     {
         // Arrange
-        GroupRegistrations left = new(
+        GroupExternalIdentifiers left = new(
             UkprnTestDoubles.Create("123"),
             CompaniesHouseIdTestDoubles.Create("1"));
 
-        GroupRegistrations right = new(
+        GroupExternalIdentifiers right = new(
             ukprn: null!,
             CompaniesHouseIdTestDoubles.Create("1"));
 
@@ -129,11 +129,11 @@ public sealed class GroupRegistrationsTests
     public void Equals_Should_Return_False_When_CompaniesHouseid_Differ()
     {
         // Arrange
-        GroupRegistrations left = new(
+        GroupExternalIdentifiers left = new(
             UkprnTestDoubles.Create("1"),
             CompaniesHouseIdTestDoubles.Create("12345678"));
 
-        GroupRegistrations right = new(
+        GroupExternalIdentifiers right = new(
             UkprnTestDoubles.Create("1"),
             CompaniesHouseIdTestDoubles.Create("09876543"));
 
@@ -148,11 +148,11 @@ public sealed class GroupRegistrationsTests
     public void Equals_Should_Return_False_When_Compared_CompaniesHouseId_IsNull()
     {
         // Arrange
-        GroupRegistrations left = new(
+        GroupExternalIdentifiers left = new(
             UkprnTestDoubles.Create("123"),
             CompaniesHouseIdTestDoubles.Create("1"));
 
-        GroupRegistrations right = new(
+        GroupExternalIdentifiers right = new(
             UkprnTestDoubles.Create("123"),
             companiesHouseId: null);
 

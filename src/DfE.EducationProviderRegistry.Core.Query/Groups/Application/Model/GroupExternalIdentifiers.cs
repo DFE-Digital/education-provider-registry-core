@@ -2,9 +2,9 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-public sealed record GroupRegistrations
+public sealed record GroupExternalIdentifiers
 {
-    public GroupRegistrations(Ukprn? ukprn, CompaniesHouseId? companiesHouseId)
+    public GroupExternalIdentifiers(Ukprn? ukprn, CompaniesHouseId? companiesHouseId)
     {
         Ukprn = ukprn;
         CompaniesHouseId = companiesHouseId;

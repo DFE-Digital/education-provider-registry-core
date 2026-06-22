@@ -64,11 +64,12 @@ internal sealed class GroupBuilder
                 new GroupIdentity(
                     new GroupId(_groupId),
                     new GroupUID(_groupUid)),
-            registrations: new GroupRegistrations(
+            externalIds: new GroupExternalIdentifiers(
                 new Ukprn(_ukprn),
                 new CompaniesHouseId(_companiesHouseId)),
-            academies: _academies,
-            members: _members,
-            trustees: _trustees);
+            composition: new GroupComposition(
+                academies: _academies,
+                members: _members,
+                trustees: _trustees));
     }
 }
