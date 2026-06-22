@@ -1,6 +1,6 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using Moq;
@@ -73,6 +73,7 @@ public sealed class GroupToGroupReadModelMapperTests
             .WithGroupId("Test group")
             .WithGroupUid(123)
             .WithCompaniesHouseId("Corpo")
+            .WithUkprn("test-ukprn")
             .WithAcademies(AcademyTestDouble.Create(3))
             .WithMembers(MemberTestDoubles.Create(5))
             .WithTrustees(TrusteeTestDoubles.Create(7))
@@ -84,6 +85,7 @@ public sealed class GroupToGroupReadModelMapperTests
         // Assert
         Assert.Equal("Test group", result.GroupId);
         Assert.Equal(123, result.GroupUID);
+        Assert.Equal("test-ukprn", result.UKPRN);
         Assert.Equal("Corpo", result.CompaniesHouseId);
 
         Assert.Same(memberDtos, result.Members);

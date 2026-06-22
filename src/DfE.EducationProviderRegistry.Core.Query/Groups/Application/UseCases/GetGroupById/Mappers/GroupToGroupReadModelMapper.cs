@@ -26,6 +26,7 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
         {
             GroupId = input.GroupId.Value,
             GroupUID = input.GroupUID.Value,
+            UKPRN = input.Ukprn.Value,
             CompaniesHouseId = input.CompaniesHouseId.Value,
             Academies = input.Academies.OrderBy(t => t.Name.ToString()).ToArray(),
             Members = _memberToReadModelMapper.Map(input.Members),

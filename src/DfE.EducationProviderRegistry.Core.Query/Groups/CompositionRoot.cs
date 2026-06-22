@@ -2,7 +2,6 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;

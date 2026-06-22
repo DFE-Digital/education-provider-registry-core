@@ -1,4 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 
@@ -10,6 +10,7 @@ internal static class GroupReadModelTestDoubles
         {
             GroupId = "Id",
             GroupUID = 123,
+            UKPRN = "ukprn",
             CompaniesHouseId = "A123",
             Academies = [],
             Members = [],
