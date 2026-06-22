@@ -85,6 +85,7 @@ public sealed class GroupCharacteristicsTests
         GroupCharacteristics result = new(name, address, type, status);
 
         // Assert
+        Assert.Same(name, result.Name);
         Assert.Same(address, result.Address);
         Assert.Same(type, result.Type);
         Assert.Same(status, result.Status);
