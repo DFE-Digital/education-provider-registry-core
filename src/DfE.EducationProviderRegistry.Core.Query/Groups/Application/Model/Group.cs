@@ -3,27 +3,28 @@
 public sealed record Group
 {
     public Group(
-        GroupId id,
-        GroupUID uid,
+        GroupIdentity identity,
         CompaniesHouseId companiesHouseId,
         IEnumerable<Academy>? academies,
         IEnumerable<Member>? members,
         IEnumerable<Trustee>? trustees)
     {
-        ArgumentNullException.ThrowIfNull(id);
+        ArgumentNullException.ThrowIfNull(identity);
         ArgumentNullException.ThrowIfNull(companiesHouseId);
 
-        GroupId = id;
-        GroupUID = uid;
+        GroupId = identity.Id;
+        GroupUID = identity.Uid;
         CompaniesHouseId = companiesHouseId;
-
         Academies = academies?.ToList() ?? [];
         Members = members?.ToList() ?? [];
         Trustees = trustees?.ToList() ?? [];
     }
+
     public GroupId GroupId { get; }
     public GroupUID GroupUID { get; }
+    //public Ukprn Ukprn { get; }
     public CompaniesHouseId CompaniesHouseId { get; }
+    //public GroupStatus Status { get; }
     public IReadOnlyCollection<Academy> Academies { get; }
     public IReadOnlyCollection<Member> Members { get; }
     public IReadOnlyCollection<Trustee> Trustees { get; }
@@ -35,6 +36,7 @@ public sealed record Group
 
         return GroupId == other.GroupId
             && GroupUID == other.GroupUID
+            //&& Ukprn == other.Ukprn
             && CompaniesHouseId == other.CompaniesHouseId
             && Academies.SequenceEqual(other.Academies)
             && Members.SequenceEqual(other.Members)

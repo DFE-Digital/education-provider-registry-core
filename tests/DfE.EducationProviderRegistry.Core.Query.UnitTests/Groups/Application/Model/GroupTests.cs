@@ -188,8 +188,7 @@ public sealed class GroupTests
         IReadOnlyCollection<Trustee> trustees)
     {
         return new Group(
-            groupId,
-            groupUid,
+            new(groupId, groupUid),
             companiesHouseId,
             academies,
             members,

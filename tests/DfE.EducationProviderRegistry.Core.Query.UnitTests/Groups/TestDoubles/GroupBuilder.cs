@@ -51,8 +51,10 @@ internal sealed class GroupBuilder
     public Group Build()
     {
         return new Group(
-            id: new(_groupId),
-            uid: new(_groupUid),
+            identity:
+                new GroupIdentity(
+                    new GroupId(_groupId),
+                    new GroupUID(_groupUid)),
             companiesHouseId: new(_companiesHouseId),
             academies: _academies,
             members: _members,
