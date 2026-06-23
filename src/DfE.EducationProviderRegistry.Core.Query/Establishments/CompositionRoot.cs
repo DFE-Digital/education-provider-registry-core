@@ -86,7 +86,7 @@ public static class CompositionRoot
         ArgumentNullException.ThrowIfNull(services);
 
 
-        services.AddDbContext<AppDbContext>(options =>
+        services.AddDbContext<EducationProviderRegistryDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("EprDbConnection"));
         });

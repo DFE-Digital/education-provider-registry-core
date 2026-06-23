@@ -7,9 +7,9 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 
 internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsRepository
 {
-    private readonly AppDbContext _dbContext;
+    private readonly EducationProviderRegistryDbContext _dbContext;
 
-    public EfPostgresEstablishmensRepository(AppDbContext appDbContext)
+    public EfPostgresEstablishmensRepository(EducationProviderRegistryDbContext appDbContext)
     {
         ArgumentNullException.ThrowIfNull(appDbContext);
         _dbContext = appDbContext;

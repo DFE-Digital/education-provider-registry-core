@@ -314,7 +314,6 @@ public class EfEstablishmentInspectionDto
     public EfEstablishmentDto Establishment { get; set; }
 }
 
-
 // References
 [Table("establishment_type", Schema = "ref")]
 public class EfEstablishmentTypeDto
@@ -409,7 +408,6 @@ public class EfEducationPhaseGroupDto
     public ICollection<EfEducationPhaseDto> EducationPhases { get; set; }
         = new List<EfEducationPhaseDto>();
 }
-
 
 [Table("reason_establishment_opened", Schema = "ref")]
 public class EfReasonEstablishmentOpenedDto

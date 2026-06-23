@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 
-public class AppDbContext : DbContext
+public class EducationProviderRegistryDbContext : DbContext
 {
     public DbSet<EfEstablishmentDto> Establishments { get; set; }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options)
+    public EducationProviderRegistryDbContext(DbContextOptions<EducationProviderRegistryDbContext> options)
         : base(options)
     {
     }
