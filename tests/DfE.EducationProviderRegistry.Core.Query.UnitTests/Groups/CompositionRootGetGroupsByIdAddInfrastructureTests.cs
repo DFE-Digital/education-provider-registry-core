@@ -2,7 +2,6 @@
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared.Services;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups;
 
@@ -19,7 +18,7 @@ public sealed class CompositionRootGetGroupsByIdAddInfrastructureTests
     public void AddGroupsInfrastructureDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
 
         // Act
         IServiceCollection updated = services.AddGroupsInfrastructureDependencies();

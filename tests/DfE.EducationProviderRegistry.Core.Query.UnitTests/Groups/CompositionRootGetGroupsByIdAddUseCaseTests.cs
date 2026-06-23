@@ -5,7 +5,6 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared.Services;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups;
 
@@ -23,7 +22,7 @@ public sealed class CompositionRootGetGroupsByIdAddUseCaseTests
     public void AddGroupsUseCaseDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
 
         // Act
         IServiceCollection updated = services.AddGroupsUseCaseDependencies();

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="DfE.Core.Libraries.Testing" />
     <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />

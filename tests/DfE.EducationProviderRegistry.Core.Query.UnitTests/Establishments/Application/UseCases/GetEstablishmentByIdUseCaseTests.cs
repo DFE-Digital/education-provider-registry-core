@@ -5,8 +5,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Tests.Shared;
-using Tests.Shared.Logger;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Application.UseCases;
 

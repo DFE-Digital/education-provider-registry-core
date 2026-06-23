@@ -6,9 +6,6 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGr
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Tests.Shared;
-using Tests.Shared.Logger;
-using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 
