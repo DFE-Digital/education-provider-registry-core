@@ -1,5 +1,4 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
-using Tests.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Filter;
 

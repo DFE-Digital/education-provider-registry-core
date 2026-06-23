@@ -4,7 +4,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared.Services;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
 
@@ -22,7 +21,7 @@ public sealed class CompositionRootAddEstablishmentUseCaseUnitTests
     public void AddEstablishmentsUseCaseDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
 
         // Act
         IServiceCollection updated = services.AddEstablishmentsUseCaseDependencies();

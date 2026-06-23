@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared;
-using Tests.Shared.Services;
-
-namespace IntegrationTests.Abstractions;
+﻿namespace IntegrationTests.Abstractions;
 
 public abstract class IntegrationTestBase : IAsyncDisposable
 {
@@ -105,7 +100,7 @@ public abstract class IntegrationTestBase : IAsyncDisposable
 
     private static IServiceProvider BuildApplicationServices(IConfiguration configuration, Action<IServiceCollection, IConfiguration>? configure = null)
     {
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
         configure?.Invoke(services, configuration);
         services.AddSingleton<IConfiguration>((sp) => configuration);
 

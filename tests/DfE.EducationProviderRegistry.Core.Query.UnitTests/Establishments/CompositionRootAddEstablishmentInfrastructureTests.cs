@@ -6,7 +6,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared.Services;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
 
@@ -23,7 +22,7 @@ public sealed class CompositionRootAddInfrastructureTests
     public void AddEstablishmentsInfrastructureDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
 
         // Act
         IServiceCollection updated = services.AddEstablishmentsInfrastructureDependencies();

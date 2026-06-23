@@ -9,7 +9,6 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Respo
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared.Services;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search;
 
@@ -26,7 +25,7 @@ public sealed class CompositionRootAddSearchTests
     public void AddSearchDependencies_ShouldRegisterCorrectDependencyDescriptors()
     {
         // Arrange
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
 
         IConfiguration configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
