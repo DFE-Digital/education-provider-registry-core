@@ -5,14 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DfE.Core.Libraries.Testing" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
 
 </Project>

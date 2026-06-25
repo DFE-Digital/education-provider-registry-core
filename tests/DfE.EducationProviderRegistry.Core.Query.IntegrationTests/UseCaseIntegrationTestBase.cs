@@ -1,9 +1,7 @@
-﻿using DfE.Core.Libraries.CleanArchitecture.Application;
-using IntegrationTests.Abstractions;
+﻿using IntegrationTests.Abstractions;
 using IntegrationTests.Database.Server.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests;
 

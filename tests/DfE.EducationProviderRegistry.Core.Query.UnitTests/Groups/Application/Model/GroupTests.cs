@@ -7,32 +7,56 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.
 public sealed class GroupTests
 {
     [Fact]
-    public void Constructor_WhenGroupIdIsNull_ThrowsArgumentNullException()
+    public void Constructor_WhenGroupIdentitysNull_ThrowsArgumentNullException()
     {
         // Arrange
         Func<Group> construct = () => CreateSut(
-            groupId: null!,
-            groupUid: GroupUIDTestDoubles.Create(),
-            companiesHouseId: CompaniesHouseIdTestDoubles.Create(),
-            academies: [],
-            trustees: [],
-            members: []);
+            id: null!,
+            externalIds: GroupExternalIdentifiersTestDoubles.Create(),
+            composition: GroupCompositionTestDoubles.Create(),
+            characteristics: GroupCharacteristicsTestDoubles.Create());
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
     }
 
     [Fact]
-    public void Constructor_WhenCompaniesHouseIdIsNull_ThrowsArgumentNullException()
+    public void Constructor_WhenGroupExternalIdentifier_IsNull_ThrowsArgumentNullException()
     {
         // Arrange
         Func<Group> construct = () => CreateSut(
-            groupId: GroupIdTestDoubles.Create(),
-            groupUid: GroupUIDTestDoubles.Create(),
-            companiesHouseId: null!,
-            academies: [],
-            trustees: [],
-            members: []);
+            id: GroupIdentityTestDoubles.Create(),
+            externalIds: null!,
+            composition: GroupCompositionTestDoubles.Create(),
+            characteristics: GroupCharacteristicsTestDoubles.Create());
+
+        // Act & Assert
+        Assert.ThrowsAny<ArgumentNullException>(construct);
+    }
+
+    [Fact]
+    public void Constructor_WhenGroupsComposition_IsNull_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Func<Group> construct = () => CreateSut(
+            id: GroupIdentityTestDoubles.Create(),
+            externalIds: GroupExternalIdentifiersTestDoubles.Create(),
+            composition: null!,
+            characteristics: GroupCharacteristicsTestDoubles.Create());
+
+        // Act & Assert
+        Assert.ThrowsAny<ArgumentNullException>(construct);
+    }
+
+    [Fact]
+    public void Constructor_WhenCharacteristics_IsNull_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Func<Group> construct = () => CreateSut(
+            id: GroupIdentityTestDoubles.Create(),
+            externalIds: GroupExternalIdentifiersTestDoubles.Create(),
+            composition: GroupCompositionTestDoubles.Create(),
+            characteristics: null!);
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentNullException>(construct);
@@ -42,58 +66,33 @@ public sealed class GroupTests
     public void Constructor_WhenValidArguments_SetsProperties()
     {
         // Arrange
-        GroupId id = GroupIdTestDoubles.Create();
-        GroupUID uid = GroupUIDTestDoubles.Create();
-        CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create();
-        IReadOnlyCollection<Academy> academies = AcademyTestDouble.Create(7);
-        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(9);
-        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(13);
+        GroupIdentity identity = GroupIdentityTestDoubles.Create();
+        GroupExternalIdentifiers externalIds = GroupExternalIdentifiersTestDoubles.Create();
+
+        GroupComposition composition =
+            GroupCompositionTestDoubles.Create(
+                academies: AcademyTestDouble.Create(7),
+                members: MemberTestDoubles.Create(9),
+                trustees: TrusteeTestDoubles.Create(13));
+
+        GroupCharacteristics characteristics = GroupCharacteristicsTestDoubles.Create();
 
         // Act
         Group result = CreateValidSut(
-            groupId: id,
-            groupUid: uid,
-            companiesHouseId: companiesHouseId,
-            academies: academies,
-            members: members,
-            trustees: trustees);
+            id: identity,
+            externalIds: externalIds,
+            composition: composition,
+            characteristics: characteristics);
 
         // Assert
-        Assert.Equal(uid, result.GroupUID);
-        Assert.Equal(companiesHouseId, result.CompaniesHouseId);
+        Assert.Equal(identity.Id, result.GroupId);
+        Assert.Equal(identity.Uid, result.GroupUID);
+        Assert.Same(externalIds.Ukprn, result.Ukprn);
+        Assert.Same(externalIds.CompaniesHouseId, result.CompaniesHouseId);
 
-        Assert.Equivalent(academies, result.Academies);
-        Assert.Equivalent(members, result.Members);
-        Assert.Equivalent(trustees, result.Trustees);
-    }
-
-    [Fact]
-    public void Constructor_WhenOptionalCollectionsAreNull_SetsEmptyCollections()
-    {
-        // Arrange
-
-        // Act
-        Group result = CreateValidSut(
-            academies: null,
-            members: null,
-            trustees: null);
-
-        // Assert
-        Assert.Empty(result.Academies);
-        Assert.Empty(result.Members);
-        Assert.Empty(result.Trustees);
-    }
-
-    [Fact]
-    public void Constructor_WhenAcademiesIsNull_SetsEmptyCollection()
-    {
-        // Arrange
-
-        // Act
-        Group result = CreateValidSut(academies: null);
-
-        // Assert
-        Assert.Empty(result.Academies);
+        Assert.Same(composition.Academies, result.Academies);
+        Assert.Same(composition.Members, result.Members);
+        Assert.Same(composition.Trustees, result.Trustees);
     }
 
     [Fact]
@@ -103,8 +102,8 @@ public sealed class GroupTests
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(1);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(1);
 
-        Group left = CreateValidSut(members: members, trustees: trustees);
-        Group right = CreateValidSut(members: members, trustees: trustees);
+        Group left = CreateValidSut(composition: GroupCompositionTestDoubles.Create(members: members, trustees: trustees));
+        Group right = CreateValidSut(composition: GroupCompositionTestDoubles.Create(members: members, trustees: trustees));
 
         // Act & Assert
         Assert.Equal(left, right);
@@ -114,29 +113,41 @@ public sealed class GroupTests
     public void Equality_WhenCollectionsAreDifferent_ShouldNotBeEqual()
     {
         // Arrange
-        Group left = CreateValidSut(members: MemberTestDoubles.Create(1));
-        Group right = CreateValidSut(members: MemberTestDoubles.Create(1));
+        Group left = CreateValidSut(
+            composition: GroupCompositionTestDoubles.Create(
+                members: MemberTestDoubles.Create(count: 1)));
+
+        Group right = CreateValidSut(
+            composition: GroupCompositionTestDoubles.Create(
+                members: MemberTestDoubles.Create(count: 1)));
 
         // Act & Assert
         Assert.NotEqual(left, right);
     }
 
     [Fact]
-    public void Equality_WhenGroupIdDiffers_ShouldNotBeEqual()
+    public void Equality_WhenGroupIdentityDiffers_ShouldNotBeEqual()
     {
         // Arrange
-        Group left = CreateValidSut(groupId: GroupIdTestDoubles.Create("group-1"));
-        Group right = CreateValidSut(groupId: GroupIdTestDoubles.Create("group-2"));
+        Group left = CreateValidSut(
+            id: GroupIdentityTestDoubles.Create(
+                GroupIdTestDoubles.Create("group-1"),
+                GroupUIDTestDoubles.Create(1)));
+
+        Group right = CreateValidSut(
+            id: GroupIdentityTestDoubles.Create(
+                GroupIdTestDoubles.Create("group-2"),
+                GroupUIDTestDoubles.Create(1)));
 
         // Act & Assert
         Assert.NotEqual(left, right);
     }
 
     [Fact]
-    public void Equality_WhenGroupIdIsNull_ShouldNotBeEqual()
+    public void Equality_WhenGroupIsNull_ShouldNotBeEqual()
     {
         // Arrange
-        Group left = CreateValidSut(groupId: GroupIdTestDoubles.Create("group-1"));
+        Group left = CreateValidSut();
         Group? right = null;
 
         // Act & Assert
@@ -147,29 +158,24 @@ public sealed class GroupTests
     public void GetHashCode_WhenEqual_ShouldReturnSameValue()
     {
         // Arrange
-        GroupId id = GroupIdTestDoubles.Create();
-        GroupUID uid = GroupUIDTestDoubles.Create();
-        CompaniesHouseId companiesHouseId = CompaniesHouseIdTestDoubles.Create();
+        GroupIdentity identity = new(GroupIdTestDoubles.Create(), GroupUIDTestDoubles.Create());
+        GroupExternalIdentifiers externalIds = GroupExternalIdentifiersTestDoubles.Create();
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(7);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(9);
         IReadOnlyCollection<Academy> academies = AcademyTestDouble.Create(13);
 
+        GroupComposition composition = GroupCompositionTestDoubles.Create(members: members, trustees: trustees, academies: academies);
+
         // Act
         Group left = CreateValidSut(
-            groupId: id,
-            groupUid: uid,
-            companiesHouseId: companiesHouseId,
-            academies: academies,
-            members: members,
-            trustees: trustees);
+            identity,
+            externalIds: externalIds,
+            composition);
 
         Group right = CreateValidSut(
-            groupId: id,
-            groupUid: uid,
-            companiesHouseId: companiesHouseId,
-            academies: academies,
-            members: members,
-            trustees: trustees);
+            identity,
+            externalIds: externalIds,
+            composition);
 
         // Act
         int leftHash = left.GetHashCode();
@@ -180,36 +186,33 @@ public sealed class GroupTests
     }
 
     private static Group CreateSut(
-        GroupId groupId,
-        GroupUID groupUid,
-        CompaniesHouseId companiesHouseId,
-        IReadOnlyCollection<Academy> academies,
-        IReadOnlyCollection<Member> members,
-        IReadOnlyCollection<Trustee> trustees)
+        GroupIdentity id,
+        GroupExternalIdentifiers externalIds,
+        GroupComposition composition,
+        GroupCharacteristics characteristics)
     {
         return new Group(
-            groupId,
-            groupUid,
-            companiesHouseId,
-            academies,
-            members,
-            trustees);
+                id,
+                externalIds,
+                composition,
+                characteristics
+            );
     }
 
     private static Group CreateValidSut(
-        GroupId? groupId = null,
-        GroupUID? groupUid = null,
-        CompaniesHouseId? companiesHouseId = null,
-        IReadOnlyCollection<Academy>? academies = null,
-        IReadOnlyCollection<Member>? members = null,
-        IReadOnlyCollection<Trustee>? trustees = null)
+        GroupIdentity? id = null,
+        GroupExternalIdentifiers? externalIds = null,
+        GroupComposition? composition = null,
+        GroupCharacteristics? characteristics = null)
     {
         return CreateSut(
-            groupId ?? GroupIdTestDoubles.Create(),
-            groupUid ?? GroupUIDTestDoubles.Create(),
-            companiesHouseId ?? CompaniesHouseIdTestDoubles.Create(),
-            academies ?? [],
-            members ?? [],
-            trustees ?? []);
+            id ?? GroupIdentityTestDoubles.Create(),
+            externalIds ??
+                new(
+                    UkprnTestDoubles.Create(),
+                    CompaniesHouseIdTestDoubles.Create()),
+            composition ?? GroupCompositionTestDoubles.Create(),
+            characteristics ?? GroupCharacteristicsTestDoubles.Create()
+        );
     }
 }

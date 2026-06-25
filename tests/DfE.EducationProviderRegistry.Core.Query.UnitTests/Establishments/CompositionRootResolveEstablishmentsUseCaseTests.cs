@@ -7,8 +7,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Tests.Shared.Logger;
-using Tests.Shared.Services;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
 
@@ -18,7 +16,7 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
     public void CompositionRoot_ShouldResolveFullGraph()
     {
         // Arrange
-        IServiceCollection services = ServiceCollectionDefault.Create();
+        IServiceCollection services = ServiceCollectionDefaults.Create();
 
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();

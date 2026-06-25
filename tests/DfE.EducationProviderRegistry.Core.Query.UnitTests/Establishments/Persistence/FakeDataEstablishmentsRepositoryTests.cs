@@ -4,7 +4,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Moq;
-using Tests.Shared.Mapper;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence;
 

@@ -21,7 +21,7 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
@@ -95,7 +95,7 @@ jobs:
 
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
-      uses: DFE-Digital/github-actions/sonarscan-dotnet@784ea93ed96957679873b1f5426d876a37f453d2
+      uses: DFE-Digital/github-actions/sonarscan-dotnet@dba482af0e2d638c4fa08803b9d0237cc7c4a194
       with:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
@@ -123,7 +123,7 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
