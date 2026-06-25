@@ -82,15 +82,9 @@ public static class CompositionRoot
     /// Thrown when <paramref name="services"/> is <c>null</c>.
     /// </exception>
     public static IServiceCollection AddEstablishmentsInfrastructureDependencies(
-        this IServiceCollection services, IConfiguration configuration)
+        this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-
-        services.AddDbContext<EducationProviderRegistryDbContext>(options =>
-        {
-            options.UseNpgsql(configuration.GetConnectionString("EprDbConnection"));
-        });
 
         return services
             // Establishment repository.
