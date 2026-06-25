@@ -22,7 +22,7 @@
     <PackageVersion Include="Npgsql" Version="10.0.2" />
     <PackageVersion Include="MartinCostello.Logging.XUnit.v3" Version="0.7.1" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="11.2.1" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="11.3.0" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="11.0.0" />
   </ItemGroup>
 </Project>
