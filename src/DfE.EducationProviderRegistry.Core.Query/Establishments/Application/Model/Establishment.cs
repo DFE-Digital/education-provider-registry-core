@@ -13,10 +13,10 @@ public sealed record Establishment
     public EstablishmentType Type { get; init; }
 
     public PhaseOfEducation Phase { get; init; }
-    public EstablishmentOpenDate OpenDate { get; init; }
-    public EstablishmentOpenReason OpenReason { get; init; }
-    public EstablishmentCloseDate CloseDate { get; init; }
-    public EstablishmentCloseReason CloseReason { get; init; }
+
+    public EstablishmentLifecycleEvent LifecycleEventOpened { get; init; }
+    public EstablishmentLifecycleEvent? LifecycleEventClosed { get; init; }
+
     public EstablishmentAdmissions Admissions { get; init; }
     public IEnumerable<SiteAddress> Addresses { get; init; }
     public IEnumerable<Governor> Governors { get; init; }

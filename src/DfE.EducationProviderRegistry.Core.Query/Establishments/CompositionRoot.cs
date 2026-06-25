@@ -8,6 +8,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

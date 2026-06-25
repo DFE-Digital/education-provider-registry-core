@@ -1,11 +1,11 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared;
 
+// TODO: Remove this record and replace with SiteAddress
 public sealed record Address(
     string Street,
     string Town,
     string County,
     string Postcode);
-
 
 public sealed record SiteAddress(
     string Name,
