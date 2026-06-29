@@ -1,7 +1,8 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
+﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
@@ -9,61 +10,38 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsRepository
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
+    private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentMapper;
 
-    public EfPostgresEstablishmensRepository(EducationProviderRegistryDbContext appDbContext)
+    public EfPostgresEstablishmensRepository(
+        EducationProviderRegistryDbContext appDbContext,
+        IMapper<Establishment, EstablishmentDetailsModel> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(appDbContext);
+        ArgumentNullException.ThrowIfNull(establishmentMapper);
         _dbContext = appDbContext;
+        _establishmentMapper = establishmentMapper;
     }
 
 
-    public async Task<Establishment?> GetEstablishmentById(EstablishmentUrn identifier, CancellationToken cancellationToken = default)
+    public async Task<EstablishmentDetailsModel?> GetEstablishmentById(EstablishmentUrnModel identifier, CancellationToken cancellationToken = default)
     {
-        Establishment? result = await _dbContext.Establishment
+        EstablishmentDetailsModel? result = await _dbContext.Establishment
             .AsNoTracking()
             .Where(e => e.Urn == identifier.Value)
-            .Select(e => new Establishment
-            {
-                Urn = EstablishmentUrn.Create(e.Urn.ToString()),
-                Name = new EstablishmentName(e.Name),
-                Number = new EstablishmentNumber(e.EstablishmentNumber),
-                Status = new EstablishmentStatus(e.EstablishmentStatus.Name),
-                Type = new EstablishmentType(e.EstablishmentType.Name),
-                Phase = new PhaseOfEducation(e.EstablishmentProvision.EducationPhase.Name),
-                LifecycleEventOpened = e.EstablishmentLifecycleEvent
-                    .Where(l => l.EventType == "Opened")
-                    .Select(l => new EstablishmentLifecycleEvent(
-                        EstablishmentLifecycleEventType.Opened,
-                        l.EventDate,
-                        new EstablishmentLifeCycleReason(l.OpenedReason.Name)))
-                    .FirstOrDefault(), // TODO: Handle getting specific lifecycle event types in a more robust way
-                LifecycleEventClosed = e.EstablishmentLifecycleEvent
-                    .Where(l => l.EventType == "Closed")
-                    .Select(l => new EstablishmentLifecycleEvent(
-                        EstablishmentLifecycleEventType.Closed,
-                        l.EventDate,
-                        new EstablishmentLifeCycleReason(l.ClosedReason.Name)))
-                    .FirstOrDefault(), // TODO: Handle getting specific lifecycle event types in a more robust way
-                Admissions = new EstablishmentAdmissions(
-                    e.EstablishmentAdmissions.StatutoryLowAge,
-                    e.EstablishmentAdmissions.StatutoryHighAge),
-                Addresses = e.Site
-                    .Select(s => new SiteAddress(s.Name, s.AddressLine1, s.AddressLine2, s.Town, s.County, s.Postcode)),
-                Governors = new List<Governor>(),
-            })
+            .Select(e => _establishmentMapper.Map(e))
             .FirstOrDefaultAsync(cancellationToken);
 
         return result;
     }
 
-    public async Task<IReadOnlyCollection<Establishment>> GetEstablishments(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<EstablishmentDetailsModel>> GetEstablishments(CancellationToken cancellationToken = default)
     {
-        List<Establishment> results = await _dbContext.Establishment
+        List<EstablishmentDetailsModel> results = await _dbContext.Establishment
             .AsNoTracking()
-            .Select(e => new Establishment
+            .Select(e => new EstablishmentDetailsModel
             {
-                Urn = EstablishmentUrn.Create(e.Urn),
-                Name = new EstablishmentName(e.Name),
+                Urn = EstablishmentUrnModel.Create(e.Urn),
+                Name = new EstablishmentNameModel(e.Name),
             })
             .ToListAsync(cancellationToken);
 

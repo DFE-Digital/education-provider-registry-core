@@ -1,6 +1,6 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public record EstablishmentLifecycleEvent(
+public record EstablishmentLifecycleEventModel(
     EstablishmentLifecycleEventType EventType,
     DateOnly EventDate,
     EstablishmentLifeCycleReason Reason);

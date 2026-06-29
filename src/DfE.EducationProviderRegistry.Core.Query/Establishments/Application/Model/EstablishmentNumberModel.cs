@@ -1,3 +1,3 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public sealed record EstablishmentNumber(string Value);
+public sealed record EstablishmentNumberModel(string Value);

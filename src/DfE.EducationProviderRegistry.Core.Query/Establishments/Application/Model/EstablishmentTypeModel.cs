@@ -1,3 +1,3 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public sealed record PhaseOfEducation(string Value);
+public sealed record EstablishmentTypeModel(string Value);

@@ -6,11 +6,8 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments;
@@ -39,7 +36,7 @@ public static class CompositionRoot
     /// This method configures all services involved in Establishment-related operations.
     /// It registers the <see cref="GetEstablishmentsUseCase"/> as the implementation of
     /// <see cref="IUseCaseResponseOnly{TUseCaseResponse}"/> for retrieving collections of
-    /// <see cref="Establishment"/> instances. In addition to the use case, it also registers
+    /// <see cref="EstablishmentDetailsModel"/> instances. In addition to the use case, it also registers
     /// the shared <see cref="IRegexValidationService"/>, which provides reusable regular
     /// expression–based validation logic used throughout the Establishments domain.
     ///
@@ -59,11 +56,11 @@ public static class CompositionRoot
 
         return services
             .AddScoped<
-                IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>,
+                IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>,
                 GetEstablishmentsUseCase>()
 
             .AddScoped<
-                IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>>,
+                IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>>,
                 GetEstablishmentByIdUseCase>();
     }
 
@@ -89,17 +86,16 @@ public static class CompositionRoot
         return services
             // Establishment repository.
             .AddScoped<IEstablishmentsRepository, FakeDataEstablishmentsRepository>()
-            .AddScoped<IEstablishmentsRepository, EfPostgresEstablishmensRepository>()
 
             // Collection mapper: DTO → application read model.
             .AddSingleton<IMapper<
-                IEnumerable<EstablishmentDto>,
-                IReadOnlyCollection<Establishment>>,
-                    EstablishmentsDtoToModelMapper>()
+                IEnumerable<Establishment>,
+                IReadOnlyCollection<EstablishmentDetailsModel>>,
+                    EstablishmentsToDetailsModelMapper>()
 
             // Single‑item mapper: DTO → application read model model.
             .AddSingleton<IMapper<
-                EstablishmentDto, Establishment>,
-                    EstablishmentDtoToModelMapper>();
+                Establishment, EstablishmentDetailsModel>,
+                    EstablishmentToDetailsModelMapper>();
     }
 }

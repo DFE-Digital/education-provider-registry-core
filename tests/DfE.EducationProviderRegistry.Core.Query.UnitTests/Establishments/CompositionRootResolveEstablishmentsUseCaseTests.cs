@@ -34,10 +34,10 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         // Act Assert
 
 #pragma warning disable CS8600
-        IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>> getEstablishmentsUseCase =
-            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>>();
-        IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>> getEstablishmentByIdUseCase =
-            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>>>();
+        IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>> getEstablishmentsUseCase =
+            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>>();
+        IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>> getEstablishmentByIdUseCase =
+            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>>>();
 #pragma warning restore CS8600
 
         // Assert
@@ -49,13 +49,13 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
 
     private sealed class DummyRepository : IEstablishmentsRepository
     {
-        public Task<Establishment?> GetEstablishmentById(
-            EstablishmentUrn identifier,
+        public Task<EstablishmentDetailsModel?> GetEstablishmentById(
+            EstablishmentUrnModel identifier,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult<Establishment?>(null);
+            Task.FromResult<EstablishmentDetailsModel?>(null);
 
-        public Task<IReadOnlyCollection<Establishment>> GetEstablishments(
+        public Task<IReadOnlyCollection<EstablishmentDetailsModel>> GetEstablishments(
             CancellationToken cancellationToken = default) =>
-                Task.FromResult<IReadOnlyCollection<Establishment>>([]);
+                Task.FromResult<IReadOnlyCollection<EstablishmentDetailsModel>>([]);
     }
 }

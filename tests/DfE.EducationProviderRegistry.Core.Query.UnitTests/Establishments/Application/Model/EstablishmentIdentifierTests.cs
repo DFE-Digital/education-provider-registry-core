@@ -9,7 +9,7 @@ public sealed class EstablishmentIdentifierTests
     public void Constructor_Should_Throw_When_EstablishmentUrn_Is_Null()
     {
         // Arrange
-        Func<EstablishmentUrn> construct = () => new EstablishmentUrn(null!);
+        Func<EstablishmentUrnModel> construct = () => new EstablishmentUrnModel(null!);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -22,7 +22,7 @@ public sealed class EstablishmentIdentifierTests
         UniqueReferenceNumber urn = new("12345");
 
         // Act
-        EstablishmentUrn result = EstablishmentUrn.Create(urn.Value);
+        EstablishmentUrnModel result = EstablishmentUrnModel.Create(urn.Value);
 
         // Assert
         Assert.Equal("12345", result.Value);
@@ -32,7 +32,7 @@ public sealed class EstablishmentIdentifierTests
     public void Create_Should_Throw_When_Urn_Is_Null()
     {
         // Arrange
-        Func<EstablishmentUrn> construct = () => EstablishmentUrn.Create(null!);
+        Func<EstablishmentUrnModel> construct = () => EstablishmentUrnModel.Create(null!);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -42,7 +42,7 @@ public sealed class EstablishmentIdentifierTests
     public void Create_Should_Throw_When_Urn_Is_Invalid()
     {
         // Arrange
-        Func<EstablishmentUrn> construct = () => EstablishmentUrn.Create("invalid");
+        Func<EstablishmentUrnModel> construct = () => EstablishmentUrnModel.Create("invalid");
 
         // Act & Assert
         Assert.ThrowsAny<ArgumentException>(construct);
@@ -55,7 +55,7 @@ public sealed class EstablishmentIdentifierTests
         const string urn = "12345";
 
         // Act
-        EstablishmentUrn result = EstablishmentUrn.Create(urn);
+        EstablishmentUrnModel result = EstablishmentUrnModel.Create(urn);
 
         // Assert
         Assert.Equal(urn, result.Value);
@@ -69,8 +69,8 @@ public sealed class EstablishmentIdentifierTests
         UniqueReferenceNumber urn = new(urnValue);
 
         // Act
-        EstablishmentUrn fromFactory = EstablishmentUrn.Create(urnValue);
-        EstablishmentUrn direct = EstablishmentUrn.Create(urn.Value);
+        EstablishmentUrnModel fromFactory = EstablishmentUrnModel.Create(urnValue);
+        EstablishmentUrnModel direct = EstablishmentUrnModel.Create(urn.Value);
 
         // Assert
         Assert.Equal(fromFactory, direct);
@@ -81,7 +81,7 @@ public sealed class EstablishmentIdentifierTests
     {
         // Arrange
         UniqueReferenceNumber urn = new("123456");
-        EstablishmentUrn identifier = EstablishmentUrn.Create(urn.Value);
+        EstablishmentUrnModel identifier = EstablishmentUrnModel.Create(urn.Value);
 
         // Act
         string result = identifier.ToString();
@@ -97,8 +97,8 @@ public sealed class EstablishmentIdentifierTests
         UniqueReferenceNumber urn1 = new("1234567");
         UniqueReferenceNumber urn2 = new("1234567");
 
-        EstablishmentUrn first = EstablishmentUrn.Create(urn1.Value);
-        EstablishmentUrn second = EstablishmentUrn.Create(urn2.Value);
+        EstablishmentUrnModel first = EstablishmentUrnModel.Create(urn1.Value);
+        EstablishmentUrnModel second = EstablishmentUrnModel.Create(urn2.Value);
 
         // Act & Assert
         Assert.Equal(first, second);
@@ -111,8 +111,8 @@ public sealed class EstablishmentIdentifierTests
         UniqueReferenceNumber urn1 = new("12345");
         UniqueReferenceNumber urn2 = new("54321");
 
-        EstablishmentUrn first = EstablishmentUrn.Create(urn1.Value);
-        EstablishmentUrn second = EstablishmentUrn.Create(urn2.Value);
+        EstablishmentUrnModel first = EstablishmentUrnModel.Create(urn1.Value);
+        EstablishmentUrnModel second = EstablishmentUrnModel.Create(urn2.Value);
 
         // Act & Assert
         Assert.NotEqual(first, second);

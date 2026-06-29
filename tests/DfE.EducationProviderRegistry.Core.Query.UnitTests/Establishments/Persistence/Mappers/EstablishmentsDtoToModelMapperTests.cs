@@ -1,8 +1,8 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
@@ -13,8 +13,8 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Construct_WithNullMapper_ThrowsArgumentNullException()
     {
         // Arrange
-        Func<EstablishmentsDtoToModelMapper> construct =
-            () => new EstablishmentsDtoToModelMapper(null!);
+        Func<EstablishmentsToDetailsModelMapper> construct =
+            () => new EstablishmentsToDetailsModelMapper(null!);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -24,10 +24,10 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithNullInput_ThrowsArgumentNullException()
     {
         // Arrange
-        IMapper<EstablishmentDto, Establishment> innerMapper =
-            MockTestDouble.Default<IMapper<EstablishmentDto, Establishment>>().Object;
+        IMapper<Establishment, EstablishmentDetailsModel> innerMapper =
+            MockTestDouble.Default<IMapper<Establishment, EstablishmentDetailsModel>>().Object;
 
-        EstablishmentsDtoToModelMapper sut = new(establishmentMapper: innerMapper);
+        EstablishmentsToDetailsModelMapper sut = new(establishmentMapper: innerMapper);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => sut.Map(null!));
@@ -37,28 +37,28 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithValidDtos_MapsEachItemCorrectly()
     {
         // Arrange
-        IReadOnlyCollection<EstablishmentDto> dtos =
-            EstablishmentDtoFactory.CreateMany(2);
+        IReadOnlyCollection<Establishment> dtos =
+            EstablishmentFactory.CreateMany(2);
 
-        IReadOnlyCollection<Establishment> establishments =
+        IReadOnlyCollection<EstablishmentDetailsModel> establishments =
             new EstablishmentCollectionBuilder()
                 .WithCount(2)
                 .Build();
 
-        KeyValuePair<EstablishmentDto, Establishment>[] mappings =
+        KeyValuePair<Establishment, EstablishmentDetailsModel>[] mappings =
         [
             new(dtos.ElementAt(0), establishments.ElementAt(index: 0)),
             new(dtos.ElementAt(1), establishments.ElementAt(index: 1))
         ];
 
-        Mock<IMapper<EstablishmentDto, Establishment>> innerMapper =
+        Mock<IMapper<Establishment, EstablishmentDetailsModel>> innerMapper =
             IMapperTestDouble.MapMany(mappings);
 
-        EstablishmentsDtoToModelMapper mapper =
+        EstablishmentsToDetailsModelMapper mapper =
             new(innerMapper.Object);
 
         // Act
-        IReadOnlyCollection<Establishment> result = mapper.Map(dtos);
+        IReadOnlyCollection<EstablishmentDetailsModel> result = mapper.Map(dtos);
 
         // Assert
         Assert.NotNull(result);
@@ -76,16 +76,16 @@ public sealed class EstablishmentsDtoToModelMapperTests
     public void Map_WithEmptyCollection_ReturnsEmptyCollection()
     {
         // Arrange
-        IReadOnlyCollection<EstablishmentDto> input = [];
+        IReadOnlyCollection<Establishment> input = [];
 
-        Mock<IMapper<EstablishmentDto, Establishment>> innerMapper =
+        Mock<IMapper<Establishment, EstablishmentDetailsModel>> innerMapper =
             MockTestDouble.Default<
-                IMapper<EstablishmentDto, Establishment>>();
+                IMapper<Establishment, EstablishmentDetailsModel>>();
 
-        EstablishmentsDtoToModelMapper sut = new(innerMapper.Object);
+        EstablishmentsToDetailsModelMapper sut = new(innerMapper.Object);
 
         // Act
-        IReadOnlyCollection<Establishment> result = sut.Map(input);
+        IReadOnlyCollection<EstablishmentDetailsModel> result = sut.Map(input);
 
         // Assert
         Assert.NotNull(result);

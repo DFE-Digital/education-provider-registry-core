@@ -28,7 +28,7 @@ public sealed class CompositionRootAddEstablishmentUseCaseUnitTests
 
         // Assert
         updated.ShouldContain<
-            IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>,
+            IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>,
             GetEstablishmentsUseCase>(ServiceLifetime.Scoped);
     }
 }

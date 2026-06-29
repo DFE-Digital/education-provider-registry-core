@@ -24,18 +24,18 @@ public sealed class GetEstablishmentByIdUseCaseTests
     }
 
     [Fact]
-    public async Task HandleRequestAsync_ReturnsMappedEstablishment()
+    public async Task HandleRequestAsync_ReturnsMappedEstablishmentDetails()
     {
         // Arrange
-        Establishment establishment =
+        EstablishmentDetailsModel establishment =
             new EstablishmentCollectionBuilder()
                 .WithCount(1)
                 .Build()
                 .Single();
 
         Mock<IEstablishmentsRepository> repoMock =
-            MockTestDouble.For<IEstablishmentsRepository, Establishment?>(
-                (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token),
+            MockTestDouble.For<IEstablishmentsRepository, EstablishmentDetailsModel?>(
+                (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
                 establishment);
 
         GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
@@ -43,7 +43,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new(establishment.Urn.Value);
 
         // Act
-        UseCaseResponse<Establishment?> result =
+        UseCaseResponse<EstablishmentDetailsModel?> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -52,7 +52,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Assert.Equal(establishment.Urn.Value, result.Model!.Urn.Value);
 
         repoMock.Verify(
-            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token),
+            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
             Times.Once);
 
         _loggerMock.VerifyNoErrors();
@@ -63,8 +63,8 @@ public sealed class GetEstablishmentByIdUseCaseTests
     {
         // Arrange
         Mock<IEstablishmentsRepository> repoMock =
-            MockTestDouble.For<IEstablishmentsRepository, Establishment?>(
-                (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token),
+            MockTestDouble.For<IEstablishmentsRepository, EstablishmentDetailsModel?>(
+                (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
                 null!);
 
         GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
@@ -72,7 +72,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new("12345");
 
         // Act
-        UseCaseResponse<Establishment?> result =
+        UseCaseResponse<EstablishmentDetailsModel?> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -80,7 +80,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Assert.Null(result.Model);
 
         repoMock.Verify(
-            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token),
+            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
             Times.Once);
 
         _loggerMock.VerifyNoErrors();
@@ -94,7 +94,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new("INVALID_URN");
 
         // Act
-        UseCaseResponse<Establishment?> result =
+        UseCaseResponse<EstablishmentDetailsModel?> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -111,16 +111,16 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Mock<IEstablishmentsRepository> repoMock =
             MockTestDouble.ThrowsExceptionFor<
                 IEstablishmentsRepository,
-                Establishment?,
+                EstablishmentDetailsModel?,
                 OperationCanceledException>(
-                    (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token));
+                    (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token));
 
         GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentByIdRequest request = new("12345");
 
         // Act
-        UseCaseResponse<Establishment?> result =
+        UseCaseResponse<EstablishmentDetailsModel?> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -128,7 +128,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Assert.Equal("The request was cancelled by the caller.", result.ErrorMessage);
 
         repoMock.Verify(
-            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token),
+            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
             Times.Once);
 
         _loggerMock.VerifyErrorContains("execution was cancelled by the caller");
@@ -141,16 +141,16 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Mock<IEstablishmentsRepository> repoMock =
             MockTestDouble.ThrowsExceptionFor<
                 IEstablishmentsRepository,
-                Establishment?,
+                EstablishmentDetailsModel?,
                 Exception>(
-                    (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token));
+                    (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token));
 
         GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
 
         GetEstablishmentByIdRequest request = new("12345");
 
         // Act
-        UseCaseResponse<Establishment?> result =
+        UseCaseResponse<EstablishmentDetailsModel?> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -158,7 +158,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Assert.Equal("An unexpected error occurred while processing the request.", result.ErrorMessage);
 
         repoMock.Verify(
-            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrn>(), _token),
+            r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
             Times.Once);
 
         _loggerMock.VerifyErrorContains("unexpected error");

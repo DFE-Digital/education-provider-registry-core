@@ -1,7 +1,7 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 
@@ -17,16 +17,16 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 /// <param name="establishmentsMapper">
 /// The mapper responsible for converting collections of
 /// <see cref="EstablishmentDto"/> instances into
-/// domain <see cref="Establishment"/> models.
+/// domain <see cref="EstablishmentDetailsModel"/> models.
 /// </param>
 internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsRepository
 {
-    private readonly IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>> _establishmentsMapper;
-    private readonly IMapper<EstablishmentDto, Establishment> _establishmentMapper;
+    private readonly IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>> _establishmentsMapper;
+    private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentMapper;
 
     public FakeDataEstablishmentsRepository(
-        IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>> establishmentsMapper,
-        IMapper<EstablishmentDto, Establishment> establishmentMapper)
+        IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>> establishmentsMapper,
+        IMapper<Establishment, EstablishmentDetailsModel> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(establishmentsMapper);
         ArgumentNullException.ThrowIfNull(establishmentMapper);
@@ -40,14 +40,14 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
     /// <param name="identifier"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>
-    /// A read‑only collection of mapped <see cref="Establishment"/> domain models
+    /// A read‑only collection of mapped <see cref="EstablishmentDetailsModel"/> domain models
     /// or <see langword="null"/> if no matching establishment is found.
     /// </returns>
-    public async Task<Establishment?> GetEstablishmentById(
-        EstablishmentUrn identifier,
+    public async Task<EstablishmentDetailsModel?> GetEstablishmentById(
+        EstablishmentUrnModel identifier,
         CancellationToken cancellationToken = default)
     {
-        EstablishmentDto? dto =
+        Establishment? dto =
             FakeEstablishmentDataGenerator
             .Generate(1)
             .FirstOrDefault();
@@ -65,17 +65,17 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
     /// A token that allows the caller to cancel the operation.
     /// </param>
     /// <returns>
-    /// A read‑only collection of mapped <see cref="Establishment"/> domain models.
+    /// A read‑only collection of mapped <see cref="EstablishmentDetailsModel"/> domain models.
     /// </returns>
     /// <remarks>
     /// This implementation currently returns generated fake data until the
     /// SQL infrastructure is fully wired up.
     /// </remarks>
-    public async Task<IReadOnlyCollection<Establishment>> GetEstablishments(
+    public async Task<IReadOnlyCollection<EstablishmentDetailsModel>> GetEstablishments(
         CancellationToken cancellationToken = default)
     {
         // TEMPORARY: Fake data until SQL is wired up
-        IEnumerable<EstablishmentDto> dtos =
+        IEnumerable<Establishment> dtos =
             FakeEstablishmentDataGenerator.Generate(100);
 
         return _establishmentsMapper.Map(dtos);
@@ -98,16 +98,71 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         /// <returns>
         /// A read‑only collection of generated DTOs.
         /// </returns>
-        public static IReadOnlyCollection<EstablishmentDto> Generate(int count)
+        public static IReadOnlyCollection<Establishment> Generate(int count)
         {
             HashSet<string> urns = GenerateUniqueUrns(count);
-            List<EstablishmentDto> dtos = [];
+            List<Establishment> dtos = [];
 
             foreach (string urn in urns)
             {
-                EstablishmentDto dto = new()
+                Establishment dto = new()
                 {
-                    URN = urn
+                    Urn = urn,
+                    Name = "Test School",
+                    EstablishmentNumber = "123",
+                    EstablishmentStatus = new EstablishmentStatus
+                    {
+                        Name = "Open"
+                    },
+                    EstablishmentType = new EstablishmentType
+                    {
+                        Name = "Academy"
+                    },
+                    EstablishmentProvision = new EstablishmentProvision
+                    {
+                        EducationPhase = new EducationPhase
+                        {
+                            Name = "Primary"
+                        }
+                    },
+                    EstablishmentAdmissions = new EstablishmentAdmissions
+                    {
+                        StatutoryLowAge = 5,
+                        StatutoryHighAge = 11
+                    },
+                    EstablishmentLifecycleEvent = new List<EstablishmentLifecycleEvent>
+                    {
+                        new EstablishmentLifecycleEvent
+                        {
+                            EventType = "Opened",
+                            EventDate = new DateOnly(2000, 1, 1),
+                            OpenedReason = new ReasonEstablishmentOpened
+                            {
+                                Name = "New School"
+                            }
+                        },
+                        new EstablishmentLifecycleEvent
+                        {
+                            EventType = "Closed",
+                            EventDate = new DateOnly(2020, 1, 1),
+                            ClosedReason = new ReasonEstablishmentClosed
+                            {
+                                Name = "Merged"
+                            }
+                        }
+                    },
+                    Site = new List<Site>
+                    {
+                        new Site
+                        {
+                            Name = "Main Site",
+                            AddressLine1 = "1 Test Street",
+                            AddressLine2 = "Test Area",
+                            Town = "Test Town",
+                            County = "Test County",
+                            Postcode = "TE1 1ST"
+                        }
+                    }
                 };
 
                 dtos.Add(dto);
