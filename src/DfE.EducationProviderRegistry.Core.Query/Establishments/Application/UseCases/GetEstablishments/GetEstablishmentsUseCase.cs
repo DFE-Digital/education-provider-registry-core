@@ -25,7 +25,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Us
 /// The repository responsible for retrieving establishment data.
 /// </param>
 public sealed class GetEstablishmentsUseCase :
-    IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<Establishment>>>
+    IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>
 {
     private readonly ILogger<GetEstablishmentsUseCase> _logger;
     private readonly IEstablishmentsRepository _establishmentsRepository;
@@ -55,16 +55,16 @@ public sealed class GetEstablishmentsUseCase :
     /// A <see cref="UseCaseResponse{T}"/> containing the retrieved establishments,
     /// or an error response if the operation fails or is cancelled.
     /// </returns>
-    public async Task<UseCaseResponse<IReadOnlyCollection<Establishment>>> HandleRequestAsync(
+    public async Task<UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>> HandleRequestAsync(
         GetEstablishmentsRequest request,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            IReadOnlyCollection<Establishment> results =
+            IReadOnlyCollection<EstablishmentDetailsModel> results =
                 await _establishmentsRepository.GetEstablishments(cancellationToken);
 
-            return UseCaseResponse<IReadOnlyCollection<Establishment>>.Success(results);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Success(results);
         }
         catch (OperationCanceledException ex)
         {
@@ -78,7 +78,7 @@ public sealed class GetEstablishmentsUseCase :
                 message
                 );
 
-            return UseCaseResponse<IReadOnlyCollection<Establishment>>.Failure(message);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(message);
         }
         catch (EstablishmentException ex)
         {
@@ -91,7 +91,7 @@ public sealed class GetEstablishmentsUseCase :
                 nameof(GetEstablishmentsUseCase),
                 message);
 
-            return UseCaseResponse<IReadOnlyCollection<Establishment>>.Failure(message);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(message);
         }
         catch (Exception ex)
         {
@@ -104,7 +104,7 @@ public sealed class GetEstablishmentsUseCase :
                 nameof(GetEstablishmentsUseCase),
                 message);
 
-            return UseCaseResponse<IReadOnlyCollection<Establishment>>.Failure(message);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(message);
         }
     }
 }

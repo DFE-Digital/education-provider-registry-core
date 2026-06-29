@@ -13,17 +13,17 @@ internal sealed class EstablishmentCollectionBuilder
         return this;
     }
 
-    public IReadOnlyCollection<Establishment> Build()
+    public IReadOnlyCollection<EstablishmentDetailsModel> Build()
     {
-        List<Establishment> establishmentList = new(_count);
+        List<EstablishmentDetailsModel> establishmentList = new(_count);
         HashSet<string> urns = GenerateUniqueUrns(_count);
 
         foreach (string urn in urns)
         {
             establishmentList.Add(
-                new Establishment()
+                new EstablishmentDetailsModel()
                 {
-                    Urn = new EstablishmentUrn(new UniqueReferenceNumber(urn)),
+                    Urn = new EstablishmentUrnModel(new UniqueReferenceNumber(urn)),
                 });
         }
 

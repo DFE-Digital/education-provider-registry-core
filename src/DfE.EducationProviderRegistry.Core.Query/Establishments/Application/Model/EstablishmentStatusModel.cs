@@ -1,3 +1,3 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public sealed record EstablishmentCloseReason(string? Value);
+public sealed record EstablishmentStatusModel(string Value);

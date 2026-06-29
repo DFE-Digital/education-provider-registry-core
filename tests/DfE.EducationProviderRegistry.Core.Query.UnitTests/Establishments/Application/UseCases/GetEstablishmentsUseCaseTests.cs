@@ -23,7 +23,7 @@ public sealed class GetEstablishmentsUseCaseTests
         Mock<IEstablishmentsRepository> repoMock =
              MockTestDouble.ThrowsExceptionFor<
                  IEstablishmentsRepository,
-                 IReadOnlyCollection<Establishment>,
+                 IReadOnlyCollection<EstablishmentDetailsModel>,
                  TException>(
                     (repo) => repo.GetEstablishments(_token));
 
@@ -60,16 +60,16 @@ public sealed class GetEstablishmentsUseCaseTests
     }
 
     [Fact]
-    public async Task HandleRequestAsync_ReturnsMappedEstablishments()
+    public async Task HandleRequestAsync_ReturnsMappedEstablishmentsDetails()
     {
         // Arrange
-        IReadOnlyCollection<Establishment> establishmentResults =
+        IReadOnlyCollection<EstablishmentDetailsModel> establishmentResults =
             new EstablishmentCollectionBuilder()
                 .WithCount(2)
                 .Build();
 
         Mock<IEstablishmentsRepository> repoMock =
-            MockTestDouble.For<IEstablishmentsRepository, IReadOnlyCollection<Establishment>>(
+            MockTestDouble.For<IEstablishmentsRepository, IReadOnlyCollection<EstablishmentDetailsModel>>(
                 (repo) => repo.GetEstablishments(_token), establishmentResults);
 
         GetEstablishmentsUseCase sut = CreateSut(_loggerMock, repoMock);
@@ -77,7 +77,7 @@ public sealed class GetEstablishmentsUseCaseTests
         GetEstablishmentsRequest request = new();
 
         // Act
-        UseCaseResponse<IReadOnlyCollection<Establishment>> result =
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -98,7 +98,7 @@ public sealed class GetEstablishmentsUseCaseTests
         // Arrange
         Mock<IEstablishmentsRepository> repoMock =
             MockTestDouble.For<
-                IEstablishmentsRepository, IReadOnlyCollection<Establishment>>(
+                IEstablishmentsRepository, IReadOnlyCollection<EstablishmentDetailsModel>>(
                     (repo) => repo.GetEstablishments(_token),
                     null!);
 
@@ -107,7 +107,7 @@ public sealed class GetEstablishmentsUseCaseTests
         GetEstablishmentsRequest request = new();
 
         // Act
-        UseCaseResponse<IReadOnlyCollection<Establishment>> result =
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -129,7 +129,7 @@ public sealed class GetEstablishmentsUseCaseTests
         GetEstablishmentsRequest request = new();
 
         // Act
-        UseCaseResponse<IReadOnlyCollection<Establishment>> result =
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -154,7 +154,7 @@ public sealed class GetEstablishmentsUseCaseTests
         GetEstablishmentsRequest request = new();
 
         // Act
-        UseCaseResponse<IReadOnlyCollection<Establishment>> result =
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -176,7 +176,7 @@ public sealed class GetEstablishmentsUseCaseTests
         GetEstablishmentsRequest request = new();
 
         // Act
-        UseCaseResponse<IReadOnlyCollection<Establishment>> result =
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert

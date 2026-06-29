@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
 
 public class GetEstablishmentByIdUseCase :
-    IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<Establishment?>>
+    IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>>
 {
     private readonly ILogger<GetEstablishmentByIdUseCase> _logger;
     private readonly IEstablishmentsRepository _establishmentRepository;
@@ -22,17 +22,17 @@ public class GetEstablishmentByIdUseCase :
         _establishmentRepository = establishmentRepository;
     }
 
-    public async Task<UseCaseResponse<Establishment?>> HandleRequestAsync(
+    public async Task<UseCaseResponse<EstablishmentDetailsModel?>> HandleRequestAsync(
         GetEstablishmentByIdRequest request,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            EstablishmentUrn establishmentId = EstablishmentUrn.Create(request.Urn);
-            Establishment? establishment = await _establishmentRepository
+            EstablishmentUrnModel establishmentId = EstablishmentUrnModel.Create(request.Urn);
+            EstablishmentDetailsModel? establishment = await _establishmentRepository
                 .GetEstablishmentById(establishmentId, cancellationToken);
 
-            return UseCaseResponse<Establishment?>.Success(establishment);
+            return UseCaseResponse<EstablishmentDetailsModel?>.Success(establishment);
         }
         catch (OperationCanceledException ex)
         {
@@ -46,7 +46,7 @@ public class GetEstablishmentByIdUseCase :
                 message
                 );
 
-            return UseCaseResponse<Establishment?>.Failure(message);
+            return UseCaseResponse<EstablishmentDetailsModel?>.Failure(message);
         }
         catch (Exception ex)
         {
@@ -59,7 +59,7 @@ public class GetEstablishmentByIdUseCase :
                 nameof(GetEstablishmentByIdUseCase),
                 message);
 
-            return UseCaseResponse<Establishment?>.Failure(message);
+            return UseCaseResponse<EstablishmentDetailsModel?>.Failure(message);
         }
     }
 }

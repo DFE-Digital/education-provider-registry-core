@@ -3,8 +3,8 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.DataTransferObjects;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
@@ -29,7 +29,7 @@ public sealed class CompositionRootAddInfrastructureTests
 
         // Assert lifetimes
         updated.ShouldContain<IEstablishmentsRepository, FakeDataEstablishmentsRepository>(ServiceLifetime.Scoped);
-        updated.ShouldContain<IMapper<EstablishmentDto, Establishment>, EstablishmentDtoToModelMapper>(ServiceLifetime.Singleton);
-        updated.ShouldContain<IMapper<IEnumerable<EstablishmentDto>, IReadOnlyCollection<Establishment>>, EstablishmentsDtoToModelMapper>(ServiceLifetime.Singleton);
+        updated.ShouldContain<IMapper<Establishment, EstablishmentDetailsModel>, EstablishmentToDetailsModelMapper>(ServiceLifetime.Singleton);
+        updated.ShouldContain<IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>>, EstablishmentsToDetailsModelMapper>(ServiceLifetime.Singleton);
     }
 }

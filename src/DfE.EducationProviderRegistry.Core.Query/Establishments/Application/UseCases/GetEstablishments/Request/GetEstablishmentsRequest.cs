@@ -10,10 +10,10 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Us
 /// <remarks>
 /// This request type carries no parameters and serves as a simple
 /// trigger for the corresponding use case. The response contains a
-/// read‑only collection of <see cref="Establishment"/> instances.
+/// read‑only collection of <see cref="EstablishmentDetailsModel"/> instances.
 /// </remarks>
 public sealed record GetEstablishmentsRequest :
-    IUseCaseRequest<UseCaseResponse<IReadOnlyCollection<Establishment>>>
+    IUseCaseRequest<UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>
 {
     /// <summary>
     /// Creates a new <see cref="GetEstablishmentsRequest"/> instance.

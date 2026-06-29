@@ -1,6 +1,4 @@
-﻿using DfE.Core.Libraries.CleanArchitecture.Application;
-using DfE.EducationProviderRegistry.Core.Query.Establishments;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -27,9 +25,9 @@ public sealed class GetEstablishmentsReturnsResultsTests : UseCaseIntegrationTes
         GetEstablishmentsRequest request = GetEstablishmentsRequest.Create();
 
         // act
-        UseCaseResponse<IReadOnlyCollection<Establishment>> results =
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> results =
             await ExecuteUseCase<
-                GetEstablishmentsRequest, IReadOnlyCollection<Establishment>>(request);
+                GetEstablishmentsRequest, IReadOnlyCollection<EstablishmentDetailsModel>>(request);
 
         // assert
         Assert.NotNull(results);
