@@ -19,7 +19,7 @@ public static class CompositionRoot
 
         services.AddScoped<
             IUseCase<
-                GetGroupByGroupIdRequest,
+                GetGroupByGroupUniqueIdentifierRequest,
                 UseCaseResponse<GroupReadModel>>,
             GetGroupByGroupIdUseCase>();
 
@@ -36,7 +36,7 @@ public static class CompositionRoot
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .TryAddScoped<IGroupsRepository, FakeGroupsRepository>();
+            .TryAddScoped<IGroupsRepository, GroupsRepository>();
 
         return services;
     }
