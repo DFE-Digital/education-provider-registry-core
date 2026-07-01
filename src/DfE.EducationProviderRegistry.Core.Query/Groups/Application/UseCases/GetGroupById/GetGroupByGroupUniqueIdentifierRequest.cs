@@ -2,5 +2,5 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 
-public sealed record GetGroupByGroupIdRequest(string GroupId) :
+public sealed record GetGroupByGroupUniqueIdentifierRequest(string GroupUid) :
     IUseCaseRequest<UseCaseResponse<GroupReadModel>>;

@@ -4,5 +4,5 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastruc
 
 public interface IGroupsRepository
 {
-    Task<Group?> GetGroupByGroupIdAsync(GroupId groupId, CancellationToken cancellationToken = default);
+    Task<Group?> GetGroupByGroupUidAsync(GroupUID groupUid, CancellationToken cancellationToken = default);
 }

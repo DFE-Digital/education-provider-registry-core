@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 
-internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdRequest, UseCaseResponse<GroupReadModel>>
+internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupUniqueIdentifierRequest, UseCaseResponse<GroupReadModel>>
 {
     private readonly ILogger<GetGroupByGroupIdUseCase> _logger;
     private readonly IGroupsRepository _groupsRepository;
@@ -28,7 +28,7 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdReque
     }
 
     public async Task<UseCaseResponse<GroupReadModel>> HandleRequestAsync(
-        GetGroupByGroupIdRequest request,
+        GetGroupByGroupUniqueIdentifierRequest request,
         CancellationToken cancellationToken = default)
     {
         if (request is null)
@@ -38,15 +38,17 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdReque
 
         try
         {
-            GroupId identifier = new(request.GroupId);
+            if (!GroupUID.TryCreate(request.GroupUid, out GroupUID groupUid))
+            {
+                return UseCaseResponse<GroupReadModel>.Failure($"Could not parse the GroupUniqueIdentifier {request.GroupUid}");
+            }
 
-            Group? group = await _groupsRepository
-                .GetGroupByGroupIdAsync(identifier, cancellationToken);
+            Group? group = await _groupsRepository.GetGroupByGroupUidAsync(groupUid, cancellationToken);
 
             if (group is null)
             {
                 return UseCaseResponse<GroupReadModel>.Failure(
-                    $"Group with GroupId {request.GroupId} not found.");
+                    $"Group with GroupId {request.GroupUid} not found.");
             }
 
             GroupReadModel dto = _modelToDtoMapper.Map(group);
@@ -68,7 +70,7 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupIdReque
                 ex,
                 "{UseCase} validation failed for GroupId {GroupId}",
                 nameof(GetGroupByGroupIdUseCase),
-                request.GroupId);
+                request.GroupUid);
 
             return UseCaseResponse<GroupReadModel>.Failure("Invalid group identifier.");
         }

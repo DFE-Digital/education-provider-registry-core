@@ -7,7 +7,7 @@ public sealed record GroupReadModel
 {
     public required string Name { get; init; }
     public required string GroupId { get; init; }
-    public required int GroupUID { get; init; }
+    public required long GroupUID { get; init; }
     public required string UKPRN { get; init; }
     public required string? CompaniesHouseId { get; init; }
     public required string Address { get; init; }

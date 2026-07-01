@@ -24,6 +24,6 @@ public sealed class CompositionRootGetGroupsByIdAddInfrastructureTests
         IServiceCollection updated = services.AddGroupsInfrastructureDependencies();
 
         // Assert lifetimes
-        updated.ShouldContain<IGroupsRepository, FakeGroupsRepository>(ServiceLifetime.Scoped);
+        updated.ShouldContain<IGroupsRepository, GroupsRepository>(ServiceLifetime.Scoped);
     }
 }

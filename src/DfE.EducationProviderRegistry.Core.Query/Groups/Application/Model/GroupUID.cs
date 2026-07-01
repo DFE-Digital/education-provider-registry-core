@@ -2,11 +2,34 @@
 
 public readonly record struct GroupUID
 {
-    public GroupUID(int groupId)
+    public GroupUID(long groupId)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(groupId);
         Value = groupId;
     }
 
-    public int Value { get; }
+    public long Value { get; }
+
+    public static bool TryCreate(string input, out GroupUID result)
+    {
+        result = default;
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return false;
+        }
+
+        if (!long.TryParse(input.Trim(), out long parsed))
+        {
+            return false;
+        }
+
+        if (parsed <= 0)
+        {
+            return false;
+        }
+
+        result = new GroupUID(parsed);
+        return true;
+    }
 }

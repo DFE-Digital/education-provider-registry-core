@@ -29,7 +29,7 @@ public sealed class CompositionRootGetGroupsByIdAddUseCaseTests
 
         // Assert
         updated.ShouldContain<
-            IUseCase<GetGroupByGroupIdRequest, UseCaseResponse<GroupReadModel>>,
+            IUseCase<GetGroupByGroupUniqueIdentifierRequest, UseCaseResponse<GroupReadModel>>,
             GetGroupByGroupIdUseCase>(ServiceLifetime.Scoped);
 
         updated.ShouldContain<IMapper<Group, GroupReadModel>, GroupToGroupReadModelMapper>(ServiceLifetime.Singleton);
