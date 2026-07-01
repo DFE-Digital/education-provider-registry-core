@@ -30,17 +30,29 @@ internal sealed class GroupsRepository : IGroupsRepository
 
     public async Task<Group?> GetGroupByGroupUidAsync(GroupUID groupUid, CancellationToken cancellationToken = default)
     {
-        GroupRecord? group =
-            await _dbContext.GroupRecord
-                .SingleOrDefaultAsync((group) =>
-                    group.GroupId == groupUid.Value, cancellationToken);
 
-        if (group is null)
+        GroupRecord? entity =
+            await _dbContext.GroupRecord
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(g => g.GroupIdentifier)
+                .Include(g => g.GroupType)
+                .Include(g => g.EstablishmentGroupMembership)
+                    .ThenInclude(m => m.Establishment)
+                .Include(g => g.RoleAssignment)
+                    .ThenInclude(ra => ra.Role)
+                    .ThenInclude(r => r.Person)
+                .SingleOrDefaultAsync(g => g.GroupId == groupUid.Value, cancellationToken);
+
+        if (entity is null)
         {
-            _logger.LogWarning("Could not find Group with GroupId {GroupId}", groupUid.Value);
+            _logger.LogWarning(
+                "Could not find Group with GroupUID {GroupUID}",
+                groupUid.Value);
+
             return null;
         }
 
-        return _mapper.Map(group);
+        return _mapper.Map(entity);
     }
 }
