@@ -19,11 +19,10 @@ public readonly record struct GroupUID
             return false;
         }
 
-        if (!int.TryParse(input.Trim(), out int parsed))
+        if (!long.TryParse(input.Trim(), out long parsed))
         {
             return false;
         }
-
 
         if (parsed <= 0)
         {
