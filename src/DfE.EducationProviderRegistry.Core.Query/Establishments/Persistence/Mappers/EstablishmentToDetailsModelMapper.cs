@@ -1,6 +1,5 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
@@ -34,11 +33,6 @@ public sealed class EstablishmentToDetailsModelMapper :
                         l.EventDate,
                         new EstablishmentLifeCycleReason(l.ClosedReason.Name)))
                     .FirstOrDefault(), // TODO: Handle getting specific lifecycle event types in a more robust way
-            Admissions = new EstablishmentAdmissionsModel(
-                    dto.EstablishmentAdmissions.StatutoryLowAge,
-                    dto.EstablishmentAdmissions.StatutoryHighAge),
-            Addresses = dto.Site
-                    .Select(s => new SiteAddressModel(s.Name, s.AddressLine1, s.AddressLine2, s.Town, s.County, s.Postcode)),
             Governors = new List<GovernorModel>(),
         };
     }
