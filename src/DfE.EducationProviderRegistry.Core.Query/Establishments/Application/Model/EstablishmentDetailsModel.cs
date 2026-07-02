@@ -11,7 +11,7 @@ public sealed record EstablishmentDetailsModel
     public EstablishmentTypeModel Type { get; init; }
     public PhaseOfEducationModel Phase { get; init; }
 
-    public EstablishmentLifecycleEventModel LifecycleEventOpened { get; init; }
+    public EstablishmentLifecycleEventModel? LifecycleEventOpened { get; init; }
     public EstablishmentLifecycleEventModel? LifecycleEventClosed { get; init; }
 
     public IEnumerable<GovernorModel> Governors { get; init; }

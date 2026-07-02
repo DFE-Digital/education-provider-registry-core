@@ -11,29 +11,40 @@ public sealed class EstablishmentToDetailsModelMapper :
     {
         ArgumentNullException.ThrowIfNull(dto);
 
+        EstablishmentUrnModel urn = EstablishmentUrnModel.Create(dto.Urn.ToString());
+        EstablishmentNameModel name = new(dto.Name);
+        EstablishmentNumberModel number = new(dto.EstablishmentNumber);
+        EstablishmentStatusModel status = new(dto.EstablishmentStatus.Name);
+        EstablishmentTypeModel type = new(dto.EstablishmentType.Name);
+        PhaseOfEducationModel phase = new(dto.EstablishmentProvision.EducationPhase.Name);
+
+        EstablishmentLifecycleEventModel? openedEvent = dto.EstablishmentLifecycleEvent
+            .Where(e => e.EventType == "Opened")
+            .Select(e => new EstablishmentLifecycleEventModel(
+                EstablishmentLifecycleEventType.Opened,
+                e.EventDate,
+                new EstablishmentLifeCycleReason(e.OpenedReason!.Name)))
+            .FirstOrDefault();
+
+        EstablishmentLifecycleEventModel? closedEvent = dto.EstablishmentLifecycleEvent
+            .Where(e => e.EventType == "Closed")
+            .Select(e => new EstablishmentLifecycleEventModel(
+                EstablishmentLifecycleEventType.Closed,
+                e.EventDate,
+                new EstablishmentLifeCycleReason(e.ClosedReason!.Name)))
+            .FirstOrDefault();
+
         return new EstablishmentDetailsModel
         {
-            Urn = EstablishmentUrnModel.Create(dto.Urn.ToString()),
-            Name = new EstablishmentNameModel(dto.Name),
-            Number = new EstablishmentNumberModel(dto.EstablishmentNumber),
-            Status = new EstablishmentStatusModel(dto.EstablishmentStatus.Name),
-            Type = new EstablishmentTypeModel(dto.EstablishmentType.Name),
-            Phase = new PhaseOfEducationModel(dto.EstablishmentProvision.EducationPhase.Name),
-            LifecycleEventOpened = dto.EstablishmentLifecycleEvent
-                    .Where(l => l.EventType == "Opened")
-                    .Select(l => new EstablishmentLifecycleEventModel(
-                        EstablishmentLifecycleEventType.Opened,
-                        l.EventDate,
-                        new EstablishmentLifeCycleReason(l.OpenedReason.Name)))
-                    .FirstOrDefault(), // TODO: Handle getting specific lifecycle event types in a more robust way
-            LifecycleEventClosed = dto.EstablishmentLifecycleEvent
-                    .Where(l => l.EventType == "Closed")
-                    .Select(l => new EstablishmentLifecycleEventModel(
-                        EstablishmentLifecycleEventType.Closed,
-                        l.EventDate,
-                        new EstablishmentLifeCycleReason(l.ClosedReason.Name)))
-                    .FirstOrDefault(), // TODO: Handle getting specific lifecycle event types in a more robust way
-            Governors = new List<GovernorModel>(),
+            Urn = urn,
+            Name = name,
+            Number = number,
+            Status = status,
+            Type = type,
+            Phase = phase,
+            LifecycleEventOpened = openedEvent,
+            LifecycleEventClosed = closedEvent,
+            Governors = new List<GovernorModel>()
         };
     }
 }

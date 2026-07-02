@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
 
-public sealed class CompositionRootAddEstablishmentUseCaseUnitTests
+public sealed class CompositionRootGetEstablishmentsAddUseCaseTests
 {
 
     [Fact]
