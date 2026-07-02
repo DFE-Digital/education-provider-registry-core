@@ -45,7 +45,11 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         // TODO options from application to set DatabaseConnection
         return Task.FromResult<IConfiguration>(
             ConfigurationDefault
-                .Create());
+                .CreateBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>()
+                {
+                    ["eprweb-eprdat-dotnet-db-connection"] = Database!.ConnectionString
+                }).Build());
     }
 
     protected override async Task BeforeDisposeAsync()

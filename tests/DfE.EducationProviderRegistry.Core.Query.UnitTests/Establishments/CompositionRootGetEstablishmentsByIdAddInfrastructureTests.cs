@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
 
-public sealed class CompositionRootAddInfrastructureTests
+public sealed class CompositionRootGetEstablishmentsByIdAddInfrastructureTests
 {
     [Fact]
     public void AddEstablishmentsInfrastructureDependencies_ShouldThrow_WhenServicesIsNull()
@@ -28,8 +28,7 @@ public sealed class CompositionRootAddInfrastructureTests
         IServiceCollection updated = services.AddEstablishmentsInfrastructureDependencies();
 
         // Assert lifetimes
-        updated.ShouldContain<IEstablishmentsRepository, FakeDataEstablishmentsRepository>(ServiceLifetime.Scoped);
+        updated.ShouldContain<IEstablishmentsRepository, EfPostgresEstablishmensRepository>(ServiceLifetime.Scoped);
         updated.ShouldContain<IMapper<Establishment, EstablishmentDetailsModel>, EstablishmentToDetailsModelMapper>(ServiceLifetime.Singleton);
-        updated.ShouldContain<IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>>, EstablishmentsToDetailsModelMapper>(ServiceLifetime.Singleton);
     }
 }

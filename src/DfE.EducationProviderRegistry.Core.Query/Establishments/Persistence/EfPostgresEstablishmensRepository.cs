@@ -10,16 +10,16 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsRepository
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
-    private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentMapper;
+    private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentDetailsMapper;
 
     public EfPostgresEstablishmensRepository(
         EducationProviderRegistryDbContext appDbContext,
-        IMapper<Establishment, EstablishmentDetailsModel> establishmentMapper)
+        IMapper<Establishment, EstablishmentDetailsModel> establishmentDetailsMapper)
     {
         ArgumentNullException.ThrowIfNull(appDbContext);
-        ArgumentNullException.ThrowIfNull(establishmentMapper);
+        ArgumentNullException.ThrowIfNull(establishmentDetailsMapper);
         _dbContext = appDbContext;
-        _establishmentMapper = establishmentMapper;
+        _establishmentDetailsMapper = establishmentDetailsMapper;
     }
 
 
@@ -28,7 +28,7 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
         EstablishmentDetailsModel? result = await _dbContext.Establishment
             .AsNoTracking()
             .Where(e => e.Urn == identifier.Value)
-            .Select(e => _establishmentMapper.Map(e))
+            .Select(e => _establishmentDetailsMapper.Map(e))
             .FirstOrDefaultAsync(cancellationToken);
 
         return result;

@@ -5,6 +5,9 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +24,13 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();
         services.AddSingleton<ILogger<GetEstablishmentByIdUseCase>, InMemoryLogger<GetEstablishmentByIdUseCase>>();
-        services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();
-        services.AddSingleton<IEstablishmentsRepository, DummyRepository>();
+        services.AddScoped<IEstablishmentsRepository, EfPostgresEstablishmensRepository>();
+
+        services.AddDbContext<EducationProviderRegistryDbContext>(options =>
+        {
+            options.UseInMemoryDatabase("CompositionRootTest");
+        });
+
 
         // Register module dependencies
         services.AddEstablishmentsUseCaseDependencies();
@@ -32,7 +40,6 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         using IServiceScope scope = provider.CreateScope();
 
         // Act Assert
-
 #pragma warning disable CS8600
         IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>> getEstablishmentsUseCase =
             scope.ServiceProvider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>>();
@@ -45,17 +52,5 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         Assert.NotNull(getEstablishmentByIdUseCase);
         Assert.IsType<GetEstablishmentsUseCase>(getEstablishmentsUseCase);
         Assert.IsType<GetEstablishmentByIdUseCase>(getEstablishmentByIdUseCase);
-    }
-
-    private sealed class DummyRepository : IEstablishmentsRepository
-    {
-        public Task<EstablishmentDetailsModel?> GetEstablishmentById(
-            EstablishmentUrnModel identifier,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<EstablishmentDetailsModel?>(null);
-
-        public Task<IReadOnlyCollection<EstablishmentDetailsModel>> GetEstablishments(
-            CancellationToken cancellationToken = default) =>
-                Task.FromResult<IReadOnlyCollection<EstablishmentDetailsModel>>([]);
     }
 }
