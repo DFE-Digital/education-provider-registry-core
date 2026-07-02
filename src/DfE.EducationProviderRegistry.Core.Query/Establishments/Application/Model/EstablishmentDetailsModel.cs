@@ -1,6 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
-
-namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
 public sealed record EstablishmentDetailsModel
 {
@@ -16,8 +14,6 @@ public sealed record EstablishmentDetailsModel
     public EstablishmentLifecycleEventModel LifecycleEventOpened { get; init; }
     public EstablishmentLifecycleEventModel? LifecycleEventClosed { get; init; }
 
-    public EstablishmentAdmissionsModel Admissions { get; init; }
-    public IEnumerable<SiteAddressModel> Addresses { get; init; }
     public IEnumerable<GovernorModel> Governors { get; init; }
 
     public EstablishmentDetailsModel()
