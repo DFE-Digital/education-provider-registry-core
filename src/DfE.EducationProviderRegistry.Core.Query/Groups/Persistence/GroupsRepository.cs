@@ -33,17 +33,9 @@ internal sealed class GroupsRepository : IGroupsRepository
         GroupRecord? entity =
             await _dbContext.GroupRecord
                 .AsNoTracking()
-                .AsSplitQuery()
-                .Include(g => g.Name)
-                .Include(g => g.GroupId)
-                .Include(g => g.GroupType)
-                    .ThenInclude(g => g.Name)
-                //.Include(g => g.EstablishmentGroupMembership)
-                //    .ThenInclude(m => m.Establishment)
-                //.Include(g => g.RoleAssignment)
-                //    .ThenInclude(ra => ra.Role)
-                //    .ThenInclude(r => r.Person)
-                .SingleOrDefaultAsync(g => g.GroupId == groupUid.Value, cancellationToken);
+                .Include((g) => g.GroupType)
+                .SingleOrDefaultAsync((g) =>
+                    g.GroupId == groupUid.Value, cancellationToken);
 
         if (entity is null)
         {
