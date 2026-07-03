@@ -28,6 +28,11 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
         EstablishmentDetailsModel? result = await _dbContext.Establishment
             .AsNoTracking()
             .Where(e => e.Urn == identifier.Value)
+            .Include(e => e.EstablishmentStatus)
+            .Include(e => e.EstablishmentType)
+            .Include(e => e.EstablishmentProvision)
+            .ThenInclude(ep => ep.EducationPhase)
+            .Include(e => e.EstablishmentLifecycleEvent)
             .Select(e => _establishmentDetailsMapper.Map(e))
             .FirstOrDefaultAsync(cancellationToken);
 

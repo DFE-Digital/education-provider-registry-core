@@ -5,7 +5,7 @@ public record EstablishmentLifecycleEventModel(
     DateOnly EventDate,
     EstablishmentLifeCycleReason Reason);
 
-public record EstablishmentLifeCycleReason(string Reason);
+public record EstablishmentLifeCycleReason(string? Reason);
 
 public enum EstablishmentLifecycleEventType
 {
