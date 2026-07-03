@@ -16,14 +16,14 @@ public sealed class EstablishmentToDetailsModelMapper :
         EstablishmentNumberModel number = new(dto.EstablishmentNumber);
         EstablishmentStatusModel status = new(dto.EstablishmentStatus.Name);
         EstablishmentTypeModel type = new(dto.EstablishmentType.Name);
-        PhaseOfEducationModel phase = new(dto.EstablishmentProvision.EducationPhase.Name);
+        PhaseOfEducationModel phase = new(dto.EstablishmentProvision?.EducationPhase?.Name);
 
         EstablishmentLifecycleEventModel? openedEvent = dto.EstablishmentLifecycleEvent
             .Where(e => e.EventType == "Opened")
             .Select(e => new EstablishmentLifecycleEventModel(
                 EstablishmentLifecycleEventType.Opened,
                 e.EventDate,
-                new EstablishmentLifeCycleReason(e.OpenedReason!.Name)))
+                new EstablishmentLifeCycleReason(e.OpenedReason?.Name)))
             .FirstOrDefault();
 
         EstablishmentLifecycleEventModel? closedEvent = dto.EstablishmentLifecycleEvent
@@ -31,7 +31,7 @@ public sealed class EstablishmentToDetailsModelMapper :
             .Select(e => new EstablishmentLifecycleEventModel(
                 EstablishmentLifecycleEventType.Closed,
                 e.EventDate,
-                new EstablishmentLifeCycleReason(e.ClosedReason!.Name)))
+                new EstablishmentLifeCycleReason(e.ClosedReason?.Name)))
             .FirstOrDefault();
 
         return new EstablishmentDetailsModel
