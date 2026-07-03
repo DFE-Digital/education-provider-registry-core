@@ -29,13 +29,17 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
             .AsNoTracking()
             .Where(e => e.Urn == identifier.Value)
             .Include(e => e.EstablishmentGroupMembership)
-            .ThenInclude(gm => gm.Group)
-            .ThenInclude(g => g.GroupType)
+                .ThenInclude(gm => gm.Group)
+                    .ThenInclude(g => g.GroupType)
             .Include(e => e.EstablishmentStatus)
             .Include(e => e.EstablishmentType)
             .Include(e => e.EstablishmentProvision)
-            .ThenInclude(ep => ep.EducationPhase)
+                .ThenInclude(ep => ep.EducationPhase)
             .Include(e => e.EstablishmentLifecycleEvent)
+            .Include(e => e.RoleAssignment)
+                .ThenInclude(ra => ra.Role)
+                    .ThenInclude(r => r.Person)
+
             .Select(e => _establishmentDetailsMapper.Map(e))
             .FirstOrDefaultAsync(cancellationToken);
 
