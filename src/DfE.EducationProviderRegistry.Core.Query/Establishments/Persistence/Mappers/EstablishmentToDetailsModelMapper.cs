@@ -34,6 +34,11 @@ public sealed class EstablishmentToDetailsModelMapper :
                 new EstablishmentLifeCycleReason(e.ClosedReason?.Name)))
             .FirstOrDefault();
 
+        string? uid = dto.Uid;
+        string? groupName = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name;
+        string? groupType = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name;
+        DateOnly? groupOpenDate = dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate;
+
         return new EstablishmentDetailsModel
         {
             Urn = urn,
@@ -44,6 +49,10 @@ public sealed class EstablishmentToDetailsModelMapper :
             Phase = phase,
             LifecycleEventOpened = openedEvent,
             LifecycleEventClosed = closedEvent,
+            Uid = uid,
+            GroupName = groupName,
+            GroupType = groupType,
+            GroupOpenDate = groupOpenDate,
             Governors = new List<GovernorModel>()
         };
     }

@@ -28,6 +28,9 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
         EstablishmentDetailsModel? result = await _dbContext.Establishment
             .AsNoTracking()
             .Where(e => e.Urn == identifier.Value)
+            .Include(e => e.EstablishmentGroupMembership)
+            .ThenInclude(gm => gm.Group)
+            .ThenInclude(g => g.GroupType)
             .Include(e => e.EstablishmentStatus)
             .Include(e => e.EstablishmentType)
             .Include(e => e.EstablishmentProvision)

@@ -14,6 +14,11 @@ public sealed record EstablishmentDetailsModel
     public EstablishmentLifecycleEventModel? LifecycleEventOpened { get; init; }
     public EstablishmentLifecycleEventModel? LifecycleEventClosed { get; init; }
 
+    public string? Uid { get; init; }
+    public string? GroupName { get; init; }
+    public string? GroupType { get; init; }
+    public DateOnly? GroupOpenDate { get; init; }
+
     public IEnumerable<GovernorModel> Governors { get; init; }
 
     public EstablishmentDetailsModel()
