@@ -1,5 +1,6 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
@@ -38,6 +39,14 @@ public sealed class EstablishmentToDetailsModelMapper :
         string? groupName = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name;
         string? groupType = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name;
         DateOnly? groupOpenDate = dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate;
+        List<GovernorModel> governors = dto.RoleAssignment
+            .Where(ra => ra.Role?.Person != null)
+            .Select(ra => new GovernorModel(
+                Identifier: new GovernanceIdentifier(ra.Role.Person.PersonId.ToString()),
+                Name: new Name(ra.Role.Person.DisplayName)
+            ))
+            .ToList();
+
 
         return new EstablishmentDetailsModel
         {
@@ -53,7 +62,7 @@ public sealed class EstablishmentToDetailsModelMapper :
             GroupName = groupName,
             GroupType = groupType,
             GroupOpenDate = groupOpenDate,
-            Governors = new List<GovernorModel>()
+            Governors = governors
         };
     }
 }
