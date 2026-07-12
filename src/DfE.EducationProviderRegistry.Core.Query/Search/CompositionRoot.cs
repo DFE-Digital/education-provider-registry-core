@@ -72,7 +72,8 @@ public static class CompositionRoot
     /// Thrown when <paramref name="services"/> is <c>null</c>.
     /// </exception>
     public static IServiceCollection AddInfraSearchDependencies(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         // ---------------------------------------------------------
         // Search orchestrator (trigram)
