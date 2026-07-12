@@ -1,4 +1,4 @@
-﻿using IntegrationTests.Database.Server.Postgres.Extensions;
+﻿using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Extensions;
 using MartinCostello.Logging.XUnit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
