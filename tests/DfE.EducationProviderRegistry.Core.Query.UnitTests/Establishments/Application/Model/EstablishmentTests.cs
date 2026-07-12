@@ -14,9 +14,9 @@ public sealed class EstablishmentTests
     [Fact]
     public void ShouldSetUrn_WhenInitialized()
     {
-        EstablishmentUrnModel urn = new EstablishmentUrnModel(new UniqueReferenceNumber("123456"));
+        EstablishmentUrnModel urn = new(new UniqueReferenceNumber("123456"));
 
-        EstablishmentDetailsModel establishment = new EstablishmentDetailsModel
+        EstablishmentDetailsModel establishment = new()
         {
             Urn = urn
         };
@@ -27,7 +27,7 @@ public sealed class EstablishmentTests
     [Fact]
     public void ShouldPopulateAllFields()
     {
-        EstablishmentDetailsModel establishment = new EstablishmentDetailsModel
+        EstablishmentDetailsModel establishment = new()
         {
             Urn = new EstablishmentUrnModel(new UniqueReferenceNumber("123456")),
             Name = new EstablishmentNameModel("Test School"),

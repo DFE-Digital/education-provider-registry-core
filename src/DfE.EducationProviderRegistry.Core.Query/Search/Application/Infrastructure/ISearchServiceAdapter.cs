@@ -19,7 +19,7 @@ public interface ISearchServiceAdapter<TSearchResult, TFacetResult>
     /// Executes a search operation using the supplied request parameters and returns
     /// both the primary results and associated facet data.
     /// </summary>
-    /// <param name="searchServiceAdapterRequest">
+    /// <param name="request">
     /// The request containing the validated search parameters to be sent to the
     /// underlying search provider.
     /// </param>
@@ -31,6 +31,6 @@ public interface ISearchServiceAdapter<TSearchResult, TFacetResult>
     /// the matched results and any faceted aggregation data returned by the provider.
     /// </returns>
     Task<SearchResults<TSearchResult, TFacetResult>> SearchAsync(
-        SearchServiceAdapterRequest searchServiceAdapterRequest,
+        SearchServiceAdapterRequest request,
         CancellationToken cancellationToken = default);
 }
