@@ -1,10 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
@@ -26,25 +30,32 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search;
 
-/// <summary>
-/// Provides dependency‑injection registration for all infrastructure‑level
-/// search components used by the MVC application. This includes orchestrators,
-/// providers, pipeline steps, mappers, filter expression builders, and
-/// supporting metadata resolvers.
-/// </summary>
-/// <remarks>
-/// This composition root is responsible for wiring together the complete
-/// search pipeline, including trigram search orchestration, facet providers,
-/// projection builders, SQL execution, filter expression factories, and
-/// logical operator factories. All registrations are scoped or singleton
-/// depending on their intended usage within the search pipeline.
-/// </remarks>
 public static class CompositionRoot
 {
+    public static IServiceCollection AddApplicationSearchDependencies(this IServiceCollection services, IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        // Bind SearchCriteria configuration from appsettings.json.
+        services
+            .AddOptions<SearchCriteria>()
+            .Bind(configuration.GetSection(nameof(SearchCriteria)));
+
+        // Register the resolved SearchCriteria instance for direct injection.
+        services.AddSingleton(serviceProvider =>
+            serviceProvider.GetRequiredService<IOptions<SearchCriteria>>().Value);
+
+        services.AddScoped<
+            IUseCase<SearchRequest, UseCaseResponse<SearchResponse>>,
+            SearchUseCase>();
+
+        return services;
+    }
+
     /// <summary>
     /// Registers all infrastructure‑level search dependencies required for
     /// executing establishment search operations. This includes orchestrators,
@@ -61,30 +72,8 @@ public static class CompositionRoot
     /// Thrown when <paramref name="services"/> is <c>null</c>.
     /// </exception>
     public static IServiceCollection AddInfraSearchDependencies(
-        this IServiceCollection services,
-        IConfiguration configuration)
+        this IServiceCollection services)
     {
-        ArgumentNullException.ThrowIfNull(services);
-
-        // ---------------------------------------------------------
-        // DbContext factory 
-        // ---------------------------------------------------------
-        if (!services.Any(serviceDescriptor =>
-            serviceDescriptor.ServiceType == typeof(IDbContextFactory<EducationProviderRegistryDbContext>)))
-        {
-            services.AddDbContextFactory<EducationProviderRegistryDbContext>(options =>
-            {
-                string connectionString = configuration["eprweb_eprdat_dotnet_db_connection"]
-                    ?? throw new InvalidOperationException(
-                        "Database connection string not configured.");
-
-                options.UseNpgsql(connectionString)
-                       .EnableSensitiveDataLogging()
-                       .EnableDetailedErrors()
-                       .LogTo(Console.WriteLine, LogLevel.Information);
-            });
-        }
-
         // ---------------------------------------------------------
         // Search orchestrator (trigram)
         // ---------------------------------------------------------
@@ -144,20 +133,11 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Facet provider
         // ---------------------------------------------------------
-        /// <summary>
-        /// Registers the facet provider responsible for computing facet
-        /// aggregations over filtered establishment result sets.
-        /// </summary>
         services.TryAddScoped<IFacetProvider, EstablishmentFacetProvider>();
 
         // ---------------------------------------------------------
         // Pipeline steps
         // ---------------------------------------------------------
-        /// <summary>
-        /// Registers all search pipeline steps used to transform search
-        /// requests into executable queries and map results back into
-        /// response models.
-        /// </summary>
         services.AddScoped<ISearchPipelineStep, SearchOrderMapStep>();
         services.AddScoped<ISearchPipelineStep, SearchOrderingStep>();
 
@@ -252,8 +232,7 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Facet selectors
         // ---------------------------------------------------------
-        services.AddSingleton<
-            Dictionary<string, Expression<Func<Establishment, object>>>>
+        services.AddSingleton
             (
                 new Dictionary<string, Expression<Func<Establishment, object>>>(StringComparer.OrdinalIgnoreCase)
                 {
