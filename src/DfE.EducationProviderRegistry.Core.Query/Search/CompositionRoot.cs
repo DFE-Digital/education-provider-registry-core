@@ -76,6 +76,13 @@ public static class CompositionRoot
         IConfiguration configuration)
     {
         // ---------------------------------------------------------
+        // Search service adapter
+        // ---------------------------------------------------------
+        services.AddScoped<
+            ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
+            EstablishmentsSearchServiceAdapter>();
+
+        // ---------------------------------------------------------
         // Search orchestrator (trigram)
         // ---------------------------------------------------------
         /// <summary>
@@ -265,12 +272,5 @@ public static class CompositionRoot
             .Bind(configuration.GetSection(nameof(FilterKeyToFilterExpressionMapOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-
-        // ---------------------------------------------------------
-        // Search service adapter
-        // ---------------------------------------------------------
-        services.AddScoped<
-            ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
-            EstablishmentsSearchServiceAdapter>();
     }
 }

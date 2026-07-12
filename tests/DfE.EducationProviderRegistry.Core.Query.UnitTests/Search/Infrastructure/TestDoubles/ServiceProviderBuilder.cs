@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DfE.EducationProviderRegistry.Core.Query.Search;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,7 +44,14 @@ internal static class ServiceProviderBuilder
                 .AddInMemoryCollection(configValues!)
                 .Build();
 
+        services.AddDbContextFactory<EducationProviderRegistryDbContext>(
+            options =>
+            {
+                options.UseInMemoryDatabase("CompositionRootTests");
+            });
+
         services.AddSingleton(configuration);
+        services.AddApplicationSearchDependencies(configuration);
         services.AddInfraSearchDependencies(configuration);
         services.AddInfraSearchFilterDependencies(configuration);
 

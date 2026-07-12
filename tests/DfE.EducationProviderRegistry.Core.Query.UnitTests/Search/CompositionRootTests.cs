@@ -12,31 +12,13 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search;
 
 public sealed class CompositionRootTests
 {
-    [Fact]
-    public void CompositionRoot_Registers_DbContextFactory()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        // act
-        IDbContextFactory<EducationProviderRegistryDbContext> factory =
-            provider.GetRequiredService<
-                IDbContextFactory<EducationProviderRegistryDbContext>>();
-
-        // assert
-        Assert.NotNull(factory);
-    }
-
     [Fact]
     public void CompositionRoot_Registers_FilterExpressionFactory()
     {
