@@ -1,5 +1,5 @@
-﻿using IntegrationTests.Abstractions;
-using IntegrationTests.Database.Server.Abstractions;
+﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
+using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
