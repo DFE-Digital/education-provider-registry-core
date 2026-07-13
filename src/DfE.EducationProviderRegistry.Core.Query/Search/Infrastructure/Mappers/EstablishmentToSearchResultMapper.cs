@@ -15,43 +15,33 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         UniqueReferenceNumber urn = new(input.Urn);
         Name name = new(input.Name);
 
-        Site site = input.Site.FirstOrDefault()
-            ?? throw new InvalidOperationException(
-                "Establishment.Site must contain at least one site.");
+        Site? site = input.Site.FirstOrDefault();
 
-        Address address =
+        Address? address = site != null ?
             new(
                 Street: site.AddressLine1,
                 Town: site.Town,
                 County: site.County,
                 Postcode: site.Postcode
-            );
+            ) : null;
 
         EstablishmentType type = new(input.EstablishmentType.Name);
 
-        EstablishmentGroupMembership membership = input.EstablishmentGroupMembership.FirstOrDefault()
-            ?? throw new InvalidOperationException(
-                "Establishment.EstablishmentGroupMembership must contain at least one group membership.");
+        GroupRecord? groupRecord = input.EstablishmentGroupMembership.FirstOrDefault()?.Group;
 
-        GroupRecord groupRecord = membership.Group
-            ?? throw new InvalidOperationException(
-                "GroupRecord cannot be null.");
-
-        GroupDetail group =
+        GroupDetail? group = groupRecord != null ?
             new(
                 partOfName: groupRecord.Name,
                 partOfCode: groupRecord.Code
-            );
+            ) : null;
 
-        EstablishmentAuthority authority =
-            input.EstablishmentAuthority.FirstOrDefault()
-                ?? throw new InvalidOperationException(
-                    "Establishment.EstablishmentAuthority must contain at least one authority.");
+        EstablishmentAuthority? authority =
+            input.EstablishmentAuthority.FirstOrDefault();
 
-        LocalAuthority localAuthority = new(
+        LocalAuthority? localAuthority = authority != null ? new(
             localAuthorityCode: authority.AuthorityCode,
             localAuthorityName: authority.AuthorityName
-        );
+        ) : null;
 
         return new EstablishmentSearchResult(
             urn,

@@ -1,5 +1,8 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +13,9 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     private readonly IDatabaseFactory _databaseFactory;
 
     protected IDatabase? Database { get; private set; }
+#nullable disable
+    protected IEstablishmentFactory EstablishmentFactory { get; private set; }
+#nullable enable
 
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
         : base(testServicesProvider)
@@ -37,6 +43,11 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     protected override async Task StartTestDependenciesAsync(CancellationToken ct = default)
     {
         Database = await _databaseFactory.CreateAsync(ct);
+
+        EstablishmentFactory =
+            new EstablishmentFactory(
+                CreateDbContext(Database));
+
         await Database.StartAsync(ct);
     }
 
@@ -58,5 +69,13 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         {
             await Database.DisposeAsync();
         }
+    }
+
+    private static EducationProviderRegistryDbContext CreateDbContext(IDatabase db)
+    {
+        DbContextOptionsBuilder<EducationProviderRegistryDbContext> contextOptionsBuilder = new();
+        contextOptionsBuilder.UseNpgsql(connectionString: db.ConnectionString);
+        EducationProviderRegistryDbContext dbContext = new(contextOptionsBuilder.Options);
+        return dbContext;
     }
 }
