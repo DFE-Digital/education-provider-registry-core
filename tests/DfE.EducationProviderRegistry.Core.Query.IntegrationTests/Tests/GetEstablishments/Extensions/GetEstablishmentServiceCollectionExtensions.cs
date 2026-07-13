@@ -1,6 +1,4 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,13 +14,9 @@ internal static class GetEstablishmentServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         services
-            // TODO temporary until we have custom logger-provider set up in application-logging, COULD register IObservationHandler? on logging ITestOutputHelper / IMessageSink
-            .AddLogging()
+            .AddSharedFeatureDependencies(configuration)
             .AddEstablishmentsUseCaseDependencies()
             .AddEstablishmentsInfrastructureDependencies();
-
-        services.AddDbContext<EducationProviderRegistryDbContext>(option =>
-            option.UseNpgsql(configuration["eprweb-eprdat-dotnet-db-connection"]));
 
         return services;
     }

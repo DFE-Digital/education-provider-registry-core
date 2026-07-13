@@ -48,7 +48,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
                 .CreateBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>()
                 {
-                    ["eprweb-eprdat-dotnet-db-connection"] = Database!.ConnectionString
+                    ["eprweb_eprdat_dotnet_db_connection"] = Database!.ConnectionString
                 }).Build());
     }
 
