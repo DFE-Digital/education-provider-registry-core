@@ -40,8 +40,7 @@ internal sealed class EstablishmentBuilder
 
             EstablishmentLifecycleEvent = new List<EstablishmentLifecycleEvent>
             {
-                new EstablishmentLifecycleEvent
-                {
+                new() {
                     EventType = "Opened",
                     EventDate = new DateOnly(2000, 1, 1),
                     OpenedReason = new ReasonEstablishmentOpened
@@ -49,8 +48,7 @@ internal sealed class EstablishmentBuilder
                         Name = "New School"
                     }
                 },
-                new EstablishmentLifecycleEvent
-                {
+                new() {
                     EventType = "Closed",
                     EventDate = new DateOnly(2020, 1, 1),
                     ClosedReason = new ReasonEstablishmentClosed
@@ -62,8 +60,7 @@ internal sealed class EstablishmentBuilder
 
             Site = new List<Site>
             {
-                new Site
-                {
+                new() {
                     Name = "Main Site",
                     AddressLine1 = "1 Test Street",
                     AddressLine2 = "Test Area",
@@ -106,7 +103,7 @@ internal static class EstablishmentFactory
 
     public static IReadOnlyCollection<Establishment> CreateMany(int count)
     {
-        List<Establishment> list = new List<Establishment>(count);
+        List<Establishment> list = new(count);
 
         for (int i = 0; i < count; i++)
         {
