@@ -5,6 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establi
 
 public sealed class EstablishmentBuilder
 {
+    private static int _urnCounter = 777777;
     private readonly Establishment _establishment;
 
     public EstablishmentBuilder()
@@ -26,6 +27,7 @@ public sealed class EstablishmentBuilder
         _establishment = new Establishment
         {
             Name = "Test Establishment",
+            Urn = _urnCounter++.ToString(),
         };
 
         RoleAssignment roleAssignment = new()

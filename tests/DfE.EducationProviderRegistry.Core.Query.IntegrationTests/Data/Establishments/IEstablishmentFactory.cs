@@ -1,10 +1,10 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments.Builders;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
+﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
 
 public interface IEstablishmentFactory
 {
-    Task<CreatedEstablishmentResult> CreateAsync(
-        Action<EstablishmentBuilder>? configure = null);
+    Task<Establishment> CreateAsync(
+        Action<EstablishmentBuilder>? configure = null, CancellationToken ct = default);
 }
+

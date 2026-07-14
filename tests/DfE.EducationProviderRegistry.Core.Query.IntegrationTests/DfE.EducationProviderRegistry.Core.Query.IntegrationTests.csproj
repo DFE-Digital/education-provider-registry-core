@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" />
+    <PackageReference Include="Dapper" />
     <PackageReference Include="DfE.Core.Libraries.Testing" />
     <PackageReference Include="DfE.Core.Libraries.IntegrationTests" />
     <PackageReference Include="DfE.Core.Libraries.IntegrationTests.Database.Postgres" />

@@ -1,6 +1,11 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments.Insert;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor.Postgres;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +19,9 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
-    protected IEstablishmentFactory EstablishmentFactory { get; private set; }
+    protected IEstablishmentFactory CreateEstablishment { get; private set; }
+    protected ISearchEstablishmentFactory CreateSearchedEstablishment { get; private set; }
+    protected IObservationHandler<PostgresQueryObservation> QueryObservationHandler { get; private set;  }
 #nullable enable
 
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
@@ -44,9 +51,14 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     {
         Database = await _databaseFactory.CreateAsync(ct);
 
-        EstablishmentFactory =
-            new EstablishmentFactory(
-                CreateDbContext(Database));
+        string connectionString = Database.ConnectionString;
+
+        IInsertEstablishmentHandler handler =
+            new EfCoreInsertEstablishmentHandler(CreateDbContext(connectionString));
+
+        CreateEstablishment = new EstablishmentFactory(handler);
+        CreateSearchedEstablishment = new SearchEstablishmentFactory(handler)!;
+        QueryObservationHandler = new PostgresQueryObservationHandler(connectionString);
 
         await Database.StartAsync(ct);
     }
@@ -71,10 +83,15 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         }
     }
 
-    private static EducationProviderRegistryDbContext CreateDbContext(IDatabase db)
+    private static EducationProviderRegistryDbContext CreateDbContext(string connectionString)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+
         DbContextOptionsBuilder<EducationProviderRegistryDbContext> contextOptionsBuilder = new();
-        contextOptionsBuilder.UseNpgsql(connectionString: db.ConnectionString);
+        contextOptionsBuilder
+            .UseNpgsql(connectionString)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging();
         EducationProviderRegistryDbContext dbContext = new(contextOptionsBuilder.Options);
         return dbContext;
     }
