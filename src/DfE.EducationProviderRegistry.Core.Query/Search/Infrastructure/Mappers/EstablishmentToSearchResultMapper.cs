@@ -12,54 +12,44 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        UniqueReferenceNumber urn = new(input.Urn);
-        Name name = new(input.Name);
+        Site? site = input.Site.FirstOrDefault();
 
-        Site site = input.Site.FirstOrDefault()
-            ?? throw new InvalidOperationException(
-                "Establishment.Site must contain at least one site.");
-
-        Address address =
-            new(
+        Address? address = site is null
+            ? null
+            : new Address(
                 Street: site.AddressLine1,
                 Town: site.Town,
                 County: site.County,
-                Postcode: site.Postcode
-            );
+                Postcode: site.Postcode);
 
-        EstablishmentType type = new(input.EstablishmentType.Name);
+        EstablishmentGroupMembership? membership =
+            input.EstablishmentGroupMembership.FirstOrDefault();
 
-        EstablishmentGroupMembership membership = input.EstablishmentGroupMembership.FirstOrDefault()
-            ?? throw new InvalidOperationException(
-                "Establishment.EstablishmentGroupMembership must contain at least one group membership.");
+        GroupDetail? group = membership is null
+            ? null
+            : new GroupDetail(
+                partOfName: membership.Group?.Name,
+                partOfCode: membership.Group?.Code);
 
-        GroupRecord groupRecord = membership.Group
-            ?? throw new InvalidOperationException(
-                "GroupRecord cannot be null.");
+        EstablishmentAuthority? authority =
+            input.EstablishmentAuthority.FirstOrDefault();
 
-        GroupDetail group =
-            new(
-                partOfName: groupRecord.Name,
-                partOfCode: groupRecord.Code
-            );
+        LocalAuthority? localAuthority = authority is null
+            ? null
+            : new LocalAuthority(
+                localAuthorityName: authority.AuthorityName,
+                localAuthorityCode: authority.AuthorityCode);
 
-        EstablishmentAuthority authority =
-            input.EstablishmentAuthority.FirstOrDefault()
-                ?? throw new InvalidOperationException(
-                    "Establishment.EstablishmentAuthority must contain at least one authority.");
-
-        LocalAuthority localAuthority = new(
-            localAuthorityCode: authority.AuthorityCode,
-            localAuthorityName: authority.AuthorityName
-        );
+        EstablishmentType? type = input.EstablishmentType is null
+            ? null
+            : new EstablishmentType(input.EstablishmentType.Name);
 
         return new EstablishmentSearchResult(
-            urn,
-            name,
+            new UniqueReferenceNumber(input.Urn),
+            new Name(input.Name),
             address,
             type,
             group,
-            localAuthority
-        );
+            localAuthority);
     }
 }
