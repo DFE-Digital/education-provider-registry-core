@@ -14,36 +14,42 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
 
         Site? site = input.Site.FirstOrDefault();
 
-        Address address = new(
-            Street: site?.AddressLine1,
-            Town: site?.Town,
-            County: site?.County,
-            Postcode: site?.Postcode
-        );
+        Address? address = site is null
+            ? null
+            : new Address(
+                Street: site.AddressLine1,
+                Town: site.Town,
+                County: site.County,
+                Postcode: site.Postcode);
 
         EstablishmentGroupMembership? membership =
             input.EstablishmentGroupMembership.FirstOrDefault();
 
-        GroupDetail group = new(
-            partOfName: membership?.Group?.Name,
-            partOfCode: membership?.Group?.Code
-        );
+        GroupDetail? group = membership is null
+            ? null
+            : new GroupDetail(
+                partOfName: membership.Group?.Name,
+                partOfCode: membership.Group?.Code);
 
         EstablishmentAuthority? authority =
             input.EstablishmentAuthority.FirstOrDefault();
 
-        LocalAuthority localAuthority = new(
-            localAuthorityCode: authority?.AuthorityCode,
-            localAuthorityName: authority?.AuthorityName
-        );
+        LocalAuthority? localAuthority = authority is null
+            ? null
+            : new LocalAuthority(
+                localAuthorityName: authority.AuthorityName,
+                localAuthorityCode: authority.AuthorityCode);
+
+        EstablishmentType? type = input.EstablishmentType is null
+            ? null
+            : new EstablishmentType(input.EstablishmentType.Name);
 
         return new EstablishmentSearchResult(
             new UniqueReferenceNumber(input.Urn),
             new Name(input.Name),
             address,
-            new EstablishmentType(input.EstablishmentType?.Name),
+            type,
             group,
-            localAuthority
-        );
+            localAuthority);
     }
 }

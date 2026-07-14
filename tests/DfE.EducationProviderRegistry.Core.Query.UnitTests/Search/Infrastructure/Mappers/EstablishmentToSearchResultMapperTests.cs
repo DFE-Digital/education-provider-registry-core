@@ -73,14 +73,14 @@ public sealed class EstablishmentToSearchResultMapperTests
         // assert
         Assert.Equal("123456", result.Urn.Value);
         Assert.Equal("Test School", result.Name.Value);
-        Assert.Equal("123 Street", result.Address.Street);
-        Assert.Equal("Townsville", result.Address.Town);
-        Assert.Equal("Countyshire", result.Address.County);
-        Assert.Equal("AB1 2CD", result.Address.Postcode);
-        Assert.Equal("Academy", result.Type.Value);
-        Assert.Equal("Group Name", result.Group.PartOfName);
-        Assert.Equal("GRP123", result.Group.PartOfCode);
-        Assert.Equal("LA001", result.LocalAuthority.Code);
-        Assert.Equal("Local Authority", result.LocalAuthority.Name);
+        Assert.Equal("123 Street", result.Address?.Street);
+        Assert.Equal("Townsville", result.Address?.Town);
+        Assert.Equal("Countyshire", result.Address?.County);
+        Assert.Equal("AB1 2CD", result.Address?.Postcode);
+        Assert.Equal("Academy", result.Type?.Value);
+        Assert.Equal("Group Name", result.Group?.PartOfName);
+        Assert.Equal("GRP123", result.Group?.PartOfCode);
+        Assert.Equal("LA001", result.LocalAuthority?.Code);
+        Assert.Equal("Local Authority", result.LocalAuthority?.Name);
     }
 }
