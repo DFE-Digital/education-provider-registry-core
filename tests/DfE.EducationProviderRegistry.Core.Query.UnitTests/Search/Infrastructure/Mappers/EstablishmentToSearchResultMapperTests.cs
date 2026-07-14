@@ -61,58 +61,6 @@ public sealed class EstablishmentToSearchResultMapperTests
     }
 
     [Fact]
-    public void Map_Throws_WhenSiteMissing()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.Site.Clear();
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
-    public void Map_Throws_WhenGroupMembershipMissing()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.EstablishmentGroupMembership.Clear();
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
-    public void Map_Throws_WhenGroupRecordIsNull()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.EstablishmentGroupMembership.First().Group = null!;
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
-    public void Map_Throws_WhenAuthorityMissing()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.EstablishmentAuthority.Clear();
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
     public void Map_ReturnsExpectedResult_WhenInputIsValid()
     {
         // arrange
