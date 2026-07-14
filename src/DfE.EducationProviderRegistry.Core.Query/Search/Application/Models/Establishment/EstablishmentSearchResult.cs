@@ -61,12 +61,12 @@ public sealed record EstablishmentSearchResult
         GroupDetail group,
         LocalAuthority localAuthority)
     {
-        Urn = urn ?? throw new ArgumentNullException(nameof(urn));
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        Address = address ?? throw new ArgumentNullException(nameof(address));
-        Type = type ?? throw new ArgumentNullException(nameof(type));
-        Group = group ?? throw new ArgumentNullException(nameof(group));
-        LocalAuthority = localAuthority ?? throw new ArgumentNullException(nameof(localAuthority));
+        Urn = urn;
+        Name = name;
+        Address = address;
+        Type = type;
+        Group = group;
+        LocalAuthority = localAuthority;
     }
 
     /// <summary>
