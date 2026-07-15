@@ -77,6 +77,24 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
             "test",
             SearchByNameTerms.Create("test", 50)),
 
+        // Case insensitive single-word term
+        new SearchScenario(
+            "Establishment",
+            new([
+                "establishment",
+                "EsTaBlIshMeNT",
+                "ESTABLISHMENT"
+            ])),
+        // Case insentive match multi word
+        new SearchScenario(
+            "The Establishment",
+            new([
+                "The Primary Establishment",
+                "My establishment",
+                "Establishment",
+                "ESTABLISHMENT",
+                "establishment"
+            ])),
         // Special character - '
         new SearchScenario(
             "o'connor",
