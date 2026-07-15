@@ -18,7 +18,7 @@ internal static class SearchResponseAssertions
             actual.Name.Value);
 
         Assert.Equal(
-            expected.EstablishmentType.Name,
-            actual.Type.Value);
+            expected.EstablishmentType?.Name,
+            actual.Type?.Value);
     }
 }

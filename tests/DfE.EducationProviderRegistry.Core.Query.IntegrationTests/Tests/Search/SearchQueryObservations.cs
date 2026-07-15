@@ -1,13 +1,12 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor.Postgres;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
 
 internal sealed class SearchQueryObservations
 {
-    private readonly IReadOnlyList<ObservedQuery> _queries;
+    private readonly IReadOnlyList<PostgresQuery> _queries;
 
-    public SearchQueryObservations(PostgresQueryObservations queries)
+    public SearchQueryObservations(PostgresQueries queries)
     {
         _queries =
            [
@@ -16,12 +15,12 @@ internal sealed class SearchQueryObservations
            ];
     }
 
-    private ObservedQuery InitialProjection =>
+    private PostgresQuery InitialProjection =>
         _queries.First(
             (t) => t.query?.Contains("LEFT JOIN core.site AS s") ?? false);
 
-    private ObservedQuery TrigramSearch => GetSingleQuery("similarity(");
-    private ObservedQuery Facets => GetSingleQuery("GROUP BY e.establishment_type_id");
+    private PostgresQuery TrigramSearch => GetSingleQuery("similarity(");
+    private PostgresQuery Facets => GetSingleQuery("GROUP BY e.establishment_type_id");
 
     public void AssertSearchPipelineExecuted(TimeSpan expectedExecutionTime)
     {
@@ -44,7 +43,7 @@ internal sealed class SearchQueryObservations
             userMessage: $"total execution time {totalExecutionTime.TotalMilliseconds}ms exceeded {expectedExecutionTime.TotalMilliseconds}ms");
     }
 
-    private ObservedQuery GetSingleQuery(string contains) =>
+    private PostgresQuery GetSingleQuery(string contains) =>
         _queries.SingleOrDefault(
             t => t.query?.Contains(contains, StringComparison.Ordinal) ?? false)
                 ?? throw new InvalidOperationException(

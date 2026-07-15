@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor.Postgres;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
@@ -51,7 +51,7 @@ public sealed class SearchEstablishmentByNamePerformanceTests : UseCaseIntegrati
                 .WithSearchKeywords(searchTerm)
                 .Build();
 
-        await QueryObservationHandler.StartAsync(ct);
+        await QueryCollector.StartAsync(ct);
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         // act
@@ -60,7 +60,7 @@ public sealed class SearchEstablishmentByNamePerformanceTests : UseCaseIntegrati
 
         // assert
         stopwatch.Stop();
-        PostgresQueryObservations observations = await QueryObservationHandler.GetObservationsAsync(ct);
+        PostgresQueries observations = await QueryCollector.GetObservationsAsync(ct);
 
         Assert.NotNull(response);
         Assert.True(response.SuccessfulRequest);

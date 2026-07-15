@@ -2,6 +2,8 @@
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,9 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
 #nullable enable
 
+#nullable disable
+    internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
+#nullable enable
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
         : base(testServicesProvider)
     {
@@ -50,8 +55,10 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
         EstablishmentFactory = new EstablishmentFactory(CreateDbContext(connectionString));
         SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
-
+        QueryCollector = new PostgresQueryCollector(connectionString);
         await Database.StartAsync(ct);
+
+
     }
 
     protected override Task<IConfiguration> GetApplicationConfigurationAsync()
