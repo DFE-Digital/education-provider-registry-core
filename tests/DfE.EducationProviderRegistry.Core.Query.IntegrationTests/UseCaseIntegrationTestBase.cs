@@ -17,9 +17,6 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     protected IDatabase? Database { get; private set; }
 #nullable disable
     internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
-#nullable enable
-
-#nullable disable
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
 #nullable enable
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)

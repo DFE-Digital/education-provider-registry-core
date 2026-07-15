@@ -34,7 +34,7 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        SearchableEstablishments searchedEstablishments =
+        SearchableEstablishmentsResponse searchedEstablishments =
             await SearchEstablishmentFactory.CreateManyAsync(
                 totalToCreate: 100_000,
                 searchTerm: scenario.searchTerm,
@@ -69,13 +69,13 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
         }
     }
 
-    public sealed record SearchScenario(string searchTerm, SearchByNameMatchTerms matches);
+    public sealed record SearchScenario(string searchTerm, SearchByNameTerms matches);
 
     public static TheoryData<SearchScenario> SearchScenarios =>
     [
         new SearchScenario(
             "test",
-            SearchByNameMatchTerms.Create("test", 50)),
+            SearchByNameTerms.Create("test", 50)),
 
         // Special character - '
         new SearchScenario(

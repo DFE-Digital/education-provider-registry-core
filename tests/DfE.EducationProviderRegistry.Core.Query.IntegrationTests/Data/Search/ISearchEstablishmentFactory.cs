@@ -1,10 +1,17 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
 internal interface ISearchEstablishmentFactory
 {
-    Task<SearchableEstablishments> CreateManyAsync(
+    Task<SearchableEstablishmentsResponse> CreateManyAsync(
         int totalToCreate,
         string searchTerm,
-        SearchByNameMatchTerms matches,
+        SearchByNameTerms matches,
         CancellationToken ct = default);
+}
+
+public sealed record SearchableEstablishmentsResponse
+{
+    public required IReadOnlyCollection<Establishment> SearchTermMatches { get; init; }
 }

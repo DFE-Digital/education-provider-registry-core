@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
@@ -35,11 +34,11 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
 
         const string searchTerm = "TEST";
 
-        SearchableEstablishments searchedEstablishments =
+        SearchableEstablishmentsResponse searchedEstablishments =
             await SearchEstablishmentFactory.CreateManyAsync(
                 totalToCreate: 100_000,
                 searchTerm: searchTerm,
-                matches: SearchByNameMatchTerms.Create(searchTerm, matchCount: 1),
+                matches: SearchByNameTerms.Create(searchTerm, matchCount: 1),
                 ct);
 
         SearchRequest request =

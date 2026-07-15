@@ -39,11 +39,11 @@ public sealed class SearchEstablishmentByNamePerformanceTests : UseCaseIntegrati
 
         const string searchTerm = "TEST";
 
-        SearchableEstablishments _ =
+        SearchableEstablishmentsResponse _ =
             await SearchEstablishmentFactory.CreateManyAsync(
                 totalToCreate: 100_000,
                 searchTerm: searchTerm,
-                matches: SearchByNameMatchTerms.Create(searchTerm, matchCount: matches),
+                matches: SearchByNameTerms.Create(searchTerm, matchCount: matches),
                 ct);
 
         SearchRequest request =
