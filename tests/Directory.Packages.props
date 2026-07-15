@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="coverlet.msbuild" Version="10.0.1" />
+    <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="DfE.Core.Libraries.CrossCutting" Version="1.0.3" />
     <PackageVersion Include="DfE.Core.Libraries.Testing" Version="1.0.3" />
     <PackageVersion Include="DfE.Core.Libraries.IntegrationTests" Version="1.0.3" />
