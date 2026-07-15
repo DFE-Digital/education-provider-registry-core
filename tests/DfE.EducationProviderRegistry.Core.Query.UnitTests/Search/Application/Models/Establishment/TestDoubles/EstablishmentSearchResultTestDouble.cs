@@ -29,7 +29,7 @@ public static class EstablishmentSearchResultTestDouble
             EstablishmentType.Create("Academy");
 
         GroupDetail group =
-            GroupDetail.Create("Mock Trust", "TRUST001");
+            GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001");
 
         LocalAuthority localAuthority =
             LocalAuthority.Create("Test LA", "LA001");
@@ -49,6 +49,6 @@ public static class EstablishmentSearchResultTestDouble
             new Name("Test School"),
             new Address("123 Street", "Town", "County", "PC1 1AA"),
             EstablishmentType.Create("Academy"),
-            GroupDetail.Create("Mock Trust", "TRUST001"),
+            GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001"),
             LocalAuthority.Create("Test LA", "LA001"));
 }

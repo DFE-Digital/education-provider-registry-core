@@ -8,7 +8,7 @@ public sealed class GroupDetailTests
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        GroupDetail detail = new("Mock Trust", "TRUST001");
+        GroupDetail detail = new("Mock Group Id","Mock Trust", "TRUST001");
 
         // assert
         Assert.Equal("Mock Trust", detail.PartOfName);
@@ -19,8 +19,8 @@ public sealed class GroupDetailTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        GroupDetail viaCtor = new("Mock Trust", "TRUST001");
-        GroupDetail viaFactory = GroupDetail.Create("Mock Trust", "TRUST001");
+        GroupDetail viaCtor = new( "Mock Group Id","Mock Trust", "TRUST001");
+        GroupDetail viaFactory = GroupDetail.Create("Mock Group Id","Mock Trust", "TRUST001");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
@@ -28,11 +28,19 @@ public sealed class GroupDetailTests
     }
 
     [Fact]
+    public void Constructor_ShouldThrow_WhenGroupIdIsNull()
+    {
+        // arrange/assert
+        Assert.Throws<ArgumentNullException>(() =>
+            new GroupDetail(null!, "Mock Trust", "TRUST001"));
+    }
+
+    [Fact]
     public void Constructor_ShouldThrow_WhenPartOfNameIsNull()
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            new GroupDetail(null!, "TRUST001"));
+            new GroupDetail("Mock Group Id", null!, "TRUST001"));
     }
 
     [Fact]
@@ -40,7 +48,7 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            new GroupDetail("Mock Trust", null!));
+            new GroupDetail("Mock Group Id", "Mock Trust", null!));
     }
 
     [Fact]
@@ -48,7 +56,7 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            GroupDetail.Create(null!, "TRUST001"));
+            GroupDetail.Create("Mock Group Id", null!, "TRUST001"));
     }
 
     [Fact]
@@ -56,7 +64,18 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            GroupDetail.Create("Mock Trust", null!));
+            GroupDetail.Create("Mock Group Id", "Mock Trust", null!));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("   ")]
+    public void Constructor_ShouldThrowArgumentException_WhenGroupIdIsEmptyOrWhitespace(string invalid)
+    {
+        // arrange/assert
+        Assert.Throws<ArgumentException>(() =>
+            new GroupDetail(invalid, "Mock Trust", "TRUST001"));
     }
 
     [Theory]
@@ -67,7 +86,7 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            new GroupDetail(invalid, "TRUST001"));
+            new GroupDetail("Mock Group Id", invalid, "TRUST001"));
     }
 
     [Theory]
@@ -78,7 +97,7 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            new GroupDetail("Mock Trust", invalid));
+            new GroupDetail("Mock Group Id", "Mock Trust", invalid));
     }
 
     [Theory]
@@ -89,7 +108,7 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            GroupDetail.Create(invalid, "TRUST001"));
+            GroupDetail.Create("Mock Group Id", invalid, "TRUST001"));
     }
 
     [Theory]
@@ -100,6 +119,6 @@ public sealed class GroupDetailTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            GroupDetail.Create("Mock Trust", invalid));
+            GroupDetail.Create("Mock Group Id", "Mock Trust", invalid));
     }
 }

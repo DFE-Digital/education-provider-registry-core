@@ -15,7 +15,7 @@ internal sealed class EstablishmentSearchResultBuilder
         County: "Testshire",
         Postcode: "TE5 7ST");
     private EstablishmentType _type = EstablishmentType.Create("Academy");
-    private GroupDetail _group = GroupDetail.Create("Mock Trust", "TRUST001");
+    private GroupDetail _group = GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001");
     private LocalAuthority _localAuthority = LocalAuthority.Create("Test LA", "LA001");
 
     public EstablishmentSearchResultBuilder WithUrn(string urn)
@@ -42,9 +42,9 @@ internal sealed class EstablishmentSearchResultBuilder
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithGroup(string name, string code)
+    public EstablishmentSearchResultBuilder WithGroup(string id, string name, string code)
     {
-        _group = GroupDetail.Create(name, code);
+        _group = GroupDetail.Create(id, name, code);
         return this;
     }
 

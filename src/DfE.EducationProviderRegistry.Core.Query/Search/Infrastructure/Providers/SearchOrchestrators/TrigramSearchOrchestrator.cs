@@ -43,13 +43,14 @@ internal sealed class TrigramSearchOrchestrator<TProjection> : ISearchOrchestrat
         }
 
         // Build trigram SQL
+        string searchTerm = context.SearchTerm.Replace("'", "''");
         string sql =
             $@"
             SELECT t.""{metadata.PrimaryKeyColumn}""
             FROM {metadata.Schema}.""{metadata.TableName}"" t
-            WHERE t.""{context.SearchColumn}"" % CAST('{context.SearchTerm}' AS text)
+            WHERE t.""{context.SearchColumn}"" % CAST('{searchTerm}' AS text)
             {searchFilters}
-            ORDER BY similarity(t.""{context.SearchColumn}"", CAST('{context.SearchTerm}' AS text)) DESC
+            ORDER BY similarity(t.""{context.SearchColumn}"", CAST('{searchTerm}' AS text)) DESC
             LIMIT {context.PageSize} OFFSET {context.Offset}
             ";
 

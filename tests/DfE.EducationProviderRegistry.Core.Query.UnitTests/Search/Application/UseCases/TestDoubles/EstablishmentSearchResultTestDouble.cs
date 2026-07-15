@@ -28,7 +28,7 @@ internal static class EstablishmentSearchResultTestDouble
                 County: FakeCounty(faker),
                 Postcode: FakePostcode(faker)),
             type: EstablishmentType.Create("Academy"),
-            group: GroupDetail.Create("Mock Trust", "TRUST001"),
+            group: GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001"),
             localAuthority: LocalAuthority.Create("Test LA", "LA001")
         );
     }

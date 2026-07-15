@@ -42,7 +42,7 @@ public sealed class ParallelMappingStepUnitTests
                     new Name("School A"),
                     new Address("Street", "Town", "County", "AA1 1AA"),
                     new EstablishmentType("Academy"),
-                    new GroupDetail("Group", "G"),
+                    new GroupDetail("Group A", "Trust A", "TRUST001"),
                     new LocalAuthority("LA", "Authority")
                 ));
 
@@ -57,7 +57,7 @@ public sealed class ParallelMappingStepUnitTests
         ParallelMappingStep step = new(mapperMock.Object);
 
         using CancellationTokenSource cts = new();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // act
         Func<Task> act = () => Task.Run(() =>
@@ -78,7 +78,7 @@ public sealed class ParallelMappingStepUnitTests
                         new Name("Mapped " + e.Urn),
                         new Address("Street", "Town", "County", "AA1 1AA"),
                         new EstablishmentType("Academy"),
-                        new GroupDetail("Group", "G"),
+                        new GroupDetail("Group A", "Trust A", "TRUST001"),
                         new LocalAuthority("LA", "Authority")));
 
         List<Establishment> establishments =

@@ -8,6 +8,8 @@
 /// </summary>
 public sealed record class GroupDetail
 {
+    public string GroupId { get; set; }
+
     /// <summary>
     /// Gets the display name of the group the establishment is part of.
     /// </summary>
@@ -29,11 +31,13 @@ public sealed record class GroupDetail
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="partOfName"/> or <paramref name="partOfCode"/> is empty or whitespace.
     /// </exception>
-    public GroupDetail(string partOfName, string partOfCode)
+    public GroupDetail(string groupId, string partOfName, string partOfCode)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(partOfName);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(partOfCode);
+        ArgumentException.ThrowIfNullOrWhiteSpace(groupId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(partOfName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(partOfCode);
 
+        GroupId = groupId;
         PartOfName = partOfName;
         PartOfCode = partOfCode;
     }
@@ -46,7 +50,8 @@ public sealed record class GroupDetail
     /// <param name="partOfCode">The identifying code of the group.</param>
     /// <returns>A fully validated <see cref="GroupDetail"/> instance.</returns>
     public static GroupDetail Create(
+        string groupId,
         string partOfName,
         string partOfCode) =>
-            new(partOfName, partOfCode);
+            new(groupId, partOfName, partOfCode);
 }

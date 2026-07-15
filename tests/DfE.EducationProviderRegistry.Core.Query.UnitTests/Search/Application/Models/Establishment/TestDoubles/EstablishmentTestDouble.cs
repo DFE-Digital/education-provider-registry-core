@@ -22,7 +22,7 @@ internal static class EstablishmentTestDouble
         EstablishmentType.Create("Academy");
 
     public static GroupDetail ValidGroup =>
-        GroupDetail.Create("Mock Trust", "TRUST001");
+        GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001");
 
     public static LocalAuthority ValidLocalAuthority =>
         LocalAuthority.Create("Test LA", "LA001");

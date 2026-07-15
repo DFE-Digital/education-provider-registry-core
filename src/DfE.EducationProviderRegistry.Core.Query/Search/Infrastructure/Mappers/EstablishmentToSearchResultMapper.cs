@@ -28,6 +28,7 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         GroupDetail? group = membership is null
             ? null
             : new GroupDetail(
+                groupId: membership.Group?.GroupId.ToString(),
                 partOfName: membership.Group?.Name,
                 partOfCode: membership.Group?.Code);
 

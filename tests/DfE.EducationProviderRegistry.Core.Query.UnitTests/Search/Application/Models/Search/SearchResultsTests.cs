@@ -17,7 +17,7 @@ public sealed class SearchResultsTests
                 County: "Testshire",
                 Postcode: "TE5 7ST"),
             type: EstablishmentType.Create("Academy"),
-            group: GroupDetail.Create("Mock Trust", "TRUST001"),
+            group: GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001"),
             localAuthority: LocalAuthority.Create("Test LA", "LA001")
         );
     }

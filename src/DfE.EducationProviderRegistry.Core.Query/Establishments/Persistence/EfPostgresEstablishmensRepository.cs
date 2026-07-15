@@ -55,6 +55,7 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
                 Urn = EstablishmentUrnModel.Create(e.Urn),
                 Name = new EstablishmentNameModel(e.Name),
             })
+            .Take(50)
             .ToListAsync(cancellationToken);
 
         return results;

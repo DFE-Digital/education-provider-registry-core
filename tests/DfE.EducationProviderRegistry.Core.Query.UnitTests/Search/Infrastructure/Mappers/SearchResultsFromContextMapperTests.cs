@@ -54,7 +54,7 @@ public sealed class SearchResultsFromContextMapperTests
                 new Name("School A"),
                 new Address("Street A", "Town A", "County A", "AA1 1AA"),
                 new EstablishmentType("Academy"),
-                new GroupDetail("Group A", "GA"),
+                new GroupDetail("Group A", "Trust A", "TRUST001"),
                 new LocalAuthority("LA1", "Authority A")
             );
 
