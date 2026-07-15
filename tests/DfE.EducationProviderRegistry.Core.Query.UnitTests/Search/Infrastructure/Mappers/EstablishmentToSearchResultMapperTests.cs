@@ -61,58 +61,6 @@ public sealed class EstablishmentToSearchResultMapperTests
     }
 
     [Fact]
-    public void Map_Throws_WhenSiteMissing()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.Site.Clear();
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
-    public void Map_Throws_WhenGroupMembershipMissing()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.EstablishmentGroupMembership.Clear();
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
-    public void Map_Throws_WhenGroupRecordIsNull()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.EstablishmentGroupMembership.First().Group = null!;
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
-    public void Map_Throws_WhenAuthorityMissing()
-    {
-        // arrange
-        Establishment establishment = BuildValidEstablishment();
-        establishment.EstablishmentAuthority.Clear();
-
-        EstablishmentToSearchResultMapper mapper = new();
-
-        // act // assert
-        Assert.Throws<InvalidOperationException>(() => mapper.Map(establishment));
-    }
-
-    [Fact]
     public void Map_ReturnsExpectedResult_WhenInputIsValid()
     {
         // arrange
@@ -125,14 +73,14 @@ public sealed class EstablishmentToSearchResultMapperTests
         // assert
         Assert.Equal("123456", result.Urn.Value);
         Assert.Equal("Test School", result.Name.Value);
-        Assert.Equal("123 Street", result.Address.Street);
-        Assert.Equal("Townsville", result.Address.Town);
-        Assert.Equal("Countyshire", result.Address.County);
-        Assert.Equal("AB1 2CD", result.Address.Postcode);
-        Assert.Equal("Academy", result.Type.Value);
-        Assert.Equal("Group Name", result.Group.PartOfName);
-        Assert.Equal("GRP123", result.Group.PartOfCode);
-        Assert.Equal("LA001", result.LocalAuthority.Code);
-        Assert.Equal("Local Authority", result.LocalAuthority.Name);
+        Assert.Equal("123 Street", result.Address?.Street);
+        Assert.Equal("Townsville", result.Address?.Town);
+        Assert.Equal("Countyshire", result.Address?.County);
+        Assert.Equal("AB1 2CD", result.Address?.Postcode);
+        Assert.Equal("Academy", result.Type?.Value);
+        Assert.Equal("Group Name", result.Group?.PartOfName);
+        Assert.Equal("GRP123", result.Group?.PartOfCode);
+        Assert.Equal("LA001", result.LocalAuthority?.Code);
+        Assert.Equal("Local Authority", result.LocalAuthority?.Name);
     }
 }

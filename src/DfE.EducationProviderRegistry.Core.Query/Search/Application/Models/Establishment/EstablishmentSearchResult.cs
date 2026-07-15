@@ -27,7 +27,7 @@ public sealed record EstablishmentSearchResult
     /// <summary>
     /// Gets the establishment type classification (e.g., Academy, Free School).
     /// </summary>
-    public EstablishmentType Type { get; }
+    public EstablishmentType? Type { get; }
 
     /// <summary>
     /// Gets the group‑level details associated with the establishment,
@@ -57,14 +57,14 @@ public sealed record EstablishmentSearchResult
         UniqueReferenceNumber urn,
         Name name,
         Address? address,
-        EstablishmentType type,
+        EstablishmentType? type,
         GroupDetail? group,
         LocalAuthority? localAuthority)
     {
-        Urn = urn ?? throw new ArgumentNullException(nameof(urn));
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Urn = urn;
+        Name = name;
         Address = address;
-        Type = type ?? throw new ArgumentNullException(nameof(type));
+        Type = type;
         Group = group;
         LocalAuthority = localAuthority;
     }
@@ -86,9 +86,9 @@ public sealed record EstablishmentSearchResult
     public static EstablishmentSearchResult Create(
         UniqueReferenceNumber urn,
         Name name,
-        Address address,
-        EstablishmentType type,
-        GroupDetail group,
-        LocalAuthority localAuthority)
+        Address? address,
+        EstablishmentType? type,
+        GroupDetail? group,
+        LocalAuthority? localAuthority)
         => new(urn, name, address, type, group, localAuthority);
 }

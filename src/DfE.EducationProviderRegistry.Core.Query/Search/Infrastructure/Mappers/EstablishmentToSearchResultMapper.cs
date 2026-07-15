@@ -12,44 +12,44 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        UniqueReferenceNumber urn = new(input.Urn);
-        Name name = new(input.Name);
-
         Site? site = input.Site.FirstOrDefault();
 
-        Address? address = site != null ?
-            new(
+        Address? address = site is null
+            ? null
+            : new Address(
                 Street: site.AddressLine1,
                 Town: site.Town,
                 County: site.County,
-                Postcode: site.Postcode
-            ) : null;
+                Postcode: site.Postcode);
 
-        EstablishmentType type = new(input.EstablishmentType.Name);
+        EstablishmentGroupMembership? membership =
+            input.EstablishmentGroupMembership.FirstOrDefault();
 
-        GroupRecord? groupRecord = input.EstablishmentGroupMembership.FirstOrDefault()?.Group;
-
-        GroupDetail? group = groupRecord != null ?
-            new(
-                partOfName: groupRecord.Name,
-                partOfCode: groupRecord.Code
-            ) : null;
+        GroupDetail? group = membership is null
+            ? null
+            : new GroupDetail(
+                partOfName: membership.Group?.Name,
+                partOfCode: membership.Group?.Code);
 
         EstablishmentAuthority? authority =
             input.EstablishmentAuthority.FirstOrDefault();
 
-        LocalAuthority? localAuthority = authority != null ? new(
-            localAuthorityCode: authority.AuthorityCode,
-            localAuthorityName: authority.AuthorityName
-        ) : null;
+        LocalAuthority? localAuthority = authority is null
+            ? null
+            : new LocalAuthority(
+                localAuthorityName: authority.AuthorityName,
+                localAuthorityCode: authority.AuthorityCode);
+
+        EstablishmentType? type = input.EstablishmentType is null
+            ? null
+            : new EstablishmentType(input.EstablishmentType.Name);
 
         return new EstablishmentSearchResult(
-            urn,
-            name,
+            new UniqueReferenceNumber(input.Urn),
+            new Name(input.Name),
             address,
             type,
             group,
-            localAuthority
-        );
+            localAuthority);
     }
 }
