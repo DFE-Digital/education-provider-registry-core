@@ -1,7 +1,10 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +17,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     protected IDatabase? Database { get; private set; }
 
 #nullable disable
+    internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
 #nullable enable
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
@@ -45,6 +49,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
         string connectionString = Database.ConnectionString;
 
+        SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
         QueryCollector = new PostgresQueryCollector(connectionString);
         await Database.StartAsync(ct);
 
@@ -69,5 +74,18 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         {
             await Database.DisposeAsync();
         }
+    }
+
+    private static EducationProviderRegistryDbContext CreateDbContext(string connectionString)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+
+        DbContextOptionsBuilder<EducationProviderRegistryDbContext> contextOptionsBuilder = new();
+        contextOptionsBuilder
+            .UseNpgsql(connectionString)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging();
+        EducationProviderRegistryDbContext dbContext = new(contextOptionsBuilder.Options);
+        return dbContext;
     }
 }
