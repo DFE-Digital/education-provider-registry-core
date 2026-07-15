@@ -62,7 +62,7 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
             Assert.Single(
                 response.Model.EstablishmentResults.EstablishmentCollection);
 
-        SearchResponseAssertions.AssertMatches(
+        SearchResponseAssertions.AssertMapped(
             searchedEstablishments.SearchTermMatches.Single(),
             result);
     }

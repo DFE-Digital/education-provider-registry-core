@@ -65,7 +65,7 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
             EstablishmentSearchResult result =
                 Assert.Single(actualResults, (estab) => estab.Urn.Value == matchedEstablishment.Urn);
 
-            SearchResponseAssertions.AssertMatches(matchedEstablishment, result);
+            SearchResponseAssertions.AssertMapped(matchedEstablishment, result);
         }
     }
 
