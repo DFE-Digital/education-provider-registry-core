@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 internal static class SearchConfigurationExtensions
 {
-    internal static Dictionary<string, string?> Default => new()
+    private static Dictionary<string, string?> Default => new()
         {
             {
                 "FilterKeyToFilterExpressionMapOptions:FilterChainingLogicalOperator",
