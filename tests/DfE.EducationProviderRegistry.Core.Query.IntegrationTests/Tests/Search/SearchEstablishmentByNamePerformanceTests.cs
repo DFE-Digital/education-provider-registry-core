@@ -37,7 +37,7 @@ public sealed class SearchEstablishmentByNamePerformanceTests : UseCaseIntegrati
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        const string searchTerm = "TEST";
+        const string searchTerm = "estab";
 
         SearchableEstablishmentsResponse _ =
             await SearchEstablishmentFactory.CreateManyAsync(
