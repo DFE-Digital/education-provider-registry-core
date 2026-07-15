@@ -2,7 +2,6 @@
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using static DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments.EstablishmentBuilder;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
@@ -48,7 +47,7 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
         };
     }
 
-    private List<Establishment> CreateMatchingEstablishments(SearchByNameMatchTerms config)
+    private static List<Establishment> CreateMatchingEstablishments(SearchByNameMatchTerms config)
     {
         List<Establishment> matchedEstablishments = [];
         foreach (string matchName in config.matchingNames)

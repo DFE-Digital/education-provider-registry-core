@@ -1,6 +1,5 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
@@ -17,7 +16,6 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
-    internal IEstablishmentFactory EstablishmentFactory { get; private set; }
     internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
 #nullable enable
 
@@ -53,7 +51,6 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
         string connectionString = Database.ConnectionString;
 
-        EstablishmentFactory = new EstablishmentFactory(CreateDbContext(connectionString));
         SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
         QueryCollector = new PostgresQueryCollector(connectionString);
         await Database.StartAsync(ct);
