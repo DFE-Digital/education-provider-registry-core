@@ -8,7 +8,7 @@ public sealed class GroupDetailTests
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        GroupDetail detail = new("Mock Group Id","Mock Trust", "TRUST001");
+        GroupDetail detail = new("Mock Group Id", "Mock Trust", "TRUST001");
 
         // assert
         Assert.Equal("Mock Trust", detail.PartOfName);
@@ -19,8 +19,8 @@ public sealed class GroupDetailTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        GroupDetail viaCtor = new( "Mock Group Id","Mock Trust", "TRUST001");
-        GroupDetail viaFactory = GroupDetail.Create("Mock Group Id","Mock Trust", "TRUST001");
+        GroupDetail viaCtor = new("Mock Group Id", "Mock Trust", "TRUST001");
+        GroupDetail viaFactory = GroupDetail.Create("Mock Group Id", "Mock Trust", "TRUST001");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
