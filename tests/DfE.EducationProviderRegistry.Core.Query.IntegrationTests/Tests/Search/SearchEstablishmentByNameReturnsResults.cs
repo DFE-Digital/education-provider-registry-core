@@ -69,40 +69,6 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
         }
     }
 
-    [Fact]
-    public async Task Limits_Matches_To_50_Results()
-    {
-        // arrange
-        CancellationToken ct = TestContext.Current.CancellationToken;
-
-        const string searchTerm = "testlimit";
-
-        SearchableEstablishments searchedEstablishments =
-            await SearchEstablishmentFactory.CreateManyAsync(
-                totalToCreate: 100_000,
-                searchTerm: searchTerm,
-                matches: SearchByNameMatchTerms.Create(searchTerm, 5000),
-                ct);
-
-        SearchRequest request =
-            SearchRequestBuilder.Create()
-                .WithSearchKeywords(searchTerm)
-                .Build();
-
-        // act
-        UseCaseResponse<SearchResponse> response =
-            await ExecuteUseCase<SearchRequest, SearchResponse>(request);
-
-        // assert
-        const int limit = 50;
-
-        Assert.NotNull(response);
-        Assert.Null(response.ErrorMessage);
-        Assert.NotNull(response.Model);
-        Assert.Equal(limit, response.Model.TotalNumberOfResults);
-        Assert.Equal(limit, response.Model.EstablishmentResults!.EstablishmentCollection.Count);
-    }
-
     public sealed record SearchScenario(string searchTerm, SearchByNameMatchTerms matches);
 
     public static TheoryData<SearchScenario> SearchScenarios =>

@@ -40,7 +40,7 @@ internal sealed class SearchQueryObservations
 
         Assert.True(
             totalExecutionTime < expectedExecutionTime,
-            userMessage: $"total execution time {totalExecutionTime.TotalMilliseconds}ms exceeded {expectedExecutionTime.TotalMilliseconds}ms");
+            userMessage: $"search queries total execution time {totalExecutionTime.TotalMilliseconds}ms exceeded {expectedExecutionTime.TotalMilliseconds}ms");
     }
 
     private PostgresQuery GetSingleQuery(string contains) =>
