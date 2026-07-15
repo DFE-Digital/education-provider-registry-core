@@ -5,7 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 public sealed class SearchEstablishmentBuilder
 {
     // temp as seed range 10_000->9_010_000 avoids conflicts
-    private static int _urnCounter = 9_500_000;
+    private static int _urnCounter = 9_010_001;
 
     private readonly Establishment _establishment;
 
