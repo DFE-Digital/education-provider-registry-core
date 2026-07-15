@@ -2,11 +2,11 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
-public interface ISearchEstablishmentFactory
+internal interface ISearchEstablishmentFactory
 {
-    Task<IReadOnlyCollection<Establishment>> CreateManyAsync(
+    Task<SearchableEstablishments> CreateManyAsync(
         int totalToCreate,
-        int matchingSearchTermCount,
         string searchTerm,
+        SearchByNameMatchTerms matches,
         CancellationToken ct = default);
 }

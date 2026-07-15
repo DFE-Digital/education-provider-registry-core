@@ -5,7 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor.Pos
 
 // Maybe we can use a Clock injected to query between when GetObservationsAsync is called from StartAsync ->?
 public sealed class PostgresQueryObservationHandler
-    : IObservationHandler<PostgresQueryObservation>
+    : IObservationHandler<PostgresQueryObservations>
 {
     private readonly string _connectionString;
 
@@ -23,23 +23,24 @@ public sealed class PostgresQueryObservationHandler
 
     public Task StopAsync() => Task.CompletedTask;
 
-    public async Task<PostgresQueryObservation> GetObservationsAsync(CancellationToken ct = default)
+    public async Task<PostgresQueryObservations> GetObservationsAsync(CancellationToken ct = default)
     {
         const string sql = """
             SELECT query, calls, total_exec_time, mean_exec_time, rows 
             FROM pg_stat_statements
             WHERE query NOT ILIKE '%pg_stat_statements%'
+            AND query <> 'DISCARD ALL'
         """;
 
         await using NpgsqlConnection conn = new(_connectionString);
 
-        List<PgStatStatementsDataTransferObject> statements =
-            (await conn.QueryAsync<PgStatStatementsDataTransferObject>(sql))
+        List<ObservedQuery> statements =
+            (await conn.QueryAsync<ObservedQuery>(sql))
                 .ToList();
 
-        return new PostgresQueryObservation
+        return new PostgresQueryObservations
         {
-            Statements = statements
+            Queries = statements
         };
     }
 

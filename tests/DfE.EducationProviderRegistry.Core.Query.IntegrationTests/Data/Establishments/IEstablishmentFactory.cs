@@ -2,7 +2,7 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
 
-public interface IEstablishmentFactory
+internal interface IEstablishmentFactory
 {
     Task<Establishment> CreateAsync(
         Action<EstablishmentBuilder>? configure = null, CancellationToken ct = default);

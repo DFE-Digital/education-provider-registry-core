@@ -1,11 +1,9 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments.Insert;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observor.Postgres;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,9 +17,9 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
-    protected IEstablishmentFactory CreateEstablishment { get; private set; }
-    protected ISearchEstablishmentFactory CreateSearchedEstablishment { get; private set; }
-    protected IObservationHandler<PostgresQueryObservation> QueryObservationHandler { get; private set;  }
+    internal IEstablishmentFactory EstablishmentFactory { get; private set; }
+    internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
+    protected IObservationHandler<PostgresQueryObservations> QueryObservationHandler { get; private set; }
 #nullable enable
 
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
@@ -53,11 +51,8 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
         string connectionString = Database.ConnectionString;
 
-        IInsertEstablishmentHandler handler =
-            new EfCoreInsertEstablishmentHandler(CreateDbContext(connectionString));
-
-        CreateEstablishment = new EstablishmentFactory(handler);
-        CreateSearchedEstablishment = new SearchEstablishmentFactory(handler)!;
+        EstablishmentFactory = new EstablishmentFactory(CreateDbContext(connectionString));
+        SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
         QueryObservationHandler = new PostgresQueryObservationHandler(connectionString);
 
         await Database.StartAsync(ct);

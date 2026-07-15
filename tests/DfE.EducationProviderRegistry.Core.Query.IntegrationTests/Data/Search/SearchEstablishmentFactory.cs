@@ -1,50 +1,128 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments.Insert;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
+using static DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments.EstablishmentBuilder;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
 internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
 {
-    private readonly IInsertEstablishmentHandler _insertEstablishmentHandler;
+    private readonly EducationProviderRegistryDbContext _dbContext;
 
-    public SearchEstablishmentFactory(IInsertEstablishmentHandler insertEstablishmentHandler)
+    public SearchEstablishmentFactory(EducationProviderRegistryDbContext dbContext)
     {
-        ArgumentNullException.ThrowIfNull(insertEstablishmentHandler);
-        _insertEstablishmentHandler = insertEstablishmentHandler;
+        ArgumentNullException.ThrowIfNull(dbContext);
+        _dbContext = dbContext;
     }
 
-    public async Task<IReadOnlyCollection<Establishment>> CreateManyAsync(int totalToCreate, int matchingSearchTermCount, string searchTerm, CancellationToken ct = default)
+    public async Task<SearchableEstablishments> CreateManyAsync(int totalToCreate, string searchTerm, SearchByNameMatchTerms matches, CancellationToken ct = default)
     {
-        List<Establishment> establishments = [];
+        IReadOnlyCollection<Establishment> matching = CreateMatchingEstablishments(matches);
 
-        for (int count = 0; count < totalToCreate; count++)
+        IReadOnlyCollection<Establishment> nonMatching = CreateNotMatchingEstablishments(createCount: (totalToCreate - matches.matchingNames.Count));
+
+        await InsertEstablishmentsAsync(
+            _dbContext,
+            [.. matching, .. nonMatching],
+            ct);
+
+
+        // Requery for updated values as mapping assertions require
+        List<long> matchIds = [.. matching.Select(x => x.EstablishmentId)];
+
+        IReadOnlyCollection<Establishment> rehydratedMatches =
+            await _dbContext.Establishment
+                .Include(x => x.EstablishmentType)
+                .Include(x => x.EstablishmentAuthority)
+                .Include(x => x.Site)
+                .Where(x => matchIds.Contains(x.EstablishmentId))
+                .ToListAsync(ct);
+
+        return new()
+        {
+            Matches = rehydratedMatches,
+        };
+    }
+
+    private IReadOnlyCollection<Establishment> CreateMatchingEstablishments(SearchByNameMatchTerms config)
+    {
+        List<Establishment> matchedEstablishments = [];
+        foreach (string matchName in config.matchingNames)
         {
             EstablishmentBuilder builder = new();
-            builder.WithName(
-                (count < matchingSearchTermCount) ?
-                    CreateMatchingName(searchTerm, count) :
-                      CreateNonMatchingName(count));
+            builder.WithName(matchName);
+            matchedEstablishments.Add(builder.Build());
+        }
+        return matchedEstablishments;
+    }
 
-            establishments.Add(builder.Build());
+    private static IReadOnlyCollection<Establishment> CreateNotMatchingEstablishments(int createCount)
+    {
+        List<Establishment> notMatchEstablishments = [];
+        for (int count = 0; count < createCount; count++)
+        {
+            EstablishmentBuilder builder = new();
+            builder.WithName($"ZZZ-{count}");
+            notMatchEstablishments.Add(builder.Build());
         }
 
-        await _insertEstablishmentHandler.InsertAsync(establishments, ct);
-        return establishments;
+        return notMatchEstablishments;
     }
 
-
-    private static string CreateMatchingName(
-        string searchTerm,
-        int index)
+    private static async Task InsertEstablishmentsAsync(
+        EducationProviderRegistryDbContext dbContext,
+        IReadOnlyCollection<Establishment> establishments,
+        CancellationToken ct)
     {
-        return $"{searchTerm}-match-{index}";
-    }
+        ArgumentNullException.ThrowIfNull(establishments);
 
-    private static string CreateNonMatchingName(
-        int index)
-    {
-        return $"ZZZ-{index}";
-    }
+        if (establishments.Count == 0)
+        {
+            return;
+        }
 
+        // Resolve reference data once
+        EstablishmentReferenceData referenceData = new();
+
+        long establishmentTypeId =
+            await dbContext.GetEstablishmentTypeIdAsync(referenceData.EstablishmentTypeCode);
+
+        long establishmentStatusId =
+            await dbContext.GetEstablishmentStatusIdAsync(referenceData.EstablishmentStatusCode);
+
+        long roleTypeId =
+            await dbContext.GetRoleTypeIdAsync(referenceData.HeadteacherRoleTypeCode);
+
+        // Configure all graphs before first save
+        foreach (Establishment establishment in establishments)
+        {
+            establishment.EstablishmentTypeId =
+                establishmentTypeId;
+
+            establishment.EstablishmentStatusId =
+                establishmentStatusId;
+
+            RoleAssignment roleAssignment =
+                establishment.RoleAssignment.Single();
+
+            roleAssignment.Role.RoleTypeId =
+                roleTypeId;
+
+            // Break circular FK
+            establishment.HeadteacherRoleAssignment = null;
+            establishment.HeadteacherRoleAssignmentId = null;
+        }
+
+        // Insert everything in one batch
+        await dbContext.BulkInsertAsync(
+            establishments,
+            bulkConfig: new BulkConfig()
+            {
+                IncludeGraph = true,
+                SetOutputIdentity = true
+            },
+            cancellationToken: ct);
+    }
 }

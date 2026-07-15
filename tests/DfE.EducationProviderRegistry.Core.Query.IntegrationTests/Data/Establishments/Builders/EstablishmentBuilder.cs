@@ -5,7 +5,8 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establi
 
 public sealed class EstablishmentBuilder
 {
-    private static int _urnCounter = 777777;
+    // temporary as seed sql generates in range 10_000->9_010_000
+    private static int _urnCounter = 9_500_000;
     private readonly Establishment _establishment;
 
     public EstablishmentBuilder()
@@ -27,7 +28,8 @@ public sealed class EstablishmentBuilder
         _establishment = new Establishment
         {
             Name = "Test Establishment",
-            Urn = _urnCounter++.ToString(),
+            Urn = Interlocked.Increment(ref _urnCounter).ToString()
+
         };
 
         RoleAssignment roleAssignment = new()
