@@ -58,9 +58,9 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
 
         IReadOnlyCollection<EstablishmentSearchResult> actualResults = response.Model.EstablishmentResults!.EstablishmentCollection;
 
-        Assert.Equal(searchedEstablishments.Matches.Count, actualResults.Count);
+        Assert.Equal(searchedEstablishments.SearchTermMatches.Count, actualResults.Count);
 
-        foreach (Establishment matchedEstablishment in searchedEstablishments.Matches)
+        foreach (Establishment matchedEstablishment in searchedEstablishments.SearchTermMatches)
         {
             EstablishmentSearchResult result =
                 Assert.Single(actualResults, (estab) => estab.Urn.Value == matchedEstablishment.Urn);

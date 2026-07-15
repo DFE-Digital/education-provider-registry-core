@@ -1,5 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Establishments;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +24,10 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
 
         await InsertEstablishmentsAsync(
             _dbContext,
-            [.. matching, .. nonMatching],
+            [
+                .. matching,
+                .. nonMatching
+            ],
             ct);
 
 
@@ -42,30 +44,33 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
 
         return new()
         {
-            Matches = rehydratedMatches,
+            SearchTermMatches = rehydratedMatches,
         };
     }
 
-    private IReadOnlyCollection<Establishment> CreateMatchingEstablishments(SearchByNameMatchTerms config)
+    private List<Establishment> CreateMatchingEstablishments(SearchByNameMatchTerms config)
     {
         List<Establishment> matchedEstablishments = [];
         foreach (string matchName in config.matchingNames)
         {
-            EstablishmentBuilder builder = new();
-            builder.WithName(matchName);
-            matchedEstablishments.Add(builder.Build());
+            matchedEstablishments.Add(
+                SearchEstablishmentBuilder
+                    .Create()
+                    .WithName(matchName)
+                    .Build());
         }
         return matchedEstablishments;
     }
 
-    private static IReadOnlyCollection<Establishment> CreateNotMatchingEstablishments(int createCount)
+    private static List<Establishment> CreateNotMatchingEstablishments(int createCount)
     {
         List<Establishment> notMatchEstablishments = [];
         for (int count = 0; count < createCount; count++)
         {
-            EstablishmentBuilder builder = new();
-            builder.WithName($"ZZZ-{count}");
-            notMatchEstablishments.Add(builder.Build());
+            notMatchEstablishments.Add(
+                SearchEstablishmentBuilder.Create()
+                    .WithName($"ZZZ-{count}")
+                    .Build());
         }
 
         return notMatchEstablishments;
@@ -92,10 +97,7 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
         long establishmentStatusId =
             await dbContext.GetEstablishmentStatusIdAsync(referenceData.EstablishmentStatusCode);
 
-        long roleTypeId =
-            await dbContext.GetRoleTypeIdAsync(referenceData.HeadteacherRoleTypeCode);
-
-        // Configure all graphs before first save
+        // Configure all graphs
         foreach (Establishment establishment in establishments)
         {
             establishment.EstablishmentTypeId =
@@ -103,16 +105,6 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
 
             establishment.EstablishmentStatusId =
                 establishmentStatusId;
-
-            RoleAssignment roleAssignment =
-                establishment.RoleAssignment.Single();
-
-            roleAssignment.Role.RoleTypeId =
-                roleTypeId;
-
-            // Break circular FK
-            establishment.HeadteacherRoleAssignment = null;
-            establishment.HeadteacherRoleAssignmentId = null;
         }
 
         // Insert everything in one batch
@@ -120,7 +112,6 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
             establishments,
             bulkConfig: new BulkConfig()
             {
-                IncludeGraph = true,
                 SetOutputIdentity = true
             },
             cancellationToken: ct);

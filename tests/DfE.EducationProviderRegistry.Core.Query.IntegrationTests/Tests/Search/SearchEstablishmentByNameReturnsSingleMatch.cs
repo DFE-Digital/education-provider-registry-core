@@ -64,7 +64,7 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
                 response.Model.EstablishmentResults.EstablishmentCollection);
 
         SearchResponseAssertions.AssertMatches(
-            searchedEstablishments.Matches.Single(),
+            searchedEstablishments.SearchTermMatches.Single(),
             result);
     }
 }

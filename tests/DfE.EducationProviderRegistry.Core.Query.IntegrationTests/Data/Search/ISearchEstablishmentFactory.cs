@@ -1,6 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
-
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
 internal interface ISearchEstablishmentFactory
 {
