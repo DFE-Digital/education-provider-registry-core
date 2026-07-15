@@ -73,6 +73,7 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
 
     public static TheoryData<SearchScenario> SearchScenarios =>
     [
+    // single-word term
         new SearchScenario(
             "test",
             SearchByNameTerms.Create("test", 50)),
@@ -85,7 +86,8 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
                 "EsTaBlIshMeNT",
                 "ESTABLISHMENT"
             ])),
-        // Case insentive match multi word
+
+        // Case insensitive multi-word term
         new SearchScenario(
             "The Establishment",
             new([
@@ -95,21 +97,101 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
                 "ESTABLISHMENT",
                 "establishment"
             ])),
-        // Special character - '
+
+        // Apostrophe
         new SearchScenario(
             "o'connor",
-            new(
-            [
+            new([
                 "O'Connor Academy",
                 "St O'Connor's School"
             ])),
-        // Special character - @
+
+        // Typographic apostrophe
+        new SearchScenario(
+            "paul’s",
+            new([
+                "St Paul’s Cathedral School"
+            ])),
+
+        // Ampersand
+        new SearchScenario(
+            "&",
+            new([
+                "Health & Social Care Academy",
+                "Arts & Media School"
+            ])),
+
+        // Hyphen
+        new SearchScenario(
+            "-",
+            new([
+                "North-East Academy",
+                "All-Through School"
+            ])),
+
+        // Comma
+        new SearchScenario(
+            ",",
+            new([
+                "Christ Church Primary School, Hampstead",
+                "Holy Trinity CofE Primary School, NW3"
+            ])),
+
+        // Forward slash
+        new SearchScenario(
+            "/",
+            new([
+                "Smith/Jones Learning Centre"
+            ])),
+
+        // Parentheses
+        new SearchScenario(
+            "(",
+            new([
+                "Academy (Primary Site)"
+            ])),
+
+        // Plus
+        new SearchScenario(
+            "+",
+            new([
+                "11+ Academy"
+            ])),
+
+        // At sign
         new SearchScenario(
             "@",
-            new(
-            [
+            new([
                 "@ Academy",
                 "Coll@ge"
+            ])),
+
+        // omits apostrophe match
+        new SearchScenario(
+            "oconnor",
+            new([
+                "O'Connor Academy"
+            ])),
+        // omits apostrophe match
+        new SearchScenario(
+            "st pauls",
+            new([
+                "St Paul's School",
+                "St Paul’s School"
+            ])),
+
+        // omits hyphen match
+        new SearchScenario(
+            "north east",
+            new([
+                "North-East Academy"
+            ])),
+
+        // omits ampersand partial match
+        new SearchScenario(
+            "health social care",
+            new([
+                "Health & Social Care Academy"
             ]))
     ];
 }
