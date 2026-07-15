@@ -2,6 +2,7 @@
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
@@ -17,9 +18,24 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
 
     public async Task<SearchableEstablishmentsResponse> CreateManyAsync(int totalToCreate, string searchTerm, SearchByNameTerms matches, CancellationToken ct = default)
     {
-        IReadOnlyCollection<Establishment> matching = CreateMatchingEstablishments(matches);
 
-        IReadOnlyCollection<Establishment> nonMatching = CreateNotMatchingEstablishments(createCount: (totalToCreate - matches.matchingNames.Count));
+        IReadOnlyCollection<Establishment> matching =
+        [
+            .. matches.matchingNames.Select((name) =>
+                SearchEstablishmentBuilder
+                    .Create()
+                    .WithName(name)
+                    .Build())
+        ];
+
+        IReadOnlyCollection<Establishment> nonMatching =
+        [
+            .. Enumerable.Range(0, (totalToCreate - matches.matchingNames.Count))
+                .Select((i) =>
+                    SearchEstablishmentBuilder.Create()
+                        .WithName($"ZZZ-{i}")
+                        .Build())
+        ];
 
         await InsertEstablishmentsAsync(
             _dbContext,
@@ -45,34 +61,6 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
         {
             SearchTermMatches = rehydratedMatches,
         };
-    }
-
-    private static List<Establishment> CreateMatchingEstablishments(SearchByNameTerms config)
-    {
-        List<Establishment> matchedEstablishments = [];
-        foreach (string matchName in config.matchingNames)
-        {
-            matchedEstablishments.Add(
-                SearchEstablishmentBuilder
-                    .Create()
-                    .WithName(matchName)
-                    .Build());
-        }
-        return matchedEstablishments;
-    }
-
-    private static List<Establishment> CreateNotMatchingEstablishments(int createCount)
-    {
-        List<Establishment> notMatchEstablishments = [];
-        for (int count = 0; count < createCount; count++)
-        {
-            notMatchEstablishments.Add(
-                SearchEstablishmentBuilder.Create()
-                    .WithName($"ZZZ-{count}")
-                    .Build());
-        }
-
-        return notMatchEstablishments;
     }
 
     private static async Task InsertEstablishmentsAsync(
