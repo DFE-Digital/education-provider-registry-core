@@ -2,7 +2,6 @@
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
