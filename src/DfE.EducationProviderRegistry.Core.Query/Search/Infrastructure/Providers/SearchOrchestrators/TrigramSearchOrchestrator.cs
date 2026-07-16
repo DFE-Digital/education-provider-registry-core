@@ -33,25 +33,96 @@ internal sealed class TrigramSearchOrchestrator<TProjection> : ISearchOrchestrat
 
         EntityMetadata metadata = _metadataResolver.Resolve(db);
 
-        if (!metadata.EntityType
-            .GetProperties()
-                .Any(property =>
-                    property.GetColumnName() == context.SearchColumn))
+        List<string> invalidColumns = context.SearchColumns
+            .Where(searchColumn =>
+                !metadata.EntityType
+                    .GetProperties()
+                    .Any(property => property.GetColumnName() == searchColumn))
+            .ToList();
+
+        if (invalidColumns.Count is not 0)
         {
             throw new InvalidOperationException(
-                $"Column '{context.SearchColumn}' does not exist on entity {typeof(TProjection).Name}.");
+                $"Column(s) '{string.Join("', '", invalidColumns)}' do not exist on entity {typeof(TProjection).Name}.");
         }
 
-        // Build trigram SQL
-        string sql =
-            $@"
-            SELECT t.""{metadata.PrimaryKeyColumn}""
-            FROM {metadata.Schema}.""{metadata.TableName}"" t
-            WHERE t.""{context.SearchColumn}"" % CAST('{context.SearchTerm}' AS text)
-            {searchFilters}
-            ORDER BY similarity(t.""{context.SearchColumn}"", CAST('{context.SearchTerm}' AS text)) DESC
-            LIMIT {context.PageSize} OFFSET {context.Offset}
-            ";
+
+        bool isNumericSearch = context.SearchTerm.All(char.IsDigit);
+
+        string sql;
+
+        if (isNumericSearch)
+        {
+            string exactMatchClause = string.Join(
+                " OR ",
+                context.SearchColumns.Select(column =>
+                    $@"t.""{column}"" = CAST('{context.SearchTerm}' AS text)"));
+
+            string partialMatchClause = string.Join(
+                " OR ",
+                context.SearchColumns.Select(column =>
+                    $@"t.""{column}"" LIKE CAST('{context.SearchTerm}' AS text) || '%'"));
+
+            sql =
+                $@"
+                SELECT t.""{metadata.PrimaryKeyColumn}""
+                FROM {metadata.Schema}.""{metadata.TableName}"" t
+                WHERE (
+                    {exactMatchClause}
+                    OR {partialMatchClause}
+                )
+                {searchFilters}
+                ORDER BY
+                    CASE
+                        WHEN ({exactMatchClause}) THEN 1
+                        ELSE 2
+                    END,
+                    t.""{context.SearchColumns.First()}"" ASC
+                LIMIT {context.PageSize} OFFSET {context.Offset}
+                ";
+        }
+        else
+        {
+            string exactMatchClause = string.Join(
+                " OR ",
+                context.SearchColumns.Select(column =>
+                    $@"t.""{column}"" = CAST('{context.SearchTerm}' AS text)"));
+
+            string partialMatchClause = string.Join(
+                " OR ",
+                context.SearchColumns.Select(column =>
+                    $@"t.""{column}"" ILIKE '%' || CAST('{context.SearchTerm}' AS text) || '%'"));
+
+            string fuzzyMatchClause = string.Join(
+                " OR ",
+                context.SearchColumns.Select(column =>
+                    $@"t.""{column}"" % CAST('{context.SearchTerm}' AS text)"));
+
+            string similarityClause = string.Join(
+                ", ",
+                context.SearchColumns.Select(column =>
+                    $@"similarity(t.""{column}"", CAST('{context.SearchTerm}' AS text))"));
+
+            sql =
+                $@"
+                SELECT t.""{metadata.PrimaryKeyColumn}""
+                FROM {metadata.Schema}.""{metadata.TableName}"" t
+                WHERE (
+                    {exactMatchClause}
+                    OR {partialMatchClause}
+                    OR {fuzzyMatchClause}
+                )
+                {searchFilters}
+                ORDER BY
+                    CASE
+                        WHEN ({exactMatchClause}) THEN 1
+                        WHEN ({partialMatchClause}) THEN 2
+                        ELSE 3
+                    END,
+                    GREATEST({similarityClause}) DESC
+                LIMIT {context.PageSize} OFFSET {context.Offset}
+                ";
+        }
 
         List<object> ids = await _sqlExecutor.ExecuteIdsAsync(
             db,

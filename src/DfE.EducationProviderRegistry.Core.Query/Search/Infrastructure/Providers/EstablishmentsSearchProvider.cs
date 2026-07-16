@@ -14,19 +14,22 @@ public sealed class EstablishmentsSearchProvider : ISearchProvider<Establishment
     private readonly ISearchProjectionBuilder<Establishment> _projectionBuilder;
     private readonly ISearchFilterExpressionsBuilder _searchFilterExpressionsBuilder;
     private readonly string _searchColumn;
+    private readonly List<string> _searchColumns;
 
     public EstablishmentsSearchProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> factory,
         ISearchOrchestrator<Establishment> orchestrator,
         ISearchProjectionBuilder<Establishment> projectionBuilder,
         ISearchFilterExpressionsBuilder searchFilterExpressionsBuilder,
-        string searchColumn)
+        string searchColumn,
+        List<string> searchColumns)
     {
         _factory = factory;
         _orchestrator = orchestrator;
         _projectionBuilder = projectionBuilder;
         _searchFilterExpressionsBuilder = searchFilterExpressionsBuilder;
         _searchColumn = searchColumn;
+        _searchColumns = searchColumns;
     }
 
     public async Task<IReadOnlyList<Establishment>> GetMatchingIdsAsync(
@@ -45,6 +48,7 @@ public sealed class EstablishmentsSearchProvider : ISearchProvider<Establishment
             new()
             {
                 SearchColumn = _searchColumn,
+                SearchColumns = _searchColumns,
                 SearchTerm = searchTerm,
                 PageSize = pageSize,
                 Offset = offset,

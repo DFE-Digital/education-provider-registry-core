@@ -135,7 +135,8 @@ public static class CompositionRoot
                 sp.GetRequiredService<ISearchOrchestrator<Establishment>>(),
                 sp.GetRequiredService<ISearchProjectionBuilder<Establishment>>(),
                 sp.GetRequiredService<ISearchFilterExpressionsBuilder>(),
-                searchColumn: "name" // TODO: move to config
+                searchColumn: "name", // TODO: Move to config?
+                searchColumns: ["name", "urn"] // TODO: Move to config?
             ));
 
         // ---------------------------------------------------------

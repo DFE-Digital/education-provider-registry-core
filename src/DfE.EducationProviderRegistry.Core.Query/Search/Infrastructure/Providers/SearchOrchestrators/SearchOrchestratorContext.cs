@@ -25,6 +25,8 @@ public sealed record SearchOrchestratorContext
     /// </remarks>
     public string SearchColumn { get; init; } = string.Empty;
 
+    public IReadOnlyList<string> SearchColumns { get; init; } = [];
+
     /// <summary>
     /// The maximum number of records to return for the current search request.
     /// </summary>
