@@ -31,6 +31,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using static DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.EfEstablishmentSearchProvider;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search;
 
@@ -78,9 +79,14 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Search service adapter
         // ---------------------------------------------------------
-        services.AddScoped<
-            ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
-            EstablishmentsSearchServiceAdapter>();
+        //services.AddScoped<
+        //    ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
+        //    EstablishmentsSearchServiceAdapter>();
+
+        // Dummy
+        services.AddScoped<EfEstablishmentSearchProvider>();
+        services.AddScoped<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>, EfEstablishmentSearchServiceAdapater>();
+
 
         // ---------------------------------------------------------
         // Search orchestrator (trigram)

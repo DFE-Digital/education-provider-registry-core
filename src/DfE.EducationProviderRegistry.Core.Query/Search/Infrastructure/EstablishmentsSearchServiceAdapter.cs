@@ -14,7 +14,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 internal sealed class EstablishmentsSearchServiceAdapter
     : ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>
 {
-    private readonly ISearchProvider<Establishment> _idProvider;
+    private readonly ISearchProvider<Establishment> _establishmentSearchProvider;
 
     private readonly IReadOnlyList<ISearchPipelineStep> _pipeline;
 
@@ -27,7 +27,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         ReadOnlyCollection<SearchFilterRequest>> _searchRequestFiltersToCoreFiltersMapper;
 
     public EstablishmentsSearchServiceAdapter(
-        ISearchProvider<Establishment> idProvider,
+        ISearchProvider<Establishment> establishmentSearchProvider,
         IFacetProvider facetProvider,
         IEnumerable<ISearchPipelineStep> pipeline,
         IMapper<
@@ -37,8 +37,8 @@ internal sealed class EstablishmentsSearchServiceAdapter
             ReadOnlyCollection<FilterRequest>,
             ReadOnlyCollection<SearchFilterRequest>> searchRequestFiltersToCoreFiltersMapper)
     {
-        _idProvider = idProvider ??
-            throw new ArgumentNullException(nameof(idProvider));
+        _establishmentSearchProvider = establishmentSearchProvider ??
+            throw new ArgumentNullException(nameof(establishmentSearchProvider));
         _searchResultsFromContextMapper = searchResultsFromContextMapper ??
             throw new ArgumentNullException(nameof(searchResultsFromContextMapper));
         _searchRequestFiltersToCoreFiltersMapper = searchRequestFiltersToCoreFiltersMapper ??
@@ -57,7 +57,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         ArgumentNullException.ThrowIfNull(request);
 
         IReadOnlyList<Establishment> establishments =
-            await _idProvider.GetMatchingIdsAsync(
+            await _establishmentSearchProvider.GetMatchingIdsAsync(
                 searchTerm: request.SearchKeyword,
                 pageSize: 50,
                 offset: request.Offset,
