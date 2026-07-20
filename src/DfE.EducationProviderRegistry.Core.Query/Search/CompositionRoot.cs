@@ -24,6 +24,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Test;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
@@ -79,13 +80,18 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Search service adapter
         // ---------------------------------------------------------
-        //services.AddScoped<
-        //    ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
-        //    EstablishmentsSearchServiceAdapter>();
+        services.AddScoped<
+            ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>, EstablishmentsSearchServiceAdapter>();
 
         // Dummy
-        services.AddScoped<EfEstablishmentSearchProvider>();
-        services.AddScoped<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>, EfEstablishmentSearchServiceAdapater>();
+        services.AddScoped<ISearchClauseBuilder, SearchClauseBuilder>();
+        services.AddScoped<ISearchQueryDefinitionFactory, SearchQueryDefinitionFactory>();
+        services.AddScoped<ISearchQueryBuilder, SearchQueryBuilder>();
+        services.AddScoped<ISearchOrchestrator<Establishment>, SearchOrchestrator<Establishment>>();
+        services.AddScoped<ISearchColumnValidator, SearchColumnValidator>();
+
+        //services.AddScoped<EfEstablishmentSearchProvider>();
+        //services.AddScoped<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>, EfEstablishmentSearchServiceAdapater>();
 
 
         // ---------------------------------------------------------
@@ -95,7 +101,7 @@ public static class CompositionRoot
         /// Registers the trigram‑based search orchestrator responsible for
         /// executing similarity search queries against the database.
         /// </summary>
-        services.TryAddScoped<ISearchOrchestrator<Establishment>, TrigramSearchOrchestrator<Establishment>>();
+        //services.TryAddScoped<ISearchOrchestrator<Establishment>, TrigramSearchOrchestrator<Establishment>>();
 
         // ---------------------------------------------------------
         // Projection builder

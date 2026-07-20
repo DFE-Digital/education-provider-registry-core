@@ -66,10 +66,10 @@ public class MatchAnyFilterStategy : IFilterStrategy
     public Expression? BuildExpression(Expression propertyPath, IEnumerable<object> values)
     {
         Expression? fieldChain = null;
-        foreach (var val in values)
+        foreach (object val in values)
         {
-            var constant = Expression.Constant(Convert.ChangeType(val, propertyPath.Type), propertyPath.Type);
-            var equality = Expression.Equal(propertyPath, constant);
+            ConstantExpression constant = Expression.Constant(Convert.ChangeType(val, propertyPath.Type), propertyPath.Type);
+            BinaryExpression equality = Expression.Equal(propertyPath, constant);
             fieldChain = fieldChain is null ? equality : Expression.OrElse(fieldChain, equality);
         }
 
@@ -163,7 +163,7 @@ public static class SearchExpressionBuilder<TEntity> where TEntity : class
         Expression? combinedWhere = null;
         Expression currentScoreSum = Expression.Constant(0);
 
-        foreach (var field in request.SearchFields)
+        foreach (string field in request.SearchFields)
         {
             if (!SearchRegistry.FieldMap.TryGetValue(field, out FieldDefinition? fieldDefinition) || fieldDefinition.AllowedSearchRules == MatchType.None)
                 continue;
