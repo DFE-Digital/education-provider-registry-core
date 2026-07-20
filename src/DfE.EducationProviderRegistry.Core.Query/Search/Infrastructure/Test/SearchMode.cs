@@ -5,12 +5,6 @@ using Microsoft.EntityFrameworkCore;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Test;
 
 
-public enum SearchMode
-{
-    Numeric,
-    Text
-}
-
 public sealed record SearchQueryDefinition(
     IReadOnlyCollection<string> WhereClauses,
     IReadOnlyCollection<string> OrderByClauses);
@@ -90,13 +84,10 @@ public sealed class SearchClauseBuilder : ISearchClauseBuilder
 
 public interface ISearchQueryDefinitionFactory
 {
-    SearchQueryDefinition Create(
-        SearchMode mode,
-        SearchOrchestratorContext context);
+    SearchQueryDefinition Create(SearchOrchestratorContext context);
 }
 
-public sealed class SearchQueryDefinitionFactory
-    : ISearchQueryDefinitionFactory
+public sealed class SearchQueryDefinitionFactory : ISearchQueryDefinitionFactory
 {
     private readonly ISearchClauseBuilder _clauseBuilder;
 
@@ -106,10 +97,10 @@ public sealed class SearchQueryDefinitionFactory
         _clauseBuilder = clauseBuilder;
     }
 
-    public SearchQueryDefinition Create(
-        SearchMode mode,
-        SearchOrchestratorContext context)
+    public SearchQueryDefinition Create(SearchOrchestratorContext context)
     {
+        bool isNumeric = context.SearchTerm.All(char.IsDigit);
+
         string exactClause =
             _clauseBuilder.BuildExactMatch(
                 context.SearchColumns,
@@ -119,9 +110,9 @@ public sealed class SearchQueryDefinitionFactory
             _clauseBuilder.BuildPartialMatch(
                 context.SearchColumns,
                 context.SearchTerm,
-                prefixOnly: mode == SearchMode.Numeric);
+                prefixOnly: isNumeric);
 
-        if (mode == SearchMode.Numeric)
+        if (isNumeric)
         {
             return new SearchQueryDefinition(
                 [exactClause, partialClause],

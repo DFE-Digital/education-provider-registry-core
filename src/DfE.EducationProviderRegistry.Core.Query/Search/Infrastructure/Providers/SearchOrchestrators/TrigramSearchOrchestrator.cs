@@ -193,14 +193,8 @@ internal sealed class SearchOrchestrator<TProjection> : ISearchOrchestrator<TPro
             metadata,
             context);
 
-        SearchMode mode =
-            context.SearchTerm.All(char.IsDigit)
-                ? SearchMode.Numeric
-                : SearchMode.Text;
-
         SearchQueryDefinition definition =
             _definitionFactory.Create(
-                mode,
                 context);
 
         string sql =
