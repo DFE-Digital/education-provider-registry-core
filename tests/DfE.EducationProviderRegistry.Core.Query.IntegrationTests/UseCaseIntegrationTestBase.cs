@@ -15,7 +15,6 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     private readonly IDatabaseFactory _databaseFactory;
 
     protected IDatabase? Database { get; private set; }
-
 #nullable disable
     internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
