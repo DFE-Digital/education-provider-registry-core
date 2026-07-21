@@ -100,6 +100,8 @@ jobs:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
+          # awaiting completion of https://github.com/DFE-Digital/github-actions/pull/236/changes then defaults handle
+          java-version: 21
           coverage-report-path: coverage-sonar/SonarQube.xml
 
     - name: Run verify format
