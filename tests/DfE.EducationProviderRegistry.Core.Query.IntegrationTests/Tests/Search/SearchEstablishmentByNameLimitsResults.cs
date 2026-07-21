@@ -32,7 +32,7 @@ public sealed class SearchEstablishmentByNameLimitsResults : UseCaseIntegrationT
 
         const string searchTerm = "testlimit";
 
-        SearchableEstablishmentsResponse searchedEstablishments =
+        SearchableEstablishmentsResponse _ =
             await SearchEstablishmentFactory.CreateManyAsync(
                 totalToCreate: 100_000,
                 searchTerm: searchTerm,

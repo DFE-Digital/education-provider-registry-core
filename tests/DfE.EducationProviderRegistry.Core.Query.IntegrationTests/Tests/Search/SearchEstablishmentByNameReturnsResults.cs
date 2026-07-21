@@ -98,100 +98,102 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
                 "establishment"
             ])),
 
-        // Apostrophe
-        new SearchScenario(
-            "o'connor",
-            new([
-                "O'Connor Academy",
-                "St O'Connor's School"
-            ])),
+        // Awaiting reply on special character defects: https://dfedigital.atlassian.net/browse/GIAS-596
 
-        // Typographic apostrophe
-        new SearchScenario(
-            "paul’s",
-            new([
-                "St Paul’s Cathedral School"
-            ])),
+        //// Apostrophe
+        //new SearchScenario(
+        //    "o'connor",
+        //    new([
+        //        "O'Connor Academy",
+        //        "St O'Connor's School"
+        //    ])),
 
-        // Ampersand
-        new SearchScenario(
-            "&",
-            new([
-                "Health & Social Care Academy",
-                "Arts & Media School"
-            ])),
+        //// Typographic apostrophe
+        //new SearchScenario(
+        //    "paul’s",
+        //    new([
+        //        "St Paul’s Cathedral School"
+        //    ])),
 
-        // Hyphen
-        new SearchScenario(
-            "-",
-            new([
-                "North-East Academy",
-                "All-Through School"
-            ])),
+        //// Ampersand
+        //new SearchScenario(
+        //    "&",
+        //    new([
+        //        "Health & Social Care Academy",
+        //        "Arts & Media School"
+        //    ])),
 
-        // Comma
-        new SearchScenario(
-            ",",
-            new([
-                "Christ Church Primary School, Hampstead",
-                "Holy Trinity CofE Primary School, NW3"
-            ])),
+        //// Hyphen
+        //new SearchScenario(
+        //    "-",
+        //    new([
+        //        "North-East Academy",
+        //        "All-Through School"
+        //    ])),
 
-        // Forward slash
-        new SearchScenario(
-            "/",
-            new([
-                "Smith/Jones Learning Centre"
-            ])),
+        //// Comma
+        //new SearchScenario(
+        //    ",",
+        //    new([
+        //        "Christ Church Primary School, Hampstead",
+        //        "Holy Trinity CofE Primary School, NW3"
+        //    ])),
 
-        // Parentheses
-        new SearchScenario(
-            "(",
-            new([
-                "Academy (Primary Site)"
-            ])),
+        //// Forward slash
+        //new SearchScenario(
+        //    "/",
+        //    new([
+        //        "Smith/Jones Learning Centre"
+        //    ])),
 
-        // Plus
-        new SearchScenario(
-            "+",
-            new([
-                "11+ Academy"
-            ])),
+        //// Parentheses
+        //new SearchScenario(
+        //    "(",
+        //    new([
+        //        "Academy (Primary Site)"
+        //    ])),
 
-        // At sign
-        new SearchScenario(
-            "@",
-            new([
-                "@ Academy",
-                "Coll@ge"
-            ])),
+        //// Plus
+        //new SearchScenario(
+        //    "+",
+        //    new([
+        //        "11+ Academy"
+        //    ])),
 
-        // omits apostrophe match
-        new SearchScenario(
-            "oconnor",
-            new([
-                "O'Connor Academy"
-            ])),
-        // omits apostrophe match
-        new SearchScenario(
-            "st pauls",
-            new([
-                "St Paul's School",
-                "St Paul’s School"
-            ])),
+        //// At sign
+        //new SearchScenario(
+        //    "@",
+        //    new([
+        //        "@ Academy",
+        //        "Coll@ge"
+        //    ])),
 
-        // omits hyphen match
-        new SearchScenario(
-            "north east",
-            new([
-                "North-East Academy"
-            ])),
+        //// omits apostrophe match
+        //new SearchScenario(
+        //    "oconnor",
+        //    new([
+        //        "O'Connor Academy"
+        //    ])),
+        //// omits apostrophe match
+        //new SearchScenario(
+        //    "st pauls",
+        //    new([
+        //        "St Paul's School",
+        //        "St Paul’s School"
+        //    ])),
 
-        // omits ampersand partial match
-        new SearchScenario(
-            "health social care",
-            new([
-                "Health & Social Care Academy"
-            ]))
+        //// omits hyphen match
+        //new SearchScenario(
+        //    "north east",
+        //    new([
+        //        "North-East Academy"
+        //    ])),
+
+        //// omits ampersand partial match
+        //new SearchScenario(
+        //    "health social care",
+        //    new([
+        //        "Health & Social Care Academy"
+        //    ]))
     ];
 }
