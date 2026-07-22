@@ -8,5 +8,6 @@ public interface ISqlExecutor<TProjection>
         DbContext db,
         string sql,
         string primaryKeyPropertyName,
+        object[] parameters,
         CancellationToken cancellationToken = default);
 }

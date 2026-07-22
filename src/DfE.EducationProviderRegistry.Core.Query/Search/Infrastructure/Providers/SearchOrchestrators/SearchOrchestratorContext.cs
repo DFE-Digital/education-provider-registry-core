@@ -24,6 +24,7 @@ public sealed record SearchOrchestratorContext
     /// exist within the same entity.
     /// </remarks>
     public string SearchColumn { get; init; } = string.Empty;
+    public IReadOnlyCollection<SearchColumnConfig> SearchColumnConfig { get; set; } = [];
 
     /// <summary>
     /// The maximum number of records to return for the current search request.

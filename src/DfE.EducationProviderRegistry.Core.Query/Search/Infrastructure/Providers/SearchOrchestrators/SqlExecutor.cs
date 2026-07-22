@@ -11,13 +11,14 @@ internal sealed class SqlExecutor<TProjection> : ISqlExecutor<TProjection>
         DbContext db,
         string sql,
         string primaryKeyPropertyName,
+        object[] parameters,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(db);
         ArgumentNullException.ThrowIfNull(sql);
 
         return await db.Set<TProjection>()
-            .FromSqlRaw(sql)
+            .FromSqlRaw(sql, parameters)
             .Select(projection =>
                 EF.Property<object>(projection, primaryKeyPropertyName))
             .ToListAsync(cancellationToken);
