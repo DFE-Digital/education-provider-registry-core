@@ -46,6 +46,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
             throw new ArgumentNullException(nameof(searchRequestFiltersToCoreFiltersMapper));
 
         ArgumentNullException.ThrowIfNull(evaluator);
+        _searchPipelineEvaluator = evaluator;
 
         ArgumentNullException.ThrowIfNull(facetProvider);
     }

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
@@ -165,17 +166,14 @@ public sealed class CompositionRootTests
 
         using IServiceScope scope = provider.CreateScope();
 
-        // act
-        IEnumerable<ISearchPipelineStep> steps =
-            scope.ServiceProvider.GetServices<ISearchPipelineStep>();
-
-        // assert
-        Assert.Contains(steps, step => step is SearchOrderMapStep);
-        Assert.Contains(steps, step => step is SearchOrderingStep);
-        Assert.Contains(steps, step => step is ParallelMappingStep);
-        Assert.Contains(steps, step => step is FacetQueryDispatchStep);
-        Assert.Contains(steps, step => step is FacetQueryResolverStep);
-        Assert.Contains(steps, step => step is FacetQueryBuilderStep);
+        // act assert
+        Assert.Single(scope.ServiceProvider.GetServices<IEvaluator<SearchPipelineContext>>());
+        Assert.Single(scope.ServiceProvider.GetServices<SearchOrderMapStep>());
+        Assert.Single(scope.ServiceProvider.GetServices<SearchOrderingStep>());
+        Assert.Single(scope.ServiceProvider.GetServices<ParallelMappingStep>());
+        Assert.Single(scope.ServiceProvider.GetServices<FacetQueryDispatchStep>());
+        Assert.Single(scope.ServiceProvider.GetServices<FacetQueryResolverStep>());
+        Assert.Single(scope.ServiceProvider.GetServices<FacetQueryBuilderStep>());
     }
 
     [Fact]
