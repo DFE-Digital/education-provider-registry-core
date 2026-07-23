@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 
-internal static class SearchEstablishmentByNameServiceCollectionExtensions
+internal static class SearchServiceCollectionExtensions
 {
     internal static IServiceCollection AddSearch(this IServiceCollection services, IConfiguration configuration)
     {
