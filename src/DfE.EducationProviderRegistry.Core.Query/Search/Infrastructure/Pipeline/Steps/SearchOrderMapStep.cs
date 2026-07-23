@@ -1,15 +1,17 @@
 ﻿using System.Collections.ObjectModel;
+using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class SearchOrderMapStep : ISearchPipelineStep
+internal sealed class SearchOrderMapStep : BaseEvaluationHandler<SearchPipelineContext>
 {
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public override bool CanHandle(SearchPipelineContext request) => true;
+    protected override ValueTask HandleCoreAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         ReadOnlyCollection<string> ids =
-            context.Get<ReadOnlyCollection<string>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain establishment URNs.");
+         request.Get<ReadOnlyCollection<string>>()
+             ?? throw new InvalidOperationException(
+                 "PipelineContext does not contain establishment URNs.");
 
         Dictionary<string, int> orderMap = new(ids.Count);
 
@@ -28,6 +30,8 @@ internal sealed class SearchOrderMapStep : ISearchPipelineStep
             orderMap[urn] = index;
         }
 
-        context.Set(orderMap);
+        request.Set(orderMap);
+
+        return ValueTask.CompletedTask;
     }
 }

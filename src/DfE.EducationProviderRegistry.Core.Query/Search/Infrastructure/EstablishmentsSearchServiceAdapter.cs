@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
@@ -16,7 +17,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
 {
     private readonly ISearchProvider<Establishment> _idProvider;
 
-    private readonly IReadOnlyList<ISearchPipelineStep> _pipeline;
+    private readonly IEvaluator<SearchPipelineContext> _searchPipelineEvaluator;
 
     private readonly IMapper<
         SearchPipelineContext, SearchResults<
@@ -29,7 +30,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
     public EstablishmentsSearchServiceAdapter(
         ISearchProvider<Establishment> idProvider,
         IFacetProvider facetProvider,
-        IEnumerable<ISearchPipelineStep> pipeline,
+        IEvaluator<SearchPipelineContext> evaluator,
         IMapper<
             SearchPipelineContext,
             SearchResults<EstablishmentSearchResults, SearchFacets>> searchResultsFromContextMapper,
@@ -44,8 +45,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         _searchRequestFiltersToCoreFiltersMapper = searchRequestFiltersToCoreFiltersMapper ??
             throw new ArgumentNullException(nameof(searchRequestFiltersToCoreFiltersMapper));
 
-        ArgumentNullException.ThrowIfNull(pipeline);
-        _pipeline = pipeline.ToList().AsReadOnly();
+        ArgumentNullException.ThrowIfNull(evaluator);
 
         ArgumentNullException.ThrowIfNull(facetProvider);
     }
@@ -79,10 +79,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         context.Set(establishments);
         context.Set(new List<string> { "EstablishmentTypeId" });
 
-        foreach (ISearchPipelineStep step in _pipeline)
-        {
-            step.Execute(context, cancellationToken);
-        }
+        await _searchPipelineEvaluator.EvaluateAsync(context, cancellationToken);
 
         return _searchResultsFromContextMapper.Map(context);
     }

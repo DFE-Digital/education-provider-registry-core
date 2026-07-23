@@ -1,10 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class FacetQueryDispatchStep : ISearchPipelineStep
+internal sealed class FacetQueryDispatchStep : BaseEvaluationHandler<SearchPipelineContext>
 {
     private readonly IFacetProvider _facetProvider;
 
@@ -14,24 +15,26 @@ internal sealed class FacetQueryDispatchStep : ISearchPipelineStep
         _facetProvider = facetProvider;
     }
 
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public override bool CanHandle(SearchPipelineContext request) => true;
+
+    protected override ValueTask HandleCoreAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         ReadOnlyCollection<string> ids =
-            context.Get<ReadOnlyCollection<string>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain establishment IDs.");
+            request.Get<ReadOnlyCollection<string>>()
+                ?? throw new InvalidOperationException(
+                    "PipelineContext does not contain establishment IDs.");
 
         List<string> facetNames =
-            context.Get<List<string>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain facet names.");
+            request.Get<List<string>>()
+                ?? throw new InvalidOperationException(
+                    "PipelineContext does not contain facet names.");
 
         if (facetNames.Count == 0)
         {
-            context.Set(new List<(
+            request.Set(new List<(
                 string FacetName, Task<IReadOnlyList<FacetResult>> Task)>());
 
-            return;
+            return ValueTask.CompletedTask;
         }
 
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
@@ -53,6 +56,8 @@ internal sealed class FacetQueryDispatchStep : ISearchPipelineStep
             tasks.Add((facetName, task));
         }
 
-        context.Set(tasks);
+        request.Set(tasks);
+
+        return ValueTask.CompletedTask;
     }
 }

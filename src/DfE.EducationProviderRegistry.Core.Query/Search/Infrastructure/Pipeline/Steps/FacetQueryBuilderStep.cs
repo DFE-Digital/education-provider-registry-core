@@ -1,13 +1,16 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class FacetQueryBuilderStep : ISearchPipelineStep
+internal sealed class FacetQueryBuilderStep : BaseEvaluationHandler<SearchPipelineContext>
 {
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public override bool CanHandle(SearchPipelineContext request) => true;
+
+    protected override ValueTask HandleCoreAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
-            context.Get<List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)>>();
+            request.Get<List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)>>();
 
         List<SearchFacet> facets = new(tasks.Count);
 
@@ -35,6 +38,8 @@ internal sealed class FacetQueryBuilderStep : ISearchPipelineStep
             facets.Add(new SearchFacet(facetName, [.. results]));
         }
 
-        context.Set(facets);
+        request.Set(facets);
+
+        return ValueTask.CompletedTask;
     }
 }

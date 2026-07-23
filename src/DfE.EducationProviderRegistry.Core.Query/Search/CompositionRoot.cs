@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
@@ -146,19 +147,17 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Pipeline steps
         // ---------------------------------------------------------
-        services.AddScoped<ISearchPipelineStep, SearchOrderMapStep>();
-        services.AddScoped<ISearchPipelineStep, SearchOrderingStep>();
 
-        services.AddScoped<ISearchPipelineStep>(sp =>
-            new ParallelMappingStep(
-                sp.GetRequiredService<IMapper<Establishment, EstablishmentSearchResult>>()));
-
-        services.AddScoped<ISearchPipelineStep>(sp =>
-            new FacetQueryDispatchStep(
-                sp.GetRequiredService<IFacetProvider>()));
-
-        services.AddScoped<ISearchPipelineStep, FacetQueryResolverStep>();
-        services.AddScoped<ISearchPipelineStep, FacetQueryBuilderStep>();
+        services.AddChainedHandlers<SearchPipelineContext>((builder) =>
+        {
+            builder
+                .AddScoped<SearchOrderMapStep>()
+                .AddScoped<SearchOrderingStep>()
+                .AddScoped<ParallelMappingStep>()
+                .AddScoped<FacetQueryDispatchStep>()
+                .AddScoped<FacetQueryResolverStep>()
+                .AddScoped<FacetQueryBuilderStep>();
+        });
 
         // ---------------------------------------------------------
         // Mappers
