@@ -38,19 +38,10 @@ internal sealed class TrigramSearchOrchestrator<TProjection> : ISearchOrchestrat
 
         EntityMetadata metadata = _metadataResolver.Resolve(db);
 
-        Dictionary<string, IProperty> entityProperties = metadata.EntityType
-            .GetProperties()
-            .ToDictionary(property => property.GetColumnName(), property => property, StringComparer.OrdinalIgnoreCase);
-
-        // validate target columns against EF core metadata
-        foreach (SearchColumnConfig colConfig in context.SearchColumnConfig)
-        {
-            if (!entityProperties.ContainsKey(colConfig.ColumnName))
-            {
-                throw new InvalidOperationException(
-                    $"Column '{context.SearchColumn}' does not exist on entity {typeof(TProjection).Name}.");
-            }
-        }
+        // TODO: we could move all of this
+        const string SearchParameter = "@searchTerm";
+        const string pageSizeParameter = "@pageSize";
+        const string offsetParameter = "@offset";
 
         object[] parameters =
         [
@@ -59,45 +50,97 @@ internal sealed class TrigramSearchOrchestrator<TProjection> : ISearchOrchestrat
             new NpgsqlParameter<int>("offset", context.Offset)
         ];
 
-        const string SearchParameter = "@searchTerm";
-        const string pageSizeParameter = "@pageSize";
-        const string offsetParameter = "@offset";
-
-        List<string> whereConditions = new();
-        List<string> tierExpressions = new();
-        List<string> similarityExpressions = new();
+        Dictionary<string, string> joins = []; // Alias -> Join clause
+        List<string> whereConditions = [];
+        List<string> tierExpressions = [];
+        List<string> similarityExpressions = [];
 
         // Biild sql dynamically based on each columns config strategy
         foreach (SearchColumnConfig colConfig in context.SearchColumnConfig)
         {
-            string col = colConfig.ColumnName;
+            string tableAlias = "t";
+
+            // resolve target entity and column name
+            IEntityType targetEntityType = metadata.EntityType;
+
+            // TODO: we culd move all of this, expression building
+            if (!string.IsNullOrWhiteSpace(colConfig.NavigationProperty))
+            {
+                tableAlias = $"j_{colConfig.NavigationProperty.ToLowerInvariant()}";
+
+                if (!joins.ContainsKey(tableAlias))
+                {
+                    INavigation navigation = metadata.EntityType.FindNavigation(colConfig.NavigationProperty)
+                        ?? throw new InvalidOperationException($"Navigation property '{colConfig.NavigationProperty}' not found on {metadata.EntityType.Name}");
+
+                    targetEntityType = navigation.TargetEntityType;
+                    IForeignKey fk = navigation.ForeignKey;
+
+                    string targetTable = targetEntityType.GetTableName()!;
+                    string targetSchema = targetEntityType.GetSchema() ?? metadata.Schema;
+
+                    // build join condition based on foreign key direction
+                    string joinCondition;
+                    if (fk.DeclaringEntityType == metadata.EntityType)
+                    {
+                        string fkCol = fk.Properties[0].GetColumnName();
+                        string pkCol = fk.PrincipalKey.Properties[0].GetColumnName();
+                        joinCondition = $"t.\"{fkCol}\" = {tableAlias}.\"{pkCol}\"";
+                    }
+                    else
+                    {
+                        string fkCol = fk.Properties[0].GetColumnName();
+                        string pkCol = fk.PrincipalKey.Properties[0].GetColumnName();
+                        joinCondition = $"{tableAlias}.\"{fkCol}\" = t.\"{pkCol}\"";
+                    }
+
+                    joins[tableAlias] = $"LEFT JOIN {targetSchema}.\"{targetTable}\" {tableAlias} ON {joinCondition}";
+                }
+                else
+                {
+                    INavigation navigation = metadata.EntityType.FindNavigation(colConfig.NavigationProperty)!;
+                    targetEntityType = navigation.TargetEntityType;
+                }
+            }
+
+            // validate column exists on target entity
+            // TODO: We could move this
+            IProperty targetProperty = targetEntityType.GetProperties()
+                .FirstOrDefault(p => p.GetColumnName().Equals(colConfig.ColumnName, StringComparison.OrdinalIgnoreCase))
+                ?? throw new InvalidOperationException(
+                    $"Column '{colConfig.ColumnName}' does not existon target entity '{targetEntityType.Name}'");
+
+            string targetColumn = targetProperty.GetColumnName();
+
+            // build sql conditions for this column
+            // TODO: We could move this
             switch (colConfig.Strategy)
             {
                 case MatchStrategy.ExactPartialFuzzy:
                     whereConditions.Add(
-                        $"(LOWER(t.\"{col}\") = LOWER({SearchParameter}) OR " +
-                        $"t.\"{col}\" ILIKE '%' || {SearchParameter} || '%' OR " +
-                        $"t.\"{col}\" % {SearchParameter})");
+                        $"(LOWER({tableAlias}.\"{targetColumn}\") = LOWER({SearchParameter}) OR " +
+                        $"{tableAlias}.\"{targetColumn}\" ILIKE '%' || {SearchParameter} || '%' OR " +
+                        $"{tableAlias}.\"{targetColumn}\" % {SearchParameter})");
 
                     tierExpressions.Add($"" +
                         $"CASE " +
-                            $"WHEN LOWER(t.\"{col}\") = LOWER({SearchParameter}) THEN 3 " +
-                            $"WHEN t.\"{col}\" ILIKE '%' || {SearchParameter} || '%' THEN 2 " +
-                            $"WHEN t.\"{col}\" % {SearchParameter} THEN 1 " +
+                            $"WHEN LOWER({tableAlias}.\"{targetColumn}\") = LOWER({SearchParameter}) THEN 3 " +
+                            $"WHEN {tableAlias}.\"{targetColumn}\" ILIKE '%' || {SearchParameter} || '%' THEN 2 " +
+                            $"WHEN {tableAlias}.\"{targetColumn}\" % {SearchParameter} THEN 1 " +
                             $"ELSE 0 " +
                         $"END");
 
-                    similarityExpressions.Add($"similarity(t.\"{col}\", {SearchParameter})");
+                    similarityExpressions.Add($"similarity({tableAlias}.\"{targetColumn}\", {SearchParameter})");
                     break;
                 case MatchStrategy.ExactPartial:
                     whereConditions.Add(
-                        $"(LOWER(t.\"{col}\") = LOWER({SearchParameter}) OR " +
-                        $"t.\"{col}\" ILIKE '%' || {SearchParameter} || '%')");
+                        $"(LOWER({tableAlias}.\"{targetColumn}\") = LOWER({SearchParameter}) OR " +
+                        $"{tableAlias}.\"{targetColumn}\" ILIKE '%' || {SearchParameter} || '%')");
 
                     tierExpressions.Add($"" +
                         $"CASE " +
-                            $"WHEN LOWER(t.\"{col}\") = LOWER({SearchParameter}) THEN 3 " +
-                            $"WHEN t.\"{col}\" ILIKE '%' || {SearchParameter} || '%' THEN 2 " +
+                            $"WHEN LOWER({tableAlias}.\"{targetColumn}\") = LOWER({SearchParameter}) THEN 3 " +
+                            $"WHEN {tableAlias}.\"{targetColumn}\" ILIKE '%' || {SearchParameter} || '%' THEN 2 " +
                             $"ELSE 0 " +
                         $"END");
 
@@ -108,7 +151,9 @@ internal sealed class TrigramSearchOrchestrator<TProjection> : ISearchOrchestrat
             }
         }
 
+        string joinStatements = string.Join("\n", joins.Values);
         string combinedWhere = string.Join(" OR ", whereConditions);
+
         string matchingTierExpression = tierExpressions.Count > 1
             ? $"GREATEST({string.Join(", ", tierExpressions)})"
             : tierExpressions.First();
@@ -117,38 +162,45 @@ internal sealed class TrigramSearchOrchestrator<TProjection> : ISearchOrchestrat
             ? $"GREATEST({string.Join(", ", similarityExpressions)})"
             : similarityExpressions.First();
 
-
-        // CTE query executing exact-match cutoff and ordering
         string sql =
-           $@"
-            WITH scored_matches AS (
-                SELECT
-                    t.""{metadata.PrimaryKeyProperty.GetColumnName()}"",
-                    {matchingTierExpression} AS match_score,
-                    {similarityExpression} AS similarity_score
-                FROM {metadata.Schema}.""{metadata.TableName}"" t
-                WHERE ({combinedWhere})
-                {searchFilters}
-            ),
-            ranked_matches AS (
-                SELECT
-                    *,
-                    MAX(match_score) OVER () AS best_overall_score
-                    FROM scored_matches
-                    WHERE match_score > 0
-            )
-            SELECT ""{metadata.PrimaryKeyColumn}""
-            FROM ranked_matches
-            WHERE
-                (best_overall_score = 3 AND match_score = 3)
-                OR
-                (best_overall_score < 3 AND match_score >= 1)
-            ORDER BY
-                match_score DESC,
-                similarity_score DESC
-            LIMIT {pageSizeParameter}
-            OFFSET {offsetParameter}
-            ";
+        $@"
+        WITH row_scores AS (
+            SELECT
+                t.""{metadata.PrimaryKeyColumn}"",
+                {matchingTierExpression} AS match_score,
+                {similarityExpression} AS similarity_score
+            FROM {metadata.Schema}.""{metadata.TableName}"" t
+            {joinStatements}
+            WHERE ({combinedWhere})
+            {searchFilters}
+        ),
+        scored_matches AS (
+            SELECT
+                ""{metadata.PrimaryKeyColumn}"",
+                MAX(match_score) AS match_score,
+                MAX(similarity_score) AS similarity_score
+            FROM row_scores
+            GROUP BY ""{metadata.PrimaryKeyColumn}""
+        ),
+        ranked_matches AS (
+            SELECT
+                *,
+                MAX(match_score) OVER () AS best_overall_score
+            FROM scored_matches
+            WHERE match_score > 0
+        )
+        SELECT ""{metadata.PrimaryKeyColumn}""
+        FROM ranked_matches
+        WHERE
+            (best_overall_score = 3 AND match_score = 3)
+            OR
+            (best_overall_score < 3 AND match_score >= 1)
+        ORDER BY
+            match_score DESC,
+            similarity_score DESC
+        LIMIT {pageSizeParameter}
+        OFFSET {offsetParameter}
+        ";
 
 
 
@@ -194,4 +246,5 @@ public enum MatchStrategy
 
 public record SearchColumnConfig(
     string ColumnName,
-    MatchStrategy Strategy = MatchStrategy.ExactPartialFuzzy);
+    MatchStrategy Strategy = MatchStrategy.ExactPartialFuzzy,
+    string? NavigationProperty = null);

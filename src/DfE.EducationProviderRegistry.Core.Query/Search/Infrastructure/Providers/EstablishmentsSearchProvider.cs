@@ -47,8 +47,10 @@ public sealed class EstablishmentsSearchProvider : ISearchProvider<Establishment
                 SearchColumn = _searchColumn,
                 SearchColumnConfig = new List<SearchColumnConfig>
                 {
-                    new("urn", MatchStrategy.ExactPartial),
-                    new("name", MatchStrategy.ExactPartialFuzzy)
+                    new(ColumnName: "urn", Strategy: MatchStrategy.ExactPartial),
+                    new(ColumnName: "name", Strategy: MatchStrategy.ExactPartialFuzzy),
+                    new(ColumnName: "postcode", Strategy: MatchStrategy.ExactPartial, NavigationProperty: "Site"),
+                    //new(ColumnName: "group_id", Strategy: MatchStrategy.ExactPartial, NavigationProperty: "EstablishmentGroupMembership")
                 },
                 SearchTerm = searchTerm,
                 PageSize = pageSize,
