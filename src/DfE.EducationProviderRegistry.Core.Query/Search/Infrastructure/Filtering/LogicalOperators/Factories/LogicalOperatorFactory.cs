@@ -1,44 +1,58 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 
-internal sealed class LogicalOperatorFactory : ILogicalOperatorFactory
+/// <summary>
+/// Resolves logical operators used to combine predicate expressions for
+/// <typeparamref name="TProjection"/>. Operators are registered by name and
+/// returned as typed combinators capable of merging two Boolean expression trees.
+/// </summary>
+/// <typeparam name="TProjection">
+/// The entity or projection type the logical operators apply to.
+/// </typeparam>
+public sealed class LogicalOperatorFactory<TProjection> : ILogicalOperatorFactory<TProjection>
+    where TProjection : class
 {
-    private readonly Dictionary<string, Func<ILogicalOperator>> _logicalOperatorFactory;
+    private readonly Dictionary<string, Func<ILogicalOperator<TProjection>>> _registry;
 
     /// <summary>
-    /// The <see cref="LogicalOperatorFactory"/> uses a dictionary of delegates injected via the IOC
-    /// container which allows management of object lifetime and scope to be managed via this composition root.
+    /// Creates a new <see cref="LogicalOperatorFactory{TProjection}"/> using the
+    /// supplied registry of operator factories.
     /// </summary>
-    /// <param name="logicalOperatorFactory">
-    /// Provides a dictionary of delegates used to derive the requested type.
+    /// <param name="registry">
+    /// A dictionary mapping operator names (e.g., AND, OR, NOT) to delegates that
+    /// construct the corresponding <see cref="ILogicalOperator{TProjection}"/>.
     /// </param>
-    public LogicalOperatorFactory(Dictionary<string, Func<ILogicalOperator>> logicalOperatorFactory)
+    public LogicalOperatorFactory(
+        Dictionary<string, Func<ILogicalOperator<TProjection>>> registry)
     {
-        _logicalOperatorFactory = logicalOperatorFactory;
+        _registry = registry ??
+            throw new ArgumentNullException(nameof(registry));
     }
 
     /// <summary>
-    /// Allows creation of an <see cref="ILogicalOperator"/> instance based on the type name requested.
+    /// Resolves a logical operator combinator by name.
     /// </summary>
-    /// <param name="logicalOperatorName">
-    /// The name of the concrete implementation type <see cref="ILogicalOperator"/> requested.
-    /// </param>
+    /// <param name="logicalOperatorName">The operator name to resolve.</param>
     /// <returns>
-    /// The configured instance of the <see cref="ILogicalOperator"/> type.
+    /// The configured <see cref="ILogicalOperator{TProjection}"/> instance.
     /// </returns>
-    /// <exception cref="ArgumentException ">
-    /// Exception thrown if an invalid filter name string is provisioned.
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="logicalOperatorName"/> is null or whitespace.
     /// </exception>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// Exception thrown if a request is made to derive an unknown
-    /// <see cref="ILogicalOperator"/> instance from the underlying IOC managed dictionary.
+    /// Thrown when the operator name is not registered.
     /// </exception>
-    public ILogicalOperator CreateLogicalOperator(string logicalOperatorName)
+    public ILogicalOperator<TProjection> Resolve(string logicalOperatorName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(logicalOperatorName);
 
-        return (!_logicalOperatorFactory
-            .TryGetValue(logicalOperatorName, out Func<ILogicalOperator>? logicalOperator) || logicalOperator is null) ?
-                throw new ArgumentOutOfRangeException(
-                    $"Logical operator of type {logicalOperatorName} is not registered.") : logicalOperator();
+        if (!_registry.TryGetValue(logicalOperatorName,
+            out Func<ILogicalOperator<TProjection>>? factory) ||
+            factory is null)
+        {
+            throw new ArgumentOutOfRangeException(
+                $"Logical operator '{logicalOperatorName}' is not registered.");
+        }
+
+        return factory();
     }
 }

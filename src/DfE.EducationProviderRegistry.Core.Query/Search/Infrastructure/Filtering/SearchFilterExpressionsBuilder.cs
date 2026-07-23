@@ -1,111 +1,101 @@
 ﻿using System.Collections.ObjectModel;
-using System.Text;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
+using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using Microsoft.Extensions.Options;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 
 /// <summary>
-/// Composes and builds filter expression strings based on incoming request keys and values.
-/// These keys are mapped to configured filter expression types, which determine how values
-/// are formatted and combined into a final filter expression.
-/// 
-/// For example, given:
-/// <code>
-/// List&lt;SearchFilterRequest&gt; searchFilterRequests =
-///     SearchFilterRequestBuilder.Create().BuildSearchFilterRequestsWith(
-///         ("OFSTEDRATINGCODE", new List&lt;object&gt; { "2", "5", "9", "12" }),
-///         ("RELIGIOUSCHARACTERCODE", new List&lt;object&gt; { "00", "02" }))
-///            .BuildSearchFilterRequests();
-/// </code>
-/// 
-/// And configuration:
-/// <code>
-/// "FilterKeyToFilterExpressionMapOptions": {
-///     "FilterChainingLogicalOperator": "AndLogicalOperator",
-///     "SearchFilterToExpressionMap": {
-///         "RELIGIOUSCHARACTERCODE": {
-///             "FilterExpressionKey": "SearchInFilterExpression",
-///             "FilterExpressionValuesDelimiter": ","
-///         },
-///         "OFSTEDRATINGCODE": {
-///             "FilterExpressionKey": "SearchInFilterExpression",
-///             "FilterExpressionValuesDelimiter": ","
-///         }
-///     }
-/// }
-/// </code>
-/// 
-/// The resulting filter expression string would be:
-/// <code>
-///     "search.in(OFSTEDRATINGCODE, '2,5,9,12') and search.in(RELIGIOUSCHARACTERCODE, '00,02')"
-/// </code>
+/// Resolves and composes typed filter expressions for <typeparamref name="TProjection"/>
+/// using the configured filter‑key map and logical operator. Produces a single
+/// provider‑agnostic predicate expression suitable for translation by the search pipeline.
 /// </summary>
-internal sealed class SearchFilterExpressionsBuilder : ISearchFilterExpressionsBuilder
+/// <typeparam name="TProjection">The projection or entity type.</typeparam>
+public sealed class SearchFilterExpressionsBuilder<TProjection>
+    : ISearchFilterExpressionsBuilder<TProjection>
+    where TProjection : class
 {
-    private readonly ISearchFilterExpressionFactory _searchFilterExpressionFactory;
-    private readonly ILogicalOperatorFactory _logicalOperatorFactory;
-    private readonly StringBuilder _aggregatedSearchFilterExpression = new();
-    private readonly FilterKeyToFilterExpressionMapOptions _filterKeyToFilterExpressionMapOptions;
+    private readonly ISearchFilterExpressionFactory<TProjection> _filterExpressionFactory;
+    private readonly FilterKeyToFilterExpressionMapOptions _filterKeyMapOptions;
 
     public SearchFilterExpressionsBuilder(
-        ISearchFilterExpressionFactory searchFilterExpressionFactory,
-        ILogicalOperatorFactory logicalOperatorFactory,
-        IOptions<FilterKeyToFilterExpressionMapOptions> filterKeyToFilterExpressionMapOptions)
+        ISearchFilterExpressionFactory<TProjection> filterExpressionFactory,
+        IOptions<FilterKeyToFilterExpressionMapOptions> filterKeyMapOptions)
     {
-        _searchFilterExpressionFactory = searchFilterExpressionFactory;
-        _logicalOperatorFactory = logicalOperatorFactory;
-        ArgumentNullException.ThrowIfNull(filterKeyToFilterExpressionMapOptions);
-        _filterKeyToFilterExpressionMapOptions = filterKeyToFilterExpressionMapOptions.Value;
+        ArgumentNullException.ThrowIfNull(filterExpressionFactory);
+        ArgumentNullException.ThrowIfNull(filterKeyMapOptions);
+
+        _filterExpressionFactory = filterExpressionFactory;
+        _filterKeyMapOptions = filterKeyMapOptions.Value;
     }
 
-    public string BuildSearchFilterExpressions(IEnumerable<SearchFilterRequest> searchFilterRequests)
+    /// <summary>
+    /// Builds a composed predicate expression by resolving filter expressions for
+    /// each incoming request and delegating composition to the filter expression factory.
+    /// </summary>
+    public Expression<Func<TProjection, bool>> BuildSearchFilterExpression(
+        IEnumerable<SearchFilterRequest> searchFilterRequests)
     {
-        IEnumerable<string> searchFilters = GetValidSearchFilterExpression(searchFilterRequests);
-        ILogicalOperator logicalOperator = GetFilterChainingLogicalOperator();
+        // Resolve filter names + requests
+        ReadOnlyCollection<(string, SearchFilterRequest)> resolved =
+            ResolveFilterRequests(searchFilterRequests);
 
-        _aggregatedSearchFilterExpression.AppendJoin(logicalOperator.GetOperatorExpression(), searchFilters);
-
-        return _aggregatedSearchFilterExpression.ToString();
-    }
-
-    private ReadOnlyCollection<string> GetValidSearchFilterExpression(IEnumerable<SearchFilterRequest> searchFilterRequests)
-    {
-        List<string> searchFilters = [];
-
-        foreach (SearchFilterRequest searchFilterRequest in searchFilterRequests
-            .Where(searchFilterRequest =>
-                _filterKeyToFilterExpressionMapOptions
-                    .SearchFilterToExpressionMap.ContainsKey(searchFilterRequest.FilterKey)))
+        if (resolved.Count == 0)
         {
-            FilterExpressionOptions filterExpressionOptions =
-                _filterKeyToFilterExpressionMapOptions.SearchFilterToExpressionMap[searchFilterRequest.FilterKey];
-
-            if (filterExpressionOptions.HasValuesDelimiter)
-            {
-                searchFilterRequest.SetFilterValuesDelimiter(filterExpressionOptions.FilterExpressionValuesDelimiter);
-            }
-
-            ISearchFilterExpression searchFilterExpression =
-                _searchFilterExpressionFactory.CreateFilter(filterExpressionOptions.FilterExpressionKey);
-
-            searchFilters.Add(searchFilterExpression.GetFilterExpression(searchFilterRequest));
+            return projection => true;
         }
 
-        return searchFilters.AsReadOnly();
+        string logicalOperatorName = ResolveLogicalOperatorName();
+
+        // Delegate composition to the factory
+        return _filterExpressionFactory.ComposeFilters(resolved, logicalOperatorName);
     }
 
-    private ILogicalOperator GetFilterChainingLogicalOperator()
+    /// <summary>
+    /// Resolves filter names and requests for all incoming requests whose keys
+    /// are present in the configured filter‑expression map.
+    /// </summary>
+    private ReadOnlyCollection<(string FilterName, SearchFilterRequest Request)> ResolveFilterRequests(
+        IEnumerable<SearchFilterRequest> searchFilterRequests)
     {
-        string filterChainingLogicalOperatorKey =
-            !string.IsNullOrWhiteSpace(_filterKeyToFilterExpressionMapOptions.FilterChainingLogicalOperator)
-                ? _filterKeyToFilterExpressionMapOptions.FilterChainingLogicalOperator
-                : throw new ArgumentException("Unable to assign a null or empty logical operator to the search expression chain.");
+        List<(string FilterName, SearchFilterRequest Request)> resolved = [];
 
-        return _logicalOperatorFactory.CreateLogicalOperator(filterChainingLogicalOperatorKey);
+        foreach (SearchFilterRequest request in searchFilterRequests)
+        {
+            if (!_filterKeyMapOptions.SearchFilterToExpressionMap
+                .TryGetValue(
+                    request.FilterKey,
+                    out FilterExpressionOptions? options))
+            {
+                continue;
+            }
+
+            if (options.HasValuesDelimiter)
+            {
+                request.SetFilterValuesDelimiter(
+                    options.FilterExpressionValuesDelimiter);
+            }
+
+            resolved.Add((options.FilterExpressionKey, request));
+        }
+
+        return resolved.AsReadOnly();
+    }
+
+    /// <summary>
+    /// Resolves the logical operator name used to combine multiple filter expressions.
+    /// </summary>
+    private string ResolveLogicalOperatorName()
+    {
+        string? key = _filterKeyMapOptions.FilterChainingLogicalOperator;
+
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            throw new ArgumentException(
+                "Filter chaining logical operator cannot be null or empty.");
+        }
+
+        return key;
     }
 }

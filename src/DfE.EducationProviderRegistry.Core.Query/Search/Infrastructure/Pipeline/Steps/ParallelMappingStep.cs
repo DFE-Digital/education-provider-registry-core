@@ -4,16 +4,31 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
+/// <summary>
+/// Maps ordered <see cref="Establishment"/> entities to
+/// <see cref="EstablishmentSearchResult"/> instances in parallel.
+/// </summary>
 internal sealed class ParallelMappingStep : ISearchPipelineStep
 {
     private readonly IMapper<Establishment, EstablishmentSearchResult> _mapper;
 
-    public ParallelMappingStep(
-        IMapper<Establishment, EstablishmentSearchResult> mapper)
+    /// <summary>
+    /// Creates a new instance of the mapping step.
+    /// </summary>
+    public ParallelMappingStep(IMapper<Establishment, EstablishmentSearchResult> mapper)
     {
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Performs parallel mapping of ordered establishments and stores the
+    /// resulting search results in the pipeline context.
+    /// </summary>
+    /// <param name="context">The pipeline context containing ordered establishments.</param>
+    /// <param name="cancellationToken">Token used to cancel execution.</param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when ordered establishments are missing from the context.
+    /// </exception>
     public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
     {
         IReadOnlyList<Establishment> ordered =
@@ -37,9 +52,7 @@ internal sealed class ParallelMappingStep : ISearchPipelineStep
                 options.CancellationToken.ThrowIfCancellationRequested();
 
                 Establishment establishment = ordered[index];
-
-                EstablishmentSearchResult mapped =
-                    _mapper.Map(establishment);
+                EstablishmentSearchResult mapped = _mapper.Map(establishment);
 
                 results[index] = mapped;
             });

@@ -1,133 +1,104 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 
 /// <summary>
-/// Generates an equality-based filter expression for a single value or multiple values.
+/// Builds a predicate expression that checks whether the
+/// <c>EstablishmentTypeId</c> property of <typeparamref name="TProjection"/>
+/// equals any of the supplied filter values. Supports both single‑value and
+/// multi‑value equality semantics.
 /// </summary>
-/// <remarks>
-/// Produces SQL fragments of the form:
-/// <list type="bullet">
-/// <item><description><c>column = 'value'</c> for a single value</description></item>
-/// <item><description><c>(column = 'a' OR column = 'b')</c> for multiple values</description></item>
-/// </list>
-/// Null, empty, or whitespace values are ignored.
-/// Strings are safely quoted and escaped. Booleans are emitted as <c>TRUE</c>/<c>FALSE</c>.
-/// </remarks>
-internal sealed class SingleOrMultiValueEqualsExpression : ISearchFilterExpression
+/// <typeparam name="TProjection">
+/// The entity or projection type the filter expression applies to.
+/// </typeparam>
+public sealed class SingleOrMultiValueEqualsExpression<TProjection>
+    : ISearchFilterExpression<TProjection>
+    where TProjection : class
 {
     /// <summary>
-    /// Builds an equality filter expression for the provided filter request.
+    /// Creates a predicate expression that evaluates whether the
+    /// <c>EstablishmentTypeId</c> property matches any of the values supplied
+    /// in the <see cref="SearchFilterRequest"/>.
     /// </summary>
-    /// <param name="searchFilterRequest">The filter request containing the column and values.</param>
+    /// <param name="request">The filter request containing raw filter values.</param>
     /// <returns>
-    /// A SQL equality expression. Returns an empty string when all values are ignored.
+    /// A predicate expression that evaluates to <c>true</c> when the property
+    /// matches any of the supplied values, or <c>true</c> when no values are provided.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="searchFilterRequest"/> is null.</exception>
-    public string GetFilterExpression(SearchFilterRequest searchFilterRequest)
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the target property does not exist on <typeparamref name="TProjection"/>.
+    /// </exception>
+    public Expression<Func<TProjection, bool>> ToExpression(SearchFilterRequest request)
     {
-        ArgumentNullException.ThrowIfNull(searchFilterRequest);
+        ArgumentNullException.ThrowIfNull(request);
 
-        List<string> expressions =
-            BuildExpressions(
-                column: searchFilterRequest.FilterKey,
-                values: searchFilterRequest.FilterValues);
+        const string PropertyName = "EstablishmentTypeId";
 
-        if (expressions.Count == 0)
+        object[] rawValues = request.FilterValues;
+
+        if (rawValues == null || rawValues.Length == 0)
         {
-            return string.Empty;
+            return projection => true;
         }
 
-        if (expressions.Count == 1)
+        ParameterExpression parameter =
+            Expression.Parameter(typeof(TProjection), "projection");
+
+        PropertyInfo propertyInfo =
+            typeof(TProjection).GetProperty(PropertyName, BindingFlags.Public | BindingFlags.Instance)
+            ?? throw new InvalidOperationException(
+                $"Property '{PropertyName}' not found on type '{typeof(TProjection).Name}'.");
+
+        Type propertyType = propertyInfo.PropertyType;
+
+        Expression propertyExpression = Expression.Property(parameter, propertyInfo);
+
+        object?[] typedValues =
+            NormalizeFilterValuesToPropertyType(rawValues, propertyType);
+
+        if (typedValues is null || typedValues.Length == 0)
         {
-            return expressions[0];
+            return projection => true;
         }
 
-        return string.Concat(
-            LogicalOperators.Open,
-            string.Join(LogicalOperators.Or, expressions),
-            LogicalOperators.Close
-        );
+        Expression body =
+            BuildOrEqualsExpressionChain(
+                propertyExpression, typedValues, propertyType);
+
+        return Expression.Lambda<Func<TProjection, bool>>(body, parameter);
     }
 
     /// <summary>
-    /// Builds individual equality expressions for each valid value.
+    /// Converts raw filter values into strongly typed values matching the
+    /// property type, ignoring null or whitespace entries.
     /// </summary>
-    /// <param name="column">The column name to compare against.</param>
-    /// <param name="values">The raw filter values.</param>
-    /// <returns>A list of formatted equality expressions.</returns>
-    private static List<string> BuildExpressions(string column, object[] values)
-    {
-        List<string> expressions = new(values.Length);
-
-        for (int i = 0; i < values.Length; i++)
-        {
-            object formatted = FormatValue(values[i]);
-
-            if (ReferenceEquals(formatted, NoValue.Instance))
-            {
-                continue;
-            }
-
-            expressions.Add(
-                string.Concat(column, LogicalOperators.Eq, formatted.ToString()));
-        }
-
-        return expressions;
-    }
+    private static object?[] NormalizeFilterValuesToPropertyType(
+        object[] rawValues, Type propertyType) =>
+            [.. rawValues
+                .Where(value => value != null)
+                .Select(value => value.ToString())
+                .Where(text => !string.IsNullOrWhiteSpace(text))
+                .Select(text => Convert.ChangeType(text, propertyType))
+            ];
 
     /// <summary>
-    /// Formats a value into its SQL literal representation.
+    /// Builds a chain of <c>OR</c> equality expressions comparing the property
+    /// to each typed filter value.
     /// </summary>
-    /// <param name="value">The raw value.</param>
-    /// <returns>
-    /// A formatted SQL literal, or <see cref="NoValue.Instance"/> when the value should be ignored.
-    /// </returns>
-    private static object FormatValue(object value)
+    private static Expression BuildOrEqualsExpressionChain(
+        Expression propertyExpression,
+        object?[] typedValues,
+        Type propertyType)
     {
-        return value switch
-        {
-            null => NoValue.Instance,
+        Expression[] equalsExpressions =
+            [.. typedValues
+                .Select(typedValue =>
+                    (Expression)Expression.Equal(
+                        propertyExpression,
+                        Expression.Constant(typedValue, propertyType)))
+            ];
 
-            string s when string.IsNullOrWhiteSpace(s)
-                => NoValue.Instance,
-
-            string s
-                => LogicalOperators.Quote
-                   + s.Replace(LogicalOperators.Quote, LogicalOperators.Quote + LogicalOperators.Quote)
-                   + LogicalOperators.Quote,
-
-            bool b
-                => b ? LogicalOperators.TrueLiteral : LogicalOperators.FalseLiteral,
-
-            _ => FormatNonString(value)
-        };
-    }
-
-    /// <summary>
-    /// Formats non-string values, ignoring null or empty representations.
-    /// </summary>
-    private static object FormatNonString(object value) =>
-        (value is null || string.IsNullOrWhiteSpace(value.ToString())) ? NoValue.Instance : value;
-
-    /// <summary>
-    /// Represents a sentinel value indicating that a filter value should be ignored.
-    /// </summary>
-    private sealed class NoValue
-    {
-        public static readonly NoValue Instance = new();
-        private NoValue() { }
-    }
-
-    /// <summary>
-    /// Defines the SQL operators used when constructing equality expressions.
-    /// </summary>
-    private readonly struct LogicalOperators
-    {
-        public const string Or = " OR ";
-        public const string Eq = " = ";
-        public const string Open = "(";
-        public const string Close = ")";
-        public const string Quote = "'";
-        public const string TrueLiteral = "TRUE";
-        public const string FalseLiteral = "FALSE";
+        return equalsExpressions.Aggregate(Expression.OrElse);
     }
 }

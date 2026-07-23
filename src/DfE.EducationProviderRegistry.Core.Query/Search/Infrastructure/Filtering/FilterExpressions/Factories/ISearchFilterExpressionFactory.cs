@@ -1,37 +1,68 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
+﻿using System.Linq.Expressions;
 
-public interface ISearchFilterExpressionFactory
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
+
+/// <summary>
+/// Defines the contract for resolving and composing typed filter expressions
+/// for <typeparamref name="TProjection"/>. Implementations map filter keys to
+/// concrete <see cref="ISearchFilterExpression{TProjection}"/> instances and
+/// produce provider‑agnostic predicate expression trees.
+/// </summary>
+/// <typeparam name="TProjection">
+/// The entity or projection type the filter expressions apply to.
+/// </typeparam>
+public interface ISearchFilterExpressionFactory<TProjection>
+    where TProjection : class
 {
     /// <summary>
-    /// Allows creation of an <see cref="ISearchFilterExpression"/> instance based on the type requested.
+    /// Creates a predicate expression for the filter identified by
+    /// <paramref name="filterName"/> using the supplied
+    /// <paramref name="request"/>.
     /// </summary>
-    /// <param name="filterType">
-    /// The concrete implementation type of <see cref="ISearchFilterExpression"/> requested.
-    /// </param>
+    /// <param name="filterName">The registered filter key.</param>
+    /// <param name="request">The filter request containing values and metadata.</param>
     /// <returns>
-    /// The configured instance of the <see cref="ISearchFilterExpression"/> type.
+    /// A typed predicate expression suitable for composition via logical operators.
     /// </returns>
-    ISearchFilterExpression CreateFilter(Type filterType);
+    Expression<Func<TProjection, bool>> CreateFilter(
+        string filterName,
+        SearchFilterRequest request);
 
     /// <summary>
-    /// Allows creation of an <see cref="ISearchFilterExpression"/> instance based on the type name requested.
+    /// Composes multiple filter expressions using the logical operator identified
+    /// by <paramref name="logicalOperatorName"/>.
     /// </summary>
-    /// <param name="filterName">
-    /// The name of the concrete implementation type <see cref="ISearchFilterExpression"/> requested.
+    /// <param name="filters">
+    /// A collection of filter keys and their associated requests.
+    /// </param>
+    /// <param name="logicalOperatorName">
+    /// The logical operator used to combine the expressions (e.g., <c>And</c>, <c>Or</c>).
     /// </param>
     /// <returns>
-    /// The configured instance of the <see cref="ISearchFilterExpression"/> type.
+    /// A composed predicate expression representing all filters.
     /// </returns>
-    ISearchFilterExpression CreateFilter(string filterName);
+    Expression<Func<TProjection, bool>> ComposeFilters(
+        IReadOnlyList<(
+            string FilterName,
+            SearchFilterRequest Request)> filters,
+        string logicalOperatorName);
 
     /// <summary>
-    /// Allows creation of an <see cref="ISearchFilterExpression"/> instance based on the generic type specified.
+    /// Composes already‑instantiated filter objects using the logical operator
+    /// identified by <paramref name="logicalOperatorName"/>.
     /// </summary>
-    /// <typeparam name="TSearchFilterExpression">
-    /// The concrete type of <see cref="ISearchFilterExpression"/> requested.
-    /// </typeparam>
+    /// <param name="filters">
+    /// A collection of filter objects and their associated requests.
+    /// </param>
+    /// <param name="logicalOperatorName">
+    /// The logical operator used to combine the expressions.
+    /// </param>
     /// <returns>
-    /// The configured instance of the <see cref="ISearchFilterExpression"/> type.
+    /// A composed predicate expression representing all filters.
     /// </returns>
-    ISearchFilterExpression CreateFilter<TSearchFilterExpression>() where TSearchFilterExpression : ISearchFilterExpression;
+    Expression<Func<TProjection, bool>> ComposeFilters(
+        IReadOnlyList<(
+            ISearchFilterExpression<TProjection> Filter,
+            SearchFilterRequest Request)> filters,
+        string logicalOperatorName);
 }

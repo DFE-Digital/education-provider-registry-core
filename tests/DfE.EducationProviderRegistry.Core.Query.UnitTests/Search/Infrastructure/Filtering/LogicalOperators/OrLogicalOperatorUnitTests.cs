@@ -1,59 +1,73 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
+﻿using System.Linq.Expressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.LogicalOperators;
 
 public sealed class OrLogicalOperatorUnitTests
 {
     [Fact]
-    public void GetOperatorExpression_ReturnsPaddedOrOperator()
+    public void Combine_ReturnsExpressionThatMatchesEitherPredicate()
     {
         // arrange
-        OrLogicalOperator logicalOperator = new();
+        OrLogicalOperator<DummyProjection> logicalOperator = new();
+
+        Expression<Func<DummyProjection, bool>> left =
+            projection => projection.EstablishmentTypeId == 1;
+        Expression<Func<DummyProjection, bool>> right =
+            projection => projection.EstablishmentTypeId == 2;
 
         // act
-        string result = logicalOperator.GetOperatorExpression();
+        Expression<Func<DummyProjection, bool>> combined =
+            logicalOperator.Combine(left, right);
+
+        Func<DummyProjection, bool> compiled = combined.Compile();
 
         // assert
-        Assert.Equal(" OR ", result);
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 1 }));
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 2 }));
+        Assert.False(compiled(new DummyProjection { EstablishmentTypeId = 3 }));
     }
 
     [Fact]
-    public void GetOperatorExpression_AlwaysReturnsUppercaseOr()
+    public void Combine_ProducesExpressionWithSingleUnifiedParameter()
     {
         // arrange
-        OrLogicalOperator logicalOperator = new();
+        OrLogicalOperator<DummyProjection> logicalOperator = new();
+
+        Expression<Func<DummyProjection, bool>> left =
+            projection => projection.EstablishmentTypeId == 1;
+        Expression<Func<DummyProjection, bool>> right =
+            projection => projection.EstablishmentTypeId == 2;
 
         // act
-        string result = logicalOperator.GetOperatorExpression();
+        Expression<Func<DummyProjection, bool>> combined =
+            logicalOperator.Combine(left, right);
 
-        // assert
-        Assert.Contains("OR", result);
+        Assert.Single(combined.Parameters);
+        Assert.Equal(typeof(DummyProjection), combined.Parameters[0].Type);
     }
 
     [Fact]
-    public void GetOperatorExpression_PaddingIsAppliedOnBothSides()
+    public void Combine_ProducesOrElseExpression()
     {
         // arrange
-        OrLogicalOperator logicalOperator = new();
+        OrLogicalOperator<DummyProjection> logicalOperator = new();
+
+        Expression<Func<DummyProjection, bool>> left =
+            projection => projection.EstablishmentTypeId == 1;
+
+        Expression<Func<DummyProjection, bool>> right =
+            projection => projection.EstablishmentTypeId == 2;
 
         // act
-        string result = logicalOperator.GetOperatorExpression();
+        Expression<Func<DummyProjection, bool>> combined =
+            logicalOperator.Combine(left, right);
 
         // assert
-        Assert.StartsWith(" ", result);
-        Assert.EndsWith(" ", result);
+        BinaryExpression body =
+            Assert.IsType<BinaryExpression>(combined.Body, exactMatch: false);
+        Assert.Equal(ExpressionType.OrElse, body.NodeType);
     }
 
-    [Fact]
-    public void GetOperatorExpression_ReturnsNonEmptyString()
-    {
-        // arrange
-        OrLogicalOperator logicalOperator = new();
-
-        // act
-        string result = logicalOperator.GetOperatorExpression();
-
-        // assert
-        Assert.False(string.IsNullOrWhiteSpace(result));
-    }
 }

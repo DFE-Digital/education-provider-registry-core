@@ -11,21 +11,36 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
+/// <summary>
+/// Adapts search requests for <see cref="Establishment"/> entities into the
+/// trigram‑based search pipeline, executes the pipeline, and maps the results
+/// into <see cref="SearchResults{TResults, TFacets}"/>.
+/// </summary>
 internal sealed class EstablishmentsSearchServiceAdapter
     : ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>
 {
     private readonly ISearchProvider<Establishment> _idProvider;
-
     private readonly IReadOnlyList<ISearchPipelineStep> _pipeline;
 
     private readonly IMapper<
-        SearchPipelineContext, SearchResults<
-        EstablishmentSearchResults, SearchFacets>> _searchResultsFromContextMapper;
+        SearchPipelineContext,
+        SearchResults<EstablishmentSearchResults, SearchFacets>> _searchResultsFromContextMapper;
 
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
         ReadOnlyCollection<SearchFilterRequest>> _searchRequestFiltersToCoreFiltersMapper;
 
+    /// <summary>
+    /// Creates a new search service adapter for establishments.
+    /// </summary>
+    /// <param name="idProvider">Provides trigram‑based search over establishments.</param>
+    /// <param name="facetProvider">Ensures facet provider is available for pipeline steps.</param>
+    /// <param name="pipeline">The ordered pipeline steps to execute.</param>
+    /// <param name="searchResultsFromContextMapper">Maps pipeline context to search results.</param>
+    /// <param name="searchRequestFiltersToCoreFiltersMapper">Maps API filter requests to core filter requests.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when any required dependency is <c>null</c>.
+    /// </exception>
     public EstablishmentsSearchServiceAdapter(
         ISearchProvider<Establishment> idProvider,
         IFacetProvider facetProvider,
@@ -50,6 +65,16 @@ internal sealed class EstablishmentsSearchServiceAdapter
         ArgumentNullException.ThrowIfNull(facetProvider);
     }
 
+    /// <summary>
+    /// Executes a trigram search for establishments, applies pipeline steps,
+    /// and maps the results into <see cref="SearchResults{TResults, TFacets}"/>.
+    /// </summary>
+    /// <param name="request">The search request containing keyword, filters, and paging.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>
+    /// A <see cref="SearchResults{TResults, TFacets}"/> instance containing
+    /// establishment search results and facet information.
+    /// </returns>
     public async Task<SearchResults<EstablishmentSearchResults, SearchFacets>> SearchAsync(
         SearchServiceAdapterRequest request,
         CancellationToken cancellationToken = default)

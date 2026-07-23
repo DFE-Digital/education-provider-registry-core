@@ -53,7 +53,7 @@ internal static class ServiceProviderBuilder
         services.AddSingleton(configuration);
         services.AddApplicationSearchDependencies(configuration);
         services.AddInfraSearchDependencies(configuration);
-        services.AddInfraSearchFilterDependencies(configuration);
+        services.AddInfraSearchFilterDependencies();
 
         return services.BuildServiceProvider(validateScopes: true);
     }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
@@ -9,27 +10,79 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 [ExcludeFromCodeCoverage]
 internal static class SearchFilterExpressionFactoryTestDouble
 {
-    public static Mock<ISearchFilterExpressionFactory> Mock() =>
-        new(MockBehavior.Strict);
-
-    public static (Mock<ISearchFilterExpressionFactory> factory, Mock<ISearchFilterExpression> expression)
-        MockFor(string filterKey, string expressionValue)
+    public static Mock<ISearchFilterExpressionFactory<TProjection>> Mock<TProjection>()
+        where TProjection : class
     {
-        Mock<ISearchFilterExpression> exprMock = new(MockBehavior.Strict);
+        return new Mock<ISearchFilterExpressionFactory<TProjection>>(MockBehavior.Strict);
+    }
+
+    public static (
+        Mock<ISearchFilterExpressionFactory<TProjection>> factory,
+        Mock<ISearchFilterExpression<TProjection>> expression
+    ) MockFor<TProjection>(
+        string filterKey,
+        Expression<Func<TProjection, bool>> expressionTree)
+        where TProjection : class
+    {
+        // Mock the filter expression itself
+        Mock<ISearchFilterExpression<TProjection>> exprMock =
+            SearchFilterExpressionTestDouble.MockForExpression<TProjection>(expressionTree);
+
         exprMock
             .Setup(searchFilterExpression =>
-                searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>()))
-            .Returns(expressionValue)
+                searchFilterExpression.ToExpression(It.IsAny<SearchFilterRequest>()))
+            .Returns(expressionTree)
             .Verifiable();
 
-        Mock<ISearchFilterExpressionFactory> factoryMock = Mock();
+        Mock<ISearchFilterExpressionFactory<TProjection>> factoryMock = Mock<TProjection>();
 
         factoryMock
-            .Setup(searchFilterExpressionFactory =>
-                searchFilterExpressionFactory.CreateFilter(filterKey))
-            .Returns(exprMock.Object)
+            .Setup(f => f.ComposeFilters(
+                It.Is<IReadOnlyList<(string FilterName, SearchFilterRequest Request)>>(
+                    list => list.Any(item => item.FilterName == filterKey)),
+                It.IsAny<string>()))
+            .Returns(expressionTree)
             .Verifiable();
 
         return (factoryMock, exprMock);
+    }
+
+    public static Mock<ISearchFilterExpressionFactory<TProjection>> MockComposition<TProjection>(
+        string logicalOperatorName,
+        Expression<Func<TProjection, bool>> expression)
+        where TProjection : class
+    {
+
+        Mock<ISearchFilterExpressionFactory<TProjection>> factoryMock = Mock<TProjection>();
+
+        factoryMock
+            .Setup(searchFilterExpressionFactory =>
+                searchFilterExpressionFactory.ComposeFilters(
+                It.IsAny<IReadOnlyList<(string FilterName, SearchFilterRequest Request)>>(),
+                logicalOperatorName))
+            .Returns(expression);
+
+        return factoryMock;
+    }
+
+    public static void MockComposition<TProjection>(
+        string logicalOperatorName,
+        Func<IReadOnlyList<(string FilterName, SearchFilterRequest Request)>,
+             string,
+             Expression<Func<TProjection, bool>>> composer)
+    where TProjection : class
+    {
+        Mock<ISearchFilterExpressionFactory<TProjection>> factoryMock = Mock<TProjection>();
+
+        factoryMock
+            .Setup(searchFilterExpressionFactory =>
+                searchFilterExpressionFactory.ComposeFilters(
+                    It.IsAny<IReadOnlyList<(string FilterName, SearchFilterRequest Request)>>(),
+                    logicalOperatorName))
+            .Returns((IReadOnlyList<(string FilterName, SearchFilterRequest Request)> filters,
+                      string op) =>
+            {
+                return composer(filters, op);
+            });
     }
 }

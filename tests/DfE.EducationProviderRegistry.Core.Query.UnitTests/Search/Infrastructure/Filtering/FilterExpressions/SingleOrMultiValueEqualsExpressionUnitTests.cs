@@ -1,134 +1,90 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+﻿using System.Linq.Expressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.FilterExpressions;
 
 public sealed class SingleOrMultiValueEqualsExpressionUnitTests
 {
-    private static SearchFilterRequest Req(string key, params object[] values) => new(key, values);
+    private static SearchFilterRequest Req(params object[] values)
+        => new("EstablishmentTypeId", values);
 
     [Fact]
-    public void GetFilterExpression_Throws_WhenRequestIsNull()
+    public void ToExpression_Throws_WhenRequestIsNull()
     {
         // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
+        SingleOrMultiValueEqualsExpression<DummyProjection> expression = new();
 
-        // act // assert
-        Assert.Throws<ArgumentNullException>(() => expression.GetFilterExpression(null!));
+        // act/assert
+        Assert.Throws<ArgumentNullException>(() =>
+            expression.ToExpression(null!));
     }
 
     [Fact]
-    public void GetFilterExpression_ReturnsEmpty_WhenAllValuesAreIgnored()
+    public void ToExpression_ReturnsSingleEquality()
     {
         // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", null!, "", "   ");
+        SingleOrMultiValueEqualsExpression<DummyProjection> expression = new();
+        SearchFilterRequest request = Req("5");
+        Expression<Func<DummyProjection, bool>> expr = expression.ToExpression(request);
 
         // act
-        string result = expression.GetFilterExpression(request);
+        Func<DummyProjection, bool> compiled = expr.Compile();
 
         // assert
-        Assert.Equal(string.Empty, result);
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 5 }));
+        Assert.False(compiled(new DummyProjection { EstablishmentTypeId = 6 }));
     }
 
     [Fact]
-    public void GetFilterExpression_ReturnsSingleEquality_WhenOneValue()
+    public void ToExpression_ReturnsOrChain_ForMultipleValues()
     {
         // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", "abc");
+        SingleOrMultiValueEqualsExpression<DummyProjection> expression = new();
+        SearchFilterRequest request = Req("1", "2", "3");
+        Expression<Func<DummyProjection, bool>> expr = expression.ToExpression(request);
 
         // act
-        string result = expression.GetFilterExpression(request);
+        Func<DummyProjection, bool> compiled = expr.Compile();
 
         // assert
-        Assert.Equal("col = 'abc'", result);
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 1 }));
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 2 }));
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 3 }));
+        Assert.False(compiled(new DummyProjection { EstablishmentTypeId = 4 }));
     }
 
     [Fact]
-    public void GetFilterExpression_ReturnsOrChain_WhenMultipleValues()
+    public void ToExpression_IgnoresNullAndEmptyValues()
     {
         // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", "a", "b", "c");
+        SingleOrMultiValueEqualsExpression<DummyProjection> expression = new();
+        SearchFilterRequest request = Req("1", null!, "", "2");
+        Expression<Func<DummyProjection, bool>> expr = expression.ToExpression(request);
 
         // act
-        string result = expression.GetFilterExpression(request);
+        Func<DummyProjection, bool> compiled = expr.Compile();
 
-        // assert
-        Assert.Equal("(col = 'a' OR col = 'b' OR col = 'c')", result);
+        // asserrt
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 1 }));
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 2 }));
+        Assert.False(compiled(new DummyProjection { EstablishmentTypeId = 3 }));
     }
 
     [Fact]
-    public void GetFilterExpression_IgnoresNullAndEmptyValues()
+    public void ToExpression_ConvertsValuesToPropertyType()
     {
         // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", "a", null!, "", "b");
+        SingleOrMultiValueEqualsExpression<DummyProjection> expression = new();
+        SearchFilterRequest request = Req("10");
+        Expression<Func<DummyProjection, bool>> expr = expression.ToExpression(request);
 
         // act
-        string result = expression.GetFilterExpression(request);
+        Func<DummyProjection, bool> compiled = expr.Compile();
 
         // assert
-        Assert.Equal("(col = 'a' OR col = 'b')", result);
-    }
-
-    [Fact]
-    public void GetFilterExpression_EscapesSingleQuotes()
-    {
-        // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", "O'Malley");
-
-        // act
-        string result = expression.GetFilterExpression(request);
-
-        // assert
-        Assert.Equal("col = 'O''Malley'", result);
-    }
-
-    [Fact]
-    public void GetFilterExpression_FormatsBooleanValues()
-    {
-        // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest requestTrue = Req("col", true);
-        SearchFilterRequest requestFalse = Req("col", false);
-
-        // act
-        string resultTrue = expression.GetFilterExpression(requestTrue);
-        string resultFalse = expression.GetFilterExpression(requestFalse);
-
-        // assert
-        Assert.Equal("col = TRUE", resultTrue);
-        Assert.Equal("col = FALSE", resultFalse);
-    }
-
-    [Fact]
-    public void GetFilterExpression_FormatsNonStringValues()
-    {
-        // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", 123);
-
-        // act
-        string result = expression.GetFilterExpression(request);
-
-        // assert
-        Assert.Equal("col = 123", result);
-    }
-
-    [Fact]
-    public void GetFilterExpression_IgnoresNonStringEmptyValues()
-    {
-        // arrange
-        SingleOrMultiValueEqualsExpression expression = new();
-        SearchFilterRequest request = Req("col", 123, "", "x");
-
-        // act
-        string result = expression.GetFilterExpression(request);
-
-        // assert
-        Assert.Equal("(col = 123 OR col = 'x')", result);
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 10 }));
+        Assert.False(compiled(new DummyProjection { EstablishmentTypeId = 11 }));
     }
 }

@@ -8,22 +8,42 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 [ExcludeFromCodeCoverage]
 internal static class LogicalOperatorFactoryTestDouble
 {
-    public static Mock<ILogicalOperatorFactory> Mock() =>
-        new(MockBehavior.Strict);
+    public static Mock<ILogicalOperatorFactory<TProjection>> Mock<TProjection>()
+        where TProjection : class =>
+            new(MockBehavior.Strict);
 
-    public static (Mock<ILogicalOperatorFactory> factory, Mock<ILogicalOperator> op)
-    MockFor(string opKey, string opExpression)
+    public static Mock<ILogicalOperatorFactory<TProjection>> MockFor<TProjection>(
+        string opKey,
+        Mock<ILogicalOperator<TProjection>> operatorMock)
+        where TProjection : class
     {
-        Mock<ILogicalOperator> opMock = new(MockBehavior.Strict);
-        opMock.Setup(logicalOperator =>
-            logicalOperator.GetOperatorExpression()).Returns(opExpression);
+        Mock<ILogicalOperatorFactory<TProjection>> factoryMock = Mock<TProjection>();
 
-        Mock<ILogicalOperatorFactory> factoryMock = new(MockBehavior.Strict);
-        factoryMock.Setup(logicalOperatorFactory =>
-            logicalOperatorFactory.CreateLogicalOperator(opKey))
-                   .Returns(opMock.Object);
+        factoryMock
+            .Setup(logicalOperatorFactory =>
+                logicalOperatorFactory.Resolve(opKey))
+            .Returns(operatorMock.Object);
 
-        return (factoryMock, opMock);
+        return factoryMock;
     }
 
+    public static Mock<ILogicalOperatorFactory<TProjection>> MockFactoryWithRegistry<TProjection>(
+        Mock<ILogicalOperator<TProjection>> andOperator,
+        Mock<ILogicalOperator<TProjection>> orOperator)
+        where TProjection : class
+    {
+        Mock<ILogicalOperatorFactory<TProjection>> factoryMock = Mock<TProjection>();
+
+        factoryMock
+            .Setup(logicalOperatorFactory =>
+                logicalOperatorFactory.Resolve("AND"))
+            .Returns(andOperator.Object);
+
+        factoryMock
+            .Setup(logicalOperatorFactory =>
+                logicalOperatorFactory.Resolve("OR"))
+            .Returns(orOperator.Object);
+
+        return factoryMock;
+    }
 }

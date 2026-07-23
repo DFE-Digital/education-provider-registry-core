@@ -1,18 +1,23 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal sealed class FilterExpressionStub : ISearchFilterExpression
+internal sealed class FilterExpressionStub<TProjection> : ISearchFilterExpression<TProjection>
+    where TProjection : class
 {
-    private readonly string _result;
+    private readonly Expression<Func<TProjection, bool>> _expression;
 
-    public FilterExpressionStub(string result)
+    public FilterExpressionStub(Expression<Func<TProjection, bool>> expression)
     {
-        _result = result;
+        _expression = expression;
     }
 
-    public string GetFilterExpression(SearchFilterRequest request) => _result;
+    public Expression<Func<TProjection, bool>> ToExpression(SearchFilterRequest request)
+    {
+        return _expression;
+    }
 }

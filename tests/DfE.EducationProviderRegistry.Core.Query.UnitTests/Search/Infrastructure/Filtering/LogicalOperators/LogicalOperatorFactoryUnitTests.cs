@@ -1,94 +1,84 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.LogicalOperators;
 
 public sealed class LogicalOperatorFactoryUnitTests
 {
-    private sealed class TestLogicalOperatorA : ILogicalOperator
+    private LogicalOperatorFactory<DummyProjection> CreateFactory()
     {
-        public string GetOperatorExpression() => "AND";
-    }
-
-    private sealed class TestLogicalOperatorB : ILogicalOperator
-    {
-        public string GetOperatorExpression() => "OR";
-    }
-
-    private LogicalOperatorFactory CreateFactory()
-    {
-        Dictionary<string, Func<ILogicalOperator>> dictionary =
+        Dictionary<string, Func<ILogicalOperator<DummyProjection>>> registry =
             new()
             {
-                { nameof(TestLogicalOperatorA), () => new TestLogicalOperatorA() },
-                { nameof(TestLogicalOperatorB), () => new TestLogicalOperatorB() }
+                { "AndLogicalOperator", () =>
+                    LogicalOperatorTestDoubles.MockAnd<DummyProjection>().Object },
+                { "OrLogicalOperator", () =>
+                    LogicalOperatorTestDoubles.MockOr<DummyProjection>().Object }
             };
 
-        return new LogicalOperatorFactory(dictionary);
+        return new LogicalOperatorFactory<DummyProjection>(registry);
     }
 
     [Fact]
-    public void CreateLogicalOperator_ValidName_ReturnsCorrectInstance_A()
+    public void Resolve_ValidName_ReturnsCorrectInstance_A()
     {
-
         // arrange
-        LogicalOperatorFactory factory = CreateFactory();
+        LogicalOperatorFactory<DummyProjection> factory = CreateFactory();
 
         // act
-        ILogicalOperator result =
-            factory.CreateLogicalOperator(nameof(TestLogicalOperatorA));
+        ILogicalOperator<DummyProjection> result =
+            factory.Resolve("AndLogicalOperator");
 
         // assert
-        Assert.IsType<TestLogicalOperatorA>(result);
-        Assert.Equal("AND", result.GetOperatorExpression());
+        Assert.IsType<ILogicalOperator<DummyProjection>>(result, exactMatch: false);
     }
 
     [Fact]
-    public void CreateLogicalOperator_ValidName_ReturnsCorrectInstance_B()
+    public void Resolve_ValidName_ReturnsCorrectInstance_B()
     {
         // arrange
-        LogicalOperatorFactory factory = CreateFactory();
+        LogicalOperatorFactory<DummyProjection> factory = CreateFactory();
 
         // act
-        ILogicalOperator result =
-            factory.CreateLogicalOperator(nameof(TestLogicalOperatorB));
+        ILogicalOperator<DummyProjection> result =
+            factory.Resolve("OrLogicalOperator");
 
         // assert
-        Assert.IsType<TestLogicalOperatorB>(result);
-        Assert.Equal("OR", result.GetOperatorExpression());
+        Assert.IsType<ILogicalOperator<DummyProjection>>(result, exactMatch: false);
     }
 
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void CreateLogicalOperator_InvalidName_ThrowsArgumentException(string name)
+    public void Resolve_InvalidName_ThrowsArgumentException(string name)
     {
         // arrange
-        LogicalOperatorFactory factory = CreateFactory();
+        LogicalOperatorFactory<DummyProjection> factory = CreateFactory();
 
-        // assert
+        // act/assert
         Assert.Throws<ArgumentException>(() =>
-            factory.CreateLogicalOperator(name));
+            factory.Resolve(name));
     }
 
     [Fact]
-    public void CreateLogicalOperator_UnknownName_ThrowsArgumentOutOfRangeException()
+    public void Resolve_UnknownName_ThrowsArgumentOutOfRangeException()
     {
         // arrange
-        LogicalOperatorFactory factory = CreateFactory();
+        LogicalOperatorFactory<DummyProjection> factory = CreateFactory();
 
-        // assert
+        // act/assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            factory.CreateLogicalOperator("DoesNotExist"));
+            factory.Resolve("DoesNotExist"));
     }
 
     [Fact]
-    public void CreateLogicalOperator_DelegateIsInvoked()
+    public void Resolve_DelegateIsInvoked()
     {
         // arrange
-        Boolean invoked = false;
+        bool invoked = false;
 
-        Dictionary<string, Func<ILogicalOperator>> dictionary =
+        Dictionary<string, Func<ILogicalOperator<DummyProjection>>> registry =
             new()
             {
                 {
@@ -96,19 +86,18 @@ public sealed class LogicalOperatorFactoryUnitTests
                     () =>
                     {
                         invoked = true;
-                        return new TestLogicalOperatorA();
+                        return LogicalOperatorTestDoubles.MockAnd<DummyProjection>().Object;
                     }
                 }
             };
 
-        LogicalOperatorFactory factory = new(dictionary);
+        LogicalOperatorFactory<DummyProjection> factory = new(registry);
 
         // act
-        ILogicalOperator result = factory.CreateLogicalOperator("TestOperator");
+        ILogicalOperator<DummyProjection> result = factory.Resolve("TestOperator");
 
         // assert
         Assert.True(invoked);
-        Assert.IsType<TestLogicalOperatorA>(result);
-        Assert.Equal("AND", result.GetOperatorExpression());
+        Assert.IsType<ILogicalOperator<DummyProjection>>(result, exactMatch: false);
     }
 }

@@ -1,125 +1,192 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+﻿using System.Linq.Expressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
+using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.FilterExpressions;
 
-public sealed class SearchFilterExpressionFactoryUnitTests
+public sealed class FilterExpressionFactoryUnitTests
 {
-    private sealed class TestFilterExpressionA : ISearchFilterExpression
+    private FilterExpressionFactory<DummyProjection> CreateFactory()
     {
-        public string GetFilterExpression(SearchFilterRequest searchFilterRequest) => "A";
-    }
+        Mock<ISearchFilterExpression<DummyProjection>> filterExprA =
+            SearchFilterExpressionTestDouble.MockEquals("A");
 
-    private sealed class TestFilterExpressionB : ISearchFilterExpression
-    {
-        public string GetFilterExpression(SearchFilterRequest searchFilterRequest) => "B";
-    }
+        Mock<ISearchFilterExpression<DummyProjection>> filterExprB =
+            SearchFilterExpressionTestDouble.MockNotEquals("B");
 
-    private SearchFilterExpressionFactory CreateFactory()
-    {
-        Dictionary<string, Func<ISearchFilterExpression>> dictionary =
+        Dictionary<string, Func<ISearchFilterExpression<DummyProjection>>> registry =
             new()
             {
-                { nameof(TestFilterExpressionA), () => new TestFilterExpressionA() },
-                { nameof(TestFilterExpressionB), () => new TestFilterExpressionB() }
+                { "Equals", () => filterExprA.Object },
+                { "NotEquals", () => filterExprB.Object }
             };
 
-        return new SearchFilterExpressionFactory(dictionary);
+        ILogicalOperatorFactory<DummyProjection> logicalOperatorFactory =
+            LogicalOperatorFactoryTestDouble.MockFactoryWithRegistry<DummyProjection>(
+                andOperator: LogicalOperatorTestDoubles.MockAnd<DummyProjection>(),
+                orOperator: LogicalOperatorTestDoubles.MockOr<DummyProjection>()).Object;
+
+        return new FilterExpressionFactory<DummyProjection>(registry, logicalOperatorFactory);
     }
 
     [Fact]
-    public void CreateFilter_ByGenericType_ReturnsCorrectInstance()
+    public void CreateFilter_ReturnsCorrectExpression()
     {
         // arrange
-        SearchFilterExpressionFactory factory = CreateFactory();
+        FilterExpressionFactory<DummyProjection> factory = CreateFactory();
+        SearchFilterRequest request = new("Value", ["A"]);
+
+        Expression<Func<DummyProjection, bool>> expr =
+            factory.CreateFilter("Equals", request);
 
         // act
-        ISearchFilterExpression result =
-            factory.CreateFilter<TestFilterExpressionA>();
+        Func<DummyProjection, bool> compiled = expr.Compile();
 
         // assert
-        Assert.IsType<TestFilterExpressionA>(result);
-    }
-
-    [Fact]
-    public void CreateFilter_ByType_ReturnsCorrectInstance()
-    {
-        // arrange
-        SearchFilterExpressionFactory factory = CreateFactory();
-
-        // act
-        ISearchFilterExpression result =
-            factory.CreateFilter<TestFilterExpressionB>();
-
-        // assert
-        Assert.IsType<TestFilterExpressionB>(result);
-    }
-
-    [Fact]
-    public void CreateFilter_ByName_ReturnsCorrectInstance()
-    {
-        // arrange
-        SearchFilterExpressionFactory factory = CreateFactory();
-
-        // act
-        ISearchFilterExpression result =
-            factory.CreateFilter(nameof(TestFilterExpressionA));
-
-        // assert
-        Assert.IsType<TestFilterExpressionA>(result);
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void CreateFilter_InvalidName_ThrowsArgumentException(string filterName)
-    {
-        // arrange
-        SearchFilterExpressionFactory factory = CreateFactory();
-
-        // assert
-        Assert.Throws<ArgumentException>(() =>
-            factory.CreateFilter(filterName));
+        Assert.True(compiled(new DummyProjection { Value = "A" }));
+        Assert.False(compiled(new DummyProjection { Value = "B" }));
     }
 
     [Fact]
     public void CreateFilter_UnknownName_ThrowsArgumentOutOfRangeException()
     {
         // arrange
-        SearchFilterExpressionFactory factory = CreateFactory();
+        FilterExpressionFactory<DummyProjection> factory = CreateFactory();
+        SearchFilterRequest request = new("Value", ["A"]);
 
         // assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            factory.CreateFilter("DoesNotExist"));
+            factory.CreateFilter("DoesNotExist", request));
     }
 
     [Fact]
-    public void CreateFilter_DelegateIsInvoked()
+    public void ComposeFilters_NoFilters_ReturnsTrueExpression()
     {
         // arrange
-        Boolean invoked = false;
+        FilterExpressionFactory<DummyProjection> factory = CreateFactory();
 
-        Dictionary<string, Func<ISearchFilterExpression>> dictionary =
-            new()
-            {
-                {
-                    "Test",
-                    () =>
-                    {
-                        invoked = true;
-                        return new TestFilterExpressionA();
-                    }
-                }
-            };
-
-        SearchFilterExpressionFactory factory = new(dictionary);
+        Expression<Func<DummyProjection, bool>> expr =
+            factory.ComposeFilters(Array.Empty<(string, SearchFilterRequest)>(), "AND");
 
         // act
-        ISearchFilterExpression result = factory.CreateFilter("Test");
+        Func<DummyProjection, bool> compiled = expr.Compile();
 
         // assert
-        Assert.True(invoked);
-        Assert.IsType<TestFilterExpressionA>(result);
+        Assert.True(compiled(new DummyProjection { Value = "Anything" }));
+    }
+
+    [Fact]
+    public void ComposeFilters_AND_ComposesCorrectly()
+    {
+        // arrange
+        Mock<ISearchFilterExpression<DummyProjection>> filterExprA =
+            SearchFilterExpressionTestDouble.MockEquals("A");
+        Mock<ISearchFilterExpression<DummyProjection>> filterExprB =
+            SearchFilterExpressionTestDouble.MockNotEquals("B");
+
+        ILogicalOperator<DummyProjection> andOperator =
+            LogicalOperatorTestDoubles.MockAnd<DummyProjection>().Object;
+
+        Mock<ILogicalOperatorFactory<DummyProjection>> logicalOperatorFactory =
+            LogicalOperatorFactoryTestDouble.MockFactoryWithRegistry<DummyProjection>(
+                andOperator: LogicalOperatorTestDoubles.MockAnd<DummyProjection>(),
+                orOperator: LogicalOperatorTestDoubles.MockOr<DummyProjection>());
+
+        FilterExpressionFactory<DummyProjection> factory =
+            new(
+                new Dictionary<string, Func<ISearchFilterExpression<DummyProjection>>>
+                {
+                    { "A", () => filterExprA.Object },
+                    { "B", () => filterExprB.Object }
+                },
+                logicalOperatorFactory.Object);
+
+        (string, SearchFilterRequest)[] filters =
+        [
+            ("A", new SearchFilterRequest("Value", ["A"])),
+            ("B", new SearchFilterRequest("Value", ["B"]))
+        ];
+
+        Expression<Func<DummyProjection, bool>> combined =
+            factory.ComposeFilters(filters, "AND");
+
+        // act
+        Func<DummyProjection, bool> compiled = combined.Compile();
+
+        // assert
+        Assert.True(compiled(new DummyProjection { Value = "A" }));
+        Assert.False(compiled(new DummyProjection { Value = "B" }));
+    }
+
+    [Fact]
+    public void ComposeFilters_OR_ComposesCorrectly()
+    {
+        // arrange
+        Mock<ISearchFilterExpression<DummyProjection>> filterExprA =
+            SearchFilterExpressionTestDouble.MockEquals("A");
+        Mock<ISearchFilterExpression<DummyProjection>> filterExprB =
+            SearchFilterExpressionTestDouble.MockEquals("B");
+
+        ILogicalOperator<DummyProjection> orOperator =
+            LogicalOperatorTestDoubles.MockOr<DummyProjection>().Object;
+
+        Mock<ILogicalOperatorFactory<DummyProjection>> logicalOperatorFactory =
+            LogicalOperatorFactoryTestDouble.MockFactoryWithRegistry<DummyProjection>(
+                andOperator: LogicalOperatorTestDoubles.MockAnd<DummyProjection>(),
+                orOperator: LogicalOperatorTestDoubles.MockOr<DummyProjection>());
+
+        FilterExpressionFactory<DummyProjection> factory =
+            new(
+                new Dictionary<string, Func<ISearchFilterExpression<DummyProjection>>>
+                {
+                    { "A", () => filterExprA.Object },
+                    { "B", () => filterExprB.Object }
+                },
+                logicalOperatorFactory.Object);
+
+        (string, SearchFilterRequest)[] filters =
+        {
+            ("A", new SearchFilterRequest("Value", ["A"])),
+            ("B", new SearchFilterRequest("Value", ["B"]))
+        };
+
+        Expression<Func<DummyProjection, bool>> combined =
+            factory.ComposeFilters(filters, "OR");
+
+        // act
+        Func<DummyProjection, bool> compiled = combined.Compile();
+
+        // assert
+        Assert.True(compiled(new DummyProjection { Value = "A" }));
+        Assert.True(compiled(new DummyProjection { Value = "B" }));
+        Assert.False(compiled(new DummyProjection { Value = "C" }));
+    }
+
+    [Fact]
+    public void ComposeFilters_WithInstances_ComposesCorrectly()
+    {
+        // arrange
+        FilterExpressionFactory<DummyProjection> factory = CreateFactory();
+
+        (ISearchFilterExpression<DummyProjection> Filter, SearchFilterRequest Request)[] filters =
+        [
+            (SearchFilterExpressionTestDouble.MockEquals("A").Object, new SearchFilterRequest("Value", ["A"])),
+            (SearchFilterExpressionTestDouble.MockNotEquals("B").Object, new SearchFilterRequest("Value", ["B"]))
+        ];
+
+        Expression<Func<DummyProjection, bool>> expr =
+            factory.ComposeFilters(filters, "AND");
+
+        // act
+        Func<DummyProjection, bool> compiled = expr.Compile();
+
+        // assert
+        Assert.True(compiled(new DummyProjection { Value = "A" }));
+        Assert.False(compiled(new DummyProjection { Value = "B" }));
     }
 }

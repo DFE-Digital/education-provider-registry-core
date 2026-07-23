@@ -1,7 +1,9 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+﻿using System.Linq.Expressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Context;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
@@ -13,52 +15,85 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public sealed class EstablishmentsSearchProviderUnitTests
 {
+    private static Expression<Func<Establishment, bool>> TrueExpr =>
+        value => true;
+
+    private static EducationProviderRegistryDbContext Db() =>
+        EducationProviderRegistryDbContextFactory.CreateDbContext();
+
+    private static Mock<IDbContextFactory<EducationProviderRegistryDbContext>> DbFactory(
+        EducationProviderRegistryDbContext db) =>
+            IDbContextFactoryTestDouble.MockFor(db);
+
+    private static IQueryable<Establishment> Query(
+        params Establishment?[] items) =>
+            items.AsQueryable()!;
+
+    private static Mock<ISearchProjectionBuilder<Establishment>> Projection(
+        EducationProviderRegistryDbContext db,
+        IQueryable<Establishment> baseQuery) =>
+            SearchProjectionBuilderTestDouble.MockFor(db, baseQuery);
+
+    private static Mock<ISearchOrchestrator<Establishment>> Orchestrator() =>
+        SearchOrchestratorTestDouble.Mock();
+
+    private static Mock<ISearchFilterExpressionsBuilder<Establishment>> FilterBuilder(
+        Expression<Func<Establishment, bool>> expr) =>
+            SearchFilterExpressionsBuilderTestDouble.MockFor(expr);
+
+    private static EstablishmentsSearchProvider Provider(
+        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory,
+        Mock<ISearchOrchestrator<Establishment>> orchestrator,
+        Mock<ISearchProjectionBuilder<Establishment>> projection,
+        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder,
+        string searchColumn) =>
+            new(
+                factory.Object,
+                orchestrator.Object,
+                projection.Object,
+                filterBuilder.Object,
+                searchColumn);
+
     [Fact]
     public async Task GetMatchingIdsAsync_DelegatesToOrchestrator_WithCorrectParameters()
     {
         // arrange
-        EducationProviderRegistryDbContext dbContext =
-            EducationProviderRegistryDbContextFactory.CreateDbContext();
+        EducationProviderRegistryDbContext dbContext = Db();
+        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory = DbFactory(dbContext);
 
-        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory =
-            IDbContextFactoryTestDouble.MockFor(dbContext);
-
-        IQueryable<Establishment> baseQuery =
-            new List<Establishment>().AsQueryable();
+        IQueryable<Establishment> baseQuery = Query();
 
         Mock<ISearchProjectionBuilder<Establishment>> projectionBuilder =
-            SearchProjectionBuilderTestDouble.MockFor(dbContext, baseQuery);
+            Projection(dbContext, baseQuery);
 
-        Mock<ISearchOrchestrator<Establishment>> orchestrator =
-            SearchOrchestratorTestDouble.Mock();
+        Mock<ISearchOrchestrator<Establishment>> orchestrator = Orchestrator();
 
-        Mock<ISearchFilterExpressionsBuilder> filterBuilder =
-            SearchFilterExpressionsBuilderTestDouble.MockFor("type = 'Academy'");
+        Expression<Func<Establishment, bool>> filterExpression =
+            entity => entity.EstablishmentTypeId == 1;
+
+        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder =
+            FilterBuilder(filterExpression);
 
         EstablishmentsSearchProvider provider =
-            new(
-                factory.Object,
-                orchestrator.Object,
-                projectionBuilder.Object,
-                filterBuilder.Object,
-                "name");
+            Provider(factory, orchestrator, projectionBuilder, filterBuilder, "name");
 
         List<SearchFilterRequest> filters =
             [
-                new SearchFilterRequest("Type", new List<string> { "Academy" })
+                new("Type", new List<string> { "Academy" })
             ];
 
         List<Establishment> expectedResults =
             [
-                new Establishment { EstablishmentId = 1, Name = "A School" }
+                new() { EstablishmentId = 1, Name = "A School" }
             ];
 
-        orchestrator.Setup(o => o.ExecuteAsync(
-                dbContext,
-                baseQuery,
-                It.IsAny<SearchOrchestratorContext>(),
-                " AND type = 'Academy'",
-                It.IsAny<CancellationToken>()))
+        orchestrator
+            .Setup(searchOrchestrator =>
+                searchOrchestrator.ExecuteAsync(
+                    dbContext,
+                    baseQuery,
+                    It.IsAny<SearchOrchestratorContext<Establishment>>(),
+                    It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResults);
 
         // act
@@ -74,58 +109,47 @@ public sealed class EstablishmentsSearchProviderUnitTests
         Assert.Single(results);
         Assert.Equal("A School", results[0].Name);
 
-        orchestrator.Verify(orchestrator =>
-            orchestrator.ExecuteAsync(
-                dbContext,
-                baseQuery,
-                It.Is<SearchOrchestratorContext>(ctx =>
-                    ctx.SearchColumn == "name" &&
-                    ctx.SearchTerm == "academy" &&
-                    ctx.PageSize == 20 &&
-                    ctx.Offset == 40 &&
-                    ctx.Filters == filters),
-                " AND type = 'Academy'",
-                It.IsAny<CancellationToken>()),
-                Times.Once);
+        orchestrator.Verify(o => o.ExecuteAsync(
+            dbContext,
+            baseQuery,
+            It.Is<SearchOrchestratorContext<Establishment>>(ctx =>
+                ctx.SearchColumn == "name" &&
+                ctx.SearchTerm == "academy" &&
+                ctx.PageSize == 20 &&
+                ctx.Offset == 40 &&
+                ctx.FilterExpression == filterExpression),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
-    public async Task GetMatchingIdsAsync_UsesEmptyFilterClause_WhenNoFiltersProvided()
+    public async Task GetMatchingIdsAsync_UsesTrueExpression_WhenNoFiltersProvided()
     {
         // arrange
-        EducationProviderRegistryDbContext dbContext =
-            EducationProviderRegistryDbContextFactory.CreateDbContext();
+        EducationProviderRegistryDbContext dbContext = Db();
+        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory = DbFactory(dbContext);
 
-        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory =
-            IDbContextFactoryTestDouble.MockFor(dbContext);
-
-        IQueryable<Establishment> baseQuery =
-            new List<Establishment>().AsQueryable();
+        IQueryable<Establishment> baseQuery = Query();
 
         Mock<ISearchProjectionBuilder<Establishment>> projectionBuilder =
-            SearchProjectionBuilderTestDouble.MockFor(dbContext, baseQuery);
+            Projection(dbContext, baseQuery);
 
-        Mock<ISearchOrchestrator<Establishment>> orchestrator =
-            SearchOrchestratorTestDouble.Mock();
+        Mock<ISearchOrchestrator<Establishment>> orchestrator = Orchestrator();
 
-        Mock<ISearchFilterExpressionsBuilder> filterBuilder =
-            SearchFilterExpressionsBuilderTestDouble.MockFor(string.Empty);
+        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder =
+            FilterBuilder(TrueExpr);
 
         EstablishmentsSearchProvider provider =
-            new(
-                factory.Object,
-                orchestrator.Object,
-                projectionBuilder.Object,
-                filterBuilder.Object,
-                "urn");
+            Provider(factory, orchestrator, projectionBuilder, filterBuilder, "urn");
 
-        orchestrator.Setup(o => o.ExecuteAsync(
-                dbContext,
-                baseQuery,
-                It.IsAny<SearchOrchestratorContext>(),
-                string.Empty,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        orchestrator
+            .Setup(searchOrchestrator =>
+                searchOrchestrator.ExecuteAsync(
+                    dbContext,
+                    baseQuery,
+                    It.IsAny<SearchOrchestratorContext<Establishment>>(),
+                    It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Establishment>());
 
         // act
         IReadOnlyList<Establishment> results =
@@ -133,69 +157,66 @@ public sealed class EstablishmentsSearchProviderUnitTests
                 "10001",
                 10,
                 0,
-                [],
+                new List<SearchFilterRequest>(),
                 CancellationToken.None);
 
         // assert
         Assert.Empty(results);
 
-        orchestrator.Verify(o => o.ExecuteAsync(
-            dbContext,
-            baseQuery,
-            It.Is<SearchOrchestratorContext>(ctx =>
-                ctx.SearchColumn == "urn" &&
-                ctx.SearchTerm == "10001"),
-            string.Empty,
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+        orchestrator.Verify(searchOrchestrator =>
+            searchOrchestrator.ExecuteAsync(
+                dbContext,
+                baseQuery,
+                It.Is<SearchOrchestratorContext<Establishment>>(ctx =>
+                    ctx.SearchColumn == "urn" &&
+                    ctx.SearchTerm == "10001" &&
+                    ctx.FilterExpression.Body is ConstantExpression &&
+                    ((ConstantExpression)ctx.FilterExpression.Body).Value != null &&
+                    ((ConstantExpression)ctx.FilterExpression.Body).Value!.Equals(true)),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
     }
 
     [Fact]
     public async Task GetMatchingIdsAsync_CreatesDbContext_FromFactory()
     {
         // arrange
-        EducationProviderRegistryDbContext dbContext =
-            EducationProviderRegistryDbContextFactory.CreateDbContext();
+        EducationProviderRegistryDbContext dbContext = Db();
+        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory = DbFactory(dbContext);
 
-        Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory =
-            IDbContextFactoryTestDouble.MockFor(dbContext);
+        IQueryable<Establishment> baseQuery = Query();
 
         Mock<ISearchProjectionBuilder<Establishment>> projectionBuilder =
-            SearchProjectionBuilderTestDouble.MockFor(
-                dbContext, new List<Establishment>().AsQueryable());
+            Projection(dbContext, baseQuery);
 
-        Mock<ISearchOrchestrator<Establishment>> orchestrator =
-            SearchOrchestratorTestDouble.Mock();
+        Mock<ISearchOrchestrator<Establishment>> orchestrator = Orchestrator();
 
-        orchestrator.Setup(o => o.ExecuteAsync(
-                dbContext,
-                It.IsAny<IQueryable<Establishment>>(),
-                It.IsAny<SearchOrchestratorContext>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        orchestrator
+            .Setup(searchOrchestrator =>
+                searchOrchestrator.ExecuteAsync(
+                    dbContext,
+                    It.IsAny<IQueryable<Establishment>>(),
+                    It.IsAny<SearchOrchestratorContext<Establishment>>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Establishment>());
 
-        Mock<ISearchFilterExpressionsBuilder> filterBuilder =
-            SearchFilterExpressionsBuilderTestDouble.MockFor(string.Empty);
+        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder =
+            FilterBuilder(TrueExpr);
 
         EstablishmentsSearchProvider provider =
-            new(
-                factory.Object,
-                orchestrator.Object,
-                projectionBuilder.Object,
-                filterBuilder.Object,
-                "name");
+            Provider(factory, orchestrator, projectionBuilder, filterBuilder, "name");
 
         // act
         await provider.GetMatchingIdsAsync(
             "test",
             10,
             0,
-            [],
+            new List<SearchFilterRequest>(),
             CancellationToken.None);
 
         // assert
         factory.Verify(dbContextFactory =>
-            dbContextFactory.CreateDbContextAsync(It.IsAny<CancellationToken>()), Times.Once);
+            dbContextFactory.CreateDbContextAsync(It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

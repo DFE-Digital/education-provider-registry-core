@@ -1,15 +1,26 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 
-public interface ILogicalOperatorFactory
+/// <summary>
+/// Resolves logical operators used to combine filter expressions for
+/// <typeparamref name="TProjection"/>. Implementations map operator names
+/// (e.g., AND, OR, NOT) to typed logical‑operator combinators that merge
+/// expression‑tree predicates into a single filter expression.
+/// </summary>
+/// <typeparam name="TProjection">
+/// The entity or projection type for which logical operators are resolved.
+/// </typeparam>
+public interface ILogicalOperatorFactory<TProjection>
+    where TProjection : class
 {
     /// <summary>
-    /// Allows creation of an <see cref="ILogicalOperator"/> instance based on the type name requested.
+    /// Retrieves a logical operator combinator by name.
     /// </summary>
     /// <param name="logicalOperatorName">
-    /// The name of the concrete implementation type <see cref="ILogicalOperator"/> requested.
+    /// The operator name to resolve (e.g., AND, OR, NOT).
     /// </param>
     /// <returns>
-    /// The configured instance of the <see cref="ILogicalOperator"/> type.
+    /// An <see cref="ILogicalOperator{TProjection}"/> capable of combining
+    /// two predicate expressions.
     /// </returns>
-    ILogicalOperator CreateLogicalOperator(string logicalOperatorName);
+    ILogicalOperator<TProjection> Resolve(string logicalOperatorName);
 }

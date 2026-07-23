@@ -1,67 +1,109 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq.Expressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 
 /// <summary>
-/// Factory responsible for creating concrete <see cref="ISearchFilterExpression"/> instances.
-///
-/// This factory is configured via dependency injection. The container supplies a dictionary
-/// mapping filter expression names to delegates that construct the corresponding
-/// <see cref="ISearchFilterExpression"/>. Each delegate resolves the expression from a DI
-/// scope, ensuring correct lifetime management.
-///
-/// Typical registration:
-/// <code>
-/// services.TryAddSingleton&lt;ISearchFilterExpressionFactory&gt;(provider =>
-/// {
-///     using var scope = provider.CreateScope();
-///
-///     var expressions = new Dictionary&lt;string, Func&lt;ISearchFilterExpression&gt;&gt;
-///     {
-///         ["SearchInFilterExpression"] = () =>
-///             scope.ServiceProvider.GetRequiredService&lt;SearchInFilterExpression&gt;(),
-///
-///         ["LessThanOrEqualToExpression"] = () =>
-///             scope.ServiceProvider.GetRequiredService&lt;LessThanOrEqualToExpression&gt;(),
-///
-///         ["SearchGeoLocationFilterExpression"] = () =>
-///             scope.ServiceProvider.GetRequiredService&lt;SearchGeoLocationFilterExpression&gt;()
-///     };
-///
-///     return new SearchFilterExpressionFactory(expressions);
-/// });
-/// </code>
+/// Factory responsible for resolving and composing typed filter expressions
+/// for <typeparamref name="TProjection"/>. Each filter requires a
+/// <see cref="SearchFilterRequest"/> to construct its predicate expression.
 /// </summary>
-internal sealed class SearchFilterExpressionFactory : ISearchFilterExpressionFactory
+/// <typeparam name="TProjection">The entity or projection type.</typeparam>
+public sealed class FilterExpressionFactory<TProjection> : ISearchFilterExpressionFactory<TProjection>
+    where TProjection : class
 {
-    private readonly Dictionary<string, Func<ISearchFilterExpression>> _filterExpressionFactory;
+    private readonly Dictionary<string, Func<ISearchFilterExpression<TProjection>>> _filterRegistry;
+    private readonly ILogicalOperatorFactory<TProjection> _logicalOperatorFactory;
 
-    public SearchFilterExpressionFactory(
-        Dictionary<string, Func<ISearchFilterExpression>> filterExpressionFactory)
+    public FilterExpressionFactory(
+        Dictionary<string, Func<ISearchFilterExpression<TProjection>>> filterRegistry,
+        ILogicalOperatorFactory<TProjection> logicalOperatorFactory)
     {
-        _filterExpressionFactory = filterExpressionFactory;
+        _filterRegistry = filterRegistry
+            ?? throw new ArgumentNullException(nameof(filterRegistry));
+
+        _logicalOperatorFactory = logicalOperatorFactory
+            ?? throw new ArgumentNullException(nameof(logicalOperatorFactory));
     }
 
-    public ISearchFilterExpression CreateFilter<TSearchFilterExpression>()
-        where TSearchFilterExpression : ISearchFilterExpression =>
-        CreateFilter(typeof(TSearchFilterExpression));
-
-    public ISearchFilterExpression CreateFilter(Type filterType) =>
-        CreateFilter(filterName: filterType.Name);
-
-    public ISearchFilterExpression CreateFilter(string filterName)
+    /// <summary>
+    /// Creates a single filter expression using the supplied request.
+    /// </summary>
+    public Expression<Func<TProjection, bool>> CreateFilter(
+        string filterName,
+        SearchFilterRequest request)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(filterName);
-
-        if (!_filterExpressionFactory.TryGetValue(filterName, out Func<ISearchFilterExpression>? factory) ||
-            factory is null)
+        if (!_filterRegistry.TryGetValue(
+            filterName,
+            out Func<ISearchFilterExpression<TProjection>>? factory))
         {
             throw new ArgumentOutOfRangeException(
-                $"Search expression filter of type {filterName} is not registered.");
+                $"Filter '{filterName}' is not registered.");
         }
 
-        return factory();
+        ISearchFilterExpression<TProjection> filter = factory();
+        return filter.ToExpression(request);
+    }
+
+    /// <summary>
+    /// Creates and composes multiple filter expressions using a logical operator.
+    /// </summary>
+    public Expression<Func<TProjection, bool>> ComposeFilters(
+        IReadOnlyList<(
+            string FilterName,
+            SearchFilterRequest Request)> filters,
+        string logicalOperatorName)
+    {
+        if (filters.Count == 0)
+        {
+            return projection => true;
+        }
+
+        ILogicalOperator<TProjection> logicalOperator =
+            _logicalOperatorFactory.Resolve(logicalOperatorName);
+
+        Expression<Func<TProjection, bool>> combined =
+            CreateFilter(filters[0].FilterName, filters[0].Request);
+
+        for (int i = 1; i < filters.Count; i++)
+        {
+            Expression<Func<TProjection, bool>> next =
+                CreateFilter(filters[i].FilterName, filters[i].Request);
+
+            combined = logicalOperator.Combine(combined, next);
+        }
+
+        return combined;
+    }
+
+    /// <summary>
+    /// Composes already-instantiated filter objects using a logical operator.
+    /// </summary>
+    public Expression<Func<TProjection, bool>> ComposeFilters(
+        IReadOnlyList<(
+            ISearchFilterExpression<TProjection> Filter,
+            SearchFilterRequest Request)> filters,
+        string logicalOperatorName)
+    {
+        if (filters.Count == 0)
+        {
+            return projection => true;
+        }
+
+        ILogicalOperator<TProjection> logicalOperator =
+            _logicalOperatorFactory.Resolve(logicalOperatorName);
+
+        Expression<Func<TProjection, bool>> combined =
+            filters[0].Filter.ToExpression(filters[0].Request);
+
+        for (int i = 1; i < filters.Count; i++)
+        {
+            combined = logicalOperator.Combine(
+                combined,
+                filters[i].Filter.ToExpression(filters[i].Request));
+        }
+
+        return combined;
     }
 }

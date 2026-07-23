@@ -3,14 +3,14 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Formatters;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,9 +27,8 @@ public sealed class CompositionRootTests
             ServiceProviderBuilder.BuildServiceProvider();
 
         // act
-        ISearchFilterExpressionFactory factory =
-            provider.GetRequiredService<
-                ISearchFilterExpressionFactory>();
+        ISearchFilterExpressionFactory<Establishment> factory =
+            provider.GetRequiredService<ISearchFilterExpressionFactory<Establishment>>();
 
         // assert
         Assert.NotNull(factory);
@@ -43,9 +42,8 @@ public sealed class CompositionRootTests
             ServiceProviderBuilder.BuildServiceProvider();
 
         // act
-        ILogicalOperatorFactory factory =
-            provider.GetRequiredService<
-                ILogicalOperatorFactory>();
+        ILogicalOperatorFactory<Establishment> factory =
+            provider.GetRequiredService<ILogicalOperatorFactory<Establishment>>();
 
         // assert
         Assert.NotNull(factory);
@@ -60,29 +58,10 @@ public sealed class CompositionRootTests
 
         // act
         Dictionary<string, Expression<Func<Establishment, object>>> selectors =
-            provider.GetRequiredService<
-                Dictionary<string, Expression<Func<Establishment, object>>>>();
+            provider.GetRequiredService<Dictionary<string, Expression<Func<Establishment, object>>>>();
 
         // assert
         Assert.True(selectors.ContainsKey("establishmenttypeid"));
-    }
-
-    [Fact]
-    public void CompositionRoot_Registers_FilterExpressionFormatter()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-
-        // act
-        IFilterExpressionFormatter formatter =
-            scope.ServiceProvider.GetRequiredService<
-                IFilterExpressionFormatter>();
-
-        // assert
-        Assert.IsType<DefaultFilterExpressionFormatter>(formatter);
     }
 
     [Fact]
@@ -96,8 +75,7 @@ public sealed class CompositionRootTests
 
         // act
         ISearchOrchestrator<Establishment> orchestrator =
-            scope.ServiceProvider.GetRequiredService<
-                ISearchOrchestrator<Establishment>>();
+            scope.ServiceProvider.GetRequiredService<ISearchOrchestrator<Establishment>>();
 
         // assert
         Assert.IsType<TrigramSearchOrchestrator<Establishment>>(orchestrator);
@@ -114,8 +92,7 @@ public sealed class CompositionRootTests
 
         // act
         ISearchProjectionBuilder<Establishment> builder =
-            scope.ServiceProvider.GetRequiredService<
-                ISearchProjectionBuilder<Establishment>>();
+            scope.ServiceProvider.GetRequiredService<ISearchProjectionBuilder<Establishment>>();
 
         // assert
         Assert.IsType<EstablishmentSearchProjectionBuilder>(builder);
@@ -132,8 +109,7 @@ public sealed class CompositionRootTests
 
         // act
         ISearchProvider<Establishment> providerInstance =
-            scope.ServiceProvider.GetRequiredService<
-                ISearchProvider<Establishment>>();
+            scope.ServiceProvider.GetRequiredService<ISearchProvider<Establishment>>();
 
         // assert
         Assert.IsType<EstablishmentsSearchProvider>(providerInstance);

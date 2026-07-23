@@ -2,6 +2,11 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
 
+/// <summary>
+/// Immutable snapshot of EF Core metadata for an entity, including schema,
+/// table name, and primary key column information. Used by search orchestrators
+/// to avoid repeated metadata reflection.
+/// </summary>
 public sealed record EntityMetadata
 {
     /// <summary>
