@@ -8,71 +8,89 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class SearchOrderMapStepUnitTests
 {
     [Fact]
-    public async Task Execute_Throws_WhenUrnListMissing()
+    public async Task HandleAsync_Throws_WhenUrnListMissing()
     {
         // arrange
         SearchOrderMapStep step = new();
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(ids: null);
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(ids: null);
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
+
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenUrnIsNullOrEmpty()
+    public async Task HandleAsync_Throws_WhenUrnIsNullOrEmpty()
     {
         // arrange
-        ReadOnlyCollection<string> ids = new(["10001", "", "10003"]);
+        ReadOnlyCollection<string> ids =
+            new(["10001", "", "10003"]);
 
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(ids);
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(ids);
+
         SearchOrderMapStep step = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("null or empty URN", ex.Message);
+        Assert.Contains(
+            "null or empty URN",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenCancellationRequested()
+    public async Task HandleAsync_Throws_WhenCancellationRequested()
     {
         // arrange
-        ReadOnlyCollection<string> ids = new(["10001", "10002", "10003"]);
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(ids);
+        ReadOnlyCollection<string> ids =
+            new(["10001", "10002", "10003"]);
+
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(ids);
+
         SearchOrderMapStep step = new();
 
-        CancellationTokenSource cts = new();
-        cts.Cancel();
+        using CancellationTokenSource cts = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, cts.Token));
+        await cts.CancelAsync();
 
-        // assert
-        await Assert.ThrowsAsync<OperationCanceledException>(act);
+        // act // assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => step.HandleAsync(
+                context,
+                cts.Token).AsTask());
     }
 
     [Fact]
-    public async Task Execute_CreatesCorrectOrderMap()
+    public async Task HandleAsync_CreatesCorrectOrderMap()
     {
         // arrange
-        ReadOnlyCollection<string> ids = new(["10001", "10002", "10003"]);
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(ids);
+        ReadOnlyCollection<string> ids =
+            new(["10001", "10002", "10003"]);
+
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(ids);
+
         SearchOrderMapStep step = new();
 
         // act
-        await Task.Run(() =>
-            step.Execute(
-                context, CancellationToken.None),
-                    TestContext.Current.CancellationToken);
+        await step.HandleAsync(
+            context,
+            TestContext.Current.CancellationToken);
 
         // assert
         Dictionary<string, int> orderMap =

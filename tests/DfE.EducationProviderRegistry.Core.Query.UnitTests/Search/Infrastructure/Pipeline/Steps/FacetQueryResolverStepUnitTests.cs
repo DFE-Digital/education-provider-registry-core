@@ -8,50 +8,59 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class FacetQueryResolverStepUnitTests
 {
     [Fact]
-    public async Task Execute_Throws_WhenFacetTasksMissing()
+    public async Task HandleAsync_Throws_WhenFacetTasksMissing()
     {
         // arrange
         FacetQueryResolverStep step = new();
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(tasks: null);
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(tasks: null);
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
+
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenCancellationRequested()
+    public async Task HandleAsync_Throws_WhenCancellationRequested()
     {
         // arrange
-        IReadOnlyList<FacetResult> results = [new("Primary", 10)];
+        IReadOnlyList<FacetResult> results =
+            [new("Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);
 
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
-            [
-                ("phase", completedTask)
-            ];
+        [
+            ("phase", completedTask)
+        ];
 
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(tasks);
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(tasks);
+
         FacetQueryResolverStep step = new();
-        CancellationTokenSource cts = new();
-        cts.Cancel();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, cts.Token));
+        using CancellationTokenSource cts = new();
 
-        // assert
-        await Assert.ThrowsAsync<OperationCanceledException>(act);
+        await cts.CancelAsync();
+
+        // act // assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => step.HandleAsync(
+                context,
+                cts.Token).AsTask());
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenAnyTaskFaults()
+    public async Task HandleAsync_Throws_WhenAnyTaskFaults()
     {
         // arrange
         Task<IReadOnlyList<FacetResult>> faultedTask =
@@ -59,26 +68,29 @@ public sealed class FacetQueryResolverStepUnitTests
                 new InvalidOperationException("boom"));
 
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
-            [
-                ("phase", faultedTask)
-            ];
+        [
+            ("phase", faultedTask)
+        ];
 
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(tasks);
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(tasks);
+
         FacetQueryResolverStep step = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
         Assert.Contains("failed", ex.Message);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
         Assert.Equal("boom", ex.InnerException!.Message);
     }
 
     [Fact]
-    public async Task Execute_CompletesSuccessfully_WhenAllTasksComplete()
+    public async Task HandleAsync_CompletesSuccessfully_WhenAllTasksComplete()
     {
         // arrange
         IReadOnlyList<FacetResult> results =
@@ -88,20 +100,22 @@ public sealed class FacetQueryResolverStepUnitTests
             Task.FromResult(results);
 
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
-            [
-                ("phase", completedTask),
-                ("type", completedTask)
-            ];
+        [
+            ("phase", completedTask),
+            ("type", completedTask)
+        ];
 
-        SearchPipelineContext context = SearchPipelineContextBuilder.BuildContext(tasks);
+        SearchPipelineContext context =
+            SearchPipelineContextBuilder.BuildContext(tasks);
+
         FacetQueryResolverStep step = new();
 
         // act
-        await Task.Run(() =>
-            step.Execute(context, CancellationToken.None), TestContext.Current.CancellationToken);
+        await step.HandleAsync(
+            context,
+            TestContext.Current.CancellationToken);
 
         // assert
-        // No exception means success
         Assert.True(true);
     }
 }

@@ -8,7 +8,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class SearchOrderingStepUnitTests
 {
     [Fact]
-    public async Task Execute_Throws_WhenEstablishmentsMissing()
+    public async Task HandleAsync_Throws_WhenEstablishmentsMissing()
     {
         // arrange
         Dictionary<string, int> orderMap =
@@ -23,25 +23,26 @@ public sealed class SearchOrderingStepUnitTests
 
         SearchOrderingStep step = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
-
-        // assert
+        // act // assert
         InvalidOperationException ex =
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenOrderMapMissing()
+    public async Task HandleAsync_Throws_WhenOrderMapMissing()
     {
         // arrange
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = "10001" }
-            ];
+        [
+            new Establishment { Urn = "10001" }
+        ];
 
         SearchPipelineContext context =
             SearchPipelineContextBuilder
@@ -49,25 +50,26 @@ public sealed class SearchOrderingStepUnitTests
 
         SearchOrderingStep step = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
-
-        // assert
+        // act // assert
         InvalidOperationException ex =
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenEstablishmentUrnIsNull()
+    public async Task HandleAsync_Throws_WhenEstablishmentUrnIsNull()
     {
         // arrange
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = null }
-            ];
+        [
+            new Establishment { Urn = null }
+        ];
 
         Dictionary<string, int> orderMap = [];
 
@@ -77,25 +79,24 @@ public sealed class SearchOrderingStepUnitTests
 
         SearchOrderingStep step = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
-
-        // assert
+        // act // assert
         InvalidOperationException ex =
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
         Assert.Contains("null URN", ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenUrnNotInOrderMap()
+    public async Task HandleAsync_Throws_WhenUrnNotInOrderMap()
     {
         // arrange
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = "99999" }
-            ];
+        [
+            new Establishment { Urn = "99999" }
+        ];
 
         Dictionary<string, int> orderMap =
             new()
@@ -109,25 +110,24 @@ public sealed class SearchOrderingStepUnitTests
 
         SearchOrderingStep step = new();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
-
-        // assert
+        // act // assert
         InvalidOperationException ex =
-            await Assert.ThrowsAsync<InvalidOperationException>(act);
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
         Assert.Contains("99999", ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenCancellationRequested()
+    public async Task HandleAsync_Throws_WhenCancellationRequested()
     {
         // arrange
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = "10001" }
-            ];
+        [
+            new Establishment { Urn = "10001" }
+        ];
 
         Dictionary<string, int> orderMap =
             new()
@@ -140,27 +140,28 @@ public sealed class SearchOrderingStepUnitTests
                 .BuildContext(establishments, orderMap);
 
         SearchOrderingStep step = new();
-        CancellationTokenSource cts = new();
-        cts.Cancel();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, cts.Token));
+        using CancellationTokenSource cts = new();
 
-        // assert
-        await Assert.ThrowsAsync<OperationCanceledException>(act);
+        await cts.CancelAsync();
+
+        // act // assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => step.HandleAsync(
+                context,
+                cts.Token).AsTask());
     }
 
     [Fact]
-    public async Task Execute_OrdersEstablishmentsCorrectly()
+    public async Task HandleAsync_OrdersEstablishmentsCorrectly()
     {
         // arrange
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = "B" },
-                new Establishment { Urn = "A" },
-                new Establishment { Urn = "C" }
-            ];
+        [
+            new Establishment { Urn = "B" },
+            new Establishment { Urn = "A" },
+            new Establishment { Urn = "C" }
+        ];
 
         Dictionary<string, int> orderMap =
             new()
@@ -177,10 +178,9 @@ public sealed class SearchOrderingStepUnitTests
         SearchOrderingStep step = new();
 
         // act
-        await Task.Run(() =>
-            step.Execute(
-                context, CancellationToken.None),
-                    TestContext.Current.CancellationToken);
+        await step.HandleAsync(
+            context,
+            TestContext.Current.CancellationToken);
 
         // assert
         List<Establishment> ordered =
