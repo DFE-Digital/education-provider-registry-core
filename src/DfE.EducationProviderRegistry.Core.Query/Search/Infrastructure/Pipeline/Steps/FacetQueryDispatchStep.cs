@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
-using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class FacetQueryDispatchStep : BaseEvaluationHandler<SearchPipelineContext>
+internal sealed class FacetQueryDispatchStep : IEvaluationHandler<SearchPipelineContext>
 {
     private readonly IFacetProvider _facetProvider;
 
@@ -15,9 +15,7 @@ internal sealed class FacetQueryDispatchStep : BaseEvaluationHandler<SearchPipel
         _facetProvider = facetProvider;
     }
 
-    public override bool CanHandle(SearchPipelineContext request) => true;
-
-    protected override ValueTask HandleCoreAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         ReadOnlyCollection<string> ids =
             request.Get<ReadOnlyCollection<string>>()

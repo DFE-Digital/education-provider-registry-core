@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
-using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
@@ -25,6 +24,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
@@ -148,15 +148,18 @@ public static class CompositionRoot
         // Pipeline steps
         // ---------------------------------------------------------
 
-        services.AddChainedHandlers<SearchPipelineContext>((builder) =>
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderMapStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderingStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, ParallelMappingStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryDispatchStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryResolverStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryBuilderStep>();
+
+        services.AddScoped<IEvaluator<SearchPipelineContext>>((sp) =>
         {
-            builder
-                .AddScoped<SearchOrderMapStep>()
-                .AddScoped<SearchOrderingStep>()
-                .AddScoped<ParallelMappingStep>()
-                .AddScoped<FacetQueryDispatchStep>()
-                .AddScoped<FacetQueryResolverStep>()
-                .AddScoped<FacetQueryBuilderStep>();
+            IEnumerable<IEvaluationHandler<SearchPipelineContext>> handlers = sp.GetServices<IEvaluationHandler<SearchPipelineContext>>();
+
+            return new PipelineEvaluator(handlers);
         });
 
         // ---------------------------------------------------------

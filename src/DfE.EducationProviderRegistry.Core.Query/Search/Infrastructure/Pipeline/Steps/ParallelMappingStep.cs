@@ -1,11 +1,11 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
-using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class ParallelMappingStep : BaseEvaluationHandler<SearchPipelineContext>
+internal sealed class ParallelMappingStep : IEvaluationHandler<SearchPipelineContext>
 {
     private readonly IMapper<Establishment, EstablishmentSearchResult> _mapper;
 
@@ -15,9 +15,7 @@ internal sealed class ParallelMappingStep : BaseEvaluationHandler<SearchPipeline
         _mapper = mapper;
     }
 
-    public override bool CanHandle(SearchPipelineContext request) => true;
-
-    protected override ValueTask HandleCoreAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         IReadOnlyList<Establishment> ordered =
             request.Get<IReadOnlyList<Establishment>>()
