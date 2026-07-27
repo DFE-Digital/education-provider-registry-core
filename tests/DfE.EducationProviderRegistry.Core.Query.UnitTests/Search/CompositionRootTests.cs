@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
@@ -8,6 +9,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.St
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
@@ -142,8 +144,8 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        IEnumerable<ISearchPipelineStep> steps =
-            scope.ServiceProvider.GetServices<ISearchPipelineStep>();
+        IEnumerable<IEvaluationHandler<SearchPipelineContext>> steps =
+            scope.ServiceProvider.GetServices<IEvaluationHandler<SearchPipelineContext>>();
 
         // assert
         Assert.Contains(steps, step => step is SearchOrderMapStep);
@@ -152,6 +154,7 @@ public sealed class CompositionRootTests
         Assert.Contains(steps, step => step is FacetQueryDispatchStep);
         Assert.Contains(steps, step => step is FacetQueryResolverStep);
         Assert.Contains(steps, step => step is FacetQueryBuilderStep);
+        Assert.NotNull(scope.ServiceProvider.GetService<Query.Shared.Pipeline.IEvaluator<SearchPipelineContext>>());
     }
 
     [Fact]

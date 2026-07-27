@@ -1,28 +1,16 @@
 ﻿using System.Collections.ObjectModel;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-/// <summary>
-/// Builds an order map from establishment URNs stored in the
-/// <see cref="SearchPipelineContext"/>.
-/// </summary>
-internal sealed class SearchOrderMapStep : ISearchPipelineStep
+internal sealed class SearchOrderMapStep : IEvaluationHandler<SearchPipelineContext>
 {
-    /// <summary>
-    /// Creates a dictionary mapping each establishment URN to its positional
-    /// index and stores it in the pipeline context.
-    /// </summary>
-    /// <param name="context">The pipeline context containing establishment URNs.</param>
-    /// <param name="cancellationToken">Token used to cancel execution.</param>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when URNs are missing or contain invalid values.
-    /// </exception>
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         ReadOnlyCollection<string> ids =
-            context.Get<ReadOnlyCollection<string>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain establishment URNs.");
+         request.Get<ReadOnlyCollection<string>>()
+             ?? throw new InvalidOperationException(
+                 "PipelineContext does not contain establishment URNs.");
 
         Dictionary<string, int> orderMap = new(ids.Count);
 
@@ -41,6 +29,8 @@ internal sealed class SearchOrderMapStep : ISearchPipelineStep
             orderMap[urn] = index;
         }
 
-        context.Set(orderMap);
+        request.Set(orderMap);
+
+        return ValueTask.CompletedTask;
     }
 }

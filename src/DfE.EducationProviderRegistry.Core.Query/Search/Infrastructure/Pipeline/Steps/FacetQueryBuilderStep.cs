@@ -1,26 +1,14 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-/// <summary>
-/// Builds <see cref="SearchFacet"/> results from completed facet tasks stored
-/// in the <see cref="SearchPipelineContext"/>.
-/// </summary>
-internal sealed class FacetQueryBuilderStep : ISearchPipelineStep
+internal sealed class FacetQueryBuilderStep : IEvaluationHandler<SearchPipelineContext>
 {
-    /// <summary>
-    /// Converts completed facet tasks into <see cref="SearchFacet"/> instances
-    /// and stores them back into the pipeline context.
-    /// </summary>
-    /// <param name="context">The pipeline context containing facet tasks.</param>
-    /// <param name="cancellationToken">Token used to cancel execution.</param>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when a facet task is incomplete, faulted, or returns null results.
-    /// </exception>
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
-            context.Get<List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)>>();
+            request.Get<List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)>>();
 
         List<SearchFacet> facets = new(tasks.Count);
 
@@ -48,6 +36,8 @@ internal sealed class FacetQueryBuilderStep : ISearchPipelineStep
             facets.Add(new SearchFacet(facetName, [.. results]));
         }
 
-        context.Set(facets);
+        request.Set(facets);
+
+        return ValueTask.CompletedTask;
     }
 }

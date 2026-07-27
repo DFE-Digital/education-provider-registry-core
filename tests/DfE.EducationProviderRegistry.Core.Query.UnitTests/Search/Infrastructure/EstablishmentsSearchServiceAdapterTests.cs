@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
@@ -12,6 +9,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
@@ -44,7 +42,7 @@ public sealed class EstablishmentsSearchServiceAdapterTests
             new(
                 searchProvider.Object,
                 Mock.Of<IFacetProvider>(),
-                [],
+                Mock.Of<IEvaluator<SearchPipelineContext>>(),
                 resultsMapper.Object,
                 filterMapper.Object);
 
@@ -83,8 +81,7 @@ public sealed class EstablishmentsSearchServiceAdapterTests
         Mock<ISearchProvider<Establishment>> provider =
             SearchProviderTestDouble.MockFor(establishments);
 
-        Mock<ISearchPipelineStep> step1 = new();
-        Mock<ISearchPipelineStep> step2 = new();
+        Mock<IEvaluator<SearchPipelineContext>> evaluator = new();
 
         Mock<IMapper<
             SearchPipelineContext,
@@ -102,7 +99,7 @@ public sealed class EstablishmentsSearchServiceAdapterTests
             new(
                 provider.Object,
                 Mock.Of<IFacetProvider>(),
-                [step1.Object, step2.Object],
+                evaluator.Object,
                 resultsMapper.Object,
                 filterMapper.Object);
 
@@ -120,18 +117,12 @@ public sealed class EstablishmentsSearchServiceAdapterTests
         await adapter.SearchAsync(request, TestContext.Current.CancellationToken);
 
         // assert
-        step1.Verify(searchPipelineStep =>
-            searchPipelineStep.Execute(
+        evaluator.Verify(searchPipelineStep =>
+            searchPipelineStep.EvaluateAsync(
                 It.IsAny<SearchPipelineContext>(),
                 It.IsAny<CancellationToken>()), Times.Once);
 
-        step2.Verify(searchPipelineStep =>
-            searchPipelineStep.Execute(
-                It.IsAny<SearchPipelineContext>(),
-                It.IsAny<CancellationToken>()), Times.Once);
-
-        step1.VerifyNoOtherCalls();
-        step2.VerifyNoOtherCalls();
+        evaluator.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -158,7 +149,7 @@ public sealed class EstablishmentsSearchServiceAdapterTests
             new(
                 provider.Object,
                 Mock.Of<IFacetProvider>(),
-                [],
+                Mock.Of<IEvaluator<SearchPipelineContext>>(),
                 resultsMapper.Object,
                 filterMapper.Object);
 
@@ -201,12 +192,14 @@ public sealed class EstablishmentsSearchServiceAdapterTests
         Mock<ISearchProvider<Establishment>> provider =
             SearchProviderTestDouble.MockFor(establishments);
 
-        Mock<ISearchPipelineStep> step = new();
+        Mock<IEvaluator<SearchPipelineContext>> evaluator = new();
 
         SearchPipelineContext? capturedContext = null;
 
-        step
-            .Setup(s => s.Execute(It.IsAny<SearchPipelineContext>(), It.IsAny<CancellationToken>()))
+        evaluator
+            .Setup(s => s.EvaluateAsync(
+                It.IsAny<SearchPipelineContext>(),
+                It.IsAny<CancellationToken>()))
             .Callback<SearchPipelineContext, CancellationToken>((ctx, _) => capturedContext = ctx);
 
         SearchResults<EstablishmentSearchResults, SearchFacets> mappedResults = new();
@@ -229,7 +222,7 @@ public sealed class EstablishmentsSearchServiceAdapterTests
             new(
                 provider.Object,
                 Mock.Of<IFacetProvider>(),
-                [step.Object],
+                evaluator.Object,
                 resultsMapper.Object,
                 filterMapper.Object);
 
