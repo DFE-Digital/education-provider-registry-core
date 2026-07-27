@@ -147,13 +147,17 @@ public static class CompositionRoot
         services.AddScoped(typeof(ISearchOrchestrator<>), typeof(SqlSearchOrchestrator<>));
 
         // EXAMPLE STUFF
-        // Modular Matchers for Search (OR logic)
+        // "What" matchers
         services.AddSingleton<ISearchFieldMatcher, UrnSearchMatcher>();
         services.AddSingleton<ISearchFieldMatcher, UidSearchMatcher>();
         services.AddSingleton<ISearchFieldMatcher, NameSearchMatcher>();
-        services.AddSingleton<ISearchFieldMatcher, PostcodeSearchMatcher>();
 
-        // Single Composite Search Rule
+        // "Where" matchers
+        services.AddSingleton<ISearchFieldMatcher, PostcodeSearchMatcher>();
+        services.AddSingleton<ISearchFieldMatcher, CountySearchMatcher>();
+        services.AddSingleton<ISearchFieldMatcher, CitySearchMatcher>();
+
+        // Core composable search rule
         services.AddSingleton<ISearchTermRule<IQueryable<Establishment>>, ComposableSearchTermRule>();
 
         // Filters (AND logic)
@@ -168,7 +172,7 @@ public static class CompositionRoot
         services.AddSingleton<IFacetProvider<IQueryable<Establishment>>, TypeFacetProvider>();
         services.AddSingleton<IFacetProvider<IQueryable<Establishment>>, StatusFacetProvider>();
 
-        // Core Components
+        // Core components
         services.AddScoped<ISortStrategy<IQueryable<Establishment>>, EfSortStrategy>();
         services.AddScoped<IFacetCalculator<IQueryable<Establishment>>, ConfigurableEfFacetCalculator>();
         services.AddScoped<IEstablishmentSearchAdapter, EfEstablishmentSearchAdapter>();

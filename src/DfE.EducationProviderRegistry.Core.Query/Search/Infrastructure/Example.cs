@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
-#region Contracts & DTOs
 
 public enum SortByOption
 {
@@ -16,6 +15,13 @@ public enum SortByOption
     Relevance
 }
 
+public enum SearchFieldCategory
+{
+    What,
+    Where
+}
+
+// Models
 public record FilterCriterion(string Field, List<string> Values);
 public record FacetValueResult(string Value, int Count);
 public record FacetResultNew(string FacetName, IReadOnlyCollection<FacetValueResult> Values);
@@ -32,7 +38,8 @@ public record EstablishmentReadModel(
 );
 
 public record EstablishmentSearchRequest(
-    string? SearchTerm = null,
+    string? WhatTerm = null,
+    string? WhereTerm = null,
     int Offset = 0,
     int PageSize = 20,
     List<FilterCriterion>? Filters = null,
@@ -49,6 +56,7 @@ public record EstablishmentSearchResponse(
     int PageSize
 );
 
+// Base abstractions
 public interface IEstablishmentSearchAdapter
 {
     Task<EstablishmentSearchResponse> SearchAsync(
@@ -58,7 +66,8 @@ public interface IEstablishmentSearchAdapter
 
 public interface ISearchTermRule<TQuery>
 {
-    TQuery ApplySearch(TQuery query, string searchTerm);
+    TQuery ApplySearch(TQuery query, string? whatTerm, string? whereTerm);
+    TQuery ApplyWhereOnly(TQuery query, string whereTerm);
 }
 
 public interface IFilterRule<TQuery>
@@ -88,48 +97,69 @@ public interface IFacetCalculator<TQuery>
         CancellationToken cancellationToken);
 }
 
-
 public interface ISearchFieldMatcher
 {
+    SearchFieldCategory Category { get; }
     Expression<Func<Establishment, bool>> GetExpression(string searchTerm);
 }
 
+
+// "What" Matchers (Name, URN, UID)
+
 public class UrnSearchMatcher : ISearchFieldMatcher
 {
+    public SearchFieldCategory Category => SearchFieldCategory.What;
+
     public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
         e => e.Urn == searchTerm || e.Urn.Contains(searchTerm);
 }
 
 public class UidSearchMatcher : ISearchFieldMatcher
 {
+    public SearchFieldCategory Category => SearchFieldCategory.What;
+
     public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
         e => e.Uid == searchTerm || e.Uid.Contains(searchTerm);
 }
 
+public class NameSearchMatcher : ISearchFieldMatcher
+{
+    public SearchFieldCategory Category => SearchFieldCategory.What;
+    private const double WordSimilarityThreshold = 0.4;
+
+    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
+        e => e.Name.ToLower() == searchTerm.ToLower() ||
+             EF.Functions.ILike(e.Name, $"%{searchTerm}%") ||
+             EF.Functions.TrigramsWordSimilarity(searchTerm, e.Name) >= WordSimilarityThreshold;
+}
+
+// "Where" Matchers (Postcode, County, City)
+
 public class PostcodeSearchMatcher : ISearchFieldMatcher
 {
+    public SearchFieldCategory Category => SearchFieldCategory.Where;
+
     public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
         e => e.Site.Any(s => s.Postcode != null && EF.Functions.ILike(s.Postcode, $"%{searchTerm}%"));
 }
 
-public class NameSearchMatcher : ISearchFieldMatcher
+public class CountySearchMatcher : ISearchFieldMatcher
 {
-    private const double WordSimilarityThreshold = 0.4;
+    public SearchFieldCategory Category => SearchFieldCategory.Where;
 
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm)
-    {
-        var term = searchTerm.Trim();
-
-        return e =>
-            // 1. Direct case-insensitive phrase match
-            e.Name.ToLower() == term.ToLower() ||
-            EF.Functions.ILike(e.Name, $"%{term}%") ||
-
-            // 2. Fuzzy / Slice Match via PostgreSQL word_similarity
-            EF.Functions.TrigramsWordSimilarity(term, e.Name) >= WordSimilarityThreshold;
-    }
+    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
+        e => e.Site.Any(s => s.County != null && EF.Functions.ILike(s.County, $"%{searchTerm}%"));
 }
 
+public class CitySearchMatcher : ISearchFieldMatcher
+{
+    public SearchFieldCategory Category => SearchFieldCategory.Where;
+
+    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
+        e => e.Site.Any(s => s.Town != null && EF.Functions.ILike(s.Town, $"%{searchTerm}%"));
+}
+
+// Composable search
 public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment>>
 {
     private readonly IEnumerable<ISearchFieldMatcher> _matchers;
@@ -139,35 +169,60 @@ public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment
         _matchers = matchers;
     }
 
-    public IQueryable<Establishment> ApplySearch(IQueryable<Establishment> query, string searchTerm)
+    public IQueryable<Establishment> ApplySearch(IQueryable<Establishment> query, string? whatTerm, string? whereTerm)
     {
-        if (string.IsNullOrWhiteSpace(searchTerm) || !_matchers.Any())
-            return query;
+        Expression<Func<Establishment, bool>>? whatExpr = BuildCategoryExpression(SearchFieldCategory.What, whatTerm);
+        Expression<Func<Establishment, bool>>? whereExpr = BuildCategoryExpression(SearchFieldCategory.Where, whereTerm);
 
-        var term = searchTerm.Trim();
-        Expression<Func<Establishment, bool>>? combinedExpression = null;
-
-        foreach (var matcher in _matchers)
+        if (whatExpr is not null && whereExpr is not null)
         {
-            var expr = matcher.GetExpression(term);
-            combinedExpression = combinedExpression == null ? expr : combinedExpression.Or(expr);
+            // Both populated: (What_1 OR What_2) AND (Where_1 OR Where_2)
+            return query.Where(whatExpr.And(whereExpr));
         }
 
-        return combinedExpression != null ? query.Where(combinedExpression) : query;
+        if (whatExpr is not null)
+            return query.Where(whatExpr);
+        if (whereExpr is not null)
+            return query.Where(whereExpr);
+
+        return query;
+    }
+
+    public IQueryable<Establishment> ApplyWhereOnly(IQueryable<Establishment> query, string whereTerm)
+    {
+        Expression<Func<Establishment, bool>>? whereExpr = BuildCategoryExpression(SearchFieldCategory.Where, whereTerm);
+        return whereExpr != null ? query.Where(whereExpr) : query;
+    }
+
+    private Expression<Func<Establishment, bool>>? BuildCategoryExpression(SearchFieldCategory category, string? term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+            return null;
+
+        string cleanTerm = term.Trim();
+        List<ISearchFieldMatcher> categoryMatchers = _matchers.Where(m => m.Category == category).ToList();
+
+        Expression<Func<Establishment, bool>>? combined = null;
+        foreach (ISearchFieldMatcher matcher in categoryMatchers)
+        {
+            Expression<Func<Establishment, bool>> expr = matcher.GetExpression(cleanTerm);
+            combined = combined == null ? expr : combined.Or(expr);
+        }
+
+        return combined;
     }
 }
 
-
-
+// Expressions
 public static class ExpressionExtensions
 {
     public static Expression<Func<T, bool>> Or<T>(
         this Expression<Func<T, bool>> expr1,
         Expression<Func<T, bool>> expr2)
     {
-        var parameter = Expression.Parameter(typeof(T));
-        var left = new ReplaceExpressionVisitor(expr1.Parameters[0], parameter).Visit(expr1.Body);
-        var right = new ReplaceExpressionVisitor(expr2.Parameters[0], parameter).Visit(expr2.Body);
+        ParameterExpression parameter = Expression.Parameter(typeof(T));
+        Expression? left = new ReplaceExpressionVisitor(expr1.Parameters[0], parameter).Visit(expr1.Body);
+        Expression? right = new ReplaceExpressionVisitor(expr2.Parameters[0], parameter).Visit(expr2.Body);
 
         return Expression.Lambda<Func<T, bool>>(Expression.OrElse(left!, right!), parameter);
     }
@@ -176,9 +231,9 @@ public static class ExpressionExtensions
         this Expression<Func<T, bool>> expr1,
         Expression<Func<T, bool>> expr2)
     {
-        var parameter = Expression.Parameter(typeof(T));
-        var left = new ReplaceExpressionVisitor(expr1.Parameters[0], parameter).Visit(expr1.Body);
-        var right = new ReplaceExpressionVisitor(expr2.Parameters[0], parameter).Visit(expr2.Body);
+        ParameterExpression parameter = Expression.Parameter(typeof(T));
+        Expression? left = new ReplaceExpressionVisitor(expr1.Parameters[0], parameter).Visit(expr1.Body);
+        Expression? right = new ReplaceExpressionVisitor(expr2.Parameters[0], parameter).Visit(expr2.Body);
 
         return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(left!, right!), parameter);
     }
@@ -199,6 +254,7 @@ public static class ExpressionExtensions
 }
 
 
+// Filter rules
 public class PostcodeFilterRule : IFilterRule<IQueryable<Establishment>>
 {
     public string FieldKey => "postcode";
@@ -229,9 +285,9 @@ public class TypeFilterRule : IFilterRule<IQueryable<Establishment>>
 
     public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values)
     {
-        var valueList = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
+        List<string>? valueList = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
 
-        if (valueList == null || !valueList.Any())
+        if (valueList is null || !valueList.Any())
             return query;
 
         return query.Where(e => e.EstablishmentType != null && valueList.Contains(e.EstablishmentType.Name));
@@ -244,9 +300,9 @@ public class StatusFilterRule : IFilterRule<IQueryable<Establishment>>
 
     public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values)
     {
-        var valueList = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
+        List<string>? valueList = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
 
-        if (valueList == null || !valueList.Any())
+        if (valueList is null || !valueList.Any())
             return query;
 
         return query.Where(e => e.EstablishmentStatus != null && valueList.Contains(e.EstablishmentStatus.Name));
@@ -254,7 +310,7 @@ public class StatusFilterRule : IFilterRule<IQueryable<Establishment>>
 }
 
 
-
+// Sorting
 public class EfSortStrategy : ISortStrategy<IQueryable<Establishment>>
 {
     public IQueryable<Establishment> ApplySorting(
@@ -273,7 +329,7 @@ public class EfSortStrategy : ISortStrategy<IQueryable<Establishment>>
             };
         }
 
-        var term = searchTerm.Trim();
+        string term = searchTerm.Trim();
 
         return sortBy switch
         {
@@ -307,7 +363,7 @@ public class CountyFacetProvider : IFacetProvider<IQueryable<Establishment>>
 
     public async Task<FacetResultNew> BuildFacetAsync(IQueryable<Establishment> query, CancellationToken cancellationToken)
     {
-        var values = await query
+        List<FacetValueResult> values = await query
             .Where(e => e.Site.Any(s => s.County != null))
             .GroupBy(e => e.Site.Select(s => s.County).FirstOrDefault()!)
             .Select(g => new FacetValueResult(g.Key, g.Count()))
@@ -323,7 +379,7 @@ public class TypeFacetProvider : IFacetProvider<IQueryable<Establishment>>
 
     public async Task<FacetResultNew> BuildFacetAsync(IQueryable<Establishment> query, CancellationToken cancellationToken)
     {
-        var values = await query
+        List<FacetValueResult> values = await query
             .Where(e => e.EstablishmentType != null)
             .GroupBy(e => e.EstablishmentType.Name)
             .Select(g => new FacetValueResult(g.Key, g.Count()))
@@ -339,7 +395,7 @@ public class StatusFacetProvider : IFacetProvider<IQueryable<Establishment>>
 
     public async Task<FacetResultNew> BuildFacetAsync(IQueryable<Establishment> query, CancellationToken cancellationToken)
     {
-        var values = await query
+        List<FacetValueResult> values = await query
             .Where(e => e.EstablishmentStatus != null)
             .GroupBy(e => e.EstablishmentStatus.Name)
             .Select(g => new FacetValueResult(g.Key, g.Count()))
@@ -368,13 +424,13 @@ public class ConfigurableEfFacetCalculator : IFacetCalculator<IQueryable<Establi
         if (requestedFacets == null || !requestedFacets.Any())
             return new List<FacetResultNew>();
 
-        var sourceQuery = scopeToFilters ? fullyFilteredQuery : baseMatchQuery;
-        var results = new List<FacetResultNew>();
+        IQueryable<Establishment> sourceQuery = scopeToFilters ? fullyFilteredQuery : baseMatchQuery;
+        List<FacetResultNew> results = new List<FacetResultNew>();
 
         // Sequential execution prevents DbContext thread safety issues
-        foreach (var facetKey in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (string? facetKey in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            if (_facetProviders.TryGetValue(facetKey.ToLowerInvariant(), out var provider))
+            if (_facetProviders.TryGetValue(facetKey.ToLowerInvariant(), out IFacetProvider<IQueryable<Establishment>>? provider))
             {
                 results.Add(await provider.BuildFacetAsync(sourceQuery, cancellationToken));
             }
@@ -416,30 +472,44 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
         IQueryable<Establishment> searchedQuery = baseQuery;
         IQueryable<Establishment> filteredQuery = baseQuery;
 
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        bool hasWhat = !string.IsNullOrWhiteSpace(request.WhatTerm);
+        bool hasWhere = !string.IsNullOrWhiteSpace(request.WhereTerm);
+
+        if (hasWhat || hasWhere)
         {
-            var term = request.SearchTerm.Trim();
+            bool exactHandled = false;
 
-            // 1. Check for an Exact Identity Match (URN, UID, or exact Full Name)
-            var exactSearchQuery = baseQuery.Where(e =>
-                e.Urn == term ||
-                e.Uid == term ||
-                e.Name.ToLower() == term.ToLower());
-
-            var exactFilteredQuery = ApplyFilters(exactSearchQuery, request.Filters);
-
-            int exactCount = await exactFilteredQuery.CountAsync(cancellationToken);
-
-            if (exactCount > 0)
+            // 1. Check Exact Identity Match on WhatTerm if provided
+            if (hasWhat)
             {
-                // EXACT MATCH FOUND: lock query to ONLY exact match(es)
-                searchedQuery = exactSearchQuery;
-                filteredQuery = exactFilteredQuery;
+                string term = request.WhatTerm!.Trim();
+
+                IQueryable<Establishment> exactWhatQuery = baseQuery.Where(e =>
+                    e.Urn == term ||
+                    e.Uid == term ||
+                    e.Name.ToLower() == term.ToLower());
+
+                // Enforce location criteria on the exact match if WhereTerm is also passed
+                if (hasWhere)
+                {
+                    exactWhatQuery = _searchTermRule.ApplyWhereOnly(exactWhatQuery, request.WhereTerm!);
+                }
+
+                IQueryable<Establishment> candidateFiltered = ApplyFilters(exactWhatQuery, request.Filters);
+                int exactCount = await candidateFiltered.CountAsync(cancellationToken);
+
+                if (exactCount > 0)
+                {
+                    searchedQuery = exactWhatQuery;
+                    filteredQuery = candidateFiltered;
+                    exactHandled = true;
+                }
             }
-            else
+
+            // 2. Broad Search Fallback (if no exact match or if only WhereTerm was supplied)
+            if (!exactHandled)
             {
-                // NO EXACT MATCH: Fall back to broad search (ILIKE, TrigramWordSimilarity)
-                searchedQuery = _searchTermRule.ApplySearch(baseQuery, request.SearchTerm);
+                searchedQuery = _searchTermRule.ApplySearch(baseQuery, request.WhatTerm, request.WhereTerm);
                 filteredQuery = ApplyFilters(searchedQuery, request.Filters);
             }
         }
@@ -448,13 +518,12 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
             filteredQuery = ApplyFilters(baseQuery, request.Filters);
         }
 
-        // 2. Count Total Items
         int totalCount = await filteredQuery.CountAsync(cancellationToken);
 
-        // 3. Apply Sorting / Relevance Ranking
-        IQueryable<Establishment> sortedQuery = _sortStrategy.ApplySorting(filteredQuery, request.SortBy, request.SearchTerm);
+        // Sort using WhatTerm for relevance if available, otherwise fallback to name
+        IQueryable<Establishment> sortedQuery = _sortStrategy.ApplySorting(
+            filteredQuery, request.SortBy, request.WhatTerm ?? request.WhereTerm);
 
-        // 4. Fetch Paginated Page
         List<EstablishmentReadModel> items = await sortedQuery
             .Skip(request.Offset)
             .Take(request.PageSize)
@@ -469,7 +538,6 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
                 e.EstablishmentStatus != null ? e.EstablishmentStatus.Name : string.Empty))
             .ToListAsync(cancellationToken);
 
-        // 5. Calculate Facets
         List<FacetResultNew> facets = await _facetCalculator.CalculateFacetsAsync(
             searchedQuery,
             filteredQuery,
@@ -489,7 +557,7 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
 
     private IQueryable<Establishment> ApplyFilters(IQueryable<Establishment> query, List<FilterCriterion>? filters)
     {
-        if (filters == null || !filters.Any())
+        if (filters is null || !filters.Any())
             return query;
 
         foreach (FilterCriterion filter in filters)
@@ -498,7 +566,7 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
             {
                 string fieldKey = filter.Field.ToLowerInvariant();
 
-                if (_filterRules.TryGetValue(fieldKey, out var rule))
+                if (_filterRules.TryGetValue(fieldKey, out IFilterRule<IQueryable<Establishment>>? rule))
                 {
                     query = rule.Apply(query, filter.Values);
                 }
