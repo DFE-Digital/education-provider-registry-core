@@ -8,8 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="DfE.EducationProviderRegistry.Data.DatabaseModels" Version="1.0.24" />
-    <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.2" />
-    <PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.2" />
+    <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.10" />
+    <PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.10" />
+    <PackageReference Include="DfE.Core.Libraries.DesignPatterns" Version="1.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />

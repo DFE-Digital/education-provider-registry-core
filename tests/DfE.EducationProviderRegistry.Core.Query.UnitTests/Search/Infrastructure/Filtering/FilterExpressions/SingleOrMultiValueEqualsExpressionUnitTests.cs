@@ -18,7 +18,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
 
         // act/assert
         Assert.Throws<ArgumentNullException>(() =>
-            expression.ToExpression(null!));
+            expression.CreateSpecification(null!));
     }
 
     [Fact]
