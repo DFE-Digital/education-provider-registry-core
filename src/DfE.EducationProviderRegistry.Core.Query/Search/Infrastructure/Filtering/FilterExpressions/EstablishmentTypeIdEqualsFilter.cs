@@ -1,19 +1,22 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 
-public sealed class EstablishmentTypeIdEqualsFilter<TProjection>
-    : ISearchFilter<TProjection>
-    where TProjection : class
+public sealed class EstablishmentTypeFilter : ISearchFilter<Establishment>
 {
-    
-    public ISpecification<TProjection> CreateSpecification(
+    public ISpecification<Establishment> CreateSpecification(
         SearchFilterRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        IReadOnlyCollection<long> values =
+        [
+            .. request.FilterValues
+                .Where((filterValue) => filterValue != null)
+                .Select((value) => Convert.ToInt64(value))
+        ];
 
-        return new PropertyEqualsAnySpecification<TProjection>(
-            propertyName: "EstablishmentTypeId",
-            values: request.FilterValues);
+        return new PropertyEqualsAnyValuesSpecification<Establishment, long>(
+            x => x.EstablishmentTypeId,
+            values);
     }
 }
