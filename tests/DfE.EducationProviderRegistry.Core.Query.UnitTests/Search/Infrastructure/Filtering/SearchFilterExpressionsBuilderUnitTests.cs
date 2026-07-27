@@ -60,7 +60,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
             Builder(options, exprFactoryMock.Object);
 
         SearchFilterRequest[] requests =
-            Requests(new SearchFilterRequest("UNKNOWN", [ "A" ]));
+            Requests(new SearchFilterRequest("UNKNOWN", ["A"]));
 
         // act
         Expression<Func<DummyProjection, bool>> expr =
@@ -105,7 +105,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
             Builder(options, exprFactoryMock.Object);
 
         SearchFilterRequest[] requests =
-            Requests(new SearchFilterRequest("eq", [ "A" ]));
+            Requests(new SearchFilterRequest("eq", ["A"]));
 
         // act
         Expression<Func<DummyProjection, bool>> expr =
@@ -163,8 +163,8 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
 
         SearchFilterRequest[] requests =
             Requests(
-                new SearchFilterRequest("eq", [ "A" ]),
-                new SearchFilterRequest("neq", [ "B" ]));
+                new SearchFilterRequest("eq", ["A"]),
+                new SearchFilterRequest("neq", ["B"]));
 
         // act
         Expression<Func<DummyProjection, bool>> expr =

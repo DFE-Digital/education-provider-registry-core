@@ -22,7 +22,7 @@ internal static class LogicalOperatorTestDoubles
         where TProjection : class
     {
         Mock<ILogicalOperator<TProjection>> opMock = Mock<TProjection>();
-            
+
         opMock
             .Setup(logicalOperator =>
                 logicalOperator.Combine(
