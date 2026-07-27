@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
-
 public enum SortByOption
 {
     NameAsc,
@@ -44,8 +43,7 @@ public record EstablishmentSearchRequest(
     int PageSize = 20,
     List<FilterCriterion>? Filters = null,
     List<string>? RequestedFacets = null,
-    SortByOption SortBy = SortByOption.NameAsc,
-    bool ScopeFacetsToFilters = false
+    SortByOption SortBy = SortByOption.NameAsc
 );
 
 public record EstablishmentSearchResponse(
@@ -90,10 +88,8 @@ public interface IFacetProvider<TQuery>
 public interface IFacetCalculator<TQuery>
 {
     Task<List<FacetResultNew>> CalculateFacetsAsync(
-        TQuery baseMatchQuery,
-        TQuery fullyFilteredQuery,
+        TQuery query,
         IEnumerable<string>? requestedFacets,
-        bool scopeToFilters,
         CancellationToken cancellationToken);
 }
 
@@ -103,9 +99,7 @@ public interface ISearchFieldMatcher
     Expression<Func<Establishment, bool>> GetExpression(string searchTerm);
 }
 
-
 // "What" Matchers (Name, URN, UID)
-
 public class UrnSearchMatcher : ISearchFieldMatcher
 {
     public SearchFieldCategory Category => SearchFieldCategory.What;
@@ -134,7 +128,6 @@ public class NameSearchMatcher : ISearchFieldMatcher
 }
 
 // "Where" Matchers (Postcode, County, City)
-
 public class PostcodeSearchMatcher : ISearchFieldMatcher
 {
     public SearchFieldCategory Category => SearchFieldCategory.Where;
@@ -176,7 +169,6 @@ public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment
 
         if (whatExpr is not null && whereExpr is not null)
         {
-            // Both populated: (What_1 OR What_2) AND (Where_1 OR Where_2)
             return query.Where(whatExpr.And(whereExpr));
         }
 
@@ -253,7 +245,6 @@ public static class ExpressionExtensions
     }
 }
 
-
 // Filter rules
 public class PostcodeFilterRule : IFilterRule<IQueryable<Establishment>>
 {
@@ -309,7 +300,6 @@ public class StatusFilterRule : IFilterRule<IQueryable<Establishment>>
     }
 }
 
-
 // Sorting
 public class EfSortStrategy : ISortStrategy<IQueryable<Establishment>>
 {
@@ -338,12 +328,6 @@ public class EfSortStrategy : ISortStrategy<IQueryable<Establishment>>
             SortByOption.UrnAsc => query.OrderBy(e => e.Urn),
             SortByOption.UrnDesc => query.OrderByDescending(e => e.Urn),
 
-            // RELEVANCE TIERING:
-            // 1. Exact URN or UID match
-            // 2. Exact Name match (case-insensitive)
-            // 3. Name Starts-With match (e.g. "The Poplars" ranks #1 when searching "the poplar")
-            // 4. Trigram Word Similarity score
-            // 5. Alphabetical fallback
             SortByOption.Relevance => query
                 .OrderByDescending(e => e.Urn == term || e.Uid == term)
                 .ThenByDescending(e => e.Name.ToLower() == term.ToLower())
@@ -415,31 +399,26 @@ public class ConfigurableEfFacetCalculator : IFacetCalculator<IQueryable<Establi
     }
 
     public async Task<List<FacetResultNew>> CalculateFacetsAsync(
-        IQueryable<Establishment> baseMatchQuery,
-        IQueryable<Establishment> fullyFilteredQuery,
+        IQueryable<Establishment> query,
         IEnumerable<string>? requestedFacets,
-        bool scopeToFilters,
         CancellationToken cancellationToken)
     {
         if (requestedFacets == null || !requestedFacets.Any())
             return new List<FacetResultNew>();
 
-        IQueryable<Establishment> sourceQuery = scopeToFilters ? fullyFilteredQuery : baseMatchQuery;
         List<FacetResultNew> results = new List<FacetResultNew>();
 
-        // Sequential execution prevents DbContext thread safety issues
         foreach (string? facetKey in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
         {
             if (_facetProviders.TryGetValue(facetKey.ToLowerInvariant(), out IFacetProvider<IQueryable<Establishment>>? provider))
             {
-                results.Add(await provider.BuildFacetAsync(sourceQuery, cancellationToken));
+                results.Add(await provider.BuildFacetAsync(query, cancellationToken));
             }
         }
 
         return results;
     }
 }
-
 
 // Adapter
 public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
@@ -469,8 +448,6 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
         CancellationToken cancellationToken = default)
     {
         var baseQuery = _dbContext.Establishment.AsNoTracking();
-
-        IQueryable<Establishment> searchedQuery = baseQuery;
         IQueryable<Establishment> filteredQuery = baseQuery;
 
         bool hasWhat = !string.IsNullOrWhiteSpace(request.WhatTerm);
@@ -501,7 +478,6 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
 
                 if (exactCount > 0)
                 {
-                    searchedQuery = exactWhatQuery;
                     filteredQuery = candidateFiltered;
                     exactHandled = true;
                 }
@@ -510,7 +486,7 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
             // 2. Broad Search Fallback (if no exact match or if only WhereTerm was supplied)
             if (!exactHandled)
             {
-                searchedQuery = _searchTermRule.ApplySearch(baseQuery, request.WhatTerm, request.WhereTerm);
+                IQueryable<Establishment> searchedQuery = _searchTermRule.ApplySearch(baseQuery, request.WhatTerm, request.WhereTerm);
                 filteredQuery = ApplyFilters(searchedQuery, request.Filters);
             }
         }
@@ -540,10 +516,8 @@ public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
             .ToListAsync(cancellationToken);
 
         List<FacetResultNew> facets = await _facetCalculator.CalculateFacetsAsync(
-            searchedQuery,
             filteredQuery,
             request.RequestedFacets,
-            request.ScopeFacetsToFilters,
             cancellationToken
         );
 
