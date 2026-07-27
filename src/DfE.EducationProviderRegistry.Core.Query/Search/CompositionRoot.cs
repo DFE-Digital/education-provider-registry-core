@@ -89,7 +89,7 @@ public static class CompositionRoot
         /// Registers the trigram‑based search orchestrator responsible for
         /// executing similarity search queries against the database.
         /// </summary>
-        services.TryAddScoped<ISearchOrchestrator<Establishment>, TrigramSearchOrchestrator<Establishment>>();
+        services.TryAddScoped<ISearchOrchestrator<Establishment>, SqlSearchOrchestrator<Establishment>>();
 
         // ---------------------------------------------------------
         // Projection builder
@@ -110,7 +110,7 @@ public static class CompositionRoot
         /// inspect EF Core entity metadata and optimise SQL generation.
         /// </summary>
         services.AddSingleton(typeof(IEntityMetadataResolver<>), typeof(CachedEntityMetadataResolver<>));
-        services.AddScoped(typeof(ISearchOrchestrator<>), typeof(TrigramSearchOrchestrator<>));
+        services.AddScoped(typeof(ISearchOrchestrator<>), typeof(SqlSearchOrchestrator<>));
 
         // ---------------------------------------------------------
         // SQL executor
@@ -137,6 +137,43 @@ public static class CompositionRoot
                 sp.GetRequiredService<ISearchFilterExpressionsBuilder>(),
                 searchColumn: "name" // TODO: move to config
             ));
+
+        // TESTING
+        services.AddSingleton<IMatchStrategyHandler, SqlExactPartialMatchStrategyHandler>();
+        services.AddSingleton<IMatchStrategyHandler, SqlExactPartialFuzzyMatchStrategyHandler>();
+
+        services.AddSingleton<IJoinClauseBuilder, JoinClauseBuilder>();
+        services.AddSingleton<ISearchQueryBuilder, SqlSearchQueryBuilder>();
+        services.AddScoped(typeof(ISearchOrchestrator<>), typeof(SqlSearchOrchestrator<>));
+
+        // EXAMPLE STUFF
+        // Modular Matchers for Search (OR logic)
+        services.AddSingleton<ISearchFieldMatcher, UrnSearchMatcher>();
+        services.AddSingleton<ISearchFieldMatcher, UidSearchMatcher>();
+        services.AddSingleton<ISearchFieldMatcher, NameSearchMatcher>();
+        services.AddSingleton<ISearchFieldMatcher, PostcodeSearchMatcher>();
+
+        // Single Composite Search Rule
+        services.AddSingleton<ISearchTermRule<IQueryable<Establishment>>, ComposableSearchTermRule>();
+
+        // Filters (AND logic)
+        services.AddSingleton<IFilterRule<IQueryable<Establishment>>, PostcodeFilterRule>();
+        services.AddSingleton<IFilterRule<IQueryable<Establishment>>, UidFilterRule>();
+        services.AddSingleton<IFilterRule<IQueryable<Establishment>>, CountyFilterRule>();
+        services.AddSingleton<IFilterRule<IQueryable<Establishment>>, TypeFilterRule>();
+        services.AddSingleton<IFilterRule<IQueryable<Establishment>>, StatusFilterRule>();
+
+        // Facets
+        services.AddSingleton<IFacetProvider<IQueryable<Establishment>>, CountyFacetProvider>();
+        services.AddSingleton<IFacetProvider<IQueryable<Establishment>>, TypeFacetProvider>();
+        services.AddSingleton<IFacetProvider<IQueryable<Establishment>>, StatusFacetProvider>();
+
+        // Core Components
+        services.AddScoped<ISortStrategy<IQueryable<Establishment>>, EfSortStrategy>();
+        services.AddScoped<IFacetCalculator<IQueryable<Establishment>>, ConfigurableEfFacetCalculator>();
+        services.AddScoped<IEstablishmentSearchAdapter, EfEstablishmentSearchAdapter>();
+
+
 
         // ---------------------------------------------------------
         // Facet provider
