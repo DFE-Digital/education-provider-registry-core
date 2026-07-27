@@ -9,12 +9,12 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 [ExcludeFromCodeCoverage]
 internal static class SearchFilterExpressionTestDouble
 {
-    public static Mock<ISearchFilterExpression<TProjection>> Mock<TProjection>()
+    public static Mock<ISearchFilter<TProjection>> Mock<TProjection>()
         where TProjection : class => new(MockBehavior.Strict);
 
-    public static Mock<ISearchFilterExpression<DummyProjection>> MockEquals(string response)
+    public static Mock<ISearchFilter<DummyProjection>> MockEquals(string response)
     {
-        Mock<ISearchFilterExpression<DummyProjection>> mock = Mock<DummyProjection>();
+        Mock<ISearchFilter<DummyProjection>> mock = Mock<DummyProjection>();
 
         mock.Setup(searchFilterExpression =>
             searchFilterExpression.ToExpression(It.IsAny<SearchFilterRequest>()))
@@ -26,9 +26,9 @@ internal static class SearchFilterExpressionTestDouble
         return mock;
     }
 
-    public static Mock<ISearchFilterExpression<DummyProjection>> MockNotEquals(string response)
+    public static Mock<ISearchFilter<DummyProjection>> MockNotEquals(string response)
     {
-        Mock<ISearchFilterExpression<DummyProjection>> mock = Mock<DummyProjection>();
+        Mock<ISearchFilter<DummyProjection>> mock = Mock<DummyProjection>();
 
         mock.Setup(searchFilterExpression =>
             searchFilterExpression.ToExpression(It.IsAny<SearchFilterRequest>()))
@@ -40,11 +40,11 @@ internal static class SearchFilterExpressionTestDouble
         return mock;
     }
 
-    public static Mock<ISearchFilterExpression<TProjection>> MockForExpression<TProjection>(
+    public static Mock<ISearchFilter<TProjection>> MockForExpression<TProjection>(
         Expression<Func<TProjection, bool>> expressionTree)
     where TProjection : class
     {
-        Mock<ISearchFilterExpression<TProjection>> exprMock = Mock<TProjection>();
+        Mock<ISearchFilter<TProjection>> exprMock = Mock<TProjection>();
 
         exprMock
             .Setup(searchFilterExpression =>

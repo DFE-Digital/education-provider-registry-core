@@ -7,7 +7,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.F
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal sealed class FilterExpressionStub<TProjection> : ISearchFilterExpression<TProjection>
+internal sealed class FilterExpressionStub<TProjection> : ISearchFilter<TProjection>
     where TProjection : class
 {
     private readonly Expression<Func<TProjection, bool>> _expression;

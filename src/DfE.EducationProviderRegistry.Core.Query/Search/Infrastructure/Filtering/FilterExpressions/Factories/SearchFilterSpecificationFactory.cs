@@ -2,18 +2,18 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 
-public sealed class FilterSpecificationFactory<TProjection>
+public sealed class SearchFilterSpecificationFactory<TProjection>
     : ISearchFilterSpecificationFactory<TProjection>
     where TProjection : class
 {
     private readonly Dictionary<
         string,
-        Func<ISearchFilterExpression<TProjection>>> _filterRegistry;
+        Func<ISearchFilter<TProjection>>> _filterRegistry;
 
-    public FilterSpecificationFactory(
+    public SearchFilterSpecificationFactory(
         Dictionary<
             string,
-            Func<ISearchFilterExpression<TProjection>>> filterRegistry)
+            Func<ISearchFilter<TProjection>>> filterRegistry)
     {
         _filterRegistry =
             filterRegistry
@@ -26,14 +26,14 @@ public sealed class FilterSpecificationFactory<TProjection>
     {
         if (!_filterRegistry.TryGetValue(
             filterName,
-            out Func<ISearchFilterExpression<TProjection>>? factory))
+            out Func<ISearchFilter<TProjection>>? factory))
         {
             throw new ArgumentOutOfRangeException(
                 nameof(filterName),
                 $"Filter '{filterName}' is not registered.");
         }
 
-        ISearchFilterExpression<TProjection> filter = factory();
+        ISearchFilter<TProjection> filter = factory();
 
         return filter.CreateSpecification(request);
     }

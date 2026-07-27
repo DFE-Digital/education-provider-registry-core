@@ -156,21 +156,21 @@ public static class CompositionRoot
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddScoped<EstablishmentTypeIdEqualsAnyValuesSpecification<Establishment>>();
+        services.TryAddScoped<EstablishmentTypeIdEqualsFilter<Establishment>>();
 
         services.TryAddSingleton<ISearchFilterSpecificationFactory<Establishment>>(provider =>
         {
             IServiceScope? scoped = provider.CreateScope();
 
-            Dictionary<string, Func<ISearchFilterExpression<Establishment>>> map =
+            Dictionary<string, Func<ISearchFilter<Establishment>>> map =
                 new()
                 {
                     ["SingleOrMultiValueEqualsExpression"] = () =>
                         scoped.ServiceProvider.GetRequiredService<
-                            EstablishmentTypeIdEqualsAnyValuesSpecification<Establishment>>()
+                            EstablishmentTypeIdEqualsFilter<Establishment>>()
                 };
 
-            return new FilterSpecificationFactory<Establishment>(map);
+            return new SearchFilterSpecificationFactory<Establishment>(map);
         });
 
         services.TryAddScoped<

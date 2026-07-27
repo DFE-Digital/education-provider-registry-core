@@ -19,7 +19,7 @@ public sealed class PropertyEqualsAnySpecification<TProjection> : ISpecification
 
     public bool IsSatisfiedBy(TProjection input)
     {
-        return ToExpression().Compile()(input);
+        return ToExpression().Compile().Invoke(input);
     }
 
     public Expression<Func<TProjection, bool>> ToExpression()

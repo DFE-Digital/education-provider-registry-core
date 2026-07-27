@@ -144,10 +144,10 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
                     Expression.Constant("B")),
                 param);
 
-        Mock<ISearchFilterExpression<DummyProjection>> eqMock =
+        Mock<ISearchFilter<DummyProjection>> eqMock =
             SearchFilterExpressionTestDouble.MockForExpression(exprA);
 
-        Mock<ISearchFilterExpression<DummyProjection>> neqMock =
+        Mock<ISearchFilter<DummyProjection>> neqMock =
             SearchFilterExpressionTestDouble.MockForExpression(exprB);
 
         Expression<Func<DummyProjection, bool>> composed =

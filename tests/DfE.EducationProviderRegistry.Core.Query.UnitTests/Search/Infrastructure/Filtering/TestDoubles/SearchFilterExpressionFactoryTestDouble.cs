@@ -18,14 +18,14 @@ internal static class SearchFilterExpressionFactoryTestDouble
 
     public static (
         Mock<ISearchFilterExpressionFactory<TProjection>> factory,
-        Mock<ISearchFilterExpression<TProjection>> expression
+        Mock<ISearchFilter<TProjection>> expression
     ) MockFor<TProjection>(
         string filterKey,
         Expression<Func<TProjection, bool>> expressionTree)
         where TProjection : class
     {
         // Mock the filter expression itself
-        Mock<ISearchFilterExpression<TProjection>> exprMock =
+        Mock<ISearchFilter<TProjection>> exprMock =
             SearchFilterExpressionTestDouble.MockForExpression<TProjection>(expressionTree);
 
         exprMock
