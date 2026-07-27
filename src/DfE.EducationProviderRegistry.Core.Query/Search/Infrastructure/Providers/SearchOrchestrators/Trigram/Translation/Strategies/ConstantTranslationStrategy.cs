@@ -21,5 +21,9 @@ public sealed class ConstantTranslationStrategy : IConstantTranslationStrategy
     /// <param name="value">The constant value to write.</param>
     /// <param name="sb">The SQL buffer being constructed.</param>
     public void Write(object value, StringBuilder sb)
-        => sb.Append(value);
+    {
+        ArgumentNullException.ThrowIfNull(sb);
+        sb.Append(value);
+    }
+
 }
