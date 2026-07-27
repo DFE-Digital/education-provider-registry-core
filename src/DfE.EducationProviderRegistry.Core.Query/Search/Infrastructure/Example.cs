@@ -356,7 +356,7 @@ public class EfSortStrategy : ISortStrategy<IQueryable<Establishment>>
     }
 }
 
-
+// Facets
 public class CountyFacetProvider : IFacetProvider<IQueryable<Establishment>>
 {
     public string FacetKey => "county";
@@ -441,6 +441,7 @@ public class ConfigurableEfFacetCalculator : IFacetCalculator<IQueryable<Establi
 }
 
 
+// Adapter
 public class EfEstablishmentSearchAdapter : IEstablishmentSearchAdapter
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
