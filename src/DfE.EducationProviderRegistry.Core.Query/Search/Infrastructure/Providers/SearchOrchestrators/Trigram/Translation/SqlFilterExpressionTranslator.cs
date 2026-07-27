@@ -63,6 +63,16 @@ public sealed class SqlFilterExpressionTranslator<TProjection>
 
         Visit(node.Left);
 
+        // Special-case: x.Property == null → IS NULL
+        if (node.NodeType == ExpressionType.Equal &&
+            node.Right is ConstantExpression c &&
+            c.Value is null)
+        {
+            _builder.Append(" IS NULL");
+            _builder.Append(')');
+            return node;
+        }
+
         if (!_operatorStrategies.TryGetValue(node.NodeType, out IBinaryOperatorTranslationStrategy? op))
         {
             throw new NotSupportedException($"Unsupported operator: {node.NodeType}");
@@ -73,9 +83,9 @@ public sealed class SqlFilterExpressionTranslator<TProjection>
         Visit(node.Right);
 
         _builder.Append(')');
-
         return node;
     }
+
 
     /// <summary>
     /// Translates member access expressions (e.g., <c>x.Property</c>) into SQL
