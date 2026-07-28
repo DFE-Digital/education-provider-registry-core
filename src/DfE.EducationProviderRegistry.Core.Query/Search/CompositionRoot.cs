@@ -13,8 +13,6 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
@@ -154,52 +152,23 @@ public static class CompositionRoot
     /// and filter‑mapping options.
     /// </summary>
     public static void AddInfraSearchFilterDependencies(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddScoped<AndLogicalOperator<Establishment>>();
-        services.TryAddScoped<OrLogicalOperator<Establishment>>();
+        services.TryAddScoped<EstablishmentTypeFilter>();
 
-        services.TryAddSingleton<ILogicalOperatorFactory<Establishment>>(provider =>
+        services.TryAddScoped<ISearchFilterSpecificationFactory<Establishment>>(provider =>
         {
-            IServiceScope? scoped = provider.CreateScope();
-
-            Dictionary<string, Func<ILogicalOperator<Establishment>>> map =
+            Dictionary<string, Func<ISearchFilter<Establishment>>> map =
                 new()
                 {
-                    ["AndLogicalOperator"] = () =>
-                        scoped.ServiceProvider.GetRequiredService<AndLogicalOperator<Establishment>>(),
-                    ["OrLogicalOperator"] = () =>
-                        scoped.ServiceProvider.GetRequiredService<OrLogicalOperator<Establishment>>()
+                    ["EstablishmentTypeFilter"] = () =>
+                        provider.GetRequiredService<EstablishmentTypeFilter>()
                 };
 
-            return new LogicalOperatorFactory<Establishment>(map);
-        });
-
-        services.TryAddScoped<
-            ISearchFilterExpression<Establishment>,
-            SingleOrMultiValueEqualsExpression<Establishment>>();
-
-        services.TryAddScoped<SingleOrMultiValueEqualsExpression<Establishment>>();
-
-        services.TryAddSingleton<ISearchFilterExpressionFactory<Establishment>>(provider =>
-        {
-            IServiceScope? scoped = provider.CreateScope();
-
-            Dictionary<string, Func<ISearchFilterExpression<Establishment>>> map =
-                new()
-                {
-                    ["SingleOrMultiValueEqualsExpression"] = () =>
-                        scoped.ServiceProvider.GetRequiredService<
-                            SingleOrMultiValueEqualsExpression<Establishment>>()
-                };
-
-            ILogicalOperatorFactory<Establishment> logicalOperatorFactory =
-                scoped.ServiceProvider.GetRequiredService<
-                    ILogicalOperatorFactory<Establishment>>();
-
-            return new FilterExpressionFactory<Establishment>(map, logicalOperatorFactory);
+            return new SearchFilterSpecificationFactory<Establishment>(map);
         });
 
         services.TryAddScoped<

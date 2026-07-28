@@ -1,11 +1,8 @@
 ﻿using System.Linq.Expressions;
-using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
@@ -21,36 +18,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search;
 
 public sealed class CompositionRootTests
 {
-    [Fact]
-    public void CompositionRoot_Registers_FilterExpressionFactory()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        // act
-        ISearchFilterExpressionFactory<Establishment> factory =
-            provider.GetRequiredService<ISearchFilterExpressionFactory<Establishment>>();
-
-        // assert
-        Assert.NotNull(factory);
-    }
-
-    [Fact]
-    public void CompositionRoot_Registers_LogicalOperatorFactory()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        // act
-        ILogicalOperatorFactory<Establishment> factory =
-            provider.GetRequiredService<ILogicalOperatorFactory<Establishment>>();
-
-        // assert
-        Assert.NotNull(factory);
-    }
-
     [Fact]
     public void CompositionRoot_Registers_FacetSelectorDictionary()
     {

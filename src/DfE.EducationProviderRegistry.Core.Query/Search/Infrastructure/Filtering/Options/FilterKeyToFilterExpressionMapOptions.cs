@@ -9,13 +9,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filteri
 public sealed class FilterKeyToFilterExpressionMapOptions
 {
     /// <summary>
-    /// The logical operator used to chain multiple filter expressions
-    /// (e.g., <c>AndLogicalOperator</c> or <c>OrLogicalOperator</c>).
-    /// </summary>
-    [Required(AllowEmptyStrings = false)]
-    public string? FilterChainingLogicalOperator { get; set; }
-
-    /// <summary>
     /// Maps request filter keys to their corresponding filter expression options.
     /// </summary>
     [Required]

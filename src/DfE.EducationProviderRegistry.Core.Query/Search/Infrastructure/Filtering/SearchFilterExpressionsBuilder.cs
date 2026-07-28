@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using Microsoft.Extensions.Options;
@@ -16,17 +18,17 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
     : ISearchFilterExpressionsBuilder<TProjection>
     where TProjection : class
 {
-    private readonly ISearchFilterExpressionFactory<TProjection> _filterExpressionFactory;
+    private readonly ISearchFilterSpecificationFactory<TProjection> _filterSpecificationFactory;
     private readonly FilterKeyToFilterExpressionMapOptions _filterKeyMapOptions;
 
     public SearchFilterExpressionsBuilder(
-        ISearchFilterExpressionFactory<TProjection> filterExpressionFactory,
+        ISearchFilterSpecificationFactory<TProjection> filterExpressionFactory,
         IOptions<FilterKeyToFilterExpressionMapOptions> filterKeyMapOptions)
     {
         ArgumentNullException.ThrowIfNull(filterExpressionFactory);
         ArgumentNullException.ThrowIfNull(filterKeyMapOptions);
 
-        _filterExpressionFactory = filterExpressionFactory;
+        _filterSpecificationFactory = filterExpressionFactory;
         _filterKeyMapOptions = filterKeyMapOptions.Value;
     }
 
@@ -46,10 +48,24 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
             return projection => true;
         }
 
-        string logicalOperatorName = ResolveLogicalOperatorName();
-
         // Delegate composition to the factory
-        return _filterExpressionFactory.ComposeFilters(resolved, logicalOperatorName);
+        ISpecification<TProjection> combined =
+            _filterSpecificationFactory.Create(
+                resolved[0].Item1,
+                resolved[0].Item2);
+
+        for (int i = 1; i < resolved.Count; i++)
+        {
+            ISpecification<TProjection> next =
+                _filterSpecificationFactory.Create(
+                    resolved[i].Item1,
+                    resolved[i].Item2);
+
+            // TODO assumes these SearchFilterRequests are always combinatorial AND
+            combined = combined.And(next);
+        }
+
+        return combined.ToExpression();
     }
 
     /// <summary>
@@ -81,21 +97,5 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
         }
 
         return resolved.AsReadOnly();
-    }
-
-    /// <summary>
-    /// Resolves the logical operator name used to combine multiple filter expressions.
-    /// </summary>
-    private string ResolveLogicalOperatorName()
-    {
-        string? key = _filterKeyMapOptions.FilterChainingLogicalOperator;
-
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            throw new ArgumentException(
-                "Filter chaining logical operator cannot be null or empty.");
-        }
-
-        return key;
     }
 }
