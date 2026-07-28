@@ -3,7 +3,7 @@
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 
 public sealed class SearchFilterSpecificationFactory<TProjection>
-    : ISearchFilterFactory<TProjection>
+    : ISearchFilterSpecificationFactory<TProjection>
     where TProjection : class
 {
     private readonly Dictionary<
@@ -20,7 +20,7 @@ public sealed class SearchFilterSpecificationFactory<TProjection>
             ?? throw new ArgumentNullException(nameof(filterRegistry));
     }
 
-    public ISpecification<TProjection> CreateFilter(
+    public ISpecification<TProjection> Create(
         string filterName,
         SearchFilterRequest request)
     {

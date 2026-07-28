@@ -10,14 +10,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 [ExcludeFromCodeCoverage]
 internal static class SearchFilterFactoryTestDouble
 {
-    public static Mock<ISearchFilterFactory<TProjection>> Mock<TProjection>()
+    public static Mock<ISearchFilterSpecificationFactory<TProjection>> Mock<TProjection>()
         where TProjection : class
     {
-        return new Mock<ISearchFilterFactory<TProjection>>(MockBehavior.Strict);
+        return new Mock<ISearchFilterSpecificationFactory<TProjection>>(MockBehavior.Strict);
     }
 
     public static (
-        Mock<ISearchFilterFactory<TProjection>> factory,
+        Mock<ISearchFilterSpecificationFactory<TProjection>> factory,
         Mock<ISearchFilter<TProjection>> expression
     ) MockFor<TProjection>(
         string filterKey,
@@ -34,11 +34,11 @@ internal static class SearchFilterFactoryTestDouble
             .Returns(spec)
             .Verifiable();
 
-        Mock<ISearchFilterFactory<TProjection>> factoryMock = Mock<TProjection>();
+        Mock<ISearchFilterSpecificationFactory<TProjection>> factoryMock = Mock<TProjection>();
 
         factoryMock
             .Setup((f) =>
-                f.CreateFilter(
+                f.Create(
                     It.IsAny<string>(), It.IsAny<SearchFilterRequest>()))
             .Returns(spec)
             .Verifiable();

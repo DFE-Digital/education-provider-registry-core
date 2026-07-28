@@ -22,7 +22,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
 
     private static SearchFilterExpressionsBuilder<DummyProjection> Builder(
         FilterKeyToFilterExpressionMapOptions options,
-        ISearchFilterFactory<DummyProjection> exprFactory)
+        ISearchFilterSpecificationFactory<DummyProjection> exprFactory)
     {
         IOptions<FilterKeyToFilterExpressionMapOptions> wrapped =
             Microsoft.Extensions.Options.Options.Create(options);
@@ -47,7 +47,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         FilterKeyToFilterExpressionMapOptions options =
             Options([]);
 
-        Mock<ISearchFilterFactory<DummyProjection>> exprFactoryMock =
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
             SearchFilterFactoryTestDouble.Mock<DummyProjection>();
 
         SearchFilterExpressionsBuilder<DummyProjection> builder =
@@ -67,7 +67,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
 
         exprFactoryMock.Verify(
             searchFilterExpressionFactory =>
-                searchFilterExpressionFactory.CreateFilter(
+                searchFilterExpressionFactory.Create(
                     It.IsAny<string>(), It.IsAny<SearchFilterRequest>()),
             Times.Never());
     }
@@ -88,11 +88,11 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         ISpecification<DummyProjection> specification =
             SpecificationTestDoubles.Create(expectedExpr);
 
-        Mock<ISearchFilterFactory<DummyProjection>> exprFactoryMock =
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
             new();
 
         exprFactoryMock
-            .Setup(x => x.CreateFilter(It.IsAny<string>(), It.IsAny<SearchFilterRequest>()))
+            .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<SearchFilterRequest>()))
             .Returns(specification);
 
         SearchFilterExpressionsBuilder<DummyProjection> builder =
@@ -112,7 +112,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         Assert.False(compiled(new DummyProjection { Value = "B" }));
 
         exprFactoryMock.Verify(
-            x => x.CreateFilter("Equals", It.IsAny<SearchFilterRequest>()),
+            x => x.Create("Equals", It.IsAny<SearchFilterRequest>()),
             Times.Once);
     }
 
@@ -149,15 +149,15 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         ISpecification<DummyProjection> specB =
             SpecificationTestDoubles.Create(exprB);
 
-        Mock<ISearchFilterFactory<DummyProjection>> exprFactoryMock =
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
             new();
 
         exprFactoryMock
-            .Setup(x => x.CreateFilter(It.Is<string>(t => t == "Equals"), It.IsAny<SearchFilterRequest>()))
+            .Setup(x => x.Create(It.Is<string>(t => t == "Equals"), It.IsAny<SearchFilterRequest>()))
             .Returns(specA);
 
         exprFactoryMock
-            .Setup(x => x.CreateFilter(It.Is<string>(t => t == "NotEquals"), It.IsAny<SearchFilterRequest>()))
+            .Setup(x => x.Create(It.Is<string>(t => t == "NotEquals"), It.IsAny<SearchFilterRequest>()))
             .Returns(specB);
 
         SearchFilterExpressionsBuilder<DummyProjection> builder =
@@ -178,11 +178,11 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         Assert.True(compiled(new DummyProjection { Value = "A" }));
         Assert.False(compiled(new DummyProjection { Value = "B" }));
         exprFactoryMock.Verify(
-            x => x.CreateFilter("Equals", It.IsAny<SearchFilterRequest>()),
+            x => x.Create("Equals", It.IsAny<SearchFilterRequest>()),
             Times.Once);
 
         exprFactoryMock.Verify(
-            x => x.CreateFilter("NotEquals", It.IsAny<SearchFilterRequest>()),
+            x => x.Create("NotEquals", It.IsAny<SearchFilterRequest>()),
             Times.Once);
     }
 
@@ -193,7 +193,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         FilterKeyToFilterExpressionMapOptions options =
             Options([]);
 
-        Mock<ISearchFilterFactory<DummyProjection>> exprFactoryMock =
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
             SearchFilterFactoryTestDouble.Mock<DummyProjection>();
 
         SearchFilterExpressionsBuilder<DummyProjection> builder =

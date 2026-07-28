@@ -18,17 +18,17 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
     : ISearchFilterExpressionsBuilder<TProjection>
     where TProjection : class
 {
-    private readonly ISearchFilterFactory<TProjection> _filterExpressionFactory;
+    private readonly ISearchFilterSpecificationFactory<TProjection> _filterSpecificationFactory;
     private readonly FilterKeyToFilterExpressionMapOptions _filterKeyMapOptions;
 
     public SearchFilterExpressionsBuilder(
-        ISearchFilterFactory<TProjection> filterExpressionFactory,
+        ISearchFilterSpecificationFactory<TProjection> filterExpressionFactory,
         IOptions<FilterKeyToFilterExpressionMapOptions> filterKeyMapOptions)
     {
         ArgumentNullException.ThrowIfNull(filterExpressionFactory);
         ArgumentNullException.ThrowIfNull(filterKeyMapOptions);
 
-        _filterExpressionFactory = filterExpressionFactory;
+        _filterSpecificationFactory = filterExpressionFactory;
         _filterKeyMapOptions = filterKeyMapOptions.Value;
     }
 
@@ -50,14 +50,14 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
 
         // Delegate composition to the factory
         ISpecification<TProjection> combined =
-            _filterExpressionFactory.CreateFilter(
+            _filterSpecificationFactory.Create(
                 resolved[0].Item1,
                 resolved[0].Item2);
 
         for (int i = 1; i < resolved.Count; i++)
         {
             ISpecification<TProjection> next =
-                _filterExpressionFactory.CreateFilter(
+                _filterSpecificationFactory.Create(
                     resolved[i].Item1,
                     resolved[i].Item2);
 
