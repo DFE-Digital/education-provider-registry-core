@@ -18,11 +18,11 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
     : ISearchFilterExpressionsBuilder<TProjection>
     where TProjection : class
 {
-    private readonly ISearchFilterSpecificationFactory<TProjection> _filterExpressionFactory;
+    private readonly ISearchFilterFactory<TProjection> _filterExpressionFactory;
     private readonly FilterKeyToFilterExpressionMapOptions _filterKeyMapOptions;
 
     public SearchFilterExpressionsBuilder(
-        ISearchFilterSpecificationFactory<TProjection> filterExpressionFactory,
+        ISearchFilterFactory<TProjection> filterExpressionFactory,
         IOptions<FilterKeyToFilterExpressionMapOptions> filterKeyMapOptions)
     {
         ArgumentNullException.ThrowIfNull(filterExpressionFactory);

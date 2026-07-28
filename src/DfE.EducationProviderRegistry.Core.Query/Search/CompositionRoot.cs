@@ -159,7 +159,7 @@ public static class CompositionRoot
 
         services.TryAddScoped<EstablishmentTypeFilter>();
 
-        services.TryAddScoped<ISearchFilterSpecificationFactory<Establishment>>(provider =>
+        services.TryAddScoped<ISearchFilterFactory<Establishment>>(provider =>
         {
             Dictionary<string, Func<ISearchFilter<Establishment>>> map =
                 new()

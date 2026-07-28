@@ -8,16 +8,16 @@ using Moq;
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal static class SearchFilterExpressionFactoryTestDouble
+internal static class SearchFilterFactoryTestDouble
 {
-    public static Mock<ISearchFilterSpecificationFactory<TProjection>> Mock<TProjection>()
+    public static Mock<ISearchFilterFactory<TProjection>> Mock<TProjection>()
         where TProjection : class
     {
-        return new Mock<ISearchFilterSpecificationFactory<TProjection>>(MockBehavior.Strict);
+        return new Mock<ISearchFilterFactory<TProjection>>(MockBehavior.Strict);
     }
 
     public static (
-        Mock<ISearchFilterSpecificationFactory<TProjection>> factory,
+        Mock<ISearchFilterFactory<TProjection>> factory,
         Mock<ISearchFilter<TProjection>> expression
     ) MockFor<TProjection>(
         string filterKey,
@@ -34,7 +34,7 @@ internal static class SearchFilterExpressionFactoryTestDouble
             .Returns(spec)
             .Verifiable();
 
-        Mock<ISearchFilterSpecificationFactory<TProjection>> factoryMock = Mock<TProjection>();
+        Mock<ISearchFilterFactory<TProjection>> factoryMock = Mock<TProjection>();
 
         factoryMock
             .Setup((f) =>

@@ -3,7 +3,7 @@
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 
 public sealed class SearchFilterSpecificationFactory<TProjection>
-    : ISearchFilterSpecificationFactory<TProjection>
+    : ISearchFilterFactory<TProjection>
     where TProjection : class
 {
     private readonly Dictionary<

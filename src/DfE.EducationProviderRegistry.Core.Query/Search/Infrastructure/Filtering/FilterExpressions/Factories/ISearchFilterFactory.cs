@@ -2,7 +2,7 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 
-public interface ISearchFilterSpecificationFactory<TProjection>
+public interface ISearchFilterFactory<TProjection>
     where TProjection : class
 {
     ISpecification<TProjection> CreateFilter(
