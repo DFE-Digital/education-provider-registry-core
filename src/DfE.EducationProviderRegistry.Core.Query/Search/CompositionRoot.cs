@@ -147,15 +147,19 @@ public static class CompositionRoot
         services.AddScoped(typeof(ISearchOrchestrator<>), typeof(SqlSearchOrchestrator<>));
 
         // EXAMPLE STUFF
-        // "What" matchers
-        services.AddSingleton<ISearchFieldMatcher, UrnSearchMatcher>();
-        services.AddSingleton<ISearchFieldMatcher, UidSearchMatcher>();
-        services.AddSingleton<ISearchFieldMatcher, NameSearchMatcher>();
+        services.AddSingleton<ISearchColumnQueryBuilder, UrnColumnQueryBuilder>();
+        services.AddSingleton<ISearchColumnQueryBuilder, UidColumnQueryBuilder>();
+        services.AddSingleton<ISearchColumnQueryBuilder, NameColumnQueryBuilder>();
+        services.AddSingleton<ISearchColumnQueryBuilder, PostcodeColumnQueryBuilder>();
+        services.AddSingleton<ISearchColumnQueryBuilder, CountyColumnQueryBuilder>();
+        services.AddSingleton<ISearchColumnQueryBuilder, CityColumnQueryBuilder>();
 
-        // "Where" matchers
-        services.AddSingleton<ISearchFieldMatcher, PostcodeSearchMatcher>();
-        services.AddSingleton<ISearchFieldMatcher, CountySearchMatcher>();
-        services.AddSingleton<ISearchFieldMatcher, CitySearchMatcher>();
+        // Register Key Handlers (Composing their builders)
+        services.AddSingleton<ISearchKeyQueryBuilder<Establishment>>(sp =>
+            new CompositeSearchKeyQueryBuilder("what", sp.GetServices<ISearchColumnQueryBuilder>()));
+
+        services.AddSingleton<ISearchKeyQueryBuilder<Establishment>>(sp =>
+            new CompositeSearchKeyQueryBuilder("where", sp.GetServices<ISearchColumnQueryBuilder>()));
 
         // Core composable search rule
         services.AddSingleton<ISearchTermRule<IQueryable<Establishment>>, ComposableSearchTermRule>();
