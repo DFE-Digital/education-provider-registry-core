@@ -20,5 +20,11 @@ public sealed class NullConstantTranslationStrategy : IConstantTranslationStrate
     /// </summary>
     /// <param name="value">The constant value (ignored).</param>
     /// <param name="sb">The SQL buffer being constructed.</param>
-    public void Write(object value, StringBuilder sb) => sb.Append("NULL");
+    public void Write(object value, StringBuilder sb)
+    {
+        ArgumentNullException.ThrowIfNull(sb);
+
+        sb.Append("NULL");
+    }
+
 }

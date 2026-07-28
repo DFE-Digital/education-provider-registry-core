@@ -11,105 +11,137 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class FacetQueryDispatchStepUnitTests
 {
     [Fact]
-    public async Task Execute_Throws_WhenIdsMissing()
+    public async Task HandleAsync_Throws_WhenIdsMissing()
     {
         // arrange
         Mock<IFacetProvider> providerMock =
             FacetProviderTestDouble.Mock();
+
         FacetQueryDispatchStep step = new(providerMock.Object);
 
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(null, ["phase"]);
+            SearchPipelineContextBuilder.BuildContext(
+                null,
+                ["phase"]);
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenFacetNamesMissing()
+    public async Task HandleAsync_Throws_WhenFacetNamesMissing()
     {
         // arrange
         Mock<IFacetProvider> providerMock =
             FacetProviderTestDouble.Mock();
+
         FacetQueryDispatchStep step = new(providerMock.Object);
+
         ReadOnlyCollection<string> ids = new(["10001"]);
+
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(ids, null);
+            SearchPipelineContextBuilder.BuildContext(
+                ids,
+                null);
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenFacetNameIsEmpty()
+    public async Task HandleAsync_Throws_WhenFacetNameIsEmpty()
     {
         // arrange
         Mock<IFacetProvider> providerMock =
             FacetProviderTestDouble.Mock();
+
         FacetQueryDispatchStep step = new(providerMock.Object);
+
         ReadOnlyCollection<string> ids = new(["10001"]);
         List<string> facetNames = [""];
+
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(ids, facetNames);
+            SearchPipelineContextBuilder.BuildContext(
+                ids,
+                facetNames);
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("Facet name cannot be null or empty", ex.Message);
+        Assert.Contains(
+            "Facet name cannot be null or empty",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenCancellationRequested()
+    public async Task HandleAsync_Throws_WhenCancellationRequested()
     {
         // arrange
         Mock<IFacetProvider> providerMock =
             FacetProviderTestDouble.Mock();
+
         FacetQueryDispatchStep step = new(providerMock.Object);
+
         ReadOnlyCollection<string> ids = new(["10001"]);
         List<string> facetNames = ["phase"];
+
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(ids, facetNames);
+            SearchPipelineContextBuilder.BuildContext(
+                ids,
+                facetNames);
+
         using CancellationTokenSource cts = new();
-        cts.Cancel();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, cts.Token));
+        await cts.CancelAsync();
 
-        // assert
-        await Assert.ThrowsAsync<OperationCanceledException>(act);
+        // act // assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => step.HandleAsync(
+                context,
+                cts.Token).AsTask());
     }
 
     [Fact]
-    public async Task Execute_SetsEmptyTaskList_WhenFacetNamesEmpty()
+    public async Task HandleAsync_SetsEmptyTaskList_WhenFacetNamesEmpty()
     {
         // arrange
         Mock<IFacetProvider> providerMock =
             FacetProviderTestDouble.Mock();
+
         FacetQueryDispatchStep step = new(providerMock.Object);
+
         ReadOnlyCollection<string> ids = new(["10001"]);
         List<string> facetNames = [];
+
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(ids, facetNames);
+            SearchPipelineContextBuilder.BuildContext(
+                ids,
+                facetNames);
 
         // act
-        await Task.Run(() =>
-            step.Execute(
-                context, CancellationToken.None),
-                TestContext.Current.CancellationToken);
+        await step.HandleAsync(
+            context,
+            TestContext.Current.CancellationToken);
 
         // assert
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
@@ -119,23 +151,27 @@ public sealed class FacetQueryDispatchStepUnitTests
     }
 
     [Fact]
-    public async Task Execute_DispatchesFacetTasksCorrectly()
+    public async Task HandleAsync_DispatchesFacetTasksCorrectly()
     {
         // arrange
         Mock<IFacetProvider> providerMock =
-            FacetProviderTestDouble.MockFor([new FacetResult("Primary", 10)]);
+            FacetProviderTestDouble.MockFor(
+                [new FacetResult("Primary", 10)]);
+
         FacetQueryDispatchStep step = new(providerMock.Object);
+
         ReadOnlyCollection<string> ids = new(["10001"]);
         List<string> facetNames = ["phase", "type"];
 
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(ids, facetNames);
+            SearchPipelineContextBuilder.BuildContext(
+                ids,
+                facetNames);
 
         // act
-        await Task.Run(() =>
-            step.Execute(
-                context, CancellationToken.None),
-                TestContext.Current.CancellationToken);
+        await step.HandleAsync(
+            context,
+            TestContext.Current.CancellationToken);
 
         // assert
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
@@ -145,8 +181,11 @@ public sealed class FacetQueryDispatchStepUnitTests
         Assert.Equal("phase", tasks[0].FacetName);
         Assert.Equal("type", tasks[1].FacetName);
 
-        IReadOnlyList<FacetResult> results0 = await tasks[0].Task;
-        IReadOnlyList<FacetResult> results1 = await tasks[1].Task;
+        IReadOnlyList<FacetResult> results0 =
+            await tasks[0].Task;
+
+        IReadOnlyList<FacetResult> results1 =
+            await tasks[1].Task;
 
         Assert.Single(results0);
         Assert.Single(results1);

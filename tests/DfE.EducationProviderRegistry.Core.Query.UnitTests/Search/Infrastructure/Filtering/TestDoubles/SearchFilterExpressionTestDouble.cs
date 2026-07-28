@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 using Moq;
@@ -16,8 +17,8 @@ internal static class SearchFilterExpressionTestDouble
     {
         Mock<ISearchFilter<DummyProjection>> mock = Mock<DummyProjection>();
 
-        mock.Setup(searchFilterExpression =>
-            searchFilterExpression.ToExpression(It.IsAny<SearchFilterRequest>()))
+        mock.Setup((filter) =>
+                filter.CreateSpecification(It.IsAny<SearchFilterRequest>()))
             .Returns((SearchFilterRequest req) =>
             {
                 return BuildExpression(Expression.Equal, response);
@@ -30,8 +31,8 @@ internal static class SearchFilterExpressionTestDouble
     {
         Mock<ISearchFilter<DummyProjection>> mock = Mock<DummyProjection>();
 
-        mock.Setup(searchFilterExpression =>
-            searchFilterExpression.ToExpression(It.IsAny<SearchFilterRequest>()))
+        mock.Setup((filter) =>
+            filter.CreateSpecification(It.IsAny<SearchFilterRequest>()))
             .Returns((SearchFilterRequest req) =>
             {
                 return BuildExpression(Expression.NotEqual, response);
@@ -40,16 +41,15 @@ internal static class SearchFilterExpressionTestDouble
         return mock;
     }
 
-    public static Mock<ISearchFilter<TProjection>> MockForExpression<TProjection>(
-        Expression<Func<TProjection, bool>> expressionTree)
+    public static Mock<ISearchFilter<TProjection>> MockForSpecification<TProjection>(ISpecification<TProjection> spec)
     where TProjection : class
     {
         Mock<ISearchFilter<TProjection>> exprMock = Mock<TProjection>();
 
         exprMock
-            .Setup(searchFilterExpression =>
-                searchFilterExpression.ToExpression(It.IsAny<SearchFilterRequest>()))
-            .Returns(expressionTree)
+            .Setup((filter) =>
+                filter.CreateSpecification(It.IsAny<SearchFilterRequest>()))
+            .Returns(spec)
             .Verifiable();
 
         return exprMock;

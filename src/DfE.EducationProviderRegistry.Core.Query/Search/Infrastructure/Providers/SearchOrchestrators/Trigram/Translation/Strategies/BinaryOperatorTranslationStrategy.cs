@@ -25,5 +25,8 @@ public sealed class BinaryOperatorTranslationStrategy : IBinaryOperatorTranslati
     /// </summary>
     /// <param name="sb">The SQL buffer being constructed.</param>
     public void Write(StringBuilder sb)
-        => sb.Append(' ').Append(_token).Append(' ');
+    {
+        ArgumentNullException.ThrowIfNull(sb);
+        sb.Append(' ').Append(_token).Append(' ');
+    }
 }

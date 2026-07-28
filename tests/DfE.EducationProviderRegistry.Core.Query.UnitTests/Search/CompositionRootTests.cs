@@ -9,6 +9,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -110,8 +111,8 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        IEnumerable<ISearchPipelineStep> steps =
-            scope.ServiceProvider.GetServices<ISearchPipelineStep>();
+        IEnumerable<IEvaluationHandler<SearchPipelineContext>> steps =
+            scope.ServiceProvider.GetServices<IEvaluationHandler<SearchPipelineContext>>();
 
         // assert
         Assert.Contains(steps, step => step is SearchOrderMapStep);
@@ -120,6 +121,7 @@ public sealed class CompositionRootTests
         Assert.Contains(steps, step => step is FacetQueryDispatchStep);
         Assert.Contains(steps, step => step is FacetQueryResolverStep);
         Assert.Contains(steps, step => step is FacetQueryBuilderStep);
+        Assert.NotNull(scope.ServiceProvider.GetService<Query.Shared.Pipeline.IEvaluator<SearchPipelineContext>>());
     }
 
     [Fact]

@@ -12,7 +12,7 @@ internal static class SearchServiceCollectionExtensions
 
         services.AddApplicationSearchDependencies(configuration);
         services.AddInfraSearchDependencies(configuration);
-        services.AddInfraSearchFilterDependencies();
+        services.AddInfraSearchFilterDependencies(configuration);
         return services;
     }
 }

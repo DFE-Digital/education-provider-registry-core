@@ -24,7 +24,9 @@ public sealed class StringConstantTranslationStrategy : IConstantTranslationStra
     /// <param name="sb">The SQL buffer being constructed.</param>
     public void Write(object value, StringBuilder sb)
     {
-        string? s = (string)value;
-        sb.Append('\'').Append(s.Replace("'", "''")).Append('\'');
+        ArgumentNullException.ThrowIfNull(sb);
+
+        string? str = (string)value;
+        sb.Append('\'').Append(str.Replace("'", "''")).Append('\'');
     }
 }

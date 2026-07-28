@@ -1,34 +1,21 @@
-﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-/// <summary>
-/// Orders <see cref="Establishment"/> entities according to the order map stored
-/// in the <see cref="SearchPipelineContext"/>.
-/// </summary>
-internal sealed class SearchOrderingStep : ISearchPipelineStep
+internal sealed class SearchOrderingStep : IEvaluationHandler<SearchPipelineContext>
 {
-    /// <summary>
-    /// Applies the configured order map to the establishments in the pipeline
-    /// context and stores the ordered list back into the context.
-    /// </summary>
-    /// <param name="context">The pipeline context containing establishments and an order map.</param>
-    /// <param name="cancellationToken">Token used to cancel execution.</param>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when required context entries are missing or when an establishment
-    /// URN is absent from the order map.
-    /// </exception>
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         IReadOnlyList<Establishment> establishments =
-            context.Get<IReadOnlyList<Establishment>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain establishments to order.");
+            request.Get<IReadOnlyList<Establishment>>()
+                ?? throw new InvalidOperationException(
+                    "PipelineContext does not contain establishments to order.");
 
         Dictionary<string, int> orderMap =
-            context.Get<Dictionary<string, int>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain an order map.");
+            request.Get<Dictionary<string, int>>()
+                ?? throw new InvalidOperationException(
+                    "PipelineContext does not contain an order map.");
 
         List<Establishment> ordered = new(establishments.Count);
 
@@ -52,6 +39,8 @@ internal sealed class SearchOrderingStep : ISearchPipelineStep
         ordered.Sort((left, right) =>
             orderMap[left.Urn!].CompareTo(orderMap[right.Urn!]));
 
-        context.Set(ordered);
+        request.Set(ordered);
+
+        return ValueTask.CompletedTask;
     }
 }
