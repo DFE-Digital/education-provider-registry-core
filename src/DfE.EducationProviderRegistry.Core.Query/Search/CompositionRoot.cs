@@ -32,6 +32,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using static DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.ComposableSearchTermRule;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search;
 
@@ -117,6 +118,27 @@ public static class CompositionRoot
                 searchColumn: "name"));
 
         services.TryAddScoped<IFacetProvider, EstablishmentFacetProvider>();
+        services.AddScoped<IFacetAggregator, FacetAggregationStep>();
+
+        services.AddTransient<ISearchColumnQueryBuilder, UrnColumnQueryBuilder>();
+        services.AddTransient<ISearchColumnQueryBuilder, UidColumnQueryBuilder>();
+        services.AddTransient<ISearchColumnQueryBuilder, NameColumnQueryBuilder>();
+        services.AddTransient<ISearchColumnQueryBuilder, PostcodeColumnQueryBuilder>();
+        services.AddTransient<ISearchColumnQueryBuilder, CountyColumnQueryBuilder>();
+        services.AddTransient<ISearchColumnQueryBuilder, CityColumnQueryBuilder>();
+
+        // 2. Register Key Query Builders for each contract key ("what", "where")
+        services.AddTransient<ISearchKeyQueryBuilder<Establishment>>(sp =>
+            new CompositeSearchKeyQueryBuilder("what", sp.GetServices<ISearchColumnQueryBuilder>()));
+
+        services.AddTransient<ISearchKeyQueryBuilder<Establishment>>(sp =>
+            new CompositeSearchKeyQueryBuilder("where", sp.GetServices<ISearchColumnQueryBuilder>()));
+
+        // 3. Register Search Rule & Adapter
+        services.AddTransient<ISearchTermRule<IQueryable<Establishment>>, ComposableSearchTermRule>();
+        services.AddScoped<
+            ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
+            EstablishmentsSearchServiceAdapter>();
 
         // Pipeline steps
         services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderMapStep>();

@@ -6,6 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
@@ -19,7 +20,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
     private readonly ISearchTermRule<IQueryable<Establishment>> _searchTermRule;
-
     private readonly IFacetAggregator _facetCalculator;
     private readonly IMapper<
         (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
@@ -39,7 +39,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
         IMapper<
             ReadOnlyCollection<FilterRequest>,
             ReadOnlyCollection<SearchFilterRequest>> searchFilterRequestMapper,
-
         ISearchFilterExpressionsBuilder<Establishment> searchFilterExpressionsBuilder)
     {
         _dbContext = dbContext;
@@ -51,47 +50,35 @@ internal sealed class EstablishmentsSearchServiceAdapter
     }
 
     public async Task<SearchResults<EstablishmentSearchResults, SearchFacets>> SearchAsync(
-    SearchServiceAdapterRequest request,
-    CancellationToken cancellationToken = default)
+        SearchServiceAdapterRequest request,
+        CancellationToken cancellationToken = default)
     {
         IQueryable<Establishment> baseQuery = _dbContext.Establishment.AsNoTracking();
         IQueryable<Establishment> filteredQuery = baseQuery;
 
-        bool hasWhat = !string.IsNullOrWhiteSpace(request.WhatTerm);
-        bool hasWhere = !string.IsNullOrWhiteSpace(request.WhereTerm);
-
         ReadOnlyCollection<SearchFilterRequest> filterRequests =
-            _searchFilterRequestMapper
-                .Map(request.SearchFilterRequests.AsReadOnly());
+            _searchFilterRequestMapper.Map(request.SearchFilterRequests.AsReadOnly());
 
-        if (hasWhat || hasWhere)
+        Expression<Func<Establishment, bool>> candidateFilter =
+            _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
+
+        bool hasTerms = request.SearchTerms != null && request.SearchTerms.Any(st => st != null && !string.IsNullOrWhiteSpace(st.Value));
+
+        if (hasTerms)
         {
             bool exactHandled = false;
 
-            // 1. Check Exact Identity Match on WhatTerm if provided
-            if (hasWhat)
+            // 1. Delegated exact search across key query builders
+            IQueryable<Establishment> exactQuery = _searchTermRule.ApplyExactSearch(
+                baseQuery,
+                request.SearchTerms,
+                out bool hasExactMatchers);
+
+            if (hasExactMatchers)
             {
-                string term = request.WhatTerm!.Trim();
-
-                IQueryable<Establishment> exactWhatQuery = baseQuery.Where(e =>
-                    e.Urn == term ||
-                    e.Uid == term ||
-                    e.Name.ToLower() == term.ToLower());
-
-                // Enforce location criteria on the exact match if WhereTerm is also passed
-                if (hasWhere)
-                {
-                    exactWhatQuery = _searchTermRule.ApplyWhereOnly(exactWhatQuery, request.WhereTerm!);
-                }
-
-                Expression<Func<Establishment, bool>> candidateFilter =
-                    _searchFilterExpressionsBuilder
-                        .BuildSearchFilterExpression(filterRequests);
-
-                IQueryable<Establishment> candidateFiltered = exactWhatQuery.Where(candidateFilter);
+                IQueryable<Establishment> candidateFiltered = exactQuery.Where(candidateFilter);
 
                 int exactCount = await candidateFiltered.CountAsync(cancellationToken);
-
                 if (exactCount > 0)
                 {
                     filteredQuery = candidateFiltered;
@@ -99,198 +86,258 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 }
             }
 
-            // 2. Broad Search Fallback (if no exact match or if only WhereTerm was supplied)
+            // 2. Broad search fallback across key query builders
             if (!exactHandled)
             {
-                IQueryable<Establishment> searchedQuery =
-                    _searchTermRule.ApplySearch(baseQuery, request.WhatTerm, request.WhereTerm);
-
-                Expression<Func<Establishment, bool>> candidateFilter =
-                    _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
-
+                IQueryable<Establishment> searchedQuery = _searchTermRule.ApplySearch(baseQuery, request.SearchTerms);
                 filteredQuery = searchedQuery.Where(candidateFilter);
             }
         }
         else
         {
-            Expression<Func<Establishment, bool>> candidateFilter =
-                _searchFilterExpressionsBuilder
-                    .BuildSearchFilterExpression(filterRequests);
-
             filteredQuery = baseQuery.Where(candidateFilter);
         }
 
         int totalCount = await filteredQuery.CountAsync(cancellationToken);
 
-        List<EstablishmentReadModel> items =
-            await filteredQuery
-                .Skip(request.Offset)
-                .Take(request.PageSize)
-                .Select(e => new EstablishmentReadModel(
-                    int.Parse(e.EstablishmentId.ToString()),
-                    e.Urn,
-                    e.Uid,
-                    e.Name,
-                    e.Site.Select(s => s.Postcode).FirstOrDefault(),
-                    e.Site.Select(s => s.County).FirstOrDefault(),
-                    e.EstablishmentType != null ? e.EstablishmentType.Name : string.Empty,
-                    e.EstablishmentStatus != null ? e.EstablishmentStatus.Name : string.Empty))
-                .ToListAsync(cancellationToken);
+        List<EstablishmentReadModel> items = await filteredQuery
+            .Skip(request.Offset)
+            .Take(request.PageSize)
+            .Select(e => new EstablishmentReadModel(
+                int.Parse(e.EstablishmentId.ToString()),
+                e.Urn,
+                e.Uid,
+                e.Name,
+                e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                e.Site.Select(s => s.County).FirstOrDefault(),
+                e.EstablishmentType != null ? e.EstablishmentType.Name : string.Empty,
+                e.EstablishmentStatus != null ? e.EstablishmentStatus.Name : string.Empty))
+            .ToListAsync(cancellationToken);
 
-        IReadOnlyList<string> urns =
-            items.Select(establishment =>
-                establishment.Urn)
-                    .ToList()
-                    .AsReadOnly();
+        IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
 
-        IReadOnlyList<AggregatedFacetResult> facets =
-            await _facetCalculator.CalculateFacetsAsync(
-                urns,
-                request.Facets,
-                cancellationToken
-        );
+        IReadOnlyList<AggregatedFacetResult> facets = await _facetCalculator.CalculateFacetsAsync(
+            urns,
+            request.Facets,
+            cancellationToken);
 
         return _searchResultsFromContextMapper.Map((items, facets));
     }
 }
 
-public enum SearchFieldCategory
+
+public interface ISearchColumnQueryBuilder
 {
-    What,
-    Where
+    string Key { get; }
+    Expression<Func<Establishment, bool>> BuildExpression(string value);
+    Expression<Func<Establishment, bool>>? BuildExactExpression(string value) => null;
 }
 
-public record AggregatedFacetResult(
-    string FacetName, IReadOnlyCollection<FacetResult> Values);
+// --- "What" Column Query Builders ---
 
-public record EstablishmentReadModel(
-    int Id,
-    string Urn,
-    string Ukprn,
-    string Name,
-    string? Postcode,
-    string? City,
-    string Type,
-    string Status
-);
-
-public interface ISearchTermRule<TQuery>
+public class UrnColumnQueryBuilder : ISearchColumnQueryBuilder
 {
-    TQuery ApplySearch(TQuery query, string? whatTerm, string? whereTerm);
-    TQuery ApplyWhereOnly(TQuery query, string whereTerm);
+    public string Key => "what";
+
+    public Expression<Func<Establishment, bool>> BuildExpression(string value) =>
+        e => e.Urn == value || e.Urn.Contains(value);
+
+    public Expression<Func<Establishment, bool>>? BuildExactExpression(string value) =>
+        e => e.Urn == value;
 }
 
-public interface ISearchFieldMatcher
+public class UidColumnQueryBuilder : ISearchColumnQueryBuilder
 {
-    SearchFieldCategory Category { get; }
-    Expression<Func<Establishment, bool>> GetExpression(string searchTerm);
+    public string Key => "what";
+
+    public Expression<Func<Establishment, bool>> BuildExpression(string value) =>
+        e => e.Uid == value || e.Uid.Contains(value);
+
+    public Expression<Func<Establishment, bool>>? BuildExactExpression(string value) =>
+        e => e.Uid == value;
 }
 
-#region This is how it currently determines what fields to search across
-
-// "What" Matchers (Name, URN, UID)
-public class UrnSearchMatcher : ISearchFieldMatcher
+public class NameColumnQueryBuilder : ISearchColumnQueryBuilder
 {
-    public SearchFieldCategory Category => SearchFieldCategory.What;
-
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
-        e => e.Urn == searchTerm || e.Urn.Contains(searchTerm);
-}
-
-public class UidSearchMatcher : ISearchFieldMatcher
-{
-    public SearchFieldCategory Category => SearchFieldCategory.What;
-
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
-        e => e.Uid == searchTerm || e.Uid.Contains(searchTerm);
-}
-
-public class NameSearchMatcher : ISearchFieldMatcher
-{
-    public SearchFieldCategory Category => SearchFieldCategory.What;
+    public string Key => "what";
     private const double WordSimilarityThreshold = 0.4;
 
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
-        e => e.Name.ToLower() == searchTerm.ToLower() ||
-             EF.Functions.ILike(e.Name, $"%{searchTerm}%") ||
-             EF.Functions.TrigramsWordSimilarity(searchTerm, e.Name) >= WordSimilarityThreshold;
+    public Expression<Func<Establishment, bool>> BuildExpression(string value) =>
+        e => e.Name.ToLower() == value.ToLower() ||
+             EF.Functions.ILike(e.Name, $"%{value}%") ||
+             EF.Functions.TrigramsWordSimilarity(value, e.Name) >= WordSimilarityThreshold;
+
+    public Expression<Func<Establishment, bool>>? BuildExactExpression(string value) =>
+        e => e.Name.ToLower() == value.ToLower();
 }
 
-public class PostcodeSearchMatcher : ISearchFieldMatcher
-{
-    public SearchFieldCategory Category => SearchFieldCategory.Where;
+// --- "Where" Column Query Builders ---
 
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
-        e => e.Site.Any(s => s.Postcode != null && EF.Functions.ILike(s.Postcode, $"%{searchTerm}%"));
+public class PostcodeColumnQueryBuilder : ISearchColumnQueryBuilder
+{
+    public string Key => "where";
+
+    public Expression<Func<Establishment, bool>> BuildExpression(string value) =>
+        e => e.Site.Any(s => s.Postcode != null && EF.Functions.ILike(s.Postcode, $"%{value}%"));
 }
 
-public class CountySearchMatcher : ISearchFieldMatcher
+public class CountyColumnQueryBuilder : ISearchColumnQueryBuilder
 {
-    public SearchFieldCategory Category => SearchFieldCategory.Where;
+    public string Key => "where";
 
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
-        e => e.Site.Any(s => s.County != null && EF.Functions.ILike(s.County, $"%{searchTerm}%"));
+    public Expression<Func<Establishment, bool>> BuildExpression(string value) =>
+        e => e.Site.Any(s => s.County != null && EF.Functions.ILike(s.County, $"%{value}%"));
 }
 
-public class CitySearchMatcher : ISearchFieldMatcher
+public class CityColumnQueryBuilder : ISearchColumnQueryBuilder
 {
-    public SearchFieldCategory Category => SearchFieldCategory.Where;
+    public string Key => "where";
 
-    public Expression<Func<Establishment, bool>> GetExpression(string searchTerm) =>
-        e => e.Site.Any(s => s.Town != null && EF.Functions.ILike(s.Town, $"%{searchTerm}%"));
+    public Expression<Func<Establishment, bool>> BuildExpression(string value) =>
+        e => e.Site.Any(s => s.Town != null && EF.Functions.ILike(s.Town, $"%{value}%"));
 }
 
-public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment>>
-{
-    private readonly IEnumerable<ISearchFieldMatcher> _matchers;
 
-    public ComposableSearchTermRule(IEnumerable<ISearchFieldMatcher> matchers)
+
+public interface ISearchKeyQueryBuilder<TEntity>
+{
+    string Key { get; }
+    Expression<Func<TEntity, bool>> BuildExpression(string value);
+    Expression<Func<TEntity, bool>>? BuildExactExpression(string value);
+}
+
+public class CompositeSearchKeyQueryBuilder : ISearchKeyQueryBuilder<Establishment>
+{
+    private readonly List<ISearchColumnQueryBuilder> _columnBuilders;
+
+    public string Key { get; }
+
+    public CompositeSearchKeyQueryBuilder(string key, IEnumerable<ISearchColumnQueryBuilder> columnBuilders)
     {
-        _matchers = matchers;
+        Key = key.ToLowerInvariant();
+        _columnBuilders = columnBuilders
+            .Where(b => b.Key.Equals(Key, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
-    public IQueryable<Establishment> ApplySearch(IQueryable<Establishment> query, string? whatTerm, string? whereTerm)
+    public Expression<Func<Establishment, bool>> BuildExpression(string value)
     {
-        Expression<Func<Establishment, bool>>? whatExpr = BuildCategoryExpression(SearchFieldCategory.What, whatTerm);
-        Expression<Func<Establishment, bool>>? whereExpr = BuildCategoryExpression(SearchFieldCategory.Where, whereTerm);
+        string term = value.Trim();
+        Expression<Func<Establishment, bool>>? combined = null;
 
-        if (whatExpr is not null && whereExpr is not null)
+        foreach (ISearchColumnQueryBuilder builder in _columnBuilders)
         {
-            return query.Where(whatExpr.And(whereExpr));
+            Expression<Func<Establishment, bool>> expr = builder.BuildExpression(term);
+            combined = combined == null ? expr : combined.Or(expr);
         }
 
-        if (whatExpr is not null)
-            return query.Where(whatExpr);
-        if (whereExpr is not null)
-            return query.Where(whereExpr);
-
-        return query;
+        return combined!;
     }
 
-    public IQueryable<Establishment> ApplyWhereOnly(IQueryable<Establishment> query, string whereTerm)
+    public Expression<Func<Establishment, bool>>? BuildExactExpression(string value)
     {
-        Expression<Func<Establishment, bool>>? whereExpr = BuildCategoryExpression(SearchFieldCategory.Where, whereTerm);
-        return whereExpr != null ? query.Where(whereExpr) : query;
-    }
-
-    private Expression<Func<Establishment, bool>>? BuildCategoryExpression(SearchFieldCategory category, string? term)
-    {
-        if (string.IsNullOrWhiteSpace(term))
-            return null;
-
-        string cleanTerm = term.Trim();
-        List<ISearchFieldMatcher> categoryMatchers = _matchers.Where(m => m.Category == category).ToList();
-
+        string term = value.Trim();
         Expression<Func<Establishment, bool>>? combined = null;
-        foreach (ISearchFieldMatcher matcher in categoryMatchers)
+
+        foreach (ISearchColumnQueryBuilder builder in _columnBuilders)
         {
-            Expression<Func<Establishment, bool>> expr = matcher.GetExpression(cleanTerm);
-            combined = combined == null ? expr : combined.Or(expr);
+            Expression<Func<Establishment, bool>>? exactExpr = builder.BuildExactExpression(term);
+            if (exactExpr != null)
+            {
+                combined = combined == null ? exactExpr : combined.Or(exactExpr);
+            }
         }
 
         return combined;
     }
 }
+
+
+
+
+public interface ISearchTermRule<TQuery>
+{
+    TQuery ApplySearch(TQuery query, IEnumerable<SearchTerm?>? searchTerms);
+    TQuery ApplyExactSearch(TQuery query, IEnumerable<SearchTerm?>? searchTerms, out bool hasExactMatchers);
+}
+
+public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment>>
+{
+    private readonly IDictionary<string, ISearchKeyQueryBuilder<Establishment>> _keyBuilders;
+
+    public ComposableSearchTermRule(IEnumerable<ISearchKeyQueryBuilder<Establishment>> keyBuilders)
+    {
+        _keyBuilders = keyBuilders.ToDictionary(b => b.Key.ToLowerInvariant(), b => b, StringComparer.OrdinalIgnoreCase);
+    }
+
+    public IQueryable<Establishment> ApplySearch(IQueryable<Establishment> query, IEnumerable<SearchTerm?>? searchTerms)
+    {
+        List<SearchTerm> validTerms = GetValidSearchTerms(searchTerms);
+        if (validTerms.Count == 0)
+            return query;
+
+        Expression<Func<Establishment, bool>>? totalExpression = null;
+
+        foreach (SearchTerm term in validTerms)
+        {
+            if (_keyBuilders.TryGetValue(term.Key, out ISearchKeyQueryBuilder<Establishment>? keyBuilder))
+            {
+                Expression<Func<Establishment, bool>> expr = keyBuilder.BuildExpression(term.Value);
+                if (expr != null)
+                {
+                    totalExpression = totalExpression == null ? expr : totalExpression.And(expr);
+                }
+            }
+        }
+
+        return totalExpression != null ? query.Where(totalExpression) : query;
+    }
+
+    public IQueryable<Establishment> ApplyExactSearch(
+        IQueryable<Establishment> query,
+        IEnumerable<SearchTerm?>? searchTerms,
+        out bool hasExactMatchers)
+    {
+        hasExactMatchers = false;
+        List<SearchTerm> validTerms = GetValidSearchTerms(searchTerms);
+        if (validTerms.Count == 0)
+            return query;
+
+        Expression<Func<Establishment, bool>>? totalExpression = null;
+
+        foreach (SearchTerm term in validTerms)
+        {
+            if (_keyBuilders.TryGetValue(term.Key, out ISearchKeyQueryBuilder<Establishment>? keyBuilder))
+            {
+                Expression<Func<Establishment, bool>>? exactExpr = keyBuilder.BuildExactExpression(term.Value);
+
+                if (exactExpr != null)
+                {
+                    hasExactMatchers = true;
+                    totalExpression = totalExpression == null ? exactExpr : totalExpression.And(exactExpr);
+                }
+                else
+                {
+                    // Fall back to broad expression for keys without explicit exact logic (e.g. "where")
+                    Expression<Func<Establishment, bool>> broadExpr = keyBuilder.BuildExpression(term.Value);
+                    if (broadExpr != null)
+                    {
+                        totalExpression = totalExpression == null ? broadExpr : totalExpression.And(broadExpr);
+                    }
+                }
+            }
+        }
+
+        return (hasExactMatchers && totalExpression != null) ? query.Where(totalExpression) : query;
+    }
+
+    private static List<SearchTerm> GetValidSearchTerms(IEnumerable<SearchTerm?>? searchTerms) =>
+        searchTerms?
+            .Where(t => t is not null && !string.IsNullOrWhiteSpace(t.Key) && !string.IsNullOrWhiteSpace(t.Value))
+            .Select(t => t!)
+            .ToList() ?? [];
+}
+
 
 public static class ExpressionExtensions
 {
@@ -331,7 +378,18 @@ public static class ExpressionExtensions
     }
 }
 
-#endregion
+public record AggregatedFacetResult(string FacetName, IReadOnlyCollection<FacetResult> Values);
+
+public record EstablishmentReadModel(
+    int Id,
+    string Urn,
+    string Ukprn,
+    string Name,
+    string? Postcode,
+    string? City,
+    string Type,
+    string Status
+);
 
 public interface IFacetAggregator
 {
@@ -367,11 +425,9 @@ public class FacetAggregationStep : IFacetAggregator
             IReadOnlyList<FacetResult> facetResults =
                 await _facetProvider.GetFacetsAsync(urns, facetKey, cancellationToken);
 
-            aggregatedFacetResults.AddRange(
-                new AggregatedFacetResult(facetKey, facetResults));
+            aggregatedFacetResults.Add(new AggregatedFacetResult(facetKey, facetResults));
         }
 
         return aggregatedFacetResults.AsReadOnly();
     }
-
 }

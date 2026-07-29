@@ -1,12 +1,12 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 
 public sealed class SearchServiceAdapterRequest
 {
-    public string? WhatTerm { get; }
-    public string? WhereTerm { get; }
+    public IReadOnlyCollection<SearchTerm?> SearchTerms { get; }
     public int Offset { get; }
     public int PageSize { get; }
     public IList<string> SearchFields { get; }
@@ -15,8 +15,7 @@ public sealed class SearchServiceAdapterRequest
     public SortOrder SortOrdering { get; }
 
     public SearchServiceAdapterRequest(
-        string? whatTerm,
-        string? whereTerm,
+        IReadOnlyCollection<SearchTerm?> searchTerms,
         IList<string> searchFields,
         SortOrder sortOrdering,
         IList<string>? facets = null,
@@ -29,10 +28,7 @@ public sealed class SearchServiceAdapterRequest
             : throw new ArgumentException(
                 $"A valid {nameof(searchFields)} argument must be provided.", nameof(searchFields));
 
-        // TODO: this is just a noddy way of getting this to work, we need to fall back to the key/value collection Tony's provisoned
-        WhatTerm = whatTerm;
-        WhereTerm = whereTerm;
-
+        SearchTerms = searchTerms;
         SortOrdering = sortOrdering;
         Facets = facets ?? [];
         SearchFilterRequests = searchFilterRequests ?? [];
@@ -41,12 +37,11 @@ public sealed class SearchServiceAdapterRequest
     }
 
     public static SearchServiceAdapterRequest Create(
-        string whatTerm,
-        string whereTerm,
+        IReadOnlyCollection<SearchTerm?> searchTerms,
         IList<string> searchFields,
         IList<string> facets,
         SortOrder sortOrdering,
         IList<FilterRequest>? searchFilterRequests = null,
         int offset = 0, int pageSize = 20)
-            => new(whatTerm, whereTerm, searchFields, sortOrdering, facets, searchFilterRequests, offset, pageSize);
+            => new(searchTerms, searchFields, sortOrdering, facets, searchFilterRequests, offset, pageSize);
 }
