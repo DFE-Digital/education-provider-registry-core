@@ -66,8 +66,8 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
             SearchResults<EstablishmentSearchResults, SearchFacets>? searchResults =
                 await _searchServiceAdapter.SearchAsync(
                     SearchServiceAdapterRequest.Create(
-                        request.SearchIndexKey,
-                        request.SearchKeywords,
+                        request.WhatTerm,   // TODO: noddy work to get stuff going!
+                        request.WhereTerm, // TODO: noddy work to get stuff going!
                         _searchCriteria.SearchFields,
                         _searchCriteria.Facets,
                         request.SortOrder,

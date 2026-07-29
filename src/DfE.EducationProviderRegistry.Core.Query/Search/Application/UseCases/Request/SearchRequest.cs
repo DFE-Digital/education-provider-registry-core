@@ -18,23 +18,16 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     /// <param name="searchKeywords">The keyword(s) used to query data.</param>
     /// <param name="offset">Offset for pagination (defaults to 0).</param>
     /// <exception cref="ArgumentException">Thrown if searchKeyword is null or empty.</exception>
-    public SearchRequest(string searchIndexKey, string searchKeywords, SortOrder sortOrder, int offset = 0)
+    public SearchRequest(string whatTerm, string whereTerm, SortOrder sortOrder, int offset = 0)
     {
-        if (string.IsNullOrWhiteSpace(searchIndexKey))
+        if (string.IsNullOrWhiteSpace(whatTerm))
         {
             throw new ArgumentException(
-                "SearchIndexKey must not be null or empty.", nameof(searchIndexKey));
+                "Search keyword must not be null or empty.", nameof(whatTerm));
         }
 
-
-        if (string.IsNullOrWhiteSpace(searchKeywords))
-        {
-            throw new ArgumentException(
-                "Search keyword must not be null or empty.", nameof(searchKeywords));
-        }
-
-        SearchIndexKey = searchIndexKey;
-        SearchKeywords = searchKeywords;
+        WhatTerm = whatTerm;
+        WhereTerm = whereTerm;
         SortOrder = sortOrder ?? throw new ArgumentNullException(nameof(sortOrder));
         Offset = offset;
     }
@@ -46,22 +39,21 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     /// <param name="filterRequests">A list of filter criteria.</param>
     /// <param name="offset">Offset for pagination (defaults to 0).</param>
     public SearchRequest(
-        string searchIndexKey,
-        string searchKeywords,
+        string whatTerm,
+        string whereTerm,
         IList<FilterRequest> filterRequests,
         SortOrder sortOrder,
-        int offset = 0) : this(searchIndexKey, searchKeywords, sortOrder, offset)
+        int offset = 0) : this(whatTerm, whereTerm, sortOrder, offset)
     {
         FilterRequests = filterRequests ??
             throw new ArgumentNullException(nameof(filterRequests));
     }
 
-    public string SearchIndexKey { get; }
 
-    /// <summary>
-    /// The keyword(s) used to search query data.
-    /// </summary>
-    public string SearchKeywords { get; }
+    public string WhatTerm { get; }
+
+    public string WhereTerm { get; }
+
 
     /// <summary>
     /// The offset used for paging through search results.

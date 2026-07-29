@@ -16,7 +16,7 @@ public sealed class EstablishmentTypeFilter : ISearchFilter<Establishment>
         ];
 
         return new PropertyEqualsAnyValuesSpecification<Establishment, long>(
-            x => x.EstablishmentTypeId,
-            values);
+            establishment =>
+                establishment.EstablishmentTypeId, values);
     }
 }

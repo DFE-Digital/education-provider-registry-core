@@ -61,7 +61,7 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
                     resolved[i].Item1,
                     resolved[i].Item2);
 
-            // TODO assumes these SearchFilterRequests are always combinatorial AND
+            // TODO assumes these SearchFilterRequests are always combinatorial AND this should is configuarble but hasn't been wired through yet!
             combined = combined.And(next);
         }
 

@@ -139,7 +139,7 @@ public static class CompositionRoot
             EstablishmentToSearchResultMapper>();
 
         services.TryAddSingleton<
-            IMapper<SearchPipelineContext,
+            IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
             SearchResults<EstablishmentSearchResults, SearchFacets>>,
             SearchResultsFromContextMapper>();
 
@@ -164,8 +164,7 @@ public static class CompositionRoot
             Dictionary<string, Func<ISearchFilter<Establishment>>> map =
                 new()
                 {
-                    ["EstablishmentTypeFilter"] = () =>
-                        provider.GetRequiredService<EstablishmentTypeFilter>()
+                    ["type"] = () => provider.GetRequiredService<EstablishmentTypeFilter>()
                 };
 
             return new SearchFilterSpecificationFactory<Establishment>(map);
@@ -183,7 +182,7 @@ public static class CompositionRoot
         services.AddSingleton(
             new Dictionary<string, Expression<Func<Establishment, object>>>(StringComparer.OrdinalIgnoreCase)
             {
-                { "establishmenttypeid", establishment => establishment.EstablishmentTypeId }
+                { "type", establishment => establishment.EstablishmentTypeId }
             });
 
         services.AddOptions<FilterKeyToFilterExpressionMapOptions>()
