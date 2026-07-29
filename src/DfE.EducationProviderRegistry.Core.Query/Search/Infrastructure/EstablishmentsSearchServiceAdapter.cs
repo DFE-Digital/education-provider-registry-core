@@ -19,35 +19,23 @@ internal sealed class EstablishmentsSearchServiceAdapter
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
     private readonly ISearchTermRule<IQueryable<Establishment>> _searchTermRule;
-    private readonly IDictionary<string, IFilterRule<IQueryable<Establishment>>> _filterRules;
-    private readonly ISortStrategy<IQueryable<Establishment>> _sortStrategy;
+
     private readonly IFacetAggregator _facetCalculator;
     private readonly IMapper<
         (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
         SearchResults<EstablishmentSearchResults, SearchFacets>> _searchResultsFromContextMapper;
-
-
-
-    // TODO: we can push this back into the pipeline then further back into it's own core framework
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
         ReadOnlyCollection<SearchFilterRequest>> _searchFilterRequestMapper;
-
-    // TODO: we can push this back into the pipeline then further back into it's own core framework
     private readonly ISearchFilterExpressionsBuilder<Establishment> _searchFilterExpressionsBuilder;
 
     public EstablishmentsSearchServiceAdapter(
         EducationProviderRegistryDbContext dbContext,
         ISearchTermRule<IQueryable<Establishment>> searchTermRule,
-        IEnumerable<IFilterRule<IQueryable<Establishment>>> filterRules,
-        ISortStrategy<IQueryable<Establishment>> sortStrategy,
         IFacetAggregator facetCalculator,
         IMapper<
             (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
             SearchResults<EstablishmentSearchResults, SearchFacets>> searchResultsFromContextMapper,
-
-
-
         IMapper<
             ReadOnlyCollection<FilterRequest>,
             ReadOnlyCollection<SearchFilterRequest>> searchFilterRequestMapper,
@@ -56,11 +44,8 @@ internal sealed class EstablishmentsSearchServiceAdapter
     {
         _dbContext = dbContext;
         _searchTermRule = searchTermRule;
-        _filterRules = filterRules.ToDictionary(filterRule => filterRule.FieldKey.ToLowerInvariant());
-        _sortStrategy = sortStrategy;
         _facetCalculator = facetCalculator;
         _searchResultsFromContextMapper = searchResultsFromContextMapper;
-
         _searchFilterRequestMapper = searchFilterRequestMapper;
         _searchFilterExpressionsBuilder = searchFilterExpressionsBuilder;
     }
@@ -99,15 +84,11 @@ internal sealed class EstablishmentsSearchServiceAdapter
                     exactWhatQuery = _searchTermRule.ApplyWhereOnly(exactWhatQuery, request.WhereTerm!);
                 }
 
-                //IQueryable<Establishment> candidateFiltered = ApplyFilters(exactWhatQuery, request.SearchFilterRequests);
-
                 Expression<Func<Establishment, bool>> candidateFilter =
                     _searchFilterExpressionsBuilder
                         .BuildSearchFilterExpression(filterRequests);
 
                 IQueryable<Establishment> candidateFiltered = exactWhatQuery.Where(candidateFilter);
-
-
 
                 int exactCount = await candidateFiltered.CountAsync(cancellationToken);
 
@@ -124,9 +105,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 IQueryable<Establishment> searchedQuery =
                     _searchTermRule.ApplySearch(baseQuery, request.WhatTerm, request.WhereTerm);
 
-
-
-
                 Expression<Func<Establishment, bool>> candidateFilter =
                     _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
 
@@ -135,7 +113,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
         }
         else
         {
-
             Expression<Func<Establishment, bool>> candidateFilter =
                 _searchFilterExpressionsBuilder
                     .BuildSearchFilterExpression(filterRequests);
@@ -145,13 +122,8 @@ internal sealed class EstablishmentsSearchServiceAdapter
 
         int totalCount = await filteredQuery.CountAsync(cancellationToken);
 
-        // Sort using WhatTerm for relevance if available, otherwise fallback to name
-        IQueryable<Establishment> sortedQuery = _sortStrategy.ApplySorting(
-            filteredQuery, SortByOption.NameAsc,// TODO: need to sort this (no pun intended ;)  request.SortOrdering.Value,
-            request.WhatTerm ?? request.WhereTerm);
-
         List<EstablishmentReadModel> items =
-            await sortedQuery
+            await filteredQuery
                 .Skip(request.Offset)
                 .Take(request.PageSize)
                 .Select(e => new EstablishmentReadModel(
@@ -179,58 +151,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         );
 
         return _searchResultsFromContextMapper.Map((items, facets));
-
-        //return new EstablishmentSearchResponse(
-        //    Items: items,
-        //    TotalCount: totalCount,
-        //    Facets: facets,
-        //    Offset: request.Offset,
-        //    PageSize: request.PageSize
-        //);
     }
-
-    //private IQueryable<Establishment> ApplyFilters(IQueryable<Establishment> query, IList<FilterRequest>? filters)
-    //{
-    //    if (filters is null || !filters.Any())
-    //        return query;
-
-    //    foreach (FilterRequest filter in filters)
-    //    {
-    //        if (filter.FilterValues != null && filter.FilterValues.Any(v => !string.IsNullOrWhiteSpace((string?)v))) // TODO: dodgy cast here to get stuff moving!!!!
-    //        {
-    //            string fieldKey = filter.FilterName.ToLowerInvariant();
-    //            // TODO: for now we'll treat the filtername as the field we're trying to filter
-    //            // against but ultimately we can't assume the consumer has and should have knowledge of this!
-    //            // i..e move to a configured dict which we can eventually pass down to the AST engine!
-
-    //            if (_filterRules.TryGetValue(fieldKey, out IFilterRule<IQueryable<Establishment>>? rule))
-    //            {
-
-    //                List<string>? stringValues =
-    //                    [.. filter.FilterValues
-    //                        .OfType<string>()
-    //                        .Where(value => !string.IsNullOrWhiteSpace(value))];
-
-    //                query = rule.Apply(query, stringValues);
-    //            }
-    //            else
-    //            {
-    //                throw new ArgumentException($"Unsupported or unregistered search filter field: '{filter.FilterName}'");
-    //            }
-    //        }
-    //    }
-
-    //    return query;
-    //}
-}
-
-public enum SortByOption
-{
-    NameAsc,
-    NameDesc,
-    UrnAsc,
-    UrnDesc,
-    Relevance
 }
 
 public enum SearchFieldCategory
@@ -239,10 +160,8 @@ public enum SearchFieldCategory
     Where
 }
 
-// Models
-//public record FilterCriterion(string Field, List<string> Values);
-public record FacetValueResult(string Value, int Count);
-public record AggregatedFacetResult(string FacetName, IReadOnlyCollection<FacetResult> Values);
+public record AggregatedFacetResult(
+    string FacetName, IReadOnlyCollection<FacetResult> Values);
 
 public record EstablishmentReadModel(
     int Id,
@@ -255,61 +174,10 @@ public record EstablishmentReadModel(
     string Status
 );
 
-//public record EstablishmentSearchRequest(
-//    string? WhatTerm = null,
-//    string? WhereTerm = null,
-//    int Offset = 0,
-//    int PageSize = 20,
-//    List<FilterCriterion>? Filters = null,
-//    List<string>? RequestedFacets = null,
-//    SortByOption SortBy = SortByOption.NameAsc
-//);
-
-//public record EstablishmentSearchResponse(
-//    IReadOnlyCollection<EstablishmentReadModel> Items,
-//    int TotalCount,
-//    IReadOnlyCollection<FacetResultNew> Facets,
-//    int Offset,
-//    int PageSize
-//);
-
-// Base abstractions
-//public interface IEstablishmentSearchAdapter
-//{
-//    Task<EstablishmentSearchResponse> SearchAsync(
-//        EstablishmentSearchRequest request,
-//        CancellationToken cancellationToken = default);
-//}
-
 public interface ISearchTermRule<TQuery>
 {
     TQuery ApplySearch(TQuery query, string? whatTerm, string? whereTerm);
     TQuery ApplyWhereOnly(TQuery query, string whereTerm);
-}
-
-public interface IFilterRule<TQuery>
-{
-    string FieldKey { get; }
-    TQuery Apply(TQuery query, IEnumerable<string> values);
-}
-
-public interface ISortStrategy<TQuery>
-{
-    TQuery ApplySorting(TQuery query, SortByOption sortBy, string? searchTerm);
-}
-
-//public interface IFacetProvider<TQuery>
-//{
-//    string FacetKey { get; }
-//    Task<FacetResultNew> BuildFacetAsync(TQuery query, CancellationToken cancellationToken);
-//}
-
-public interface IFacetAggregator
-{
-    Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
-        IReadOnlyList<string> urns,
-        IEnumerable<string>? requestedFacets,
-        CancellationToken cancellationToken);
 }
 
 public interface ISearchFieldMatcher
@@ -317,6 +185,8 @@ public interface ISearchFieldMatcher
     SearchFieldCategory Category { get; }
     Expression<Func<Establishment, bool>> GetExpression(string searchTerm);
 }
+
+#region This is how it currently determines what fields to search across
 
 // "What" Matchers (Name, URN, UID)
 public class UrnSearchMatcher : ISearchFieldMatcher
@@ -346,7 +216,6 @@ public class NameSearchMatcher : ISearchFieldMatcher
              EF.Functions.TrigramsWordSimilarity(searchTerm, e.Name) >= WordSimilarityThreshold;
 }
 
-// "Where" Matchers (Postcode, County, City)
 public class PostcodeSearchMatcher : ISearchFieldMatcher
 {
     public SearchFieldCategory Category => SearchFieldCategory.Where;
@@ -371,7 +240,6 @@ public class CitySearchMatcher : ISearchFieldMatcher
         e => e.Site.Any(s => s.Town != null && EF.Functions.ILike(s.Town, $"%{searchTerm}%"));
 }
 
-// Composable search
 public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment>>
 {
     private readonly IEnumerable<ISearchFieldMatcher> _matchers;
@@ -424,7 +292,6 @@ public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment
     }
 }
 
-// Expressions
 public static class ExpressionExtensions
 {
     public static Expression<Func<T, bool>> Or<T>(
@@ -464,149 +331,15 @@ public static class ExpressionExtensions
     }
 }
 
-//// Filter rules
-//public class PostcodeFilterRule : IFilterRule<IQueryable<Establishment>>
-//{
-//    public string FieldKey => "postcode";
+#endregion
 
-//    public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values) =>
-//        query.Where(e => e.Site.Any(s => s.Postcode != null && values.Any(v => s.Postcode.Contains(v))));
-//}
-
-//public class UidFilterRule : IFilterRule<IQueryable<Establishment>>
-//{
-//    public string FieldKey => "uid";
-
-//    public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values) =>
-//        query.Where(e => values.Contains(e.Uid));
-//}
-
-//public class CountyFilterRule : IFilterRule<IQueryable<Establishment>>
-//{
-//    public string FieldKey => "county";
-
-//    public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values) =>
-//        query.Where(e => e.Site.Any(s => s.County != null && values.Contains(s.County)));
-//}
-
-//public class TypeFilterRule : IFilterRule<IQueryable<Establishment>>
-//{
-//    public string FieldKey => "type";
-
-//    public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values)
-//    {
-//        List<string>? valueList = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
-
-//        if (valueList is null || !valueList.Any())
-//            return query;
-
-//        return query.Where(e => valueList.Contains(e.EstablishmentTypeId.ToString()));
-//    }
-//}
-
-//public class StatusFilterRule : IFilterRule<IQueryable<Establishment>>
-//{
-//    public string FieldKey => "status";
-
-//    public IQueryable<Establishment> Apply(IQueryable<Establishment> query, IEnumerable<string> values)
-//    {
-//        List<string>? valueList = values?.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
-
-//        if (valueList is null || !valueList.Any())
-//            return query;
-
-//        return query.Where(e => e.EstablishmentStatus != null && valueList.Contains(e.EstablishmentStatus.Name));
-//    }
-//}
-
-// Sorting
-public class EfSortStrategy : ISortStrategy<IQueryable<Establishment>>
+public interface IFacetAggregator
 {
-    public IQueryable<Establishment> ApplySorting(
-        IQueryable<Establishment> query,
-        SortByOption sortBy,
-        string? searchTerm)
-    {
-        if (string.IsNullOrWhiteSpace(searchTerm))
-        {
-            return sortBy switch
-            {
-                SortByOption.NameDesc => query.OrderByDescending(e => e.Name),
-                SortByOption.UrnAsc => query.OrderBy(e => e.Urn),
-                SortByOption.UrnDesc => query.OrderByDescending(e => e.Urn),
-                _ => query.OrderBy(e => e.Name)
-            };
-        }
-
-        string term = searchTerm.Trim();
-
-        return sortBy switch
-        {
-            SortByOption.NameAsc => query.OrderBy(e => e.Name),
-            SortByOption.NameDesc => query.OrderByDescending(e => e.Name),
-            SortByOption.UrnAsc => query.OrderBy(e => e.Urn),
-            SortByOption.UrnDesc => query.OrderByDescending(e => e.Urn),
-
-            SortByOption.Relevance => query
-                .OrderByDescending(e => e.Urn == term || e.Uid == term)
-                .ThenByDescending(e => e.Name.ToLower() == term.ToLower())
-                .ThenByDescending(e => e.Name.ToLower().StartsWith(term.ToLower()))
-                .ThenByDescending(e => EF.Functions.TrigramsWordSimilarity(term, e.Name))
-                .ThenBy(e => e.Name),
-
-            _ => query.OrderBy(e => e.Name)
-        };
-    }
+    Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
+        IReadOnlyList<string> urns,
+        IEnumerable<string>? requestedFacets,
+        CancellationToken cancellationToken);
 }
-
-//// Facets
-//public class CountyFacetProvider : IFacetProvider<IQueryable<Establishment>>
-//{
-//    public string FacetKey => "county";
-
-//    public async Task<FacetResultNew> BuildFacetAsync(IQueryable<Establishment> query, CancellationToken cancellationToken)
-//    {
-//        List<FacetValueResult> values = await query
-//            .Where(e => e.Site.Any(s => s.County != null))
-//            .GroupBy(e => e.Site.Select(s => s.County).FirstOrDefault()!)
-//            .Select(g => new FacetValueResult(g.Key, g.Count()))
-//            .ToListAsync(cancellationToken);
-
-//        return new FacetResultNew("County", values);
-//    }
-//}
-
-//public class TypeFacetProvider : IFacetProvider<IQueryable<Establishment>>
-//{
-//    public string FacetKey => "type";
-
-//    public async Task<FacetResultNew> BuildFacetAsync(IQueryable<Establishment> query, CancellationToken cancellationToken)
-//    {
-//        List<FacetValueResult> values = await query
-//            .Where(e => e.EstablishmentType != null)
-//            .GroupBy(e => e.EstablishmentTypeId)
-//            .Select(g => new FacetValueResult(g.Key.ToString(), g.Count()))
-//            .ToListAsync(cancellationToken);
-
-//        return new FacetResultNew("type", values);
-//    }
-//}
-
-//public class StatusFacetProvider : IFacetProvider<IQueryable<Establishment>>
-//{
-//    public string FacetKey => "status";
-
-//    public async Task<FacetResultNew> BuildFacetAsync(IQueryable<Establishment> query, CancellationToken cancellationToken)
-//    {
-//        List<FacetValueResult> values = await query
-//            .Where(e => e.EstablishmentStatus != null)
-//            .GroupBy(e => e.EstablishmentStatus.Name)
-//            .Select(g => new FacetValueResult(g.Key, g.Count()))
-//            .ToListAsync(cancellationToken);
-
-//        return new FacetResultNew("Status", values);
-//    }
-//}
 
 public class FacetAggregationStep : IFacetAggregator
 {
