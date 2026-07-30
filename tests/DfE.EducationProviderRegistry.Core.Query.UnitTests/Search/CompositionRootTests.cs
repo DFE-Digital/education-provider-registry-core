@@ -30,7 +30,7 @@ public sealed class CompositionRootTests
             provider.GetRequiredService<Dictionary<string, Expression<Func<Establishment, object>>>>();
 
         // assert
-        Assert.True(selectors.ContainsKey("establishmenttypeid"));
+        Assert.True(selectors.ContainsKey("type"));
     }
 
     [Fact]
