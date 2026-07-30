@@ -49,6 +49,10 @@ internal sealed class EstablishmentsSearchServiceAdapter
         _searchFilterExpressionsBuilder = searchFilterExpressionsBuilder;
     }
 
+    //
+    //  This needs decomposing more for testability - maybe look at creating a pipeline (of strategies)
+    //  to faciltate granular unit testing whilst also allowing for extensibility via composition.
+    //
     public async Task<SearchResults<EstablishmentSearchResults, SearchFacets>> SearchAsync(
         SearchServiceAdapterRequest request,
         CancellationToken cancellationToken = default)
@@ -126,6 +130,11 @@ internal sealed class EstablishmentsSearchServiceAdapter
 }
 
 
+# region Query Builder Work - To be refactored towards core library concerns
+
+// This sets the blueprint for a specific usecase/approach, but we'll look to delegate
+// this underlying behaviour to a core/reusable/agnostic projection AST engine. 
+//
 public interface ISearchColumnQueryBuilder
 {
     string Key { get; }
@@ -134,7 +143,13 @@ public interface ISearchColumnQueryBuilder
 }
 
 // --- "What" Column Query Builders ---
-
+//
+//  We know we need to improve this somewhat by not grouping via specific
+//  keys (i.e. the atomic builder has to have implicit knowledge of wider
+//  grouping concerns) BUT it's felt this is something we can move towards
+//  iteratively and will be handled ultimately via the query engine via
+//  structured rules which can be established on a case by case basis.
+//
 public class UrnColumnQueryBuilder : ISearchColumnQueryBuilder
 {
     public string Key => "what";
@@ -172,7 +187,13 @@ public class NameColumnQueryBuilder : ISearchColumnQueryBuilder
 }
 
 // --- "Where" Column Query Builders ---
-
+//
+//  We know we need to improve this somewhat by not grouping via specific
+//  keys (i.e. the atomic builder has to have implicit knowledge of wider
+//  grouping concerns) BUT it's felt this is something we can move towards
+//  iteratively and will be handled ultimately via the query engine via
+//  structured rules which can be established on a case by case basis.
+//
 public class PostcodeColumnQueryBuilder : ISearchColumnQueryBuilder
 {
     public string Key => "where";
@@ -197,8 +218,9 @@ public class CityColumnQueryBuilder : ISearchColumnQueryBuilder
         e => e.Site.Any(s => s.Town != null && EF.Functions.ILike(s.Town, $"%{value}%"));
 }
 
-
-
+//
+//  This is just composotion which we'll ultimately handle via the query engine.
+//
 public interface ISearchKeyQueryBuilder<TEntity>
 {
     string Key { get; }
@@ -227,6 +249,9 @@ public class CompositeSearchKeyQueryBuilder : ISearchKeyQueryBuilder<Establishme
 
         foreach (ISearchColumnQueryBuilder builder in _columnBuilders)
         {
+            // We know we have baked in predicate here which needs to be configurable,
+            // again, the query engine will be designed to handle this more elegantly
+            // in a configurable manner.
             Expression<Func<Establishment, bool>> expr = builder.BuildExpression(term);
             combined = combined == null ? expr : combined.Or(expr);
         }
@@ -261,6 +286,17 @@ public interface ISearchTermRule<TQuery>
     TQuery ApplyExactSearch(TQuery query, IEnumerable<SearchTerm?>? searchTerms, out bool hasExactMatchers);
 }
 
+
+//
+//  This part deals with search term expression composition whereby the build-up of
+//  specific query defintions, i.e. which field(s) to query over, and how to query (i.e. exact, partial, etc).
+//  
+//  This WILL be promoted to the query engine, and it SHOULD establish these sort of defintions based on the
+//  incoming search request (term key), cosolidated against some prescription (i.e. this key is associated
+//  with this configured set of fields and associated query behaviour) which the engine will compose and deliver.
+//  The engine will be fully agnostic to a given service, i.e. rules can be configured and prescribed on a
+//  case-by-case basis.
+//
 public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment>>
 {
     private readonly IDictionary<string, ISearchKeyQueryBuilder<Establishment>> _keyBuilders;
@@ -285,6 +321,9 @@ public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment
                 Expression<Func<Establishment, bool>> expr = keyBuilder.BuildExpression(term.Value);
                 if (expr != null)
                 {
+                    // We know we have baked in predicate here which needs to be configurable,
+                    // again, the query engine will be designed to handle this more elegantly
+                    // in a configurable manner.
                     totalExpression = totalExpression == null ? expr : totalExpression.And(expr);
                 }
             }
@@ -322,6 +361,9 @@ public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment
                     Expression<Func<Establishment, bool>> broadExpr = keyBuilder.BuildExpression(term.Value);
                     if (broadExpr != null)
                     {
+                        // We know we have baked in predicate here which needs to be configurable,
+                        // again, the query engine will be designed to handle this more elegantly
+                        // in a configurable manner.
                         totalExpression = totalExpression == null ? broadExpr : totalExpression.And(broadExpr);
                     }
                 }
@@ -338,7 +380,10 @@ public class ComposableSearchTermRule : ISearchTermRule<IQueryable<Establishment
             .ToList() ?? [];
 }
 
-
+//
+// Machinery to compose and combine expressions with specific predicates (Or/And) again
+// to be handled in a more agnostic way via query engine.
+//
 public static class ExpressionExtensions
 {
     public static Expression<Func<T, bool>> Or<T>(
@@ -378,6 +423,8 @@ public static class ExpressionExtensions
     }
 }
 
+#endregion
+
 public record AggregatedFacetResult(string FacetName, IReadOnlyCollection<FacetResult> Values);
 
 public record EstablishmentReadModel(
@@ -391,6 +438,13 @@ public record EstablishmentReadModel(
     string Status
 );
 
+#region Promoted to core infra
+
+//
+//  This is an Infra concern and could become part of it's own reusable piece
+//  BUT not a concern of the query engine (it's job is to surface a configured
+//  Query AST and provide options for translation into usable SQL.
+//
 public interface IFacetAggregator
 {
     Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
@@ -431,3 +485,5 @@ public class FacetAggregationStep : IFacetAggregator
         return aggregatedFacetResults.AsReadOnly();
     }
 }
+
+#endregion
