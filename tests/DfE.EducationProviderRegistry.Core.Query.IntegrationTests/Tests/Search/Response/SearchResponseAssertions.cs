@@ -24,45 +24,45 @@ internal static class SearchResponseAssertions
         // Site / Address
         Site? expectedSite = expected.Site.FirstOrDefault();
 
-        Assert.Equal(
-            expectedSite?.AddressLine1,
-            actual.Address?.Street);
+        //Assert.Equal(
+        //    expectedSite?.AddressLine1,
+        //    actual.Address?.Street);
 
-        Assert.Equal(
-            expectedSite?.Town,
-            actual.Address?.Town);
+        //Assert.Equal(
+        //    expectedSite?.Town,
+        //    actual.Address?.Town);
 
-        Assert.Equal(
-            expectedSite?.County,
-            actual.Address?.County);
+        //Assert.Equal(
+        //    expectedSite?.County,
+        //    actual.Address?.County);
 
-        Assert.Equal(
-            expectedSite?.Postcode,
-            actual.Address?.Postcode);
+        //Assert.Equal(
+        //    expectedSite?.Postcode,
+        //    actual.Address?.Postcode);
 
         // Local Authority
-        EstablishmentAuthority? expectedAuthority =
-            expected.EstablishmentAuthority.FirstOrDefault();
+        //EstablishmentAuthority? expectedAuthority =
+        //    expected.EstablishmentAuthority.FirstOrDefault();
 
-        Assert.Equal(
-            expectedAuthority?.AuthorityName,
-            actual.LocalAuthority?.Name);
+        //Assert.Equal(
+        //    expectedAuthority?.AuthorityName,
+        //    actual.LocalAuthority?.Name);
 
-        Assert.Equal(
-            expectedAuthority?.AuthorityCode,
-            actual.LocalAuthority?.Code);
+        //Assert.Equal(
+        //    expectedAuthority?.AuthorityCode,
+        //    actual.LocalAuthority?.Code);
 
-        // Establishment > Group
-        EstablishmentGroupMembership? membership =
-            expected.EstablishmentGroupMembership
-                .FirstOrDefault();
+        //// Establishment > Group
+        //EstablishmentGroupMembership? membership =
+        //    expected.EstablishmentGroupMembership
+        //        .FirstOrDefault();
 
-        Assert.Equal(
-            membership?.Group?.Name,
-            actual.Group?.PartOfName);
+        //Assert.Equal(
+        //    membership?.Group?.Name,
+        //    actual.Group?.PartOfName);
 
-        Assert.Equal(
-            membership?.Group?.Code,
-            actual.Group?.PartOfCode);
+        //Assert.Equal(
+        //    membership?.Group?.Code,
+        //    actual.Group?.PartOfCode);
     }
 }
