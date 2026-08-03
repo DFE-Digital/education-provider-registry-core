@@ -117,7 +117,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 e.Site.Select(s => s.County).FirstOrDefault(),
                 e.EstablishmentType != null ? e.EstablishmentType.Name : string.Empty,
                 e.EstablishmentStatus != null ? e.EstablishmentStatus.Name : string.Empty))
-            
+
             .ToListAsync(cancellationToken);
 
         IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
