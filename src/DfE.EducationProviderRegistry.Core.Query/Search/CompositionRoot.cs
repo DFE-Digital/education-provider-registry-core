@@ -77,23 +77,6 @@ public static class CompositionRoot
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        if (!services.Any(sd =>
-            sd.ServiceType == typeof(IDbContextFactory<EducationProviderRegistryDbContext>)))
-        {
-            services.AddDbContextFactory<EducationProviderRegistryDbContext>(options =>
-            {
-                string connectionString =
-                    configuration["eprweb_eprdat_dotnet_db_connection"]
-                    ?? throw new InvalidOperationException(
-                        "Database connection string not configured.");
-
-                options.UseNpgsql(connectionString)
-                       .EnableSensitiveDataLogging()
-                       .EnableDetailedErrors()
-                       .LogTo(Console.WriteLine, LogLevel.Information);
-            });
-        }
-
         services.TryAddScoped<ISqlFilterExpressionTranslator<Establishment>,
             SqlFilterExpressionTranslator<Establishment>>();
 
