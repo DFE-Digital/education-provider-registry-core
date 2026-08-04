@@ -25,7 +25,7 @@ public sealed class SearchEstablishmentByNameLimitsResults : UseCaseIntegrationT
     }
 
     [Fact]
-    public async Task Limits_Matches_To_50_Results()
+    public async Task Default_Limit_Returns_20_Results()
     {
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -41,7 +41,7 @@ public sealed class SearchEstablishmentByNameLimitsResults : UseCaseIntegrationT
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchKeywords(searchTerm)
+                .WithWhatTerm(searchTerm)
                 .Build();
 
         // act

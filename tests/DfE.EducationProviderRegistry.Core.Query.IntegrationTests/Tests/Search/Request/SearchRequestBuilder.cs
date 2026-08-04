@@ -6,12 +6,9 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 internal sealed class SearchRequestBuilder
 {
-    private const string DefaultSearchIndexKey = "STUB_SEARCH_INDEX_KEY";
-    private const string DefaultSearchKeywords = "search-term";
     private const string DefaultSortField = "UNDEFINED";
 
-    private string _searchIndexKey = DefaultSearchIndexKey;
-    private string _searchKeywords = DefaultSearchKeywords;
+    private readonly List<SearchTerm> _searchTerms = [];
     private int _offset;
     private IList<FilterRequest>? _filterRequests;
     private SortOrder _sortOrder =
@@ -20,15 +17,11 @@ internal sealed class SearchRequestBuilder
             sortDirection: "asc",
             validSortFields: [DefaultSortField]);
 
-    public SearchRequestBuilder WithSearchIndexKey(string searchIndexKey)
+    public SearchRequestBuilder WithWhatTerm(string value)
     {
-        _searchIndexKey = searchIndexKey;
-        return this;
-    }
+        _searchTerms.Add(
+            new SearchTerm("what", value));
 
-    public SearchRequestBuilder WithSearchKeywords(string searchKeywords)
-    {
-        _searchKeywords = searchKeywords;
         return this;
     }
 
@@ -55,13 +48,11 @@ internal sealed class SearchRequestBuilder
     {
         return _filterRequests is null
             ? new SearchRequest(
-                searchIndexKey: _searchIndexKey,
-                searchKeywords: _searchKeywords,
+                searchTerms: _searchTerms,
                 sortOrder: _sortOrder,
                 offset: _offset)
             : new SearchRequest(
-                searchIndexKey: _searchIndexKey,
-                searchKeywords: _searchKeywords,
+                searchTerms: _searchTerms,
                 filterRequests: _filterRequests,
                 sortOrder: _sortOrder,
                 offset: _offset);

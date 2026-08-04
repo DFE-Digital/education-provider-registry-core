@@ -1,5 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Context;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.SearchOrchestrators;
 
@@ -16,18 +17,19 @@ public sealed class SearchOrchestratorContextUnitTests
 
         IReadOnlyList<SearchFilterRequest> filters =
         [
-            new SearchFilterRequest("CODE", ["A"])
+            new SearchFilterRequest("CODE", new object[] { "A" })
         ];
 
         // act
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = searchTerm,
-            SearchColumn = searchColumn,
-            PageSize = pageSize,
-            Offset = offset,
-            Filters = filters
-        };
+        SearchOrchestratorContext<DummyProjection> context =
+            new()
+            {
+                SearchTerm = searchTerm,
+                SearchColumn = searchColumn,
+                PageSize = pageSize,
+                Offset = offset,
+                Filters = filters
+            };
 
         // assert
         Assert.Equal(searchTerm, context.SearchTerm);
@@ -40,13 +42,14 @@ public sealed class SearchOrchestratorContextUnitTests
     [Fact]
     public void SearchColumn_DefaultsToEmptyString()
     {
-        // act
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "academy",
-            PageSize = 10,
-            Offset = 0
-        };
+        // arrange/act
+        SearchOrchestratorContext<DummyProjection> context =
+            new()
+            {
+                SearchTerm = "academy",
+                PageSize = 10,
+                Offset = 0
+            };
 
         // assert
         Assert.Equal(string.Empty, context.SearchColumn);
@@ -55,16 +58,36 @@ public sealed class SearchOrchestratorContextUnitTests
     [Fact]
     public void Filters_DefaultsToEmptyList()
     {
-        // act
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "academy",
-            PageSize = 10,
-            Offset = 0
-        };
+        // arrange/act
+        SearchOrchestratorContext<DummyProjection> context =
+            new()
+            {
+                SearchTerm = "academy",
+                PageSize = 10,
+                Offset = 0
+            };
 
         // assert
         Assert.Empty(context.Filters);
+    }
+
+    [Fact]
+    public void FilterExpression_DefaultsToTruePredicate()
+    {
+        // arrange
+        SearchOrchestratorContext<DummyProjection> context =
+            new()
+            {
+                SearchTerm = "academy",
+                PageSize = 10,
+                Offset = 0
+            };
+
+        // act
+        Func<DummyProjection, bool> compiled = context.FilterExpression.Compile();
+
+        // assert
+        Assert.True(compiled(new DummyProjection { EstablishmentTypeId = 123 }));
     }
 
     [Fact]
@@ -73,25 +96,26 @@ public sealed class SearchOrchestratorContextUnitTests
         // arrange
         IReadOnlyList<SearchFilterRequest> filters =
         [
-            new SearchFilterRequest("CODE", ["A"])
+            new SearchFilterRequest("CODE", new object[] { "A" })
         ];
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "academy",
-            PageSize = 10,
-            Offset = 0,
-            Filters = filters
-        };
+        SearchOrchestratorContext<DummyProjection> context =
+            new()
+            {
+                SearchTerm = "academy",
+                PageSize = 10,
+                Offset = 0,
+                Filters = filters
+            };
 
+        // act
         IReadOnlyList<SearchFilterRequest> returned = context.Filters;
 
-        // act/assert
+        // assert
         Assert.Throws<InvalidCastException>(() =>
         {
-            // attempt to mutate by forcing a cast to List<T>
             ((List<SearchFilterRequest>)returned).Add(
-                new SearchFilterRequest("X", ["Y"]));
+                new SearchFilterRequest("X", new object[] { "Y" }));
         });
     }
 
@@ -99,17 +123,19 @@ public sealed class SearchOrchestratorContextUnitTests
     public void Record_Immutability_ProducesNewInstanceOnWithExpression()
     {
         // arrange
-        SearchOrchestratorContext original = new()
-        {
-            SearchTerm = "academy",
-            SearchColumn = "ProviderName",
-            PageSize = 25,
-            Offset = 0,
-            Filters = []
-        };
+        SearchOrchestratorContext<DummyProjection> original =
+            new()
+            {
+                SearchTerm = "academy",
+                SearchColumn = "ProviderName",
+                PageSize = 25,
+                Offset = 0,
+                Filters = []
+            };
 
         // act
-        SearchOrchestratorContext updated = original with { PageSize = 50 };
+        SearchOrchestratorContext<DummyProjection> updated =
+            original with { PageSize = 50 };
 
         // assert
         Assert.Equal(25, original.PageSize);

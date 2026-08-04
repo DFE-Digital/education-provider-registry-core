@@ -7,25 +7,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class FilterKeyToFilterExpressionMapOptionsUnitTests
 {
     [Fact]
-    public void FilterChainingLogicalOperator_WhenNull_FailsValidation()
-    {
-        // arrange
-        FilterKeyToFilterExpressionMapOptions options =
-            FilterKeyToFilterExpressionMapOptionsStub.MissingChainingOperator();
-
-        ValidationContext context = new(options);
-        List<ValidationResult> results = [];
-
-        // act
-        bool isValid = Validator.TryValidateObject(options, context, results, validateAllProperties: true);
-
-        // assert
-        Assert.False(isValid);
-        Assert.Contains(results, validationResult =>
-            validationResult.MemberNames.Contains(nameof(options.FilterChainingLogicalOperator)));
-    }
-
-    [Fact]
     public void SearchFilterToExpressionMap_WhenEmpty_FailsValidation()
     {
         // arrange

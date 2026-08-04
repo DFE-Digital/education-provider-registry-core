@@ -43,7 +43,7 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchKeywords(scenario.searchTerm)
+                .WithWhatTerm(scenario.searchTerm)
                 .Build();
 
         // act
@@ -76,7 +76,7 @@ public sealed class SearchEstablishmentByNameReturnsResults : UseCaseIntegration
     // single-word term
         new SearchScenario(
             "test",
-            SearchByNameTerms.Create("test", 50)),
+            SearchByNameTerms.Create("test", 20)),
 
         // Case insensitive single-word term
         new SearchScenario(

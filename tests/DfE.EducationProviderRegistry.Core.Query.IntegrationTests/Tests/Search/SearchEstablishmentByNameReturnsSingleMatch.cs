@@ -43,7 +43,7 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchKeywords(searchTerm)
+                .WithWhatTerm(searchTerm)
                 .Build();
 
         // act

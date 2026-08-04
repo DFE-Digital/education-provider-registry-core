@@ -9,8 +9,10 @@ internal sealed class FacetQueryDispatchStep : IEvaluationHandler<SearchPipeline
 {
     private readonly IFacetProvider _facetProvider;
 
-    public FacetQueryDispatchStep(
-        IFacetProvider facetProvider)
+    /// <summary>
+    /// Creates a new instance of the dispatch step.
+    /// </summary>
+    public FacetQueryDispatchStep(IFacetProvider facetProvider)
     {
         _facetProvider = facetProvider;
     }
