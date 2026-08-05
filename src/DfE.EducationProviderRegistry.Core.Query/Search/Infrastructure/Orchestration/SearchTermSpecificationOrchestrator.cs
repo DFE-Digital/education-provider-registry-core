@@ -3,18 +3,18 @@ using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration;
 
-public sealed class SearchTermSpecificationOrchestrator : ISearchTermSpecificationOrchestrator
+public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSpecificationOrchestrator<TEntity> where TEntity : class
 {
-    private readonly ISearchSpecificationOrchestrator _specificationOrchestrator;
+    private readonly ISearchSpecificationOrchestrator<TEntity> _specificationOrchestrator;
 
-    public SearchTermSpecificationOrchestrator(ISearchSpecificationOrchestrator specificationOrchestrator)
+    public SearchTermSpecificationOrchestrator(ISearchSpecificationOrchestrator<TEntity> specificationOrchestrator)
     {
         _specificationOrchestrator = specificationOrchestrator;
     }
 
-    public IQueryable<TEntity> ApplySearch<TEntity>(
+    public IQueryable<TEntity> ApplySearch(
         IQueryable<TEntity> query,
-        IEnumerable<SearchTerm?>? searchTerms) where TEntity : class
+        IEnumerable<SearchTerm?>? searchTerms)
     {
         List<SearchTerm> validTerms =
             searchTerms?
@@ -36,7 +36,7 @@ public sealed class SearchTermSpecificationOrchestrator : ISearchTermSpecificati
         foreach (SearchTerm term in validTerms)
         {
             ISpecification<TEntity> spec =
-                _specificationOrchestrator.Orchestrate<TEntity>(term.Key, term.Value);
+                _specificationOrchestrator.Orchestrate(term.Key, term.Value);
 
             combined = combined is null
                 ? spec

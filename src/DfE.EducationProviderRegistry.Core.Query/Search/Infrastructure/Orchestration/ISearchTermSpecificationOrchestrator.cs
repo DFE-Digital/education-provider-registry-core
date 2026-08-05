@@ -2,9 +2,9 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration;
 
-public interface ISearchTermSpecificationOrchestrator
+public interface ISearchTermSpecificationOrchestrator<TEntity> where TEntity : class
 {
-    IQueryable<TEntity> ApplySearch<TEntity>(
+    IQueryable<TEntity> ApplySearch(
         IQueryable<TEntity> query,
-        IEnumerable<SearchTerm?>? searchTerms) where TEntity : class;
+        IEnumerable<SearchTerm?>? searchTerms);
 }
