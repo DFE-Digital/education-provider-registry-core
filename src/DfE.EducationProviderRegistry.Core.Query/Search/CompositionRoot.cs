@@ -1,7 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Reflection;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
@@ -10,6 +13,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Behaviours;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
@@ -18,6 +22,8 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.L
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration.SpecificationChaining;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
@@ -274,5 +280,32 @@ public static class CompositionRoot
             .Bind(configuration.GetSection(nameof(FilterKeyToFilterExpressionMapOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+
+        // ---------------------------------------------------------
+        // Search specification orchestration
+        // ---------------------------------------------------------
+        services.AddSingleton(typeof(SearchBehaviourRegistry<>));
+
+        services.AddSingleton(
+            new Dictionary<string, Func<
+                ISpecification<Establishment>,
+                ISpecification<Establishment>,
+                ISpecification<Establishment>>>
+            {
+                ["AND"] = (left, right) => left.And(right),
+                ["OR"] = (left, right) => left.Or(right)
+            });
+
+        services.AddSingleton<ChainingPredicateRegistry<Establishment>>();
+
+        services.AddScoped(typeof(ISearchIndexFieldSpecificationOrchestrator<>),
+            typeof(SearchIndexFieldSpecificationOrchestrator<>));
+
+        services.AddScoped(typeof(ISearchIndexFieldSpecificationOrchestrator<>),
+            typeof(SearchIndexFieldSpecificationOrchestrator<>));
+
+        services.AddScoped(typeof(ISearchSpecificationOrchestrator<>),
+            typeof(SearchSpecificationOrchestrator<>));
     }
 }

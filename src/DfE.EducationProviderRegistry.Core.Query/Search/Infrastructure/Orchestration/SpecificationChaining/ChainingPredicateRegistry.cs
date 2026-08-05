@@ -10,9 +10,7 @@ public sealed class ChainingPredicateRegistry<TEntity>
 
     public ChainingPredicateRegistry()
     {
-        _map = new Dictionary<
-            string, Func<ISpecification<TEntity>, ISpecification<TEntity>, ISpecification<TEntity>>>(
-                StringComparer.OrdinalIgnoreCase);
+        _map = new(StringComparer.OrdinalIgnoreCase);
     }
 
     public void Register(
@@ -24,14 +22,11 @@ public sealed class ChainingPredicateRegistry<TEntity>
 
     public Func<ISpecification<TEntity>, ISpecification<TEntity>, ISpecification<TEntity>> Resolve(string? name)
     {
-        if (name is null){
+        if (name is null)
             throw new InvalidOperationException("No chaining predicate was provided.");
-        }
 
-        if (!_map.TryGetValue(name,
-            out Func<ISpecification<TEntity>, ISpecification<TEntity>, ISpecification<TEntity>>? combiner)){
-                throw new InvalidOperationException($"Unknown chaining predicate '{name}'.");
-        }
+        if (!_map.TryGetValue(name, out Func<ISpecification<TEntity>, ISpecification<TEntity>, ISpecification<TEntity>>? combiner))
+            throw new InvalidOperationException($"Unknown chaining predicate '{name}'.");
 
         return combiner;
     }
