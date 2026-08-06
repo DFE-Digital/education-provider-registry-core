@@ -31,8 +31,7 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
                 $"Behaviour collection cannot be null for field '{fieldName}'.");
         }
 
-        List<(string BehaviourName, string? BehaviourPredicate)> behaviourList =
-            behaviours.ToList();
+        List<(string BehaviourName, string? BehaviourPredicate)> behaviourList = [.. behaviours];
 
         if (behaviourList.Count == 0)
         {

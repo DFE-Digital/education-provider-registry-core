@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq.Expressions;
-using System.Reflection;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.Core.Libraries.DesignPatterns.Specification;
@@ -28,6 +27,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
@@ -171,17 +171,15 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Mappers
         // ---------------------------------------------------------
-        /// <summary>
-        /// Registers mappers used to convert domain entities and pipeline
-        /// contexts into search result DTOs.
-        /// </summary>
         services.TryAddSingleton<
             IMapper<Establishment, EstablishmentSearchResult>,
             EstablishmentToSearchResultMapper>();
 
         services.TryAddSingleton<
-            IMapper<SearchPipelineContext, SearchResults<EstablishmentSearchResults, SearchFacets>>,
-            SearchResultsFromContextMapper>();
+            IMapper<
+                (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+                SearchResults<EstablishmentSearchResults, SearchFacets>>,
+            SearchResultsFromQueryResultsMapper>();
 
         return services;
     }
@@ -256,6 +254,8 @@ public static class CompositionRoot
                 }
             );
 
+        services.AddScoped<IFacetAggregator, FacetAggregationStep>();
+
         // ---------------------------------------------------------
         // Logical operator factory
         // ---------------------------------------------------------
@@ -281,13 +281,29 @@ public static class CompositionRoot
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        // ---------------------------------------------------------
+        // Supporting mappers
+        // ---------------------------------------------------------
+        services.TryAddSingleton<
+            IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>,
+            SearchRequestFiltersToCoreFiltersMapper>();
+
+        services.TryAddSingleton<
+            IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            SearchResults<EstablishmentSearchResults, SearchFacets>>,
+            SearchResultsFromQueryResultsMapper>();
+
+        // ---------------------------------------------------------
+        // Search behaviours
+        // ---------------------------------------------------------
+        services.AddSingleton(typeof(ISearchBehaviour<>), typeof(ExactSearchBehaviour<>));
+        services.AddSingleton(typeof(ISearchBehaviour<>), typeof(PartialSearchBehaviour<>));
+        services.AddSingleton(typeof(ISearchBehaviour<>), typeof(FuzzySearchBehaviour<>));
+        services.AddSingleton(typeof(SearchBehaviourRegistry<>));
 
         // ---------------------------------------------------------
         // Search specification orchestration
         // ---------------------------------------------------------
-        services.AddSingleton(typeof(SearchBehaviourRegistry<>));
-
-        // Predicate map (closed generic)
         services.AddSingleton(
             new Dictionary<string, Func<
                 ISpecification<Establishment>,
@@ -305,5 +321,8 @@ public static class CompositionRoot
 
         services.AddScoped<ISearchTermSpecificationOrchestrator<Establishment>,
             SearchTermSpecificationOrchestrator<Establishment>>();
+
+        services.AddScoped(typeof(ISearchQueryProcessor<>), typeof(SearchQueryProcessor<>));
+
     }
 }

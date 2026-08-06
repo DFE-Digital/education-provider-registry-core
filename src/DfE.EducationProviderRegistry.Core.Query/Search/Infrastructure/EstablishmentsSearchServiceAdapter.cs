@@ -29,7 +29,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
 
     public EstablishmentsSearchServiceAdapter(
         EducationProviderRegistryDbContext dbContext,
-         ISearchQueryProcessor<Establishment> searchSpecOrchestrator,
+        ISearchQueryProcessor<Establishment> searchSpecOrchestrator,
         ISearchFilterExpressionsBuilder filterExprBuilder,
         IFacetAggregator facetAggregator,
         IMapper<
@@ -61,20 +61,30 @@ internal sealed class EstablishmentsSearchServiceAdapter
         IQueryable<Establishment> searchResult =
             _searchSpecOrchestrator.ProcessSearch(baseQuery, request.SearchTerms);
 
-        List<EstablishmentReadModel> items = await searchResult
-            .OrderBy(e => e.Name)
-            .Skip(request.Offset)
-            .Take(request.PageSize)
-            .Select(e => new EstablishmentReadModel(
-                int.Parse(e.EstablishmentId.ToString()),
-                e.Urn,
-                e.Uid,
-                e.Name,
-                e.Site.Select(s => s.Postcode).FirstOrDefault(),
-                e.Site.Select(s => s.County).FirstOrDefault(),
-                e.EstablishmentType.Name ?? string.Empty,
-                e.EstablishmentStatus.Name ?? string.Empty))
-            .ToListAsync(cancellationToken);
+        List<EstablishmentReadModel> items = null!;
+
+        try
+        {
+
+            items = await searchResult
+                .OrderBy(e => e.Name)
+                .Skip(request.Offset)
+                .Take(request.PageSize)
+                .Select(e => new EstablishmentReadModel(
+                    int.Parse(e.EstablishmentId.ToString()),
+                    e.Urn,
+                    e.Uid,
+                    e.Name,
+                    e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                    e.Site.Select(s => s.County).FirstOrDefault(),
+                    e.EstablishmentType.Name ?? string.Empty,
+                    e.EstablishmentStatus.Name ?? string.Empty))
+                .ToListAsync(cancellationToken);
+        }
+        catch(Exception ex)
+        {
+            string response = ex.Message;
+        }
 
         IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
 

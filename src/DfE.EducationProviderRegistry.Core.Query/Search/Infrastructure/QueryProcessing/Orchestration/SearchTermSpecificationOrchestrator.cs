@@ -2,6 +2,7 @@
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
+using Microsoft.Extensions.Options;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 
@@ -15,26 +16,25 @@ public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSp
 {
     private readonly ISearchIndexFieldSpecificationOrchestrator<TEntity> _indexFieldOrchestrator;
     private readonly ChainingPredicateRegistry<TEntity> _predicateRegistry;
-    private readonly SearchConfiguration _config;
+    private readonly SearchConfiguration _searchConfiguration;
 
     public SearchTermSpecificationOrchestrator(
         ISearchIndexFieldSpecificationOrchestrator<TEntity> indexFieldOrchestrator,
         ChainingPredicateRegistry<TEntity> predicateRegistry,
-        SearchConfiguration config)
+        IOptions<SearchConfiguration> searchConfiguration)
     {
         _indexFieldOrchestrator = indexFieldOrchestrator;
         _predicateRegistry = predicateRegistry;
-        _config = config;
+        _searchConfiguration = searchConfiguration.Value;
     }
 
    
     public ISpecification<TEntity> Orchestrate(string key, string value)
     {
         SearchIndexKeyConfiguration keyConfig =
-            _config.Keys.First(searchIndexKeyConfiguration =>
-                string.Equals(
-                    searchIndexKeyConfiguration.SearchTermKey,
-                    key, StringComparison.OrdinalIgnoreCase));
+            _searchConfiguration.Keys.FirstOrDefault(searchConfigurationKey =>
+                string.Equals(searchConfigurationKey.SearchTermKey, key, StringComparison.OrdinalIgnoreCase)) ??
+                throw new KeyNotFoundException( $"Search key '{key}' is not configured in SearchConfiguration.");
 
         ISpecification<TEntity>? combined = null;
 

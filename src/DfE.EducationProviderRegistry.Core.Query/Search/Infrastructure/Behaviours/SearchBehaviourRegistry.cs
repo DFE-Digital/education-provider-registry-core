@@ -6,6 +6,13 @@ public sealed class SearchBehaviourRegistry<TEntity>
 
     public SearchBehaviourRegistry(IEnumerable<ISearchBehaviour<TEntity>> behaviours)
     {
+        foreach (var b in behaviours)
+        {
+            Console.WriteLine(
+                $"[Behaviour DI] {b.GetType().FullName}  Name={b.Name}");
+        }
+
+
         _behaviours =
             behaviours.ToDictionary(
                 behaviour => behaviour.Name,
