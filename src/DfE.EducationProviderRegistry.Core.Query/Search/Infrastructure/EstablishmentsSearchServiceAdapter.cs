@@ -5,50 +5,46 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establi
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
 internal sealed class EstablishmentsSearchServiceAdapter
     : ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>
 {
-    private readonly ISearchProvider<Establishment> _idProvider;
-
-    private readonly IEvaluator<SearchPipelineContext> _searchPipelineEvaluator;
-
+    private readonly EducationProviderRegistryDbContext _dbContext;
+    private readonly ISearchQueryProcessor<Establishment> _searchSpecOrchestrator;
+    private readonly ISearchFilterExpressionsBuilder _filterExprBuilder;
+    private readonly IFacetAggregator _facetAggregator;
     private readonly IMapper<
-        SearchPipelineContext, SearchResults<
-        EstablishmentSearchResults, SearchFacets>> _searchResultsFromContextMapper;
-
+        (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+        SearchResults<EstablishmentSearchResults, SearchFacets>> _resultsMapper;
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
-        ReadOnlyCollection<SearchFilterRequest>> _searchRequestFiltersToCoreFiltersMapper;
+        ReadOnlyCollection<SearchFilterRequest>> _filterMapper;
 
     public EstablishmentsSearchServiceAdapter(
-        ISearchProvider<Establishment> idProvider,
-        IFacetProvider facetProvider,
-        IEvaluator<SearchPipelineContext> evaluator,
+        EducationProviderRegistryDbContext dbContext,
+         ISearchQueryProcessor<Establishment> searchSpecOrchestrator,
+        ISearchFilterExpressionsBuilder filterExprBuilder,
+        IFacetAggregator facetAggregator,
         IMapper<
-            SearchPipelineContext,
-            SearchResults<EstablishmentSearchResults, SearchFacets>> searchResultsFromContextMapper,
+            (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            SearchResults<EstablishmentSearchResults, SearchFacets>> resultsMapper,
         IMapper<
             ReadOnlyCollection<FilterRequest>,
-            ReadOnlyCollection<SearchFilterRequest>> searchRequestFiltersToCoreFiltersMapper)
+            ReadOnlyCollection<SearchFilterRequest>> filterMapper)
     {
-        _idProvider = idProvider ??
-            throw new ArgumentNullException(nameof(idProvider));
-        _searchResultsFromContextMapper = searchResultsFromContextMapper ??
-            throw new ArgumentNullException(nameof(searchResultsFromContextMapper));
-        _searchRequestFiltersToCoreFiltersMapper = searchRequestFiltersToCoreFiltersMapper ??
-            throw new ArgumentNullException(nameof(searchRequestFiltersToCoreFiltersMapper));
-
-        ArgumentNullException.ThrowIfNull(evaluator);
-        _searchPipelineEvaluator = evaluator;
-
-        ArgumentNullException.ThrowIfNull(facetProvider);
+        _dbContext = dbContext;
+        _searchSpecOrchestrator = searchSpecOrchestrator;
+        _filterExprBuilder = filterExprBuilder;
+        _facetAggregator = facetAggregator;
+        _resultsMapper = resultsMapper;
+        _filterMapper = filterMapper;
     }
 
     public async Task<SearchResults<EstablishmentSearchResults, SearchFacets>> SearchAsync(
@@ -57,31 +53,96 @@ internal sealed class EstablishmentsSearchServiceAdapter
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        IReadOnlyList<Establishment> establishments =
-            await _idProvider.GetMatchingIdsAsync(
-                searchTerm: request.SearchKeyword,
-                pageSize: 50,
-                offset: request.Offset,
-                filters: _searchRequestFiltersToCoreFiltersMapper
-                    .Map(request.SearchFilterRequests.AsReadOnly()),
+        IQueryable<Establishment> baseQuery = _dbContext.Establishment.AsNoTracking();
+
+        ReadOnlyCollection<SearchFilterRequest> filterRequests =
+            _filterMapper.Map(request.SearchFilterRequests.AsReadOnly());
+
+        IQueryable<Establishment> searchResult =
+            _searchSpecOrchestrator.ProcessSearch(baseQuery, request.SearchTerms);
+
+        List<EstablishmentReadModel> items = await searchResult
+            .OrderBy(e => e.Name)
+            .Skip(request.Offset)
+            .Take(request.PageSize)
+            .Select(e => new EstablishmentReadModel(
+                int.Parse(e.EstablishmentId.ToString()),
+                e.Urn,
+                e.Uid,
+                e.Name,
+                e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                e.Site.Select(s => s.County).FirstOrDefault(),
+                e.EstablishmentType.Name ?? string.Empty,
+                e.EstablishmentStatus.Name ?? string.Empty))
+            .ToListAsync(cancellationToken);
+
+        IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
+
+        IReadOnlyList<AggregatedFacetResult> facets =
+            await _facetAggregator.CalculateFacetsAsync(
+                urns,
+                request.Facets,
                 cancellationToken);
 
-        ReadOnlyCollection<string?> availableEstablishmentIids =
-            establishments.Select(establishment =>
-                establishment.Urn).ToList().AsReadOnly();
-
-        if (availableEstablishmentIids.Count == 0)
-        {
-            return new SearchResults<EstablishmentSearchResults, SearchFacets>();
-        }
-
-        SearchPipelineContext context = new();
-        context.Set(availableEstablishmentIids);
-        context.Set(establishments);
-        context.Set(new List<string> { "EstablishmentTypeId" });
-
-        await _searchPipelineEvaluator.EvaluateAsync(context, cancellationToken);
-
-        return _searchResultsFromContextMapper.Map(context);
+        return _resultsMapper.Map((items, facets));
     }
 }
+
+//
+//  This is an Infra concern and could become part of it's own reusable piece
+//  BUT not a concern of the query engine (it's job is to surface a configured
+//  Query AST and provide options for translation into usable SQL.
+//
+public interface IFacetAggregator
+{
+    Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
+        IReadOnlyList<string> urns,
+        IEnumerable<string>? requestedFacets,
+        CancellationToken cancellationToken);
+}
+
+public class FacetAggregationStep : IFacetAggregator
+{
+    private readonly IFacetProvider _facetProvider;
+
+    public FacetAggregationStep(IFacetProvider facetProvider)
+    {
+        _facetProvider = facetProvider;
+    }
+
+    public async Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
+        IReadOnlyList<string> urns,
+        IEnumerable<string>? requestedFacets,
+        CancellationToken cancellationToken)
+    {
+        if (requestedFacets == null || !requestedFacets.Any())
+        {
+            return Array.Empty<AggregatedFacetResult>();
+        }
+
+        List<AggregatedFacetResult> aggregatedFacetResults = [];
+
+        foreach (string facetKey in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            IReadOnlyList<FacetResult> facetResults =
+                await _facetProvider.GetFacetsAsync(urns, facetKey, cancellationToken);
+
+            aggregatedFacetResults.Add(new AggregatedFacetResult(facetKey, facetResults));
+        }
+
+        return aggregatedFacetResults.AsReadOnly();
+    }
+}
+
+public record AggregatedFacetResult(string FacetName, IReadOnlyCollection<FacetResult> Values);
+
+public record EstablishmentReadModel(
+    int Id,
+    string Urn,
+    string Ukprn,
+    string Name,
+    string? Postcode,
+    string? City,
+    string Type,
+    string Status
+);

@@ -1,18 +1,20 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 
-public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSpecificationOrchestrator<TEntity> where TEntity : class
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
+
+public sealed class SearchQueryProcessor<TEntity> : ISearchQueryProcessor<TEntity> where TEntity : class
 {
-    private readonly ISearchSpecificationOrchestrator<TEntity> _specificationOrchestrator;
+    private readonly ISearchTermSpecificationOrchestrator<TEntity> _specificationOrchestrator;
 
-    public SearchTermSpecificationOrchestrator(ISearchSpecificationOrchestrator<TEntity> specificationOrchestrator)
+    public SearchQueryProcessor(ISearchTermSpecificationOrchestrator<TEntity> specificationOrchestrator)
     {
         _specificationOrchestrator = specificationOrchestrator;
     }
 
-    public IQueryable<TEntity> ApplySearch(
+    public IQueryable<TEntity> ProcessSearch(
         IQueryable<TEntity> query,
         IEnumerable<SearchTerm?>? searchTerms)
     {

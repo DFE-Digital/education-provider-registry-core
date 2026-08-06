@@ -22,14 +22,14 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.L
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.LogicalOperators.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Orchestration.SpecificationChaining;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -287,6 +287,7 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         services.AddSingleton(typeof(SearchBehaviourRegistry<>));
 
+        // Predicate map (closed generic)
         services.AddSingleton(
             new Dictionary<string, Func<
                 ISpecification<Establishment>,
@@ -299,13 +300,10 @@ public static class CompositionRoot
 
         services.AddSingleton<ChainingPredicateRegistry<Establishment>>();
 
-        services.AddScoped(typeof(ISearchIndexFieldSpecificationOrchestrator<>),
-            typeof(SearchIndexFieldSpecificationOrchestrator<>));
+        services.AddScoped<ISearchIndexFieldSpecificationOrchestrator<Establishment>,
+            SearchIndexFieldSpecificationOrchestrator<Establishment>>();
 
-        services.AddScoped(typeof(ISearchIndexFieldSpecificationOrchestrator<>),
-            typeof(SearchIndexFieldSpecificationOrchestrator<>));
-
-        services.AddScoped(typeof(ISearchSpecificationOrchestrator<>),
-            typeof(SearchSpecificationOrchestrator<>));
+        services.AddScoped<ISearchTermSpecificationOrchestrator<Establishment>,
+            SearchTermSpecificationOrchestrator<Establishment>>();
     }
 }
