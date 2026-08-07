@@ -240,13 +240,17 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Facet selectors
         // ---------------------------------------------------------
-        services.AddSingleton
-            (
-                new Dictionary<string, Expression<Func<Establishment, object>>>(StringComparer.OrdinalIgnoreCase)
-                {
-                    { "establishmenttypeid", e => e.EstablishmentTypeId }
-                }
-            );
+        services.AddSingleton(
+            new Dictionary<string, FacetDefinition<Establishment>>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+        {
+            "establishmenttypeid",
+            new FacetDefinition<Establishment>(
+                e => e.EstablishmentTypeId,
+                e => e.EstablishmentType.Name)
+        }
+            });
 
         // ---------------------------------------------------------
         // Logical operator factory

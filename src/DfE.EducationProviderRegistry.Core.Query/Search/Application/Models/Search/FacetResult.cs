@@ -15,6 +15,8 @@ public sealed class FacetResult
     /// </summary>
     public long? Count { get; }
 
+    public string Name { get; set; }
+
 
     /// <summary>
     ///  Establishes an immutable <see cref="FacetResult"/> instance via the constructor arguments specified.
@@ -25,9 +27,10 @@ public sealed class FacetResult
     /// <param name="count">
     /// The number of records that belong to this facet value.
     /// </param>
-    public FacetResult(string value, long? count)
+    public FacetResult(string value, string name, long? count)
     {
         Value = value;
+        Name = name;
         Count = count;
     }
 }

@@ -10,14 +10,14 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
 {
     private readonly IDbContextFactory<EducationProviderRegistryDbContext> _contextFactory;
 
-    private readonly Dictionary<string, Expression<Func<Establishment, object>>> _facetSelectors;
+    private readonly Dictionary<string, FacetDefinition<Establishment>> _facetDefinitions;
 
     public EstablishmentFacetProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> contextFactory,
-        Dictionary<string, Expression<Func<Establishment, object>>> facetSelectors)
+        Dictionary<string, FacetDefinition<Establishment>> facetDefinitions)
     {
         _contextFactory = contextFactory;
-        _facetSelectors = facetSelectors;
+        _facetDefinitions = facetDefinitions;
     }
 
     public async Task<IReadOnlyList<FacetResult>> GetFacetsAsync(
@@ -31,7 +31,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
 
         await using (context)
         {
-            if (!_facetSelectors.TryGetValue(facetName, out Expression<Func<Establishment, object>>? selector))
+            if (!_facetDefinitions.TryGetValue(facetName, out FacetDefinition<Establishment>? facetDefinition))
             {
                 throw new InvalidOperationException($"Unknown facet '{facetName}'.");
             }
@@ -41,12 +41,17 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
                     ids.Contains(establishment.Urn));
 
             IQueryable<IGrouping<object, Establishment>> grouped =
-                filtered.GroupBy(selector);
+                filtered.GroupBy(facetDefinition.Selector);
 
             IQueryable<dynamic> sqlProjection =
                 grouped.Select(groupedFacet => new
                 {
                     groupedFacet.Key,
+
+                    Name = facetDefinition.AdditionalValueSelector != null
+                        ? groupedFacet.AsQueryable().Select(facetDefinition.AdditionalValueSelector).FirstOrDefault()
+                        : null,
+
                     Count = groupedFacet.LongCount()
                 });
 
@@ -57,6 +62,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
                 [.. rawFacetResults
                     .Select(facetResult => new FacetResult(
                         facetResult.Key?.ToString() ?? string.Empty,
+                        facetResult.Name ?? string.Empty,
                         facetResult.Count
                     ))
                     .OrderByDescending(facet => facet.Count)];
