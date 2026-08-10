@@ -1,11 +1,11 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Behaviours.Specifications;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.Specifications;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Behaviours;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
 
 internal sealed class FuzzySearchBehaviour<TEntity> : ISearchBehaviour<TEntity>
 {
-    private const double DefaultSimilarityThreshold = 0.4;
+    private const double DefaultSimilarityThreshold = 0.8;
 
     public string Name => "fuzzy";
 

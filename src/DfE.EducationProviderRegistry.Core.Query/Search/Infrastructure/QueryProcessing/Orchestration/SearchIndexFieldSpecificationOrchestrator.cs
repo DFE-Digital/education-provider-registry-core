@@ -1,5 +1,5 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Behaviours;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
@@ -45,19 +45,11 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
         {
             (string behaviourName, string? behaviourPredicate) = behaviourList[i];
 
-            if (string.IsNullOrWhiteSpace(behaviourName))
-            {
-                throw new InvalidOperationException(
-                    $"Behaviour name cannot be null or empty for field '{fieldName}'.");
-            }
-
             ISearchBehaviour<TEntity> behaviour =
                 _behaviourRegistry.Get(behaviourName);
 
             ISpecification<TEntity> spec =
                 behaviour.Build(fieldName, value);
-
-            bool isLast = i == behaviourList.Count - 1;
 
             if (combined is null)
             {
@@ -65,22 +57,33 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
                 continue;
             }
 
-            if (!isLast)
-            {
-                string predicateToUse =
-                    behaviourPredicate ?? fieldPredicate;
+            string? predicateToUse =
+                behaviourPredicate ?? fieldPredicate;
 
-                Func<
-                    ISpecification<TEntity>,
-                    ISpecification<TEntity>,
-                    ISpecification<TEntity>> combiner =
-                        _predicateRegistry.Resolve(predicateToUse);
-
-                combined = combiner(combined, spec);
-                continue;
-            }
+            combined = Combine(
+                combined,
+                spec,
+                predicateToUse);
         }
 
         return combined!;
+    }
+
+    private ISpecification<TEntity> Combine(
+        ISpecification<TEntity> left,
+        ISpecification<TEntity> right,
+        string? predicateName)
+    {
+        if (string.IsNullOrWhiteSpace(predicateName))
+        {
+            return right;
+        }
+
+        Func<ISpecification<TEntity>,
+            ISpecification<TEntity>,
+            ISpecification<TEntity>> combiner =
+                _predicateRegistry.Resolve(predicateName);
+
+        return combiner(left, right);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Configuration;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 
 public sealed class SearchIndexKeyConfiguration
 {

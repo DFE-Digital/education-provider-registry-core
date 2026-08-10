@@ -1,6 +1,6 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Behaviours;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
 
 public interface ISearchBehaviour<TEntity>
 {

@@ -63,28 +63,20 @@ internal sealed class EstablishmentsSearchServiceAdapter
 
         List<EstablishmentReadModel> items = null!;
 
-        try
-        {
-
-            items = await searchResult
-                .OrderBy(e => e.Name)
-                .Skip(request.Offset)
-                .Take(request.PageSize)
-                .Select(e => new EstablishmentReadModel(
-                    int.Parse(e.EstablishmentId.ToString()),
-                    e.Urn,
-                    e.Uid,
-                    e.Name,
-                    e.Site.Select(s => s.Postcode).FirstOrDefault(),
-                    e.Site.Select(s => s.County).FirstOrDefault(),
-                    e.EstablishmentType.Name ?? string.Empty,
-                    e.EstablishmentStatus.Name ?? string.Empty))
-                .ToListAsync(cancellationToken);
-        }
-        catch(Exception ex)
-        {
-            string response = ex.Message;
-        }
+        items = await searchResult
+            .OrderBy(e => e.Name)
+            .Skip(request.Offset)
+            .Take(request.PageSize)
+            .Select(e => new EstablishmentReadModel(
+                int.Parse(e.EstablishmentId.ToString()),
+                e.Urn,
+                e.Uid,
+                e.Name,
+                e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                e.Site.Select(s => s.County).FirstOrDefault(),
+                e.EstablishmentType.Name ?? string.Empty,
+                e.EstablishmentStatus.Name ?? string.Empty))
+            .ToListAsync(cancellationToken);
 
         IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
 
@@ -98,11 +90,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
     }
 }
 
-//
-//  This is an Infra concern and could become part of it's own reusable piece
-//  BUT not a concern of the query engine (it's job is to surface a configured
-//  Query AST and provide options for translation into usable SQL.
-//
 public interface IFacetAggregator
 {
     Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
