@@ -17,10 +17,10 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         Address? address = site is null
             ? null
             : new Address(
-                Street: site.AddressLine1,
-                Town: site.Town,
-                County: site.County,
-                Postcode: site.Postcode);
+                Street: site.AddressLine1 ?? string.Empty,
+                Town: site.Town ?? string.Empty,
+                County: site.County ?? string.Empty,
+                Postcode: site.Postcode ?? string.Empty);
 
         EstablishmentGroupMembership? membership =
             input.EstablishmentGroupMembership.FirstOrDefault();
@@ -28,8 +28,8 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         GroupDetail? group = membership is null
             ? null
             : new GroupDetail(
-                partOfName: membership.Group?.Name,
-                partOfCode: membership.Group?.Code);
+                partOfName: membership.Group?.Name ?? string.Empty,
+                partOfCode: membership.Group?.Code ?? string.Empty);
 
         EstablishmentAuthority? authority =
             input.EstablishmentAuthority.FirstOrDefault();
@@ -37,15 +37,15 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         LocalAuthority? localAuthority = authority is null
             ? null
             : new LocalAuthority(
-                localAuthorityName: authority.AuthorityName,
-                localAuthorityCode: authority.AuthorityCode);
+                localAuthorityName: authority.AuthorityName ?? string.Empty,
+                localAuthorityCode: authority.AuthorityCode ?? string.Empty);
 
         EstablishmentType? type = input.EstablishmentType is null
             ? null
             : new EstablishmentType(input.EstablishmentType.Name);
 
         return new EstablishmentSearchResult(
-            new UniqueReferenceNumber(input.Urn),
+            new UniqueReferenceNumber(input.Urn ?? string.Empty),
             new Name(input.Name),
             address,
             type,
