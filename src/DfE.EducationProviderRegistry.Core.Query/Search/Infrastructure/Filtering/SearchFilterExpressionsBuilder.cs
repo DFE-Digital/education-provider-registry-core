@@ -82,8 +82,13 @@ internal sealed class SearchFilterExpressionsBuilder : ISearchFilterExpressionsB
                 _filterKeyToFilterExpressionMapOptions
                     .SearchFilterToExpressionMap.ContainsKey(searchFilterRequest.FilterKey)))
         {
-            FilterExpressionOptions filterExpressionOptions =
-                _filterKeyToFilterExpressionMapOptions.SearchFilterToExpressionMap[searchFilterRequest.FilterKey];
+
+            if (!_filterKeyToFilterExpressionMapOptions.SearchFilterToExpressionMap
+                    .TryGetValue(searchFilterRequest.FilterKey, out FilterExpressionOptions? filterExpressionOptions))
+            {
+                throw new InvalidOperationException(
+                    $"No filter expression configuration exists for '{searchFilterRequest.FilterKey}'.");
+            }
 
             if (filterExpressionOptions.HasValuesDelimiter)
             {
@@ -93,7 +98,7 @@ internal sealed class SearchFilterExpressionsBuilder : ISearchFilterExpressionsB
             ISearchFilterExpression searchFilterExpression =
                 _searchFilterExpressionFactory.CreateFilter(filterExpressionOptions.FilterExpressionKey);
 
-            searchFilters.Add(searchFilterExpression.GetFilterExpression(searchFilterRequest));
+            searchFilters.Add(searchFilterExpression.GetFilterExpression(searchFilterRequest, filterExpressionOptions.FilterExpressionTarget));
         }
 
         return searchFilters.AsReadOnly();

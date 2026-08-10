@@ -5,8 +5,6 @@
 /// </summary>
 public class FilterRequest
 {
-    private readonly IList<object> _filterValues;
-
     /// <summary>
     /// The name or key of the filter (e.g. "Urn", "EstablishmentType").
     /// </summary>
@@ -15,7 +13,7 @@ public class FilterRequest
     /// <summary>
     /// The values to match against the filter. Read-only wrapper to prevent mutation.
     /// </summary>
-    public IList<object> FilterValues => _filterValues.AsReadOnly();
+    public IList<object> FilterValues => field.AsReadOnly();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FilterRequest"/> class.
@@ -27,7 +25,7 @@ public class FilterRequest
     {
         FilterName = filterName ??
             throw new ArgumentNullException(nameof(filterName));
-        _filterValues = filterValues ??
+        FilterValues = filterValues ??
             throw new ArgumentNullException(nameof(filterValues));
     }
 }

@@ -2,5 +2,5 @@
 
 public interface ISearchFilterExpression
 {
-    string GetFilterExpression(SearchFilterRequest searchFilterRequest);
+    string GetFilterExpression(SearchFilterRequest searchFilterRequest, string filterExpressionTarget);
 }

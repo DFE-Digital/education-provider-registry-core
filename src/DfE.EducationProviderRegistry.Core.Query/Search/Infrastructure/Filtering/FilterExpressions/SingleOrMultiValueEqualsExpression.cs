@@ -18,17 +18,18 @@ internal sealed class SingleOrMultiValueEqualsExpression : ISearchFilterExpressi
     /// Builds an equality filter expression for the provided filter request.
     /// </summary>
     /// <param name="searchFilterRequest">The filter request containing the column and values.</param>
+    /// <param name="filterExpressionTarget">The target of the filter expression, typically a column name.</param>
     /// <returns>
     /// A SQL equality expression. Returns an empty string when all values are ignored.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="searchFilterRequest"/> is null.</exception>
-    public string GetFilterExpression(SearchFilterRequest searchFilterRequest)
+    public string GetFilterExpression(SearchFilterRequest searchFilterRequest, string filterExpressionTarget)
     {
         ArgumentNullException.ThrowIfNull(searchFilterRequest);
 
         List<string> expressions =
             BuildExpressions(
-                column: searchFilterRequest.FilterKey,
+                column: filterExpressionTarget,
                 values: searchFilterRequest.FilterValues);
 
         if (expressions.Count == 0)
