@@ -6,7 +6,12 @@
 public sealed class FacetResult
 {
     /// <summary>
-    /// The value of the facet result.
+    /// The identifier/value used when applying this facet.
+    /// </summary>
+    public string Key { get; }
+
+    /// <summary>
+    /// The human-readable value displayed for this facet.
     /// </summary>
     public string Value { get; }
 
@@ -14,9 +19,6 @@ public sealed class FacetResult
     /// The number of records that belong to this facet value.
     /// </summary>
     public long? Count { get; }
-
-    public string Name { get; set; }
-
 
     /// <summary>
     ///  Establishes an immutable <see cref="FacetResult"/> instance via the constructor arguments specified.
@@ -27,10 +29,10 @@ public sealed class FacetResult
     /// <param name="count">
     /// The number of records that belong to this facet value.
     /// </param>
-    public FacetResult(string value, string name, long? count)
+    public FacetResult(string key, string value, long? count)
     {
+        Key = key;
         Value = value;
-        Name = name;
         Count = count;
     }
 }

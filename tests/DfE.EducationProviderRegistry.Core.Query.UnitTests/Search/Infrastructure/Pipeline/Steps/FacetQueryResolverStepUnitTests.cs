@@ -27,7 +27,7 @@ public sealed class FacetQueryResolverStepUnitTests
     public async Task Execute_Throws_WhenCancellationRequested()
     {
         // arrange
-        IReadOnlyList<FacetResult> results = [new("Primary", 10)];
+        IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);
@@ -82,7 +82,7 @@ public sealed class FacetQueryResolverStepUnitTests
     {
         // arrange
         IReadOnlyList<FacetResult> results =
-            [new FacetResult("Primary", 10)];
+            [new FacetResult("1", "Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);

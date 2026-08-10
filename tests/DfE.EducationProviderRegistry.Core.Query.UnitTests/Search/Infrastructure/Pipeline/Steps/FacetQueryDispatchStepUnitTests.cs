@@ -123,7 +123,7 @@ public sealed class FacetQueryDispatchStepUnitTests
     {
         // arrange
         Mock<IFacetProvider> providerMock =
-            FacetProviderTestDouble.MockFor([new FacetResult("Primary", 10)]);
+            FacetProviderTestDouble.MockFor([new FacetResult("1", "Primary", 10)]);
         FacetQueryDispatchStep step = new(providerMock.Object);
         ReadOnlyCollection<string> ids = new(["10001"]);
         List<string> facetNames = ["phase", "type"];

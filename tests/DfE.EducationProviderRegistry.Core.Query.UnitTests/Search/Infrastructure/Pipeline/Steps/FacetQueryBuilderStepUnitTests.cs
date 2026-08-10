@@ -79,7 +79,7 @@ public sealed class FacetQueryBuilderStepUnitTests
     public void Execute_Throws_WhenCancellationRequested()
     {
         // arrange
-        IReadOnlyList<FacetResult> results = [new("Primary", 10)];
+        IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);
@@ -100,7 +100,7 @@ public sealed class FacetQueryBuilderStepUnitTests
     public void Execute_SetsFacets_WhenTasksAreValid()
     {
         // arrange
-        IReadOnlyList<FacetResult> results = [new("Primary", 10)];
+        IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);

@@ -12,8 +12,8 @@ public sealed class SearchFacetTests
 
         List<FacetResult> facetResults =
         [
-            new FacetResult("North", 10),
-            new FacetResult("South", 5)
+            new FacetResult("1", "North", 10),
+            new FacetResult("2", "South", 5)
         ];
 
         // act
@@ -47,7 +47,7 @@ public sealed class SearchFacetTests
         // arrange
         List<FacetResult> results =
         [
-            new FacetResult("Unspecified", 0)
+            new FacetResult("1", "Unspecified", 0)
         ];
 
         // act

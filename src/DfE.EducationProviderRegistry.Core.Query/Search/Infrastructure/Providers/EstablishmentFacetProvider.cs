@@ -48,7 +48,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
                 {
                     groupedFacet.Key,
 
-                    Name = facetDefinition.AdditionalValueSelector != null
+                    Value = facetDefinition.AdditionalValueSelector != null
                         ? groupedFacet.AsQueryable().Select(facetDefinition.AdditionalValueSelector).FirstOrDefault()
                         : null,
 
@@ -62,7 +62,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
                 [.. rawFacetResults
                     .Select(facetResult => new FacetResult(
                         facetResult.Key?.ToString() ?? string.Empty,
-                        facetResult.Name ?? string.Empty,
+                        facetResult.Value ?? string.Empty,
                         facetResult.Count
                     ))
                     .OrderByDescending(facet => facet.Count)];

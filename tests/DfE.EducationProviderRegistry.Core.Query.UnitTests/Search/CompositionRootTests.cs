@@ -59,9 +59,9 @@ public sealed class CompositionRootTests
             ServiceProviderBuilder.BuildServiceProvider();
 
         // act
-        Dictionary<string, Expression<Func<Establishment, object>>> selectors =
+        Dictionary<string, FacetDefinition<Establishment>> selectors =
             provider.GetRequiredService<
-                Dictionary<string, Expression<Func<Establishment, object>>>>();
+                Dictionary<string, FacetDefinition<Establishment>>>();
 
         // assert
         Assert.True(selectors.ContainsKey("establishmenttypeid"));

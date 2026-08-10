@@ -63,7 +63,7 @@ public sealed class SearchResultsFromContextMapperTests
         SearchFacet facet1 =
             new(
                 "phase",
-                [new FacetResult("Primary", 1)]
+                [new FacetResult("1", "Primary", 1)]
             );
 
         List<SearchFacet> facetsList = [facet1];

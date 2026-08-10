@@ -9,13 +9,15 @@ public sealed class FacetResultTests
     {
         // arrange
         string value = "North";
+        string name = "Region";
         long? count = 42;
 
         // act
-        FacetResult result = new(value, count);
+        FacetResult result = new(name, value, count);
 
         // assert
         Assert.Equal(value, result.Value);
+        Assert.Equal(name, result.Key);
         Assert.Equal(count, result.Count);
     }
 
@@ -24,13 +26,15 @@ public sealed class FacetResultTests
     {
         // arrange
         string value = "Unspecified";
+        string name = "Unspecified";
         long? count = null;
 
         // act
-        FacetResult result = new(value, count);
+        FacetResult result = new(name, value, count);
 
         // assert
         Assert.Equal(value, result.Value);
+        Assert.Equal(name, result.Key);
         Assert.Null(result.Count);
     }
 
@@ -38,10 +42,11 @@ public sealed class FacetResultTests
     public void Constructor_WithEmptyValue_ShouldAllowEmptyString()
     {
         // act
-        FacetResult result = new(string.Empty, 0);
+        FacetResult result = new(string.Empty, string.Empty, 0);
 
         // assert
         Assert.Equal(string.Empty, result.Value);
+        Assert.Equal(string.Empty, result.Key);
         Assert.Equal(0, result.Count);
     }
 
@@ -49,10 +54,11 @@ public sealed class FacetResultTests
     public void Constructor_WithNullValue_ShouldAllowNull()
     {
         // act
-        FacetResult result = new(null!, 10);
+        FacetResult result = new(null!, null!, 10);
 
         // assert
         Assert.Null(result.Value);
+        Assert.Null(result.Key);
         Assert.Equal(10, result.Count);
     }
 }
