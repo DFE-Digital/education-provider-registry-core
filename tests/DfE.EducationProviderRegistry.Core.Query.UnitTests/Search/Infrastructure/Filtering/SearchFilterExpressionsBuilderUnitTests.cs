@@ -94,7 +94,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         exprFactoryMock.Verify(searchFilterExpressionFactory =>
             searchFilterExpressionFactory.CreateFilter("SearchIn"), Times.Once());
         exprMock.Verify(searchFilterExpression =>
-            searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>()), Times.Once());
+            searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>(), It.IsAny<string>()), Times.Once());
         opFactoryMock.Verify(logicalOperatorFactory =>
             logicalOperatorFactory.CreateLogicalOperator("AND"), Times.Once());
         opMock.Verify(logicalOperator => logicalOperator.GetOperatorExpression(), Times.Once());
@@ -140,7 +140,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         exprFactoryMock.Verify(searchFilterExpressionFactory =>
             searchFilterExpressionFactory.CreateFilter("SearchIn"), Times.Exactly(2));
         exprMock.Verify(searchFilterExpression =>
-            searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>()), Times.Exactly(2));
+            searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>(), It.IsAny<string>()), Times.Exactly(2));
 
         opFactoryMock.Verify(logicalOperatorFactory =>
             logicalOperatorFactory.CreateLogicalOperator("AND"), Times.Once());
@@ -192,7 +192,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
         exprFactoryMock.Verify(searchFilterExpressionFactory =>
             searchFilterExpressionFactory.CreateFilter("SearchIn"), Times.Once());
         exprMock.Verify(searchFilterExpression =>
-            searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>()), Times.Once());
+            searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>(), It.IsAny<string>()), Times.Once());
     }
 
     [Fact]

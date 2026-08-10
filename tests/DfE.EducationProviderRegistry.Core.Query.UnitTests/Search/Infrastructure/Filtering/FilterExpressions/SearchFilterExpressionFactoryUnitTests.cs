@@ -8,12 +8,12 @@ public sealed class SearchFilterExpressionFactoryUnitTests
 {
     private sealed class TestFilterExpressionA : ISearchFilterExpression
     {
-        public string GetFilterExpression(SearchFilterRequest searchFilterRequest) => "A";
+        public string GetFilterExpression(SearchFilterRequest searchFilterRequest, string filterExpressionTargetng) => "A";
     }
 
     private sealed class TestFilterExpressionB : ISearchFilterExpression
     {
-        public string GetFilterExpression(SearchFilterRequest searchFilterRequest) => "B";
+        public string GetFilterExpression(SearchFilterRequest searchFilterRequest, string filterExpressionTargetng) => "B";
     }
 
     private SearchFilterExpressionFactory CreateFactory()

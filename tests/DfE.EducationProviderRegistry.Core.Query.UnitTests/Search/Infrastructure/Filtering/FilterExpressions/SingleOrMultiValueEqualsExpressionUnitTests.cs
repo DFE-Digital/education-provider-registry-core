@@ -14,7 +14,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SingleOrMultiValueEqualsExpression expression = new();
 
         // act // assert
-        Assert.Throws<ArgumentNullException>(() => expression.GetFilterExpression(null!));
+        Assert.Throws<ArgumentNullException>(() => expression.GetFilterExpression(null!, "col"));
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest request = Req("col", null!, "", "   ");
 
         // act
-        string result = expression.GetFilterExpression(request);
+        string result = expression.GetFilterExpression(request, "col");
 
         // assert
         Assert.Equal(string.Empty, result);
@@ -39,7 +39,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest request = Req("col", "abc");
 
         // act
-        string result = expression.GetFilterExpression(request);
+        string result = expression.GetFilterExpression(request, "col");
 
         // assert
         Assert.Equal("col = 'abc'", result);
@@ -53,7 +53,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest request = Req("col", "a", "b", "c");
 
         // act
-        string result = expression.GetFilterExpression(request);
+        string result = expression.GetFilterExpression(request, "col");
 
         // assert
         Assert.Equal("(col = 'a' OR col = 'b' OR col = 'c')", result);
@@ -67,7 +67,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest request = Req("col", "a", null!, "", "b");
 
         // act
-        string result = expression.GetFilterExpression(request);
+        string result = expression.GetFilterExpression(request, "col");
 
         // assert
         Assert.Equal("(col = 'a' OR col = 'b')", result);
@@ -76,14 +76,14 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
     [Fact]
     public void GetFilterExpression_EscapesSingleQuotes()
     {
-        // arrange
+        // Arrange
         SingleOrMultiValueEqualsExpression expression = new();
         SearchFilterRequest request = Req("col", "O'Malley");
 
-        // act
-        string result = expression.GetFilterExpression(request);
+        // Act
+        string result = expression.GetFilterExpression(request, "col");
 
-        // assert
+        // Assert
         Assert.Equal("col = 'O''Malley'", result);
     }
 
@@ -96,8 +96,8 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest requestFalse = Req("col", false);
 
         // act
-        string resultTrue = expression.GetFilterExpression(requestTrue);
-        string resultFalse = expression.GetFilterExpression(requestFalse);
+        string resultTrue = expression.GetFilterExpression(requestTrue, "col");
+        string resultFalse = expression.GetFilterExpression(requestFalse, "col");
 
         // assert
         Assert.Equal("col = TRUE", resultTrue);
@@ -112,7 +112,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest request = Req("col", 123);
 
         // act
-        string result = expression.GetFilterExpression(request);
+        string result = expression.GetFilterExpression(request, "col");
 
         // assert
         Assert.Equal("col = 123", result);
@@ -126,7 +126,7 @@ public sealed class SingleOrMultiValueEqualsExpressionUnitTests
         SearchFilterRequest request = Req("col", 123, "", "x");
 
         // act
-        string result = expression.GetFilterExpression(request);
+        string result = expression.GetFilterExpression(request, "col");
 
         // assert
         Assert.Equal("(col = 123 OR col = 'x')", result);

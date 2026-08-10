@@ -18,7 +18,7 @@ internal static class SearchFilterExpressionFactoryTestDouble
         Mock<ISearchFilterExpression> exprMock = new(MockBehavior.Strict);
         exprMock
             .Setup(searchFilterExpression =>
-                searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>()))
+                searchFilterExpression.GetFilterExpression(It.IsAny<SearchFilterRequest>(), It.IsAny<string>()))
             .Returns(expressionValue)
             .Verifiable();
 

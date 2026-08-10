@@ -14,5 +14,5 @@ internal sealed class FilterExpressionStub : ISearchFilterExpression
         _result = result;
     }
 
-    public string GetFilterExpression(SearchFilterRequest request) => _result;
+    public string GetFilterExpression(SearchFilterRequest request, string filterExpressionTarget) => _result;
 }
