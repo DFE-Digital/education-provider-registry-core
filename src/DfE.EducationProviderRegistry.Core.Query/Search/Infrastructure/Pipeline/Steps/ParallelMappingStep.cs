@@ -1,10 +1,11 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class ParallelMappingStep : ISearchPipelineStep
+internal sealed class ParallelMappingStep : IEvaluationHandler<SearchPipelineContext>
 {
     private readonly IMapper<Establishment, EstablishmentSearchResult> _mapper;
 
@@ -14,12 +15,12 @@ internal sealed class ParallelMappingStep : ISearchPipelineStep
         _mapper = mapper;
     }
 
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         IReadOnlyList<Establishment> ordered =
-            context.Get<IReadOnlyList<Establishment>>()
-            ?? throw new InvalidOperationException(
-                "PipelineContext does not contain ordered establishments.");
+            request.Get<IReadOnlyList<Establishment>>()
+                ?? throw new InvalidOperationException(
+                    "PipelineContext does not contain ordered establishments.");
 
         EstablishmentSearchResult[] results =
             new EstablishmentSearchResult[ordered.Count];
@@ -44,6 +45,8 @@ internal sealed class ParallelMappingStep : ISearchPipelineStep
                 results[index] = mapped;
             });
 
-        context.Set(results);
+        request.Set(results);
+
+        return ValueTask.CompletedTask;
     }
 }

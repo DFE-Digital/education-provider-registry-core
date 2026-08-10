@@ -15,7 +15,7 @@ public sealed class FacetQueryBuilderStepUnitTests
     }
 
     [Fact]
-    public void Execute_Throws_WhenTaskNotCompleted()
+    public async Task Execute_Throws_WhenTaskNotCompleted()
     {
         // arrange
         Task<IReadOnlyList<FacetResult>> incompleteTask = new(() => []);
@@ -27,14 +27,17 @@ public sealed class FacetQueryBuilderStepUnitTests
 
         // act // assert
         InvalidOperationException ex =
-            Assert.Throws<InvalidOperationException>(() =>
-                step.Execute(context, CancellationToken.None));
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => step.HandleAsync(
+                        context,
+                        TestContext.Current.CancellationToken).AsTask());
+
 
         Assert.Contains("not completed", ex.Message);
     }
 
     [Fact]
-    public void Execute_Throws_WhenTaskFaulted()
+    public async Task Execute_Throws_WhenTaskFaulted()
     {
         // arrange
         Task<IReadOnlyList<FacetResult>> faultedTask =
@@ -47,8 +50,10 @@ public sealed class FacetQueryBuilderStepUnitTests
 
         // act // assert
         InvalidOperationException ex =
-            Assert.Throws<InvalidOperationException>(() =>
-                step.Execute(context, CancellationToken.None));
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    TestContext.Current.CancellationToken).AsTask());
 
         Assert.Contains("failed", ex.Message);
         Assert.IsType<InvalidOperationException>(ex.InnerException);
@@ -56,7 +61,7 @@ public sealed class FacetQueryBuilderStepUnitTests
     }
 
     [Fact]
-    public void Execute_Throws_WhenFacetResultsAreNull()
+    public async Task Execute_Throws_WhenFacetResultsAreNull()
     {
         // arrange
         Task<IReadOnlyList<FacetResult>> nullResultTask =
@@ -69,14 +74,16 @@ public sealed class FacetQueryBuilderStepUnitTests
 
         // act // assert
         InvalidOperationException ex =
-            Assert.Throws<InvalidOperationException>(() =>
-                step.Execute(context, CancellationToken.None));
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    TestContext.Current.CancellationToken).AsTask());
 
         Assert.Contains("returned null results", ex.Message);
     }
 
     [Fact]
-    public void Execute_Throws_WhenCancellationRequested()
+    public async Task Execute_Throws_WhenCancellationRequested()
     {
         // arrange
         IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
@@ -92,12 +99,12 @@ public sealed class FacetQueryBuilderStepUnitTests
         cts.Cancel();
 
         // act // assert
-        Assert.Throws<OperationCanceledException>(() =>
-            step.Execute(context, cts.Token));
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => step.HandleAsync(context, cts.Token).AsTask());
     }
 
     [Fact]
-    public void Execute_SetsFacets_WhenTasksAreValid()
+    public async Task Execute_SetsFacets_WhenTasksAreValid()
     {
         // arrange
         IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
@@ -111,7 +118,7 @@ public sealed class FacetQueryBuilderStepUnitTests
         FacetQueryBuilderStep step = new();
 
         // act
-        step.Execute(context, CancellationToken.None);
+        await step.HandleAsync(context, TestContext.Current.CancellationToken);
 
         // assert
         List<SearchFacet> facets = context.Get<List<SearchFacet>>();

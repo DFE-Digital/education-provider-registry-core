@@ -1,5 +1,6 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
+using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
@@ -7,15 +8,16 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests;
 
 public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLifetime
 {
     private readonly IDatabaseFactory _databaseFactory;
+    private readonly PostgresDatabaseOptions _dbOptions;
 
     protected IDatabase? Database { get; private set; }
-
 #nullable disable
     internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
@@ -24,6 +26,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         : base(testServicesProvider)
     {
         _databaseFactory = TestServicesProvider.GetRequiredService<IDatabaseFactory>();
+        _dbOptions = TestServicesProvider.GetRequiredService<PostgresDatabaseOptions>();
     }
 
     // Hook called by XUnit to initialise before any tests run
@@ -47,7 +50,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     {
         Database = await _databaseFactory.CreateAsync(ct);
 
-        string connectionString = Database.ConnectionString;
+        string connectionString = await GetDatabaseConnectionString(Database, _dbOptions);
 
         SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
         QueryCollector = new PostgresQueryCollector(connectionString);
@@ -56,16 +59,19 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
     }
 
-    protected override Task<IConfiguration> GetApplicationConfigurationAsync()
+    protected override async Task<IConfiguration> GetApplicationConfigurationAsync()
     {
         // TODO options from application to set DatabaseConnection
-        return Task.FromResult<IConfiguration>(
+
+        string connectionString = await GetDatabaseConnectionString(Database!, _dbOptions);
+
+        return
             ConfigurationDefault
                 .CreateBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>()
                 {
-                    ["eprweb_eprdat_dotnet_db_connection"] = Database!.ConnectionString
-                }).Build());
+                    ["eprweb_eprdat_dotnet_db_connection"] = connectionString
+                }).Build();
     }
 
     protected override async Task BeforeDisposeAsync()
@@ -87,5 +93,21 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
             .EnableSensitiveDataLogging();
         EducationProviderRegistryDbContext dbContext = new(contextOptionsBuilder.Options);
         return dbContext;
+    }
+
+    private static async Task<string> GetDatabaseConnectionString(IDatabase db, PostgresDatabaseOptions dbOptions)
+    {
+        DatabaseEndpoint endpoint = db.GetDatabaseEndpoint();
+
+        NpgsqlConnectionStringBuilder builder = new()
+        {
+            Host = endpoint.Host,
+            Port = endpoint.Port,
+            Database = dbOptions.Database,
+            Username = dbOptions.Username,
+            Password = dbOptions.Password
+        };
+
+        return builder.ToString();
     }
 }

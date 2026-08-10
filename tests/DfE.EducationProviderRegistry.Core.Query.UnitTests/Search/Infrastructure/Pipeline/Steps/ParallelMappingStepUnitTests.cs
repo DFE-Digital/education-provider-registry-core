@@ -13,26 +13,31 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class ParallelMappingStepUnitTests
 {
     [Fact]
-    public async Task Execute_Throws_WhenEstablishmentsMissing()
+    public async Task HandleAsync_Throws_WhenEstablishmentsMissing()
     {
         // arrange
         Mock<IMapper<Establishment, EstablishmentSearchResult>> mapperMock = new();
 
         ParallelMappingStep step = new(mapperMock.Object);
+
         SearchPipelineContext context =
-            SearchPipelineContextBuilder.BuildContext(establishments: null);
+            SearchPipelineContextBuilder.BuildContext(
+                establishments: null);
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, CancellationToken.None));
+        // act // assert
+        InvalidOperationException ex =
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => step.HandleAsync(
+                    context,
+                    CancellationToken.None).AsTask());
 
-        // assert
-        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-        Assert.Contains("PipelineContext does not contain a value of type", ex.Message);
+        Assert.Contains(
+            "PipelineContext does not contain a value of type",
+            ex.Message);
     }
 
     [Fact]
-    public async Task Execute_Throws_WhenCancellationRequested()
+    public async Task HandleAsync_Throws_WhenCancellationRequested()
     {
         // arrange
         Mock<IMapper<Establishment, EstablishmentSearchResult>> mapperMock =
@@ -43,13 +48,12 @@ public sealed class ParallelMappingStepUnitTests
                     new Address("Street", "Town", "County", "AA1 1AA"),
                     new EstablishmentType("Academy"),
                     new GroupDetail("Group", "G"),
-                    new LocalAuthority("LA", "Authority")
-                ));
+                    new LocalAuthority("LA", "Authority")));
 
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = "00001" }
-            ];
+        [
+            new Establishment { Urn = "00001" }
+        ];
 
         SearchPipelineContext context =
             SearchPipelineContextBuilder.BuildContext(establishments);
@@ -57,36 +61,37 @@ public sealed class ParallelMappingStepUnitTests
         ParallelMappingStep step = new(mapperMock.Object);
 
         using CancellationTokenSource cts = new();
+
         cts.Cancel();
 
-        // act
-        Func<Task> act = () => Task.Run(() =>
-            step.Execute(context, cts.Token));
-
-        // assert
-        await Assert.ThrowsAsync<OperationCanceledException>(act);
+        // act // assert
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => step.HandleAsync(
+                context,
+                cts.Token).AsTask());
     }
 
     [Fact]
-    public async Task Execute_MapsAllEstablishmentsInParallel_AndPreservesOrdering()
+    public async Task HandleAsync_MapsAllEstablishmentsInParallel_AndPreservesOrdering()
     {
         // arrange
         Mock<IMapper<Establishment, EstablishmentSearchResult>> mapperMock =
             EstablishmentToSearchResultMapperTestDouble.MockFor(
-                (Establishment e) => new EstablishmentSearchResult(
-                        new UniqueReferenceNumber(e.Urn!),
-                        new Name("Mapped " + e.Urn),
+                (Establishment establishment) =>
+                    new EstablishmentSearchResult(
+                        new UniqueReferenceNumber(establishment.Urn!),
+                        new Name($"Mapped {establishment.Urn}"),
                         new Address("Street", "Town", "County", "AA1 1AA"),
                         new EstablishmentType("Academy"),
                         new GroupDetail("Group", "G"),
                         new LocalAuthority("LA", "Authority")));
 
         List<Establishment> establishments =
-            [
-                new Establishment { Urn = "00001" },
-                new Establishment { Urn = "00002" },
-                new Establishment { Urn = "00003" }
-            ];
+        [
+            new Establishment { Urn = "00001" },
+            new Establishment { Urn = "00002" },
+            new Establishment { Urn = "00003" }
+        ];
 
         SearchPipelineContext context =
             SearchPipelineContextBuilder.BuildContext(establishments);
@@ -94,18 +99,20 @@ public sealed class ParallelMappingStepUnitTests
         ParallelMappingStep step = new(mapperMock.Object);
 
         // act
-        await Task.Run(() =>
-            step.Execute(context, CancellationToken.None),
-                TestContext.Current.CancellationToken);
+        await step.HandleAsync(
+            context,
+            TestContext.Current.CancellationToken);
 
         // assert
         EstablishmentSearchResult[] results =
             context.Get<EstablishmentSearchResult[]>();
 
         Assert.Equal(3, results.Length);
+
         Assert.Equal("00001", results[0].Urn.Value);
         Assert.Equal("00002", results[1].Urn.Value);
         Assert.Equal("00003", results[2].Urn.Value);
+
         Assert.Equal("Mapped 00001", results[0].Name.Value);
         Assert.Equal("Mapped 00002", results[1].Name.Value);
         Assert.Equal("Mapped 00003", results[2].Name.Value);

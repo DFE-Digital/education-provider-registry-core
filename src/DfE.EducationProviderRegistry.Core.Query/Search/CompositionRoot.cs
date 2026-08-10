@@ -24,6 +24,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
@@ -146,19 +147,20 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Pipeline steps
         // ---------------------------------------------------------
-        services.AddScoped<ISearchPipelineStep, SearchOrderMapStep>();
-        services.AddScoped<ISearchPipelineStep, SearchOrderingStep>();
 
-        services.AddScoped<ISearchPipelineStep>(sp =>
-            new ParallelMappingStep(
-                sp.GetRequiredService<IMapper<Establishment, EstablishmentSearchResult>>()));
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderMapStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderingStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, ParallelMappingStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryDispatchStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryResolverStep>();
+        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryBuilderStep>();
 
-        services.AddScoped<ISearchPipelineStep>(sp =>
-            new FacetQueryDispatchStep(
-                sp.GetRequiredService<IFacetProvider>()));
+        services.AddScoped<IEvaluator<SearchPipelineContext>>((sp) =>
+        {
+            IEnumerable<IEvaluationHandler<SearchPipelineContext>> handlers = sp.GetServices<IEvaluationHandler<SearchPipelineContext>>();
 
-        services.AddScoped<ISearchPipelineStep, FacetQueryResolverStep>();
-        services.AddScoped<ISearchPipelineStep, FacetQueryBuilderStep>();
+            return new PipelineEvaluator(handlers);
+        });
 
         // ---------------------------------------------------------
         // Mappers

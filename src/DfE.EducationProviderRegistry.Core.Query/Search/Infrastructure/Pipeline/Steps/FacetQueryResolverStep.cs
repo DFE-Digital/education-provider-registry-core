@@ -1,13 +1,14 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 
-internal sealed class FacetQueryResolverStep : ISearchPipelineStep
+internal sealed class FacetQueryResolverStep : IEvaluationHandler<SearchPipelineContext>
 {
-    public void Execute(SearchPipelineContext context, CancellationToken cancellationToken)
+    public ValueTask HandleAsync(SearchPipelineContext request, CancellationToken cancellationToken = default)
     {
         List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)> tasks =
-            context.Get<List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)>>()
+            request.Get<List<(string FacetName, Task<IReadOnlyList<FacetResult>> Task)>>()
             ?? throw new InvalidOperationException(
                 "PipelineContext does not contain facet query tasks.");
 
@@ -29,5 +30,7 @@ internal sealed class FacetQueryResolverStep : ISearchPipelineStep
             throw new InvalidOperationException(
                 "One or more facet tasks failed during resolution.", inner);
         }
+
+        return ValueTask.CompletedTask;
     }
 }

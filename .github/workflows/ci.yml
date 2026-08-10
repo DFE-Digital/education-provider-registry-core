@@ -25,6 +25,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        global-json-file: global.json
+        
     # As part of running build in a container LibGit2SharpException: repository path ... is not owned by current user
     - name: Fix Git ownership
       run: git config --global --add safe.directory "*"
@@ -95,11 +100,13 @@ jobs:
 
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
-      uses: DFE-Digital/github-actions/sonarscan-dotnet@bd798109fa7dd63a4600e7c2ffafcad0f3d9fe9e
+      uses: DFE-Digital/github-actions/sonarscan-dotnet@32ac8c40e87bca3d45b220bd3743aa455997a690
       with:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
+          # awaiting completion of https://github.com/DFE-Digital/github-actions/pull/236/changes then defaults handle
+          java-version: 21
           coverage-report-path: coverage-sonar/SonarQube.xml
 
     - name: Run verify format
