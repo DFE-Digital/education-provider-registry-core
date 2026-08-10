@@ -23,22 +23,29 @@ internal sealed class SearchResultsFromQueryResultsMapper
                 "Tuple does not contain facet results.");
         }
 
-        // Convert EstablishmentReadModel → EstablishmentSearchResult
-        EstablishmentSearchResult[] mapped =
-            [.. context.Results
-                   .Select(r => EstablishmentSearchResult.Create(
-                       new Shared.UniqueReferenceNumber(r.Urn),
-                       new Shared.Name(r.Name),
-                       new Shared.Address(
-                           Street: "",
-                           Town: r.City ?? "",
-                           County: "",
-                           Postcode: r.Postcode ?? ""),
-                       new EstablishmentType(r.Type),
-                       new GroupDetail("X", "y"),
-                       new LocalAuthority("LA_name", "LA_Code")))];
+        EstablishmentSearchResult[] mapped = null!;
+        
+        mapped =
+        [
+            .. context.Results.Select(r =>
+                EstablishmentSearchResult.Create(
+                    new Shared.UniqueReferenceNumber(r.Urn),
+                    new Shared.Name(r.Name ?? string.Empty),
+                    new Shared.Address(
+                        Street:   r.AddressLine1 ?? string.Empty,
+                        Town:     r.City         ?? string.Empty,
+                        County:   r.County       ?? string.Empty,
+                        Postcode: r.Postcode     ?? string.Empty),
+                    new EstablishmentType(r.Type ?? string.Empty),
+                    new GroupDetail(
+                        partOfName: r.GroupName ?? string.Empty,
+                        partOfCode: r.GroupCode ?? string.Empty),
+                    new LocalAuthority(
+                        localAuthorityName: r.LocalAuthorityName ?? string.Empty,
+                        localAuthorityCode: r.LocalAuthorityCode ?? string.Empty)
+                )
+        )];
 
-        // Convert FacetResultNew → SearchFacet (correct mapping)
         List<SearchFacet> facets =
             [.. context.Facets
                    .Select(facetResult =>

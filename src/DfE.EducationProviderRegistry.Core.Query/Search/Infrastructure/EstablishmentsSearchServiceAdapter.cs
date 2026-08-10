@@ -72,10 +72,17 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 e.Urn,
                 e.Uid,
                 e.Name,
-                e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                e.Site.Select(s => s.AddressLine1).FirstOrDefault(),
+                e.Site.Select(s => s.Town).FirstOrDefault(),
                 e.Site.Select(s => s.County).FirstOrDefault(),
+                e.Site.Select(s => s.Postcode).FirstOrDefault(),
                 e.EstablishmentType.Name ?? string.Empty,
-                e.EstablishmentStatus.Name ?? string.Empty))
+                e.EstablishmentStatus.Name ?? string.Empty,
+                e.EstablishmentGroupMembership.Select(g => g.Group.Name).FirstOrDefault(),
+                e.EstablishmentGroupMembership.Select(g => g.Group.Code).FirstOrDefault(),
+                e.EstablishmentAuthority.Select(a => a.AuthorityName).FirstOrDefault(),
+                e.EstablishmentAuthority.Select(a => a.AuthorityCode).FirstOrDefault()
+             ))
             .ToListAsync(cancellationToken);
 
         IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
@@ -138,8 +145,14 @@ public record EstablishmentReadModel(
     string Urn,
     string Ukprn,
     string Name,
-    string? Postcode,
+    string AddressLine1,
     string? City,
+    string? County,
+    string? Postcode,
     string Type,
-    string Status
+    string Status,
+    string GroupName,
+    string GroupCode,
+    string LocalAuthorityName,
+    string LocalAuthorityCode
 );

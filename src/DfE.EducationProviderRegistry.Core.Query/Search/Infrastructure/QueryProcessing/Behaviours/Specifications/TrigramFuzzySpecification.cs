@@ -1,90 +1,54 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-using DfE.Core.Libraries.DesignPatterns.Specification;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.Specifications.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.Specifications;
 
-internal sealed class TrigramFuzzySpecification<TEntity> : ISpecification<TEntity>
+internal sealed class TrigramFuzzySpecification<TEntity>
+    : PropertyPathSpecification<TEntity>
 {
-    private readonly string _propertyPath;
     private readonly string _value;
     private readonly double _threshold;
 
     public TrigramFuzzySpecification(string propertyPath, string value, double threshold)
+        : base(propertyPath)
     {
         ArgumentNullException.ThrowIfNull(propertyPath);
         ArgumentNullException.ThrowIfNull(value);
 
-        _propertyPath = propertyPath;
         _value = value;
         _threshold = threshold;
     }
 
-    public Expression<Func<TEntity, bool>> ToExpression()
+    private static MethodInfo GetSimilarityMethod()
     {
-        PropertyPathResolver.ResolvedPath resolved =
-            PropertyPathResolver.Resolve<TEntity>(_propertyPath);
+        return typeof(NpgsqlTrigramsDbFunctionsExtensions)
+            .GetMethod(
+                nameof(NpgsqlTrigramsDbFunctionsExtensions.TrigramsWordSimilarity),
+                [typeof(DbFunctions), typeof(string), typeof(string)]
+            )!;
+    }
 
-        ParameterExpression param = resolved.RootParameter;
-        Expression access = resolved.AccessExpression;
-        bool isCollection = resolved.IsCollection;
-        ParameterExpression? elementParam = resolved.CollectionElementParameter;
-        string? collectionName = resolved.CollectionNavigationName;
-
-        Expression efFunctions =
+    protected override Expression BuildExpression(Expression access)
+    {
+        MemberExpression efFunctions =
             Expression.Property(null, typeof(EF), nameof(EF.Functions));
 
-        MethodInfo similarityMethod =
-            typeof(NpgsqlTrigramsDbFunctionsExtensions)
-                .GetMethod(
-                    nameof(NpgsqlTrigramsDbFunctionsExtensions.TrigramsWordSimilarity),
-                    [typeof(DbFunctions), typeof(string), typeof(string)]
-                )!;
+        MethodInfo similarityMethod = GetSimilarityMethod();
 
-        if (!isCollection)
-        {
-            Expression similarityCall =
-                Expression.Call(
-                    similarityMethod,
-                    efFunctions,
-                    Expression.Constant(_value),
-                    access);
-
-            Expression thresholdExpr = Expression.Constant(_threshold);
-            Expression comparison = Expression.GreaterThanOrEqual(similarityCall, thresholdExpr);
-
-            return Expression.Lambda<Func<TEntity, bool>>(comparison, param);
-        }
-
-        Expression similarityElementCall =
+        Expression similarityCall =
             Expression.Call(
                 similarityMethod,
                 efFunctions,
                 Expression.Constant(_value),
-                access);
+                access
+            );
 
-        Expression thresholdElementExpr = Expression.Constant(_threshold);
-        Expression comparisonElement =
-            Expression.GreaterThanOrEqual(similarityElementCall, thresholdElementExpr);
+        Expression thresholdExpr = Expression.Constant(_threshold);
 
-        LambdaExpression elementLambda = Expression.Lambda(comparisonElement, elementParam);
-        MemberExpression collectionProp = Expression.PropertyOrField(param, collectionName);
+        Expression comparison =
+            Expression.GreaterThanOrEqual(similarityCall, thresholdExpr);
 
-        MethodInfo anyMethod =
-            typeof(Enumerable)
-                .GetMethods()
-                .First(methodInfo =>
-                    methodInfo.Name == "Any" &&
-                    methodInfo.GetParameters().Length == 2)
-                .MakeGenericMethod(elementParam.Type);
-
-        MethodCallExpression anyCall = Expression.Call(anyMethod, collectionProp, elementLambda);
-
-        return Expression.Lambda<Func<TEntity, bool>>(anyCall, param);
+        return comparison;
     }
-
-    public bool IsSatisfiedBy(TEntity input)
-        => ToExpression().Compile()(input);
 }

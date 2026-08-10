@@ -1,12 +1,13 @@
-﻿using System.Data;
-using DfE.Core.Libraries.DesignPatterns.Specification;
+﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 using Microsoft.Extensions.Options;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 
-public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSpecificationOrchestrator<TEntity>
+public sealed class SearchTermSpecificationOrchestrator<TEntity>
+    : ISearchTermSpecificationOrchestrator<TEntity>
     where TEntity : class
 {
     private readonly ISearchIndexFieldSpecificationOrchestrator<TEntity> _indexFieldOrchestrator;
@@ -26,9 +27,10 @@ public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSp
     public ISpecification<TEntity> Orchestrate(string key, string value)
     {
         SearchIndexKeyConfiguration keyConfig =
-            _searchConfiguration.Keys.FirstOrDefault(searchConfigurationKey =>
-                string.Equals(searchConfigurationKey.SearchTermKey, key, StringComparison.OrdinalIgnoreCase)) ??
-                throw new KeyNotFoundException($"Search key '{key}' is not configured in SearchConfiguration.");
+            _searchConfiguration.Keys.FirstOrDefault(k =>
+                string.Equals(k.SearchTermKey, key, StringComparison.OrdinalIgnoreCase))
+            ?? throw new KeyNotFoundException(
+                $"Search key '{key}' is not configured in SearchConfiguration.");
 
         ISpecification<TEntity>? combined = null;
 
@@ -37,10 +39,11 @@ public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSp
             ArgumentNullException.ThrowIfNull(fieldConfig);
             ArgumentNullException.ThrowIfNull(fieldConfig.SearchBehaviours);
 
-            IEnumerable<(string BehaviourName, string? BehaviourPredicate)> behaviours =
+            IEnumerable<(string Name, string? ChainingPredicate)> behaviours =
                 fieldConfig.SearchBehaviours
-                    .Select(behaviourConfiguration =>
-                        (behaviourConfiguration.Name, behaviourConfiguration.ChainingPredicate));
+                    .Select(searchBehaviourConfiguration =>
+                        (searchBehaviourConfiguration.Name,
+                        searchBehaviourConfiguration.ChainingPredicate));
 
             ISpecification<TEntity> fieldSpec =
                 _indexFieldOrchestrator.Orchestrate(
@@ -49,30 +52,12 @@ public sealed class SearchTermSpecificationOrchestrator<TEntity> : ISearchTermSp
                     fieldConfig.ChainingPredicate,
                     value);
 
-            combined = Combine(
+            combined = _predicateRegistry.Chain(
                 combined,
                 fieldSpec,
                 keyConfig.ChainingPredicate);
         }
 
         return combined!;
-    }
-
-    private ISpecification<TEntity> Combine(
-        ISpecification<TEntity>? left,
-        ISpecification<TEntity> right,
-        string? predicateName)
-    {
-        if (string.IsNullOrWhiteSpace(predicateName))
-        {
-            return right;
-        }
-
-        Func<ISpecification<TEntity>,
-            ISpecification<TEntity>,
-            ISpecification<TEntity>> combiner =
-                _predicateRegistry.Resolve(predicateName);
-
-        return (left is null) ? right : combiner(left, right);
     }
 }

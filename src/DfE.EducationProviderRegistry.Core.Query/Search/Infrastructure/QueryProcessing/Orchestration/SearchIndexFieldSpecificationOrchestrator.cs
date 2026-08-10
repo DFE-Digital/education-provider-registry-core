@@ -1,5 +1,6 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
@@ -25,13 +26,9 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
         string fieldPredicate,
         string value)
     {
-        if (behaviours is null)
-        {
-            throw new ArgumentNullException(nameof(behaviours),
-                $"Behaviour collection cannot be null for field '{fieldName}'.");
-        }
+        ArgumentNullException.ThrowIfNull(behaviours);
 
-        List<(string BehaviourName, string? BehaviourPredicate)> behaviourList = [.. behaviours];
+        List<(string BehaviourName, string? BehaviourPredicate)> behaviourList = behaviours.ToList();
 
         if (behaviourList.Count == 0)
         {
@@ -41,49 +38,22 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
 
         ISpecification<TEntity>? combined = null;
 
-        for (int i = 0; i < behaviourList.Count; i++)
+        foreach ((string? behaviourName, string? behaviourPredicate) in behaviourList)
         {
-            (string behaviourName, string? behaviourPredicate) = behaviourList[i];
-
-            ISearchBehaviour<TEntity> behaviour =
-                _behaviourRegistry.Get(behaviourName);
-
             ISpecification<TEntity> spec =
-                behaviour.Build(fieldName, value);
+                _behaviourRegistry.ResolveBehaviourSpec(
+                    behaviourName,
+                    fieldName,
+                    value);
 
-            if (combined is null)
-            {
-                combined = spec;
-                continue;
-            }
+            string predicateToUse = behaviourPredicate ?? fieldPredicate;
 
-            string? predicateToUse =
-                behaviourPredicate ?? fieldPredicate;
-
-            combined = Combine(
+            combined = _predicateRegistry.Chain(
                 combined,
                 spec,
                 predicateToUse);
         }
 
         return combined!;
-    }
-
-    private ISpecification<TEntity> Combine(
-        ISpecification<TEntity> left,
-        ISpecification<TEntity> right,
-        string? predicateName)
-    {
-        if (string.IsNullOrWhiteSpace(predicateName))
-        {
-            return right;
-        }
-
-        Func<ISpecification<TEntity>,
-            ISpecification<TEntity>,
-            ISpecification<TEntity>> combiner =
-                _predicateRegistry.Resolve(predicateName);
-
-        return combiner(left, right);
     }
 }
