@@ -2,7 +2,7 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 
-public sealed class ChainingPredicateRegistry<TEntity>
+public sealed class ChainingPredicateRegistry<TEntity> : IChainingPredicateRegistry<TEntity>
     where TEntity : class
 {
     private readonly Dictionary<

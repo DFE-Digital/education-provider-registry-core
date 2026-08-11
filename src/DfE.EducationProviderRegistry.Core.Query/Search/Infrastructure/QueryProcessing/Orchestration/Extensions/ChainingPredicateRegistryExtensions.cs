@@ -6,7 +6,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryPr
 public static class ChainingPredicateRegistryExtensions
 {
     public static ISpecification<TEntity> Chain<TEntity>(
-        this ChainingPredicateRegistry<TEntity> registry,
+        this IChainingPredicateRegistry<TEntity> registry,
         ISpecification<TEntity>? left,
         ISpecification<TEntity> right,
         string? predicateName)

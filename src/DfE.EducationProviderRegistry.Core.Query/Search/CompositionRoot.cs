@@ -304,17 +304,20 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Search specification orchestration
         // ---------------------------------------------------------
-        services.AddSingleton(
-            new Dictionary<string, Func<
+        services.AddSingleton<IChainingPredicateRegistry<Establishment>>(provider =>
+        {
+            Dictionary<string, Func<
                 ISpecification<Establishment>,
                 ISpecification<Establishment>,
-                ISpecification<Establishment>>>
-            {
-                ["AND"] = (left, right) => left.And(right),
-                ["OR"] = (left, right) => left.Or(right)
-            });
+                ISpecification<Establishment>>> map =
+                    new(StringComparer.OrdinalIgnoreCase)
+                    {
+                        ["AND"] = (left, right) => left.And(right),
+                        ["OR"] = (left, right) => left.Or(right)
+                    };
 
-        services.AddSingleton<ChainingPredicateRegistry<Establishment>>();
+            return new ChainingPredicateRegistry<Establishment>(map);
+        });
 
         services.AddScoped<ISearchIndexFieldSpecificationOrchestrator<Establishment>,
             SearchIndexFieldSpecificationOrchestrator<Establishment>>();

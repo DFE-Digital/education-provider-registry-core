@@ -10,11 +10,11 @@ public sealed class SearchQueryProcessor<TEntity> : ISearchQueryProcessor<TEntit
     where TEntity : class
 {
     private readonly ISearchTermSpecificationOrchestrator<TEntity> _specificationOrchestrator;
-    private readonly ChainingPredicateRegistry<TEntity> _predicateRegistry;
+    private readonly IChainingPredicateRegistry<TEntity> _predicateRegistry;
 
     public SearchQueryProcessor(
         ISearchTermSpecificationOrchestrator<TEntity> specificationOrchestrator,
-        ChainingPredicateRegistry<TEntity> predicateRegistry)
+        IChainingPredicateRegistry<TEntity> predicateRegistry)
     {
         _specificationOrchestrator = specificationOrchestrator;
         _predicateRegistry = predicateRegistry;

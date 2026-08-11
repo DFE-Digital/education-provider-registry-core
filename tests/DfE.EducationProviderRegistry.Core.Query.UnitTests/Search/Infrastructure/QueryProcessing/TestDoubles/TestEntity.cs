@@ -3,6 +3,7 @@
 public sealed class TestEntity
 {
     public string Name { get; set; } = string.Empty;
+    public int Age { get; set; }
     public Address Address { get; set; } = new();
     public List<Site> Sites { get; set; } = [];
 }

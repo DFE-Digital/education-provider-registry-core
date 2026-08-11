@@ -10,7 +10,7 @@ public sealed class PropertyPathSpecificationTests
     public void ToExpression_ScalarPath_BuildsCorrectPredicate()
     {
         // arrange
-        SpecificationStub<TestEntity> spec = new("Name", "Bob");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Name", "Bob");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -24,7 +24,7 @@ public sealed class PropertyPathSpecificationTests
     public void ToExpression_NestedScalarPath_BuildsCorrectPredicate()
     {
         // arrange
-        SpecificationStub<TestEntity> spec = new("Address.Postcode", "DL1");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Address.Postcode", "DL1");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -39,7 +39,7 @@ public sealed class PropertyPathSpecificationTests
     public void ToExpression_CollectionPath_BuildsAnyPredicate()
     {
         // arrange
-        SpecificationStub<TestEntity> spec = new("Sites[].Code", "X1");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Sites[].Code", "X1");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -60,7 +60,7 @@ public sealed class PropertyPathSpecificationTests
     public void ToExpression_CollectionNestedPath_BuildsCorrectElementPredicate()
     {
         // arrange
-        SpecificationStub<TestEntity> spec = new("Sites[].Location.Town", "York");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Sites[].Location.Town", "York");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -79,7 +79,7 @@ public sealed class PropertyPathSpecificationTests
     {
         // arrange
         TestEntity entity = new() { Name = "Bob" };
-        SpecificationStub<TestEntity> spec = new("Name", "Bob");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Name", "Bob");
 
         // act
         bool result = spec.IsSatisfiedBy(entity);
@@ -93,7 +93,7 @@ public sealed class PropertyPathSpecificationTests
     {
         // arrange
         TestEntity entity = new() { Name = "Alice" };
-        SpecificationStub<TestEntity> spec = new("Name", "Bob");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Name", "Bob");
 
         // act
         bool result = spec.IsSatisfiedBy(entity);
@@ -115,7 +115,7 @@ public sealed class PropertyPathSpecificationTests
             ]
         };
 
-        SpecificationStub<TestEntity> spec = new("Sites[].Code", "B2");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Sites[].Code", "B2");
 
         // act
         bool result = spec.IsSatisfiedBy(entity);
@@ -137,7 +137,7 @@ public sealed class PropertyPathSpecificationTests
             ]
         };
 
-        SpecificationStub<TestEntity> spec = new("Sites[].Code", "ZZZ");
+        TestDoubles.SpecificationStub<TestEntity> spec = new("Sites[].Code", "ZZZ");
 
         // act
         bool result = spec.IsSatisfiedBy(entity);
