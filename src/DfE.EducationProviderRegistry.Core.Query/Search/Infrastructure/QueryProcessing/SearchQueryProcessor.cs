@@ -30,7 +30,7 @@ public sealed class SearchQueryProcessor<TEntity> : ISearchQueryProcessor<TEntit
                     searchTerm is not null &&
                     !string.IsNullOrWhiteSpace(searchTerm.Key) &&
                     !string.IsNullOrWhiteSpace(searchTerm.Value))
-                .Select(t => t!)
+                .Select(searchTerm => searchTerm!)
                 .ToList()
             ?? [];
 

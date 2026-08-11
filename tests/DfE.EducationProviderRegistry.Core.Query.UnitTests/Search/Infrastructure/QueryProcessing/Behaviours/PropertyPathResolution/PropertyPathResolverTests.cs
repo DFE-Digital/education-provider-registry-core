@@ -1,53 +1,11 @@
-﻿using System.Linq.Expressions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.PropertyPathResolution;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.PropertyPathResolution;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.QueryProcessing.Behaviours.Specifications.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.QueryProcessing.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.QueryProcessing.Behaviours.PropertyPathResolution;
 
 public sealed class PropertyPathResolverTests
 {
-    public sealed class TestEntity
-    {
-        public string Name { get; set; } = string.Empty;
-        public Address Address { get; set; } = new();
-        public List<Site> Sites { get; set; } = [];
-    }
-
-    public sealed class Address
-    {
-        public string Postcode { get; set; } = string.Empty;
-    }
-
-    public sealed class Site
-    {
-        public string Code { get; set; } = string.Empty;
-        public Location Location { get; set; } = new();
-    }
-
-    public sealed class Location
-    {
-        public string Town { get; set; } = string.Empty;
-    }
-
-    private static string GetPropertyName(Expression expr)
-    {
-        return expr switch
-        {
-            MemberExpression me => me.Member.Name,
-            UnaryExpression ue => GetPropertyName(ue.Operand),
-            _ => throw new InvalidOperationException($"Unexpected expression type: {expr.GetType().Name}")
-        };
-    }
-
-    private static Expression GetParent(Expression expr)
-    {
-        return expr switch
-        {
-            MemberExpression me => me.Expression!,
-            UnaryExpression ue => GetParent(ue.Operand),
-            _ => throw new InvalidOperationException($"Unexpected expression type: {expr.GetType().Name}")
-        };
-    }
-
     [Fact]
     public void Resolve_ScalarPath_ReturnsExpectedRootAndAccess()
     {
@@ -61,7 +19,7 @@ public sealed class PropertyPathResolverTests
         Assert.False(result.IsCollection);
         Assert.NotNull(result.RootParameter);
         Assert.Equal("rootParam", result.RootParameter.Name);
-        Assert.Equal("Name", GetPropertyName(result.AccessExpression));
+        Assert.Equal("Name", result.AccessExpression.GetPropertyName());
         Assert.Null(result.CollectionElementParameter);
         Assert.Null(result.CollectionNavigationName);
     }
@@ -77,8 +35,8 @@ public sealed class PropertyPathResolverTests
 
         // assert
         Assert.False(result.IsCollection);
-        Assert.Equal("Postcode", GetPropertyName(result.AccessExpression));
-        Assert.Equal("Address", GetPropertyName(GetParent(result.AccessExpression)));
+        Assert.Equal("Postcode", result.AccessExpression.GetPropertyName());
+        Assert.Equal("Address", result.AccessExpression.GetParent().GetPropertyName());
     }
 
     [Fact]
@@ -109,8 +67,8 @@ public sealed class PropertyPathResolverTests
 
         // assert
         Assert.True(result.IsCollection);
-        Assert.Equal("Town", GetPropertyName(result.AccessExpression));
-        Assert.Equal("Location", GetPropertyName(GetParent(result.AccessExpression)));
+        Assert.Equal("Town", result.AccessExpression.GetPropertyName());
+        Assert.Equal("Location", result.AccessExpression.GetParent().GetPropertyName());
     }
 
     [Fact]
