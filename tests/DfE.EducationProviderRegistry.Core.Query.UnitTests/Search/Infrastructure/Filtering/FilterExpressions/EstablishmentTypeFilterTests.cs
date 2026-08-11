@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.FilterExpressions;
@@ -13,7 +14,7 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         EstablishmentTypeFilter sut = new();
 
-        SearchFilterRequest request = Request(values: ["a"]);
+        SearchFilterRequest request = RequestFilterValues(["a"]);
 
         // Act / Assert
         Assert.Throws<FormatException>(
@@ -26,8 +27,7 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         EstablishmentTypeFilter sut = new();
 
-        SearchFilterRequest request =
-            Request(values: ["999999999999999999999999999999"]);
+        SearchFilterRequest request = RequestFilterValues(["999999999999999999999999999999"]);
 
         // Act / Assert
         Assert.Throws<OverflowException>(
@@ -40,8 +40,7 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         EstablishmentTypeFilter sut = new();
 
-        SearchFilterRequest request =
-            Request(values: [null!]);
+        SearchFilterRequest request = RequestFilterValues([null!]);
 
         Establishment establishment = new()
         {
@@ -65,7 +64,7 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         EstablishmentTypeFilter sut = new();
 
-        SearchFilterRequest request = Request(values: ["1", null!, "2"]);
+        SearchFilterRequest request = RequestFilterValues(["1", null!, "2"]);
 
         Establishment establishment = new()
         {
@@ -89,8 +88,8 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         EstablishmentTypeFilter sut = new();
 
-        SearchFilterRequest request = Request(values: ["1", null!]);
-            
+        SearchFilterRequest request = RequestFilterValues(["1", null!]);
+
         Establishment establishment = new()
         {
             EstablishmentTypeId = 2
@@ -111,7 +110,7 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenMatchingEstablishmentTypeId_ReturnsSatisfiedSpecification()
     {
         // Arrange
-        SearchFilterRequest request = Request(values: ["1", "2"]);
+        SearchFilterRequest request = RequestFilterValues(["1", "2"]);
 
         Establishment establishment = new()
         {
@@ -133,7 +132,7 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenNonMatchingEstablishmentTypeId_ReturnsFalseSpecification()
     {
         // Arrange
-        SearchFilterRequest request = Request(values: ["1", "2"]);
+        SearchFilterRequest request = RequestFilterValues(["1", "2"]);
 
         Establishment establishment = new()
         {
@@ -153,5 +152,5 @@ public sealed class EstablishmentTypeFilterTests
         Assert.False(result);
     }
 
-    private static SearchFilterRequest Request(IEnumerable<object> values) => new("STUB-FILTERKEY", values);
+    private static SearchFilterRequest RequestFilterValues(object[] values) => SearchFilterRequestStub.Create("STUB-FILTERKEY", values);
 }
