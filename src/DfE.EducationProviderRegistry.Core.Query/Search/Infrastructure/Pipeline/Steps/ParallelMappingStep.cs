@@ -9,8 +9,10 @@ internal sealed class ParallelMappingStep : IEvaluationHandler<SearchPipelineCon
 {
     private readonly IMapper<Establishment, EstablishmentSearchResult> _mapper;
 
-    public ParallelMappingStep(
-        IMapper<Establishment, EstablishmentSearchResult> mapper)
+    /// <summary>
+    /// Creates a new instance of the mapping step.
+    /// </summary>
+    public ParallelMappingStep(IMapper<Establishment, EstablishmentSearchResult> mapper)
     {
         _mapper = mapper;
     }
@@ -38,9 +40,7 @@ internal sealed class ParallelMappingStep : IEvaluationHandler<SearchPipelineCon
                 options.CancellationToken.ThrowIfCancellationRequested();
 
                 Establishment establishment = ordered[index];
-
-                EstablishmentSearchResult mapped =
-                    _mapper.Map(establishment);
+                EstablishmentSearchResult mapped = _mapper.Map(establishment);
 
                 results[index] = mapped;
             });

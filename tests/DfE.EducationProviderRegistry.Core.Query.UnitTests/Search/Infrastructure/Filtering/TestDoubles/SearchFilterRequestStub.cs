@@ -6,6 +6,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 [ExcludeFromCodeCoverage]
 internal static class SearchFilterRequestStub
 {
-    public static SearchFilterRequest Create(string key, params object[] values)
+    public static SearchFilterRequest Default() => Create(key: "STUB-FILTER-KEY", values: ["STUB-FILTERVALUE-1"]);
+    public static SearchFilterRequest Create(string key, object[] values)
         => new(key, values);
 }
