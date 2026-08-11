@@ -13,7 +13,7 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         EstablishmentTypeFilter sut = new();
 
-        SearchFilterRequest request = Request(values: ["abc"]);
+        SearchFilterRequest request = Request(values: ["a"]);
 
         // Act / Assert
         Assert.Throws<FormatException>(
