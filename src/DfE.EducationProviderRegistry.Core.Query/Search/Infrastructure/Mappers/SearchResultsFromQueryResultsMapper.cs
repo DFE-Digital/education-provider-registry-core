@@ -24,7 +24,7 @@ internal sealed class SearchResultsFromQueryResultsMapper
         }
 
         EstablishmentSearchResult[] mapped = null!;
-        
+
         mapped =
         [
             .. context.Results.Select(r =>
