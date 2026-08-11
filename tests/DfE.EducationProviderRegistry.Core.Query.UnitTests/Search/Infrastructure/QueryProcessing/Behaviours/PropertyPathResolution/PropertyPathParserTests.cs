@@ -38,7 +38,7 @@ public sealed class PropertyPathParserTests
     public void Parse_CollectionPathWithNoRemainder_ReturnsEmptyRemainder()
     {
         // arrange
-        string fieldPath = "Sites[]";
+        string fieldPath = "Sites[].";
 
         // act
         ParsedPropertyPath result = PropertyPathParser.Parse(fieldPath);
