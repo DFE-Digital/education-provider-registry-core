@@ -112,10 +112,10 @@ public sealed class EstablishmentFacetProviderUnitTests
 
         // assert
         Assert.Equal(2, results.Count);
-        Assert.Equal("1", results[0].Key);
+        Assert.Equal("1", results[0].Value);
         Assert.Equal("Primary", results[0].Value);
         Assert.Equal(2, results[0].Count);
-        Assert.Equal("2", results[1].Key);
+        Assert.Equal("2", results[1].Value);
         Assert.Equal("Secondary", results[1].Value);
         Assert.Equal(1, results[1].Count);
     }
@@ -175,8 +175,8 @@ public sealed class EstablishmentFacetProviderUnitTests
                 ["A", "B", "C"], "Type", TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("1", results[0].Key);
-        Assert.Equal("2", results[1].Key);
+        Assert.Equal("1", results[0].Value);
+        Assert.Equal("2", results[1].Value);
         Assert.Equal("X", results[0].Value);
         Assert.Equal("Y", results[1].Value);
     }
@@ -243,8 +243,8 @@ public sealed class EstablishmentFacetProviderUnitTests
             await provider.GetFacetsAsync(["A", "B"], "Type", TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Contains(results, r => r.Key == string.Empty);
-        Assert.Contains(results, r => r.Key == "2");
+        Assert.Contains(results, r => r.Value == string.Empty);
+        Assert.Contains(results, r => r.Value == "2");
         Assert.Contains(results, r => r.Value == string.Empty);
         Assert.Contains(results, r => r.Value == "Primary");
     }

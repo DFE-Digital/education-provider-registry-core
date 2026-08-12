@@ -34,11 +34,6 @@ public sealed class FilterExpressionOptions
     public string FilterExpressionValuesDelimiter { get; set; } = string.Empty;
 
     /// <summary>
-    /// The target property or field name that the filter expression should be applied to.
-    /// </summary>
-    public string FilterExpressionTarget { get; set; } = string.Empty;
-
-    /// <summary>
     /// Indicates whether a delimiter has been specified.
     /// </summary>
     public bool HasValuesDelimiter =>

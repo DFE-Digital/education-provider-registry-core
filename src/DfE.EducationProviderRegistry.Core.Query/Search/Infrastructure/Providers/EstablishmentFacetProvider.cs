@@ -70,9 +70,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
                 {
                     groupedFacet.Key,
 
-                    Value = facetDefinition.AdditionalValueSelector != null
-                        ? groupedFacet.AsQueryable().Select(facetDefinition.AdditionalValueSelector).FirstOrDefault()
-                        : null,
+                    Value = groupedFacet.AsQueryable().Select(facetDefinition.LabelSelector).FirstOrDefault(),
 
                     Count = groupedFacet.LongCount()
                 });

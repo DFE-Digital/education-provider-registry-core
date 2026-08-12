@@ -17,7 +17,7 @@ public sealed class FacetResultTests
 
         // assert
         Assert.Equal(value, result.Value);
-        Assert.Equal(name, result.Key);
+        Assert.Equal(name, result.Value);
         Assert.Equal(count, result.Count);
     }
 
@@ -34,7 +34,7 @@ public sealed class FacetResultTests
 
         // assert
         Assert.Equal(value, result.Value);
-        Assert.Equal(name, result.Key);
+        Assert.Equal(name, result.Value);
         Assert.Null(result.Count);
     }
 
@@ -46,7 +46,7 @@ public sealed class FacetResultTests
 
         // assert
         Assert.Equal(string.Empty, result.Value);
-        Assert.Equal(string.Empty, result.Key);
+        Assert.Equal(string.Empty, result.Value);
         Assert.Equal(0, result.Count);
     }
 
@@ -58,7 +58,7 @@ public sealed class FacetResultTests
 
         // assert
         Assert.Null(result.Value);
-        Assert.Null(result.Key);
+        Assert.Null(result.Value);
         Assert.Equal(10, result.Count);
     }
 }
