@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establi
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -96,7 +96,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 ))
                 .ToListAsync(cancellationToken);
 
-        IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
+        IReadOnlyList<string> urns = items.Select(entity => entity.Urn).ToList().AsReadOnly();
 
         IReadOnlyList<AggregatedFacetResult> facets =
             await _facetAggregator.CalculateFacetsAsync(
@@ -107,49 +107,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
         return _resultsMapper.Map((items, facets));
     }
 }
-
-public interface IFacetAggregator
-{
-    Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
-        IReadOnlyList<string> urns,
-        IEnumerable<string>? requestedFacets,
-        CancellationToken cancellationToken);
-}
-
-public class FacetAggregationStep : IFacetAggregator
-{
-    private readonly IFacetProvider _facetProvider;
-
-    public FacetAggregationStep(IFacetProvider facetProvider)
-    {
-        _facetProvider = facetProvider;
-    }
-
-    public async Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
-        IReadOnlyList<string> urns,
-        IEnumerable<string>? requestedFacets,
-        CancellationToken cancellationToken)
-    {
-        if (requestedFacets == null || !requestedFacets.Any())
-        {
-            return Array.Empty<AggregatedFacetResult>();
-        }
-
-        List<AggregatedFacetResult> aggregatedFacetResults = [];
-
-        foreach (string facetKey in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
-        {
-            IReadOnlyList<FacetResult> facetResults =
-                await _facetProvider.GetFacetsAsync(urns, facetKey, cancellationToken);
-
-            aggregatedFacetResults.Add(new AggregatedFacetResult(facetKey, facetResults));
-        }
-
-        return aggregatedFacetResults.AsReadOnly();
-    }
-}
-
-public record AggregatedFacetResult(string FacetName, IReadOnlyCollection<FacetResult> Values);
 
 public record EstablishmentReadModel(
     int Id,

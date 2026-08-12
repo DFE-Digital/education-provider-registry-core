@@ -21,8 +21,8 @@ public sealed class SearchFacetsTests
         // arrange
         List<SearchFacet> facetList =
         [
-            new SearchFacet("Region", [new FacetResult("North", 10)]),
-            new SearchFacet("Provider", [new FacetResult("College A", 5)])
+            new SearchFacet("Region", [new FacetResult("1", "North", 10)]),
+            new SearchFacet("Provider", [new FacetResult("1", "College A", 5)])
         ];
 
         // act
@@ -48,7 +48,7 @@ public sealed class SearchFacetsTests
         // arrange
         List<SearchFacet> facetList =
         [
-            new SearchFacet("Subject", [new FacetResult("Math", 3)])
+            new SearchFacet("Subject", [new FacetResult("1", "Math", 3)])
         ];
 
         SearchFacets facets = new(facetList);

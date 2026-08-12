@@ -19,18 +19,18 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search;
 public sealed class CompositionRootTests
 {
     [Fact]
-    public void CompositionRoot_Registers_FacetSelectorDictionary()
+    public void CompositionRoot_Registers_FacetDefinitionDictionary()
     {
         // arrange
         IServiceProvider provider =
             ServiceProviderBuilder.BuildServiceProvider();
 
         // act
-        Dictionary<string, Expression<Func<Establishment, object>>> selectors =
-            provider.GetRequiredService<Dictionary<string, Expression<Func<Establishment, object>>>>();
+        Dictionary<string, FacetDefinition<Establishment>> definitions =
+            provider.GetRequiredService<Dictionary<string, FacetDefinition<Establishment>>>();
 
         // assert
-        Assert.True(selectors.ContainsKey("establishmenttypeid"));
+        Assert.True(definitions.ContainsKey("establishmenttypeid"));
     }
 
     [Fact]

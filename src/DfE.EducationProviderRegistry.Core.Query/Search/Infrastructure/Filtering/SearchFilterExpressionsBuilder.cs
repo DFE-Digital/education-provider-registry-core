@@ -79,12 +79,12 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
 
         foreach (SearchFilterRequest request in searchFilterRequests)
         {
+
             if (!_filterKeyMapOptions.SearchFilterToExpressionMap
-                .TryGetValue(
-                    request.FilterKey,
-                    out FilterExpressionOptions? options))
+                    .TryGetValue(request.FilterKey, out FilterExpressionOptions? options))
             {
-                continue;
+                throw new InvalidOperationException(
+                    $"No filter expression configuration exists for '{request.FilterKey}'.");
             }
 
             if (options.HasValuesDelimiter)

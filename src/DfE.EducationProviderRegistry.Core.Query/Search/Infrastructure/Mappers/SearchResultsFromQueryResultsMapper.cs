@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 
@@ -51,7 +52,7 @@ internal sealed class SearchResultsFromQueryResultsMapper
                    .Select(facetResult =>
                        new SearchFacet(
                            facetResult.FacetName,
-                           [.. facetResult.Values.Select(facetValue => new FacetResult(facetValue.Value, facetValue.Count))]
+                           [.. facetResult.Values.Select(facetValue => new FacetResult(facetValue.Value, facetValue.Label, facetValue.Count))]
                        )
                    )];
 

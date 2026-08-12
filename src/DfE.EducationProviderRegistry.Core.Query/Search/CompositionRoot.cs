@@ -13,6 +13,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Reque
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
@@ -122,6 +123,7 @@ public static class CompositionRoot
             return new PipelineEvaluator(handlers);
         });
 
+        // ---------------------------------------------------------
         // Mappers
         // ---------------------------------------------------------
         services.TryAddSingleton<
@@ -176,9 +178,12 @@ public static class CompositionRoot
             SearchRequestFiltersToCoreFiltersMapper>();
 
         services.AddSingleton(
-            new Dictionary<string, Expression<Func<Establishment, object>>>(StringComparer.OrdinalIgnoreCase)
+            new Dictionary<string, FacetDefinition<Establishment>>(StringComparer.OrdinalIgnoreCase)
             {
-                { "establishmenttypeid", establishment => establishment.EstablishmentTypeId }
+                ["establishmenttypeid"] =
+                    new FacetDefinition<Establishment>(
+                        establishment => establishment.EstablishmentTypeId,
+                        establishment => establishment.EstablishmentType.Name)
             });
         // ---------------------------------------------------------
         // Facet selectors
@@ -196,7 +201,6 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Logical operator factory
         // ---------------------------------------------------------
-
         services.AddOptions<FilterKeyToFilterExpressionMapOptions>()
             .Configure<IConfiguration>((settings, cfg) =>
                 cfg.GetSection("FilterKeyToFilterExpressionMapOptions").Bind(settings))
@@ -252,6 +256,5 @@ public static class CompositionRoot
             SearchTermSpecificationOrchestrator<Establishment>>();
 
         services.AddScoped(typeof(ISearchQueryProcessor<>), typeof(SearchQueryProcessor<>));
-
     }
 }
