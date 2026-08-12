@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
@@ -55,35 +56,45 @@ internal sealed class EstablishmentsSearchServiceAdapter
 
         IQueryable<Establishment> baseQuery = _dbContext.Establishment.AsNoTracking();
 
+        // 1. Map incoming filter requests
         ReadOnlyCollection<SearchFilterRequest> filterRequests =
             _filterMapper.Map(request.SearchFilterRequests.AsReadOnly());
 
+        // 2. Build the composed filter predicate
+        Expression<Func<Establishment, bool>> filterPredicate =
+            _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
+
+        // 3. Apply filter predicate to the base query
+        IQueryable<Establishment> filteredQuery =
+            baseQuery.Where(filterPredicate);
+
+        // 4. Apply search-term specification on top of filtered results
         IQueryable<Establishment> searchResult =
-            _searchSpecOrchestrator.ProcessSearch(baseQuery, request.SearchTerms);
+            _searchSpecOrchestrator.ProcessSearch(filteredQuery, request.SearchTerms);
 
-        List<EstablishmentReadModel> items = null!;
-
-        items = await searchResult
-            .OrderBy(e => e.Name)
-            .Skip(request.Offset)
-            .Take(request.PageSize)
-            .Select(e => new EstablishmentReadModel(
-                int.Parse(e.EstablishmentId.ToString()),
-                e.Urn,
-                e.Uid,
-                e.Name,
-                e.Site.Select(s => s.AddressLine1).FirstOrDefault(),
-                e.Site.Select(s => s.Town).FirstOrDefault(),
-                e.Site.Select(s => s.County).FirstOrDefault(),
-                e.Site.Select(s => s.Postcode).FirstOrDefault(),
-                e.EstablishmentType.Name ?? string.Empty,
-                e.EstablishmentStatus.Name ?? string.Empty,
-                e.EstablishmentGroupMembership.Select(g => g.Group.Name).FirstOrDefault(),
-                e.EstablishmentGroupMembership.Select(g => g.Group.Code).FirstOrDefault(),
-                e.EstablishmentAuthority.Select(a => a.AuthorityName).FirstOrDefault(),
-                e.EstablishmentAuthority.Select(a => a.AuthorityCode).FirstOrDefault()
-             ))
-            .ToListAsync(cancellationToken);
+        // 5. Execute projection
+        List<EstablishmentReadModel> items =
+            await searchResult
+                .OrderBy(e => e.Name)
+                .Skip(request.Offset)
+                .Take(request.PageSize)
+                .Select(e => new EstablishmentReadModel(
+                    int.Parse(e.EstablishmentId.ToString()),
+                    e.Urn,
+                    e.Uid,
+                    e.Name,
+                    e.Site.Select(s => s.AddressLine1).FirstOrDefault(),
+                    e.Site.Select(s => s.Town).FirstOrDefault(),
+                    e.Site.Select(s => s.County).FirstOrDefault(),
+                    e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                    e.EstablishmentType.Name ?? string.Empty,
+                    e.EstablishmentStatus.Name ?? string.Empty,
+                    e.EstablishmentGroupMembership.Select(g => g.Group.Name).FirstOrDefault(),
+                    e.EstablishmentGroupMembership.Select(g => g.Group.Code).FirstOrDefault(),
+                    e.EstablishmentAuthority.Select(a => a.AuthorityName).FirstOrDefault(),
+                    e.EstablishmentAuthority.Select(a => a.AuthorityCode).FirstOrDefault()
+                ))
+                .ToListAsync(cancellationToken);
 
         IReadOnlyList<string> urns = items.Select(e => e.Urn).ToList().AsReadOnly();
 
