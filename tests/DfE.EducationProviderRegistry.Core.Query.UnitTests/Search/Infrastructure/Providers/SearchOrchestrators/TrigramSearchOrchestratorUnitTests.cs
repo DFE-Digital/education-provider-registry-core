@@ -1,5 +1,10 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
+﻿using System.Linq.Expressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Context;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram.Translation;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.SearchOrchestrators.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.TestDoubles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -9,6 +14,60 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public sealed class TrigramSearchOrchestratorUnitTests
 {
+    private static TrigramSearchOrchestrator<TestEntity> BuildOrchestrator(
+        IReadOnlyList<TestEntity> sqlResults,
+        string translatorResponse,
+        EntityMetadata? metadataOverride = null)
+    {
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+        EntityMetadata metadata = metadataOverride ?? EntityMetadataBuilder.BuildMetadata(dbContext);
+
+        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
+            SqlExecutorTestDouble.MockFor(sqlResults);
+
+        Mock<ISqlFilterExpressionTranslator<TestEntity>> translatorMock =
+            SqlFilterExpressionTranslatorTestDouble.MockFor<TestEntity>(
+                metadata,
+                response: translatorResponse);
+
+        return new TrigramSearchOrchestrator<TestEntity>(
+            EntityMetadataResolverTestDouble.MockFor(metadata).Object,
+            translatorMock.Object,
+            sqlExecutorMock.Object);
+    }
+
+    private static IQueryable<TestEntity> Query(
+        params TestEntity?[] items) =>
+            items.AsQueryable()!;
+
+    private static SearchOrchestratorContext<TestEntity> Ctx(
+        string term,
+        string column,
+        Expression<Func<TestEntity, bool>> filter)
+    {
+        return new SearchOrchestratorContext<TestEntity>
+        {
+            SearchTerm = term,
+            SearchColumn = column,
+            FilterExpression = filter,
+            PageSize = 10,
+            Offset = 0
+        };
+    }
+
+    private static EntityMetadata OverridePk(EntityMetadata metadata, string pkName)
+    {
+        Mock<IProperty> fakePkProperty = new();
+        fakePkProperty.Setup(property => property.Name).Returns(pkName);
+
+        return new EntityMetadata(
+            metadata.EntityType,
+            metadata.Schema,
+            metadata.TableName,
+            fakePkProperty.Object,
+            pkName);
+    }
+
     public sealed class TestEntity
     {
         public int? Id { get; set; }
@@ -19,42 +78,26 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_ReturnsMatchingEntities_WhenSearchMatches()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
-            SqlExecutorTestDouble.MockFor(
-            [
-                new TestEntity { Id = 1, Name = "alpha" }
-            ]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                new[] { new TestEntity { Id = 1, Name = "alpha" } },
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = new[]
-        {
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+
+        IQueryable<TestEntity> baseQuery = Query(
             new TestEntity { Id = 1, Name = "alpha" },
-            new TestEntity { Id = 2, Name = "beta" }
-        }
-        .AsQueryable();
+            new TestEntity { Id = 2, Name = "beta" });
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "alpha",
-            SearchColumn = "name",
-            PageSize = 10,
-            Offset = 0
-        };
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("alpha", "name", entity => true);
 
         // act
         IReadOnlyList<TestEntity> result =
             await orchestrator.ExecuteAsync(
-                db,
+                dbContext,
                 baseQuery,
                 context,
-                "",
                 CancellationToken.None);
 
         // assert
@@ -66,39 +109,26 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_ReturnsEmptyList_WhenNoMatches()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
-            SqlExecutorTestDouble.MockFor([]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                Array.Empty<TestEntity>(),
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = new[]
-        {
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+
+        IQueryable<TestEntity> baseQuery = Query(
             new TestEntity { Id = 1, Name = "alpha" },
-            new TestEntity { Id = 2, Name = "beta" }
-        }
-        .AsQueryable();
+            new TestEntity { Id = 2, Name = "beta" });
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "zzz",
-            SearchColumn = "name",
-            PageSize = 10,
-            Offset = 0
-        };
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("zzz", "name", entity => true);
 
         // act
         IReadOnlyList<TestEntity> result =
             await orchestrator.ExecuteAsync(
-                db,
+                dbContext,
                 baseQuery,
                 context,
-                "",
                 CancellationToken.None);
 
         // assert
@@ -109,34 +139,23 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_Throws_WhenColumnDoesNotExist()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
-            SqlExecutorTestDouble.MockFor([]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                Array.Empty<TestEntity>(),
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = Array.Empty<TestEntity>().AsQueryable();
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+        IQueryable<TestEntity> baseQuery = Query();
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "alpha",
-            SearchColumn = "nonexistent_column",
-            PageSize = 10,
-            Offset = 0
-        };
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("alpha", "nonexistent_column", entity => true);
 
-        // act/assert
+        // act + assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             orchestrator.ExecuteAsync(
-                db,
+                dbContext,
                 baseQuery,
                 context,
-                "",
                 CancellationToken.None));
     }
 
@@ -144,33 +163,21 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_Throws_WhenDbContextIsNull()
     {
         // arrange
-        EntityMetadata? metadata =
-            EntityMetadataBuilder.BuildMetadata(DbContextTestDouble.BuildFakeDbContext());
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock = SqlExecutorTestDouble.MockFor([]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                Array.Empty<TestEntity>(),
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = Array.Empty<TestEntity>().AsQueryable();
+        IQueryable<TestEntity> baseQuery = Query();
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("alpha", "name", entity => true);
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "alpha",
-            SearchColumn = "name",
-            PageSize = 10,
-            Offset = 0
-        };
-
-        // act/assert
+        // act + assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
             orchestrator.ExecuteAsync(
                 null!,
                 baseQuery,
                 context,
-                "",
                 CancellationToken.None));
     }
 
@@ -178,25 +185,20 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_Throws_WhenContextIsNull()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock = SqlExecutorTestDouble.MockFor([]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                Array.Empty<TestEntity>(),
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = Array.Empty<TestEntity>().AsQueryable();
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+        IQueryable<TestEntity> baseQuery = Query();
 
-        // act/assert
+        // act + assert
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
             orchestrator.ExecuteAsync(
-                db,
+                dbContext,
                 baseQuery,
                 null!,
-                "",
                 CancellationToken.None));
     }
 
@@ -204,42 +206,26 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_Throws_WhenEntityInstanceIsNull()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
-            SqlExecutorTestDouble.MockFor(
-            [
-                new TestEntity { Id = 1, Name = "alpha" }
-            ]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                new[] { new TestEntity { Id = 1, Name = "alpha" } },
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = new TestEntity?[]
-        {
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+
+        IQueryable<TestEntity> baseQuery = Query(
             null,
-            new() { Id = 1, Name = "alpha" }
-        }
-        .AsQueryable()!;
+            new TestEntity { Id = 1, Name = "alpha" });
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "alpha",
-            SearchColumn = "name",
-            PageSize = 10,
-            Offset = 0
-        };
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("alpha", "name", entity => true);
 
-        // act/assert
+        // act + assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             orchestrator.ExecuteAsync(
-                db,
-                baseQuery!,
+                dbContext,
+                baseQuery,
                 context,
-                "",
                 CancellationToken.None));
     }
 
@@ -247,53 +233,29 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_Throws_WhenPrimaryKeyPropertyDoesNotExist()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
+        EntityMetadata metadata = EntityMetadataBuilder.BuildMetadata(dbContext);
 
-        Mock<IProperty> fakePkProperty = new();
-        fakePkProperty.Setup(property =>
-            property.Name).Returns("DoesNotExist");
-
-        metadata = new EntityMetadata(
-            metadata.EntityType,
-            metadata.Schema,
-            metadata.TableName,
-            fakePkProperty.Object,
-            "DoesNotExist");
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
-            SqlExecutorTestDouble.MockFor(
-            [
-                new TestEntity { Id = 1, Name = "alpha" }
-            ]);
+        EntityMetadata overriddenMetadata = OverridePk(metadata, "DoesNotExist");
 
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                new[] { new TestEntity { Id = 1, Name = "alpha" } },
+                "TRUE",
+                overriddenMetadata);
 
-        IQueryable<TestEntity> baseQuery = new[]
-        {
-            new TestEntity { Id = 1, Name = "alpha" }
-        }
-        .AsQueryable();
+        IQueryable<TestEntity> baseQuery = Query(
+            new TestEntity { Id = 1, Name = "alpha" });
 
-        SearchOrchestratorContext context =
-            new()
-            {
-                SearchTerm = "alpha",
-                SearchColumn = "name",
-                PageSize = 10,
-                Offset = 0
-            };
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("alpha", "name", entity => true);
 
-        // act/assert
+        // act + assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             orchestrator.ExecuteAsync(
-                db,
+                dbContext,
                 baseQuery,
                 context,
-                "",
                 CancellationToken.None));
     }
 
@@ -301,41 +263,25 @@ public sealed class TrigramSearchOrchestratorUnitTests
     public async Task ExecuteAsync_Throws_WhenPrimaryKeyValueIsNull()
     {
         // arrange
-        DbContext? db = DbContextTestDouble.BuildFakeDbContext();
-        EntityMetadata? metadata = EntityMetadataBuilder.BuildMetadata(db);
-
-        Mock<ISqlExecutor<TestEntity>> sqlExecutorMock =
-            SqlExecutorTestDouble.MockFor(
-            [
-                new TestEntity { Id = null, Name = "alpha" }
-            ]);
-
         TrigramSearchOrchestrator<TestEntity> orchestrator =
-            new(
-                EntityMetadataResolverTestDouble.MockFor(metadata).Object,
-                sqlExecutorMock.Object);
+            BuildOrchestrator(
+                new[] { new TestEntity { Id = null, Name = "alpha" } },
+                "TRUE");
 
-        IQueryable<TestEntity> baseQuery = new[]
-        {
-            new TestEntity { Id = null, Name = "alpha" }
-        }
-        .AsQueryable();
+        DbContext dbContext = DbContextTestDouble.BuildFakeDbContext();
 
-        SearchOrchestratorContext context = new()
-        {
-            SearchTerm = "alpha",
-            SearchColumn = "name",
-            PageSize = 10,
-            Offset = 0
-        };
+        IQueryable<TestEntity> baseQuery = Query(
+            new TestEntity { Id = null, Name = "alpha" });
 
-        // act/assert
+        SearchOrchestratorContext<TestEntity> context =
+            Ctx("alpha", "name", entity => true);
+
+        // act + assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             orchestrator.ExecuteAsync(
-                db,
+                dbContext,
                 baseQuery,
                 context,
-                "",
                 CancellationToken.None));
     }
 }

@@ -6,8 +6,22 @@ using EstablishmentType = DfE.EducationProviderRegistry.Core.Query.Search.Applic
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 
-internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment, EstablishmentSearchResult>
+/// <summary>
+/// Maps an <see cref="Establishment"/> database entity into an
+/// <see cref="EstablishmentSearchResult"/> projection used by the search layer.
+/// </summary>
+internal sealed class EstablishmentToSearchResultMapper
+    : IMapper<Establishment, EstablishmentSearchResult>
 {
+    /// <summary>
+    /// Creates a search result projection from the supplied establishment.
+    /// Handles optional related entities (site, group, authority) gracefully.
+    /// </summary>
+    /// <param name="input">The establishment entity to map.</param>
+    /// <returns>A populated <see cref="EstablishmentSearchResult"/>.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="input"/> is null.
+    /// </exception>
     public EstablishmentSearchResult Map(Establishment input)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -17,10 +31,10 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         Address? address = site is null
             ? null
             : new Address(
-                Street: site.AddressLine1 ?? string.Empty,
-                Town: site.Town ?? string.Empty,
-                County: site.County ?? string.Empty,
-                Postcode: site.Postcode ?? string.Empty);
+                Street: site.AddressLine1!,
+                Town: site.Town!,
+                County: site.County!,
+                Postcode: site.Postcode!);
 
         EstablishmentGroupMembership? membership =
             input.EstablishmentGroupMembership.FirstOrDefault();
@@ -28,8 +42,8 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         GroupDetail? group = membership is null
             ? null
             : new GroupDetail(
-                partOfName: membership.Group?.Name ?? string.Empty,
-                partOfCode: membership.Group?.Code ?? string.Empty);
+                partOfName: membership.Group?.Name!,
+                partOfCode: membership.Group?.Code!);
 
         EstablishmentAuthority? authority =
             input.EstablishmentAuthority.FirstOrDefault();
@@ -37,15 +51,15 @@ internal sealed class EstablishmentToSearchResultMapper : IMapper<Establishment,
         LocalAuthority? localAuthority = authority is null
             ? null
             : new LocalAuthority(
-                localAuthorityName: authority.AuthorityName ?? string.Empty,
-                localAuthorityCode: authority.AuthorityCode ?? string.Empty);
+                localAuthorityName: authority.AuthorityName!,
+                localAuthorityCode: authority.AuthorityCode!);
 
         EstablishmentType? type = input.EstablishmentType is null
             ? null
             : new EstablishmentType(input.EstablishmentType.Name);
 
         return new EstablishmentSearchResult(
-            new UniqueReferenceNumber(input.Urn ?? string.Empty),
+            new UniqueReferenceNumber(input.Urn!),
             new Name(input.Name),
             address,
             type,

@@ -1,26 +1,28 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal class SearchFilterExpressionsBuilderTestDouble
+internal static class SearchFilterExpressionsBuilderTestDouble
 {
-    public static Mock<ISearchFilterExpressionsBuilder> Mock() =>
-        new(MockBehavior.Strict);
+    public static Mock<ISearchFilterExpressionsBuilder<TProjection>> Mock<TProjection>()
+        where TProjection : class => new(MockBehavior.Strict);
 
-    public static Mock<ISearchFilterExpressionsBuilder>
-        MockFor(string filterExpression)
+    public static Mock<ISearchFilterExpressionsBuilder<TProjection>> MockFor<TProjection>(
+        Expression<Func<TProjection, bool>> expression)
+        where TProjection : class
     {
-        Mock<ISearchFilterExpressionsBuilder> searchFilterBuilderMock = Mock();
+        Mock<ISearchFilterExpressionsBuilder<TProjection>> builderMock = Mock<TProjection>();
 
-        searchFilterBuilderMock
-            .Setup(filterBuilder =>
-                filterBuilder.BuildSearchFilterExpressions(
-                    It.IsAny<IReadOnlyList<SearchFilterRequest>>()))
-                        .Returns(filterExpression);
+        builderMock
+            .Setup(searchFilterExpressionBuilder =>
+                searchFilterExpressionBuilder.BuildSearchFilterExpression(
+                    It.IsAny<IEnumerable<SearchFilterRequest>>()))
+            .Returns(expression);
 
-        return searchFilterBuilderMock;
+        return builderMock;
     }
 }
