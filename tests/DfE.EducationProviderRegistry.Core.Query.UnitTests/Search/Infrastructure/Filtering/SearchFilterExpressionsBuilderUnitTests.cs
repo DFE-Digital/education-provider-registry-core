@@ -41,7 +41,7 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
             Expression.Lambda<Func<DummyProjection, bool>>(body, param);
 
     [Fact]
-    public void BuildSearchFilterExpression_NoMatchingKeys_ReturnsTrueExpression()
+    public void BuildSearchFilterExpression_UnknownFilterKey_ThrowsInvalidOperationException()
     {
         // arrange
         FilterKeyToFilterExpressionMapOptions options =
@@ -57,18 +57,51 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
             Requests(new SearchFilterRequest("UNKNOWN", ["A"]));
 
         // act
-        Expression<Func<DummyProjection, bool>> expr =
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => builder.BuildSearchFilterExpression(requests));
+
+        // assert
+        Assert.Equal(
+            "No filter expression configuration exists for 'UNKNOWN'.",
+            exception.Message);
+
+        exprFactoryMock.Verify(
+            searchFilterSpecificationFactory =>
+                searchFilterSpecificationFactory.Create(
+                    It.IsAny<string>(),
+                    It.IsAny<SearchFilterRequest>()),
+            Times.Never());
+    }
+
+    [Fact]
+    public void BuildSearchFilterExpression_NoRequests_ReturnsTrueExpression()
+    {
+        // arrange
+        FilterKeyToFilterExpressionMapOptions options =
+            Options([]);
+
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
+            SearchFilterFactoryTestDouble.Mock<DummyProjection>();
+
+        SearchFilterExpressionsBuilder<DummyProjection> builder =
+            Builder(options, exprFactoryMock.Object);
+
+        SearchFilterRequest[] requests = [];
+
+        // act
+        Expression<Func<DummyProjection, bool>> expression =
             builder.BuildSearchFilterExpression(requests);
 
-        Func<DummyProjection, bool> compiled = expr.Compile();
+        Func<DummyProjection, bool> compiled = expression.Compile();
 
         // assert
         Assert.True(compiled(new DummyProjection { Value = "anything" }));
 
         exprFactoryMock.Verify(
-            searchFilterExpressionFactory =>
-                searchFilterExpressionFactory.Create(
-                    It.IsAny<string>(), It.IsAny<SearchFilterRequest>()),
+            searchFilterSpecificationFactory =>
+                searchFilterSpecificationFactory.Create(
+                    It.IsAny<string>(),
+                    It.IsAny<SearchFilterRequest>()),
             Times.Never());
     }
 
