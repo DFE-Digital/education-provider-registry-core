@@ -16,7 +16,7 @@ public sealed class FacetResultTests
         FacetResult result = new(name, value, count);
 
         // assert
-        Assert.Equal(value, result.Value);
+        Assert.Equal(value, result.Label);
         Assert.Equal(name, result.Value);
         Assert.Equal(count, result.Count);
     }

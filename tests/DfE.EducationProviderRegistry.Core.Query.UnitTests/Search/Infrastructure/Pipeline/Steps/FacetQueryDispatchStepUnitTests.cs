@@ -187,7 +187,7 @@ public sealed class FacetQueryDispatchStepUnitTests
 
         Assert.Single(results0);
         Assert.Single(results1);
-        Assert.Equal("Primary", results0[0].Value);
+        Assert.Equal("Primary", results0[0].Label);
         Assert.Equal(10, results0[0].Count);
     }
 }

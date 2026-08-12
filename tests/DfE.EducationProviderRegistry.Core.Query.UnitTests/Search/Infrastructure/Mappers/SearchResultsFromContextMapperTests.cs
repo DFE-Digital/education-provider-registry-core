@@ -87,6 +87,6 @@ public sealed class SearchResultsFromContextMapperTests
         Assert.Single(mapped.FacetResults.Facets);
         Assert.Equal("phase", mapped.FacetResults.Facets.First().Name);
         Assert.Single(mapped.FacetResults.Facets.First().Results);
-        Assert.Equal("Primary", mapped.FacetResults.Facets.First().Results.First().Value);
+        Assert.Equal("Primary", mapped.FacetResults.Facets.First().Results.First().Label);
     }
 }

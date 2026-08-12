@@ -40,7 +40,7 @@ public sealed class EstablishmentFacetProviderUnitTests
         Dictionary<string, FacetDefinition<Establishment>> selectors =
             new()
             {
-                { "Type", new FacetDefinition<Establishment>(e => e.EstablishmentType.Name) }
+                { "Type", new FacetDefinition<Establishment>(e => e.EstablishmentType.Name, e => e.EstablishmentType.Name) }
             };
 
         EstablishmentFacetProvider provider = new(factory, selectors);
@@ -113,10 +113,10 @@ public sealed class EstablishmentFacetProviderUnitTests
         // assert
         Assert.Equal(2, results.Count);
         Assert.Equal("1", results[0].Value);
-        Assert.Equal("Primary", results[0].Value);
+        Assert.Equal("Primary", results[0].Label);
         Assert.Equal(2, results[0].Count);
         Assert.Equal("2", results[1].Value);
-        Assert.Equal("Secondary", results[1].Value);
+        Assert.Equal("Secondary", results[1].Label);
         Assert.Equal(1, results[1].Count);
     }
 
@@ -177,8 +177,8 @@ public sealed class EstablishmentFacetProviderUnitTests
         // assert
         Assert.Equal("1", results[0].Value);
         Assert.Equal("2", results[1].Value);
-        Assert.Equal("X", results[0].Value);
-        Assert.Equal("Y", results[1].Value);
+        Assert.Equal("X", results[0].Label);
+        Assert.Equal("Y", results[1].Label);
     }
 
     [Fact]
@@ -243,9 +243,14 @@ public sealed class EstablishmentFacetProviderUnitTests
             await provider.GetFacetsAsync(["A", "B"], "Type", TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Contains(results, r => r.Value == string.Empty);
-        Assert.Contains(results, r => r.Value == "2");
-        Assert.Contains(results, r => r.Value == string.Empty);
-        Assert.Contains(results, r => r.Value == "Primary");
+        Assert.Contains(
+            results,
+            r => r.Value == string.Empty &&
+                 r.Label == string.Empty);
+
+        Assert.Contains(
+            results,
+            r => r.Value == "2" &&
+                 r.Label == "Primary");
     }
 }
