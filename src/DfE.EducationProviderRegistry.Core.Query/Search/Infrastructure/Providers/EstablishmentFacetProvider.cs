@@ -68,9 +68,9 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
             IQueryable<dynamic> sqlProjection =
                 grouped.Select(groupedFacet => new
                 {
-                    groupedFacet.Key,
+                    Value = groupedFacet.Key,
 
-                    Value = groupedFacet.AsQueryable().Select(facetDefinition.LabelSelector).FirstOrDefault(),
+                    Label = groupedFacet.AsQueryable().Select(facetDefinition.LabelSelector).FirstOrDefault(),
 
                     Count = groupedFacet.LongCount()
                 });
@@ -81,8 +81,8 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
             List<FacetResult> results =
                 [.. rawFacetResults
                     .Select(facetResult => new FacetResult(
-                        facetResult.Key?.ToString() ?? string.Empty,
-                        facetResult.Value ?? string.Empty,
+                        facetResult.Value?.ToString() ?? string.Empty,
+                        facetResult.Label ?? string.Empty,
                         facetResult.Count
                     ))
                     .OrderByDescending(facet => facet.Count)];
