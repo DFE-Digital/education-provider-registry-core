@@ -11,12 +11,12 @@ public sealed class SearchTermSpecificationOrchestrator<TEntity>
     where TEntity : class
 {
     private readonly ISearchIndexFieldSpecificationOrchestrator<TEntity> _indexFieldOrchestrator;
-    private readonly ChainingPredicateRegistry<TEntity> _predicateRegistry;
+    private readonly IChainingPredicateRegistry<TEntity> _predicateRegistry;
     private readonly SearchConfiguration _searchConfiguration;
 
     public SearchTermSpecificationOrchestrator(
         ISearchIndexFieldSpecificationOrchestrator<TEntity> indexFieldOrchestrator,
-        ChainingPredicateRegistry<TEntity> predicateRegistry,
+        IChainingPredicateRegistry<TEntity> predicateRegistry,
         IOptions<SearchConfiguration> searchConfiguration)
     {
         _indexFieldOrchestrator = indexFieldOrchestrator;

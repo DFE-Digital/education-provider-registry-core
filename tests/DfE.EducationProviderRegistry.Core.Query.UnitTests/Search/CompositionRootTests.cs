@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using DfE.Core.Libraries.DesignPatterns.ChainOfResponsibility;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;

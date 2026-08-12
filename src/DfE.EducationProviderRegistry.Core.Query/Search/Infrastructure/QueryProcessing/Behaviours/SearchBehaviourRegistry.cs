@@ -1,6 +1,7 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
 
-public sealed class SearchBehaviourRegistry<TEntity>
+public sealed class SearchBehaviourRegistry<TEntity> :
+    ISearchBehaviourRegistry<TEntity> where TEntity : class
 {
     private readonly Dictionary<string, ISearchBehaviour<TEntity>> _behaviours;
 

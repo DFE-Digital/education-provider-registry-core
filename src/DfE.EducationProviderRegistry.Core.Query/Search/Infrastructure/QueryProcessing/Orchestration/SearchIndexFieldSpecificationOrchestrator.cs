@@ -1,5 +1,6 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 
@@ -9,12 +10,12 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
     : ISearchIndexFieldSpecificationOrchestrator<TEntity>
     where TEntity : class
 {
-    private readonly SearchBehaviourRegistry<TEntity> _behaviourRegistry;
-    private readonly ChainingPredicateRegistry<TEntity> _predicateRegistry;
+    private readonly ISearchBehaviourRegistry<TEntity> _behaviourRegistry;
+    private readonly IChainingPredicateRegistry<TEntity> _predicateRegistry;
 
     public SearchIndexFieldSpecificationOrchestrator(
-        SearchBehaviourRegistry<TEntity> behaviourRegistry,
-        ChainingPredicateRegistry<TEntity> predicateRegistry)
+        ISearchBehaviourRegistry<TEntity> behaviourRegistry,
+        IChainingPredicateRegistry<TEntity> predicateRegistry)
     {
         _behaviourRegistry = behaviourRegistry;
         _predicateRegistry = predicateRegistry;
