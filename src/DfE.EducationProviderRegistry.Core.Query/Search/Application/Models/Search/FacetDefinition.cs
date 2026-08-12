@@ -3,6 +3,6 @@
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 public sealed record FacetDefinition<TEntity>(
-    Expression<Func<TEntity, object>> Selector,
+    Expression<Func<TEntity, object>> ValueSelector,
     Expression<Func<TEntity, string>> LabelSelector)
  where TEntity : class;

@@ -63,7 +63,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
                     ids.Contains(establishment.Urn));
 
             IQueryable<IGrouping<object, Establishment>> grouped =
-                filtered.GroupBy(facetDefinition.Selector);
+                filtered.GroupBy(facetDefinition.ValueSelector);
 
             IQueryable<dynamic> sqlProjection =
                 grouped.Select(groupedFacet => new
