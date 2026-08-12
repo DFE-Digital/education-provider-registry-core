@@ -299,7 +299,7 @@ public static class CompositionRoot
         services.AddSingleton(typeof(ISearchBehaviour<>), typeof(ExactSearchBehaviour<>));
         services.AddSingleton(typeof(ISearchBehaviour<>), typeof(PartialSearchBehaviour<>));
         services.AddSingleton(typeof(ISearchBehaviour<>), typeof(FuzzySearchBehaviour<>));
-        services.AddSingleton(typeof(SearchBehaviourRegistry<>));
+        services.AddSingleton(typeof(ISearchBehaviourRegistry<>), typeof(SearchBehaviourRegistry<>));
 
         // ---------------------------------------------------------
         // Search specification orchestration
