@@ -4,4 +4,5 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sea
 
 public sealed record FacetDefinition<TEntity>(
     Expression<Func<TEntity, object>> Selector,
-    Expression<Func<TEntity, string>>? AdditionalValueSelector = null);
+    Expression<Func<TEntity, string>>? AdditionalValueSelector = null)
+ where TEntity : class;

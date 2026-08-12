@@ -164,9 +164,12 @@ public static class CompositionRoot
             SearchRequestFiltersToCoreFiltersMapper>();
 
         services.AddSingleton(
-            new Dictionary<string, Expression<Func<Establishment, object>>>(StringComparer.OrdinalIgnoreCase)
+            new Dictionary<string, FacetDefinition<Establishment>>(StringComparer.OrdinalIgnoreCase)
             {
-                { "establishmenttypeid", establishment => establishment.EstablishmentTypeId }
+                ["establishmenttypeid"] =
+                    new FacetDefinition<Establishment>(
+                        establishment => establishment.EstablishmentTypeId,
+                        establishment => establishment.EstablishmentType.Name)
             });
 
         services.AddOptions<FilterKeyToFilterExpressionMapOptions>()

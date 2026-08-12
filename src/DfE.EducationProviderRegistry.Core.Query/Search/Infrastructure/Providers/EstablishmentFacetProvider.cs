@@ -13,7 +13,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Provide
 public sealed class EstablishmentFacetProvider : IFacetProvider
 {
     private readonly IDbContextFactory<EducationProviderRegistryDbContext> _contextFactory;
-    private readonly Dictionary<string, Expression<Func<Establishment, object>>> _facetSelectors;
+    private readonly Dictionary<string, FacetDefinition<Establishment>> _facetDefinitions;
 
     /// <summary>
     /// Creates a new facet provider using the supplied context factory and facet selector map.
