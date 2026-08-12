@@ -36,9 +36,8 @@ internal sealed class SearchOrderingStep : IEvaluationHandler<SearchPipelineCont
             ordered.Add(establishment);
         }
 
-        ordered.Sort((establishmentLeft, establishmentRight) =>
-            orderMap[establishmentLeft.Urn!]
-                .CompareTo(orderMap[establishmentRight.Urn!]));
+        ordered.Sort((left, right) =>
+            orderMap[left.Urn!].CompareTo(orderMap[right.Urn!]));
 
         request.Set(ordered);
 

@@ -18,7 +18,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
     private readonly ISearchQueryProcessor<Establishment> _searchSpecOrchestrator;
-    private readonly ISearchFilterExpressionsBuilder _filterExprBuilder;
     private readonly IFacetAggregator _facetAggregator;
     private readonly IMapper<
         (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
@@ -30,7 +29,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
     public EstablishmentsSearchServiceAdapter(
         EducationProviderRegistryDbContext dbContext,
         ISearchQueryProcessor<Establishment> searchSpecOrchestrator,
-        ISearchFilterExpressionsBuilder filterExprBuilder,
         IFacetAggregator facetAggregator,
         IMapper<
             (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
@@ -41,7 +39,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
     {
         _dbContext = dbContext;
         _searchSpecOrchestrator = searchSpecOrchestrator;
-        _filterExprBuilder = filterExprBuilder;
         _facetAggregator = facetAggregator;
         _resultsMapper = resultsMapper;
         _filterMapper = filterMapper;
