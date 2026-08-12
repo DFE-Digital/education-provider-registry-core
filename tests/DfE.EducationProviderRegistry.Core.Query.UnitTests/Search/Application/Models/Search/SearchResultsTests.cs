@@ -40,7 +40,7 @@ public sealed class SearchResultsTests
                 {
                     new("Region",
                     [
-                        new FacetResult("North", 10)
+                        new FacetResult("1", "North", 10)
                     ])
                 });
 

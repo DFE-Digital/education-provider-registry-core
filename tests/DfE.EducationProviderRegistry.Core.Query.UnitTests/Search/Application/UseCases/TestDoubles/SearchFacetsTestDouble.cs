@@ -10,7 +10,7 @@ internal static class SearchFacetsTestDouble
     {
         List<SearchFacet> facets =
         [
-            new SearchFacet("name", [new FacetResult("value1", 1)])
+            new SearchFacet("name", [new FacetResult("1", "value1", 1)])
         ];
 
         return new SearchFacets(facets);

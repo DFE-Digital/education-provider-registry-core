@@ -86,7 +86,7 @@ public sealed class FacetQueryBuilderStepUnitTests
     public async Task Execute_Throws_WhenCancellationRequested()
     {
         // arrange
-        IReadOnlyList<FacetResult> results = [new("Primary", 10)];
+        IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);
@@ -107,7 +107,7 @@ public sealed class FacetQueryBuilderStepUnitTests
     public async Task Execute_SetsFacets_WhenTasksAreValid()
     {
         // arrange
-        IReadOnlyList<FacetResult> results = [new("Primary", 10)];
+        IReadOnlyList<FacetResult> results = [new("1", "Primary", 10)];
 
         Task<IReadOnlyList<FacetResult>> completedTask =
             Task.FromResult(results);
@@ -126,7 +126,7 @@ public sealed class FacetQueryBuilderStepUnitTests
         Assert.Single(facets);
         Assert.Equal("phase", facets[0].Name);
         Assert.Single(facets[0].Results);
-        Assert.Equal("Primary", facets[0].Results[0].Value);
+        Assert.Equal("Primary", facets[0].Results[0].Label);
         Assert.Equal(10, facets[0].Results[0].Count);
     }
 }
