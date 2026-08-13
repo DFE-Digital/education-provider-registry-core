@@ -1,252 +1,187 @@
-﻿//using System.Collections.ObjectModel;
-//using DfE.Core.Libraries.CrossCutting.Mapper;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
-//using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
-//using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
-//using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
-//using Moq;
+﻿using System.Collections.ObjectModel;
+using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 
-//namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure;
 
-//public sealed class EstablishmentsSearchServiceAdapterTests
-//{
-//    [Fact]
-//    public async Task SearchAsync_ReturnsEmptyResults_WhenNoEstablishmentsFound()
-//    {
-//        // arrange
-//        Mock<ISearchProvider<Establishment>> searchProvider =
-//            SearchProviderTestDouble.MockFor([]);
+public class EstablishmentsSearchServiceAdapterTests
+{
+    private readonly Mock<ISearchFilterExpressionsBuilder<Establishment>> _filterBuilderMock;
+    private readonly Mock<IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+        SearchResults<EstablishmentSearchResults, SearchFacets>>> _resultsMapperMock;
+    private readonly Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> _filterMapperMock;
+    private readonly EstablishmentsSearchServiceAdapter _sut;
+    private readonly EducationProviderRegistryDbContext _db;
 
-//        Mock<IMapper<
-//            SearchPipelineContext,
-//            SearchResults<EstablishmentSearchResults, SearchFacets>>> resultsMapper =
-//                SearchResultsMapperTestDouble.Mock();
+    public EstablishmentsSearchServiceAdapterTests()
+    {
+        DbContextOptions<EducationProviderRegistryDbContext> options =
+            new DbContextOptionsBuilder<EducationProviderRegistryDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
 
-//        ReadOnlyCollection<SearchFilterRequest> emptyMappedFilters =
-//            new List<SearchFilterRequest>().AsReadOnly();
+        _db = new EducationProviderRegistryDbContext(options);
 
-//        Mock<IMapper<
-//            ReadOnlyCollection<FilterRequest>,
-//            ReadOnlyCollection<SearchFilterRequest>>> filterMapper =
-//                FilterResultsMapperTestDouble.MockFor(emptyMappedFilters);
+        Mock<ISearchQueryProcessor<Establishment>>  searchProcessorMock = SearchQueryProcessorTestDouble.Mock();
+        Mock<IFacetAggregator> facetAggregatorMock = FacetAggregatorTestDouble.Mock();
 
-//        EstablishmentsSearchServiceAdapter adapter =
-//            new(
-//                searchProvider.Object,
-//                Mock.Of<IFacetProvider>(),
-//                Mock.Of<IEvaluator<SearchPipelineContext>>(),
-//                resultsMapper.Object,
-//                filterMapper.Object);
+        _filterBuilderMock = SearchFilterExpressionsBuilderTestDouble.Mock();
+        _resultsMapperMock = ResultsMapperTestDouble.Mock();
+        _filterMapperMock = FilterMapperTestDouble.Mock();
 
-//        SearchServiceAdapterRequest request =
-//            new(
-//                searchIndexKey: "establishments",
-//                searchKeyword: "abc",
-//                searchFields: ["Name"],
-//                sortOrdering: new SortOrder("Name", "Asc", new List<string>() { "Name" }.AsReadOnly()),
-//                facets: [],
-//                searchFilterRequests: [],
-//                offset: 0);
+        _sut = new EstablishmentsSearchServiceAdapter(
+            _db,
+            searchProcessorMock.Object,
+            _filterBuilderMock.Object,
+            facetAggregatorMock.Object,
+            _resultsMapperMock.Object,
+            _filterMapperMock.Object);
+    }
 
-//        // act
-//        SearchResults<EstablishmentSearchResults, SearchFacets> result =
-//            await adapter.SearchAsync(
-//                request, TestContext.Current.CancellationToken);
+    [Fact]
+    public async Task SearchAsync_Throws_WhenRequestIsNull()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _sut.SearchAsync(null!, CancellationToken.None));
+    }
 
-//        // assert
-//        Assert.Null(result.Results);
-//        Assert.Null(result.FacetResults);
+    [Fact]
+    public async Task SearchAsync_MapsFilterRequests()
+    {
+        // arrange
+        SearchServiceAdapterRequest request = new(
+            searchTerms: new List<SearchTerm>
+            {
+                new("key", "value")
+            },
+            searchFields: ["abc"],
+            sortOrdering: new SortOrder("Name", "asc", new List<string> { "Name" }));
 
-//        resultsMapper.Verify(resultsMapper =>
-//            resultsMapper.Map(It.IsAny<SearchPipelineContext>()), Times.Never);
-//    }
+        ReadOnlyCollection<SearchFilterRequest> mapped = new(
+            [new("key", ["value"])]);
 
-//    [Fact]
-//    public async Task SearchAsync_ExecutesPipelineSteps_InOrder()
-//    {
-//        // arrange
-//        List<Establishment> establishments =
-//            [
-//                new Establishment { Urn = "111" }
-//            ];
+        // act
+        await _sut.SearchAsync(request, CancellationToken.None);
 
-//        Mock<ISearchProvider<Establishment>> provider =
-//            SearchProviderTestDouble.MockFor(establishments);
+        // verify
+        _filterMapperMock.Verify(mapper =>
+            mapper.Map(It.IsAny<ReadOnlyCollection<FilterRequest>>()), Times.Once);
+    }
 
-//        Mock<IEvaluator<SearchPipelineContext>> evaluator = new();
+    [Fact]
+    public async Task SearchAsync_AppliesFilterPredicate()
+    {
+        // arrange
+        SearchServiceAdapterRequest request = new(
+            searchTerms: new List<SearchTerm>
+            {
+                new("key", "value")
+            },
+            searchFields: ["abc"],
+            sortOrdering: new SortOrder("Name", "asc", new List<string> { "Name" }));
 
-//        Mock<IMapper<
-//            SearchPipelineContext,
-//            SearchResults<EstablishmentSearchResults, SearchFacets>>> resultsMapper =
-//                SearchResultsMapperTestDouble.MockFor(
-//                    new SearchResults<EstablishmentSearchResults, SearchFacets>());
+        ReadOnlyCollection<SearchFilterRequest> mapped = new([]);
 
-//        ReadOnlyCollection<SearchFilterRequest> emptyMappedFilters =
-//            new List<SearchFilterRequest>().AsReadOnly();
+        // act
+        await _sut.SearchAsync(request, CancellationToken.None);
 
-//        Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> filterMapper =
-//            FilterResultsMapperTestDouble.MockFor(emptyMappedFilters);
+        // verify
+        _filterBuilderMock.Verify(searchFilterExpressionBuilder =>
+            searchFilterExpressionBuilder.BuildSearchFilterExpression(mapped), Times.Once);
+    }
 
-//        EstablishmentsSearchServiceAdapter adapter =
-//            new(
-//                provider.Object,
-//                Mock.Of<IFacetProvider>(),
-//                evaluator.Object,
-//                resultsMapper.Object,
-//                filterMapper.Object);
+    [Fact]
+    public async Task SearchAsync_ProjectsEstablishmentsCorrectly()
+    {
+        // arrange
+        _db.Establishment.Add(new Establishment
+        {
+            EstablishmentId = 1,
+            Urn = "100",
+            Uid = "UID",
+            Name = "School A",
+            Site =
+            [
+                new() { AddressLine1 = "Addr", Town = "Town", County = "County", Postcode = "PC" }
+            ],
+            EstablishmentType =
+                new Data.DatabaseModels.Models.EstablishmentType
+            {
+                Name = "Type",
+                Code = "T"
+            },
+            EstablishmentStatus =
+                new EstablishmentStatus
+            {
+                Name = "Status",
+                Code = "ST"
+            },
+            EstablishmentGroupMembership =
+            [
+                new EstablishmentGroupMembership
+                {
+                    Group =
+                        new GroupRecord
+                        {
+                            Name = "Group",
+                            Code = "GC"
+                        }
+                }
+            ],
+            EstablishmentAuthority =
+            [
+                new EstablishmentAuthority
+                {
+                    AuthorityName = "Auth",
+                    AuthorityCode = "AC"
+                }
+            ]
+        });
 
-//        SearchServiceAdapterRequest request =
-//            new(
-//                searchIndexKey: "establishments",
-//                searchKeyword: "abc",
-//                searchFields: ["Name"],
-//                sortOrdering: new SortOrder("Name", "Asc", new List<string>() { "Name" }.AsReadOnly()),
-//                facets: [],
-//                searchFilterRequests: [],
-//                offset: 0);
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-//        // act
-//        await adapter.SearchAsync(request, TestContext.Current.CancellationToken);
+        SearchServiceAdapterRequest request = new(
+            searchTerms: new List<SearchTerm>
+            {
+                new("key", "value")
+            },
+            searchFields: ["abc"],
+            sortOrdering: new SortOrder("Name", "asc", new List<string> { "Name" }));
 
-//        // assert
-//        evaluator.Verify(searchPipelineStep =>
-//            searchPipelineStep.EvaluateAsync(
-//                It.IsAny<SearchPipelineContext>(),
-//                It.IsAny<CancellationToken>()), Times.Once);
+        // act
+        SearchResults<EstablishmentSearchResults, SearchFacets> result = await _sut.SearchAsync(request, CancellationToken.None);
 
-//        evaluator.VerifyNoOtherCalls();
-//    }
-
-//    [Fact]
-//    public async Task SearchAsync_PassesCorrectParameters_ToSearchProvider()
-//    {
-//        // arrange
-//        Mock<ISearchProvider<Establishment>> provider =
-//            SearchProviderTestDouble.MockFor([new Establishment { Urn = "111" }]);
-
-//        Mock<IMapper<
-//            SearchPipelineContext,
-//            SearchResults<EstablishmentSearchResults, SearchFacets>>> resultsMapper =
-//                SearchResultsMapperTestDouble.MockFor(
-//                    new SearchResults<EstablishmentSearchResults, SearchFacets>());
-
-//        ReadOnlyCollection<SearchFilterRequest> mappedFilters = new List<SearchFilterRequest>().AsReadOnly();
-
-//        Mock<IMapper<
-//            ReadOnlyCollection<FilterRequest>,
-//            ReadOnlyCollection<SearchFilterRequest>>> filterMapper =
-//                FilterResultsMapperTestDouble.MockFor(mappedFilters);
-
-//        EstablishmentsSearchServiceAdapter adapter =
-//            new(
-//                provider.Object,
-//                Mock.Of<IFacetProvider>(),
-//                Mock.Of<IEvaluator<SearchPipelineContext>>(),
-//                resultsMapper.Object,
-//                filterMapper.Object);
-
-//        SearchServiceAdapterRequest request =
-//            new(
-//                searchIndexKey: "establishments",
-//                searchKeyword: "hello",
-//                searchFields: ["Name"],
-//                sortOrdering: new SortOrder("Name", "Asc", new List<string>() { "Name" }.AsReadOnly()),
-//                facets: [],
-//                searchFilterRequests: [
-//                    new FilterRequest( filterName: "x", filterValues: [])
-//                ],
-//                offset: 0);
-
-//        // act
-//        await adapter.SearchAsync(request, TestContext.Current.CancellationToken);
-
-//        // assert
-//        provider.Verify(searchProvider =>
-//            searchProvider.GetMatchingIdsAsync(
-//                searchTerm: "hello",
-//                pageSize: 50,
-//                offset: 0,
-//                mappedFilters,
-//                It.IsAny<CancellationToken>()),
-//                Times.Once);
-//    }
-
-//    [Fact]
-//    public async Task SearchAsync_SetsContextCorrectly()
-//    {
-//        // arrange
-//        List<Establishment> establishments =
-//            [
-//                new Establishment { Urn = "111" },
-//                new Establishment { Urn = "222" }
-//            ];
-
-//        Mock<ISearchProvider<Establishment>> provider =
-//            SearchProviderTestDouble.MockFor(establishments);
-
-//        Mock<IEvaluator<SearchPipelineContext>> evaluator = new();
-
-//        SearchPipelineContext? capturedContext = null;
-
-//        evaluator
-//            .Setup(s => s.EvaluateAsync(
-//                It.IsAny<SearchPipelineContext>(),
-//                It.IsAny<CancellationToken>()))
-//            .Callback<SearchPipelineContext, CancellationToken>((ctx, _) => capturedContext = ctx);
-
-//        SearchResults<EstablishmentSearchResults, SearchFacets> mappedResults = new();
-
-//        Mock<IMapper<
-//            SearchPipelineContext,
-//            SearchResults<EstablishmentSearchResults, SearchFacets>>> resultsMapper =
-//                SearchResultsMapperTestDouble.MockFor(mappedResults);
-
-//        ReadOnlyCollection<SearchFilterRequest> mappedFilters =
-//            new List<SearchFilterRequest>().AsReadOnly();
-
-//        Mock<IMapper<
-//            ReadOnlyCollection<FilterRequest>,
-//            ReadOnlyCollection<SearchFilterRequest>>> filterMapper =
-//                FilterResultsMapperTestDouble.MockFor(mappedFilters);
-
-
-//        EstablishmentsSearchServiceAdapter adapter =
-//            new(
-//                provider.Object,
-//                Mock.Of<IFacetProvider>(),
-//                evaluator.Object,
-//                resultsMapper.Object,
-//                filterMapper.Object);
-
-//        SearchServiceAdapterRequest request =
-//            new(
-//                searchIndexKey: "establishments",
-//                searchKeyword: "abc",
-//                searchFields: ["Name"],
-//                sortOrdering: new SortOrder("Name", "Asc", new List<string>() { "Name" }.AsReadOnly()),
-//                facets: [],
-//                searchFilterRequests: [],
-//                offset: 0);
-
-//        // act
-//        await adapter.SearchAsync(request, TestContext.Current.CancellationToken);
-
-//        // assert
-//        ReadOnlyCollection<string?> urns = capturedContext!.Get<ReadOnlyCollection<string?>>();
-//        IReadOnlyList<Establishment> ests = capturedContext!.Get<IReadOnlyList<Establishment>>();
-//        IReadOnlyCollection<string> facetKeys = capturedContext.Get<List<string>>();
-
-//        Assert.Contains("111", urns);
-//        Assert.Contains("222", urns);
-//        Assert.Equal(2, ests.Count);
-//        Assert.Contains("EstablishmentTypeId", facetKeys);
-//    }
-//}
+        // verify
+        _resultsMapperMock.Verify(mapper =>
+            mapper.Map(It.Is<(IReadOnlyList<EstablishmentReadModel> items,
+                IReadOnlyList<AggregatedFacetResult> facets)>(projection =>
+                    projection.items.Count == 1 &&
+                    projection.items[0].Urn == "100" &&
+                    projection.items[0].Name == "School A" &&
+                    projection.items[0].AddressLine1 == "Addr" &&
+                    projection.items[0].City == "Town" &&
+                    projection.items[0].County == "County" &&
+                    projection.items[0].Postcode == "PC" &&
+                    projection.items[0].Type == "Type" &&
+                    projection.items[0].Status == "Status" &&
+                    projection.items[0].GroupName == "Group" &&
+                    projection.items[0].GroupCode == "GC" &&
+                    projection.items[0].LocalAuthorityName == "Auth" &&
+                    projection.items[0].LocalAuthorityCode == "AC"
+                )), Times.Once);
+    }
+}
