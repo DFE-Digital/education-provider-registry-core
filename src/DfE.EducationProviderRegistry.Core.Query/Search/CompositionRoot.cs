@@ -28,6 +28,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.S
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram.Translation;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
@@ -153,6 +154,10 @@ public static class CompositionRoot
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddOptions<SearchConfiguration>()
+            .Bind(configuration.GetRequiredSection(nameof(SearchConfiguration)));
 
         services.TryAddScoped<EstablishmentTypeFilter>();
 
