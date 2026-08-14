@@ -196,7 +196,7 @@ public static class CompositionRoot
                 }
             );
 
-        services.AddScoped<IFacetAggregator, FacetAggregationStep>();
+        services.AddScoped<IFacetAggregator, FacetAggregator>();
 
         // ---------------------------------------------------------
         // Logical operator factory

@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using System.Collections.Concurrent;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using Moq;
 
@@ -6,44 +7,71 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public static class FacetProviderTestDouble
 {
-    public static Mock<IFacetProvider> Mock() => new(MockBehavior.Strict);
-
-    public static Mock<IFacetProvider> MockFor(
-        IReadOnlyDictionary<string, IReadOnlyList<FacetResult>>? facetMap = null,
-        string? throwKey = null,
-        Exception? exception = null)
+    /// <summary>
+    /// Creates a strict mock of IFacetProvider with optional preconfigured facet responses.
+    /// </summary>
+    public static Mock<IFacetProvider> Mock(
+        Action<FacetProviderBuilder>? configure = null)
     {
-        Mock<IFacetProvider> mock = Mock();
+        Mock<IFacetProvider> mock = new Mock<IFacetProvider>(MockBehavior.Strict);
+        FacetProviderBuilder builder = new FacetProviderBuilder(mock);
 
-        mock.Setup(facetProvider =>
-            facetProvider.GetFacetsAsync(
-                It.IsAny<IReadOnlyList<string>>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((IReadOnlyList<string> urns, string facetKey, CancellationToken _) =>
-            {
-                if (throwKey != null &&
-                    facetKey.Equals(throwKey, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw exception ??
-                        new InvalidOperationException("Test exception");
-                }
+        configure?.Invoke(builder);
 
-                if (facetMap != null)
-                {
-                    foreach (KeyValuePair<string, IReadOnlyList<FacetResult>> kvp in facetMap)
-                    {
-                        if (facetKey.Equals(kvp.Key, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return kvp.Value;
-                        }
-                    }
-                }
-
-                return Array.Empty<FacetResult>();
-            })
-            .Verifiable();
+        builder.Apply();
 
         return mock;
+    }
+
+    /// <summary>
+    /// Fluent builder for configuring facet responses.
+    /// </summary>
+    public sealed class FacetProviderBuilder
+    {
+        private readonly Mock<IFacetProvider> _mock;
+
+        // Key: facet name (case-insensitive)
+        private readonly ConcurrentDictionary<string, IReadOnlyList<FacetResult>> _responses =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        public FacetProviderBuilder(Mock<IFacetProvider> mock)
+        {
+            _mock = mock;
+        }
+
+        public FacetProviderBuilder Returns(string facetName, IReadOnlyList<FacetResult> results)
+        {
+            _responses[facetName] = results;
+            return this;
+        }
+
+        public FacetProviderBuilder Throws(string facetName, Exception ex)
+        {
+            _responses[facetName] = null!;
+            _mock
+                .Setup(p => p.GetFacetsAsync(It.IsAny<IReadOnlyList<string>>(), facetName, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(ex);
+
+            return this;
+        }
+
+        internal void Apply()
+        {
+            foreach (KeyValuePair<string, IReadOnlyList<FacetResult>> kvp in _responses)
+            {
+                if (kvp.Value is null)
+                    continue;
+
+                string facetName = kvp.Key;
+                IReadOnlyList<FacetResult> results = kvp.Value;
+
+                _mock
+                    .Setup(p => p.GetFacetsAsync(
+                        It.IsAny<IReadOnlyList<string>>(),
+                        facetName,
+                        It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(results);
+            }
+        }
     }
 }

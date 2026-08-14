@@ -11,17 +11,14 @@ public class FacetAggregationStepTests
     [Fact]
     public async Task CalculateFacetsAsync_ReturnsEmpty_WhenRequestedFacetsIsNull()
     {
-        // arrange
         IReadOnlyList<string> urns = new[] { "100", "200" };
 
         Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock();
 
-        // act
-        IReadOnlyList <AggregatedFacetResult> result =
-            await new FacetAggregationStep(facetProviderMock.Object)
+        IReadOnlyList<AggregatedFacetResult> result =
+            await new FacetAggregator(facetProviderMock.Object)
                 .CalculateFacetsAsync(urns, null, CancellationToken.None);
 
-        // assert/verify
         Assert.Empty(result);
         facetProviderMock.VerifyNoOtherCalls();
     }
@@ -29,17 +26,14 @@ public class FacetAggregationStepTests
     [Fact]
     public async Task CalculateFacetsAsync_ReturnsEmpty_WhenRequestedFacetsIsEmpty()
     {
-        // arrange
         IReadOnlyList<string> urns = new[] { "100", "200" };
 
         Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock();
 
-        // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregationStep(facetProviderMock.Object)
+            await new FacetAggregator(facetProviderMock.Object)
                 .CalculateFacetsAsync(urns, [], CancellationToken.None);
 
-        // assert/verify
         Assert.Empty(result);
         facetProviderMock.VerifyNoOtherCalls();
     }
@@ -51,16 +45,13 @@ public class FacetAggregationStepTests
         IReadOnlyList<string> urns = new[] { "100", "200" };
         IEnumerable<string> requested = new[] { "Type", "type", "TYPE" };
 
-        Mock<IFacetProvider> facetProviderMock =
-            FacetProviderTestDouble
-                .MockFor(new Dictionary<string, IReadOnlyList<FacetResult>>
-                {
-                    ["Type"] = new List<FacetResult>()
-                });
+        Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock(builder =>
+            builder.Returns("Type", new List<FacetResult>())
+        );
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregationStep(facetProviderMock.Object)
+            await new FacetAggregator(facetProviderMock.Object)
                 .CalculateFacetsAsync(urns, requested, CancellationToken.None);
 
         // assert/verify
@@ -70,10 +61,8 @@ public class FacetAggregationStepTests
         facetProviderMock.Verify(
             facetProvider =>
                 facetProvider.GetFacetsAsync(
-                    It.IsAny<IReadOnlyList<string>>(),
-                    "Type",
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
+                    urns, "Type", It.IsAny<CancellationToken>()),
+            Times.Once);
 
         facetProviderMock.VerifyNoOtherCalls();
     }
@@ -88,26 +77,24 @@ public class FacetAggregationStepTests
         IReadOnlyList<FacetResult> providerResults =
             new List<FacetResult>
             {
-                new("Open", "status", 10),
-                new("Closed", "status", 5)
+                new("Open", "label", 10),
+                new("Closed", "label", 5)
             };
 
         Mock<IFacetProvider> facetProviderMock =
-            FacetProviderTestDouble.MockFor(
-                new Dictionary<string, IReadOnlyList<FacetResult>>
-                {
-                    ["Status"] = providerResults
-                });
+            FacetProviderTestDouble.Mock(builder =>
+                builder.Returns("Status", providerResults));
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregationStep(facetProviderMock.Object)
+            await new FacetAggregator(facetProviderMock.Object)
                 .CalculateFacetsAsync(urns, requested, CancellationToken.None);
 
         // assert/verify
         Assert.Single(result);
         Assert.Equal("Status", result[0].FacetName);
         Assert.Equal(providerResults, result[0].Values);
+
         facetProviderMock.VerifyAll();
     }
 
@@ -118,24 +105,21 @@ public class FacetAggregationStepTests
         IReadOnlyList<string> urns = new[] { "100", "200" };
         IEnumerable<string> requested = new[] { "A", "B", "C" };
 
-        Mock<IFacetProvider> facetProviderMock =
-            FacetProviderTestDouble.MockFor(
-                new Dictionary<string, IReadOnlyList<FacetResult>>
-                {
-                    ["A"] = new List<FacetResult>(),
-                    ["B"] = new List<FacetResult>(),
-                    ["C"] = new List<FacetResult>()
-                });
+        Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock(builder =>
+        {
+            builder.Returns("A", new List<FacetResult>());
+            builder.Returns("B", new List<FacetResult>());
+            builder.Returns("C", new List<FacetResult>());
+        });
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregationStep(facetProviderMock.Object)
+            await new FacetAggregator(facetProviderMock.Object)
                 .CalculateFacetsAsync(urns, requested, CancellationToken.None);
 
         // assert/verify
-        Assert.Equal([ "A", "B", "C" ],
-            result.Select(aggregatedFacetResult =>
-                aggregatedFacetResult.FacetName));
+        Assert.Equal(["A", "B", "C"],
+            result.Select(result => result.FacetName));
 
         facetProviderMock.VerifyAll();
     }
@@ -148,15 +132,47 @@ public class FacetAggregationStepTests
         IEnumerable<string> requested = new[] { "ErrorFacet" };
 
         Mock<IFacetProvider> facetProviderMock =
-            FacetProviderTestDouble.MockFor(
-                throwKey: "ErrorFacet",
-                exception: new InvalidOperationException("Boom"));
+            FacetProviderTestDouble.Mock(builder =>
+                builder.Throws("ErrorFacet", new InvalidOperationException("Boom")));
 
-        // act/assert/verify
+        // act
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            new FacetAggregationStep(facetProviderMock.Object)
+            new FacetAggregator(facetProviderMock.Object)
                 .CalculateFacetsAsync(urns, requested, CancellationToken.None));
 
+        // verify
         facetProviderMock.VerifyAll();
+    }
+
+    [Fact]
+    public async Task CalculateFacetsAsync_RespectsCancellation()
+    {
+        // arrange
+        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IEnumerable<string> requested = new[] { "Cancelled" };
+
+        using CancellationTokenSource cts = new();
+        cts.Cancel();
+
+        Mock<IFacetProvider> facetProviderMock =
+            FacetProviderTestDouble.Mock(builder =>
+                builder.Returns("Cancelled", new List<FacetResult>()));
+
+        // manage the setup internally for this edge case.
+        facetProviderMock
+            .Setup(facetProvider =>
+                facetProvider.GetFacetsAsync(urns, "Cancelled", It.IsAny<CancellationToken>()))
+            .Returns(async (IReadOnlyList<string> _, string _, CancellationToken ct) =>
+            {
+                ct.ThrowIfCancellationRequested();
+                return new List<FacetResult>();
+            });
+
+        // act/assert/verify
+        await Assert.ThrowsAsync<OperationCanceledException>(() =>
+            new FacetAggregator(facetProviderMock.Object)
+                .CalculateFacetsAsync(urns, requested, cts.Token));
+
+        facetProviderMock.VerifyNoOtherCalls();
     }
 }
