@@ -138,7 +138,7 @@ public static class CompositionRoot
         services.TryAddSingleton<IMapper<
             (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
             SearchResults<EstablishmentSearchResults, SearchFacets>>,
-                    SearchResultsFromQueryResultsMapper > ();
+                    SearchResultsFromQueryResultsMapper>();
 
         return services;
     }

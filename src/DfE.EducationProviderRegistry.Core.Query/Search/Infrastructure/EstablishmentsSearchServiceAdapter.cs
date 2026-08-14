@@ -67,7 +67,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         // 3. Apply filter predicate to the base query.
         IQueryable<Establishment> filteredQuery =
             baseQuery.Where(filterPredicate);
-        
+
         // 4. Apply search-term specification on top of filtered results.
         IQueryable<Establishment> searchResult =
             _searchSpecOrchestrator.ProcessSearch(filteredQuery, request.SearchTerms);

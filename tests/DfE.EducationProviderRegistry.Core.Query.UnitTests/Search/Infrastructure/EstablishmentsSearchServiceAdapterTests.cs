@@ -36,7 +36,7 @@ public class EstablishmentsSearchServiceAdapterTests
 
         _db = new EducationProviderRegistryDbContext(options);
 
-        Mock<ISearchQueryProcessor<Establishment>>  searchProcessorMock = SearchQueryProcessorTestDouble.Mock();
+        Mock<ISearchQueryProcessor<Establishment>> searchProcessorMock = SearchQueryProcessorTestDouble.Mock();
         Mock<IFacetAggregator> facetAggregatorMock = FacetAggregatorTestDouble.Mock();
 
         _filterBuilderMock = SearchFilterExpressionsBuilderTestDouble.Mock();
@@ -120,16 +120,16 @@ public class EstablishmentsSearchServiceAdapterTests
             ],
             EstablishmentType =
                 new Data.DatabaseModels.Models.EstablishmentType
-            {
-                Name = "Type",
-                Code = "T"
-            },
+                {
+                    Name = "Type",
+                    Code = "T"
+                },
             EstablishmentStatus =
                 new EstablishmentStatus
-            {
-                Name = "Status",
-                Code = "ST"
-            },
+                {
+                    Name = "Status",
+                    Code = "ST"
+                },
             EstablishmentGroupMembership =
             [
                 new EstablishmentGroupMembership
