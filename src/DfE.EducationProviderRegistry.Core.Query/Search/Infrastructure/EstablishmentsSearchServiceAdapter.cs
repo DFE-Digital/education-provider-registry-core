@@ -56,54 +56,66 @@ internal sealed class EstablishmentsSearchServiceAdapter
 
         IQueryable<Establishment> baseQuery = _dbContext.Establishment.AsNoTracking();
 
-        // 1. Map incoming filter requests
+        // 1. Map incoming filter requests.
         ReadOnlyCollection<SearchFilterRequest> filterRequests =
             _filterMapper.Map(request.SearchFilterRequests.AsReadOnly());
 
-        // 2. Build the composed filter predicate
+        // 2. Build the composed filter predicate.
         Expression<Func<Establishment, bool>> filterPredicate =
             _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
 
-        // 3. Apply filter predicate to the base query
+        // 3. Apply filter predicate to the base query.
         IQueryable<Establishment> filteredQuery =
             baseQuery.Where(filterPredicate);
 
-        // 4. Apply search-term specification on top of filtered results
+        // 4. Apply search-term specification on top of filtered results.
         IQueryable<Establishment> searchResult =
             _searchSpecOrchestrator.ProcessSearch(filteredQuery, request.SearchTerms);
 
-        // 5. Execute projection
+        // 5. Execute projection.
         List<EstablishmentReadModel> items =
             await searchResult
-                .OrderBy(e => e.Name)
+                .OrderBy(e => e.Name ?? string.Empty)
                 .Skip(request.Offset)
                 .Take(request.PageSize)
                 .Select(e => new EstablishmentReadModel(
                     int.Parse(e.EstablishmentId.ToString()),
-                    e.Urn,
-                    e.Uid,
-                    e.Name,
-                    e.Site.Select(s => s.AddressLine1).FirstOrDefault(),
-                    e.Site.Select(s => s.Town).FirstOrDefault(),
-                    e.Site.Select(s => s.County).FirstOrDefault(),
-                    e.Site.Select(s => s.Postcode).FirstOrDefault(),
+                    e.Urn ?? string.Empty,
+                    e.Uid ?? string.Empty,
+                    e.Name ?? string.Empty,
+                    e.Site.Select(s => s.AddressLine1).FirstOrDefault() ?? string.Empty,
+                    e.Site.Select(s => s.Town).FirstOrDefault() ?? string.Empty,
+                    e.Site.Select(s => s.County).FirstOrDefault() ?? string.Empty,
+                    e.Site.Select(s => s.Postcode).FirstOrDefault() ?? string.Empty,
                     e.EstablishmentType.Name ?? string.Empty,
                     e.EstablishmentStatus.Name ?? string.Empty,
-                    e.EstablishmentGroupMembership.Select(g => g.Group.Name).FirstOrDefault(),
-                    e.EstablishmentGroupMembership.Select(g => g.Group.Code).FirstOrDefault(),
-                    e.EstablishmentAuthority.Select(a => a.AuthorityName).FirstOrDefault(),
-                    e.EstablishmentAuthority.Select(a => a.AuthorityCode).FirstOrDefault()
+                    e.EstablishmentGroupMembership
+                        .Select(g => g.Group.Name)
+                        .FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentGroupMembership
+                        .Select(g => g.Group.Code)
+                        .FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentAuthority
+                        .Select(a => a.AuthorityName)
+                        .FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentAuthority
+                        .Select(a => a.AuthorityCode)
+                        .FirstOrDefault() ?? string.Empty
                 ))
                 .ToListAsync(cancellationToken);
 
-        IReadOnlyList<string> urns = items.Select(entity => entity.Urn).ToList().AsReadOnly();
+        // 6. Extract URNs from projected items for facet aggregation.
+        IReadOnlyList<string> urns =
+            items.Select(entity => entity.Urn).ToList().AsReadOnly();
 
+        // 7. Calculate facet results based on URNs and requested facet keys.
         IReadOnlyList<AggregatedFacetResult> facets =
             await _facetAggregator.CalculateFacetsAsync(
                 urns,
                 request.Facets,
                 cancellationToken);
 
+        // 8. Map final results into SearchResults wrapper.
         return _resultsMapper.Map((items, facets));
     }
 }

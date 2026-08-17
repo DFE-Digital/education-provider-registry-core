@@ -7,7 +7,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public static class SearchTermSpecificationOrchestratorTestDouble
 {
     public static Mock<ISearchTermSpecificationOrchestrator<TEntity>> Mock<TEntity>()
-        where TEntity: class => new(MockBehavior.Strict);
+        where TEntity : class => new(MockBehavior.Strict);
 
     public static Mock<ISearchTermSpecificationOrchestrator<TEntity>> Create<TEntity>(
         Dictionary<(string Key, string Value), ISpecification<TEntity>> specifications)

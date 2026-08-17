@@ -3,11 +3,11 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 
-public class FacetAggregationStep : IFacetAggregator
+public class FacetAggregator : IFacetAggregator
 {
     private readonly IFacetProvider _facetProvider;
 
-    public FacetAggregationStep(IFacetProvider facetProvider)
+    public FacetAggregator(IFacetProvider facetProvider)
     {
         _facetProvider = facetProvider;
     }
@@ -17,21 +17,29 @@ public class FacetAggregationStep : IFacetAggregator
         IEnumerable<string>? requestedFacets,
         CancellationToken cancellationToken)
     {
-        if (requestedFacets == null || !requestedFacets.Any())
-        {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (requestedFacets is null || !requestedFacets.Any())
             return Array.Empty<AggregatedFacetResult>();
-        }
 
-        List<AggregatedFacetResult> aggregatedFacetResults = [];
+        List<string> distinct =
+            [.. requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase)];
 
-        foreach (string facetKey in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
+        List<AggregatedFacetResult> results = [];
+
+        foreach (string facet in distinct)
         {
-            IReadOnlyList<FacetResult> facetResults =
-                await _facetProvider.GetFacetsAsync(urns, facetKey, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
-            aggregatedFacetResults.Add(new AggregatedFacetResult(facetKey, facetResults));
+            IReadOnlyList<FacetResult> providerResults =
+                await _facetProvider.GetFacetsAsync(
+                    urns,
+                    facet,
+                    cancellationToken);
+
+            results.Add(new AggregatedFacetResult(facet, providerResults));
         }
 
-        return aggregatedFacetResults.AsReadOnly();
+        return results;
     }
 }
