@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
-using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container;
+using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container.Options;
+using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container.Provider;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
@@ -8,14 +9,15 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests;
 
 public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLifetime
 {
-    private readonly IDatabaseFactory _databaseFactory;
-    private readonly PostgresDatabaseOptions _dbOptions;
+    private readonly IPostgresDatabaseProvider _databaseProvider;
+    private readonly PostgresContainerOptions _postgresOptions;
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
@@ -25,8 +27,8 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
         : base(testServicesProvider)
     {
-        _databaseFactory = TestServicesProvider.GetRequiredService<IDatabaseFactory>();
-        _dbOptions = TestServicesProvider.GetRequiredService<PostgresDatabaseOptions>();
+        _databaseProvider = TestServicesProvider.GetRequiredService<IPostgresDatabaseProvider>();
+        _postgresOptions = TestServicesProvider.GetRequiredService<IOptionsMonitor<PostgresContainerOptions>>().Get("postgres");
     }
 
     // Hook called by XUnit to initialise before any tests run
@@ -48,22 +50,19 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
     protected override async Task StartTestDependenciesAsync(CancellationToken ct = default)
     {
-        Database = await _databaseFactory.CreateAsync(ct);
+        Database = await _databaseProvider.GetDatabaseAsync("postgres", ct);
 
-        string connectionString = await GetDatabaseConnectionString(Database, _dbOptions);
+        string connectionString = await GetDatabaseConnectionString(Database, _postgresOptions.Database!);
 
         SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
         QueryCollector = new PostgresQueryCollector(connectionString);
         await Database.StartAsync(ct);
-
-
     }
 
     protected override async Task<IConfiguration> GetApplicationConfigurationAsync()
     {
         // TODO options from application to set DatabaseConnection
-
-        string connectionString = await GetDatabaseConnectionString(Database!, _dbOptions);
+        string connectionString = await GetDatabaseConnectionString(Database!, _postgresOptions.Database!);
 
         return
             ConfigurationDefault
@@ -103,7 +102,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         {
             Host = endpoint.Host,
             Port = endpoint.Port,
-            Database = dbOptions.Database,
+            Database = dbOptions.Name,
             Username = dbOptions.Username,
             Password = dbOptions.Password
         };
