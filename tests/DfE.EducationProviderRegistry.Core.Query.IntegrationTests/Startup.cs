@@ -1,8 +1,5 @@
-﻿using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+﻿using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container.Extensions;
 using MartinCostello.Logging.XUnit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +31,6 @@ public class Startup
                 // TODO filter logging
             }));
 
-        services.AddPostgresDatabase(context.Configuration);
+        services.AddPostgres(context.Configuration);
     }
 }
