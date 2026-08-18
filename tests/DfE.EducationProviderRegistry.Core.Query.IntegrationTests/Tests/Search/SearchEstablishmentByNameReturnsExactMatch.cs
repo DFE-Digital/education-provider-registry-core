@@ -13,9 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
 
-public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegrationTestBase
+public sealed class SearchEstablishmentByNameReturnsExactMatch : UseCaseIntegrationTestBase
 {
-    public SearchEstablishmentByNameReturnsSingleMatch(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public SearchEstablishmentByNameReturnsExactMatch(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
@@ -30,37 +30,36 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
             .StubFilterOptions()
             .StubSearchCriteriaOptions();
 
-        IndexedFieldConfiguration fieldBehaviour =
-            IndexedFieldConfigurationBuilder.Create()
-                .WithFieldName<Establishment>("Name")
-                .WithExactMatchBehaviour()
-                .Build();
-
-        Dictionary<string, string?> configuration =
-            SearchConfigurationBuilder
-                .Create()
-                .WithBehaviourForSearchTerm(term: "term-1", [fieldBehaviour])
-                .Build();
-
-        builder.AddInMemoryCollection(configuration);
+        builder.AddSearchConfiguration(
+            (
+                termKey: "term-1",
+                fieldsConfigure: [
+                    (builder) =>
+                        builder
+                            .WithFieldName<Establishment>("Name")
+                            .WithExactMatchBehaviour()
+                            .Build()
+                ]
+            ));
     }
 
-    [Fact]
-    public async Task Returns_Exact_Match()
+    [Theory]
+    [InlineData("single school match", 1)]
+    [InlineData("schools", 7)]
+    [InlineData("CamelCase School", 7)]
+    public async Task Returns_Exact_Matches(string searchTerm, int totalExactMatches)
     {
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        const string searchTerm = "Test School";
-
-        SearchByNameTerms matchTerms = new(matchingNames: [searchTerm]);
+        SearchByNameTerms matchTerms = new([.. Enumerable.Range(1, totalExactMatches).Select(t => searchTerm)]);
 
         SearchableEstablishmentsResponse searchedEstablishments =
             await SearchEstablishmentFactory.CreateManyAsync(totalToCreate: 100_000, matchTerms, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchTerm("term-1", searchTerm)
+                .WithSearchTerm(key: "term-1", term: searchTerm)
                 .Build();
 
         // act
@@ -72,13 +71,17 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
         Assert.Null(response.ErrorMessage);
 
         Assert.NotNull(response.Model);
-        Assert.Equal(1, response.Model.TotalNumberOfResults);
+        Assert.Equal(totalExactMatches, response.Model.TotalNumberOfResults);
         Assert.NotNull(response.Model.EstablishmentResults);
+        Assert.Equal(totalExactMatches, response.Model.EstablishmentResults.EstablishmentCollection.Count);
 
-        EstablishmentSearchResult result = Assert.Single(response.Model.EstablishmentResults.EstablishmentCollection);
+        for (int index = 0; index < searchedEstablishments.SearchTermMatches.Count; index++)
+        {
+            EstablishmentSearchResult actualEstablishment = response.Model.EstablishmentResults.EstablishmentCollection.ToList()[index];
 
-        SearchResponseAssertions.AssertMapped(
-            searchedEstablishments.SearchTermMatches.Single(),
-            result);
+            SearchResponseAssertions.AssertMapped(
+                expected: searchedEstablishments.SearchTermMatches.Single(t => t.Urn == actualEstablishment.Urn.Value),
+                actual: actualEstablishment);
+        }
     }
 }
