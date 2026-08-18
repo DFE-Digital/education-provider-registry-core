@@ -2,50 +2,36 @@
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
-internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
+internal sealed class SearchEstablishmentSeeder : ISearchEstablishmentSeeder
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
 
-    public SearchEstablishmentFactory(EducationProviderRegistryDbContext dbContext)
+    public SearchEstablishmentSeeder(EducationProviderRegistryDbContext dbContext)
     {
         ArgumentNullException.ThrowIfNull(dbContext);
         _dbContext = dbContext;
     }
-
-    public async Task<SearchableEstablishmentsResponse> CreateManyAsync(int totalToCreate, SearchByNameTerms matches, CancellationToken ct = default)
+    public async Task ClearAsync(CancellationToken ct = default)
     {
-        IReadOnlyCollection<Establishment> matching =
-        [
-            .. matches.matchingNames.Select((name) =>
-                SearchEstablishmentBuilder
-                    .Create()
-                    .WithName(name)
-                    .Build())
-        ];
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync(ct);
 
-        IReadOnlyCollection<Establishment> nonMatching =
-        [
-            .. Enumerable.Range(0, (totalToCreate - matches.matchingNames.Count))
-                .Select((i) =>
-                    SearchEstablishmentBuilder.Create()
-                        .WithName($"ZZZ-{i}")
-                        .Build())
-        ];
+        await _dbContext.EstablishmentAuthority.ExecuteDeleteAsync(ct);
+        await _dbContext.Site.ExecuteDeleteAsync(ct);
+        await _dbContext.Establishment.ExecuteDeleteAsync(ct);
 
-        await InsertEstablishmentsAsync(
-            _dbContext,
-            [
-                .. matching,
-                .. nonMatching
-            ],
-            ct);
+        await transaction.CommitAsync(ct);
+    }
 
+    public async Task<SearchableEstablishments> SeedAsync(IReadOnlyCollection<Establishment> establishments, CancellationToken ct = default)
+    {
+        await InsertEstablishmentsAsync(_dbContext, [.. establishments], ct);
 
         // Requery for updated values as mapping assertions require
-        List<long> matchIds = [.. matching.Select(x => x.EstablishmentId)];
+        List<long> matchIds = [.. establishments.Select(x => x.EstablishmentId)];
 
         IReadOnlyCollection<Establishment> rehydratedMatches =
             await _dbContext.Establishment
@@ -57,7 +43,7 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
 
         return new()
         {
-            SearchTermMatches = rehydratedMatches,
+            Establishments = rehydratedMatches,
         };
     }
 

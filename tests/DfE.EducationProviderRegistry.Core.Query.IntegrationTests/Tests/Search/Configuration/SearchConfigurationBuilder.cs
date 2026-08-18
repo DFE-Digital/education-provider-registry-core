@@ -14,10 +14,10 @@ internal sealed class SearchConfigurationBuilder
 
     public static SearchConfigurationBuilder Create() => new();
 
-    public SearchConfigurationBuilder WithBehaviourForSearchTerm(string term, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string chainingPredicate = "OR")
+    public SearchConfigurationBuilder WithBehaviourForSearchTerm(string searchTermKey, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string chainingPredicate = "OR")
     {
         _behaviour.Add(
-            item: (term, fieldConfiguration, chainingPredicate));
+            item: (searchTermKey, fieldConfiguration, chainingPredicate));
 
         return this;
     }
