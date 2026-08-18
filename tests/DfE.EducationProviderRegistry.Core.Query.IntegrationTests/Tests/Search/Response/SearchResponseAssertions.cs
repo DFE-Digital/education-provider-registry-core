@@ -18,39 +18,39 @@ internal static class SearchResponseAssertions
             actual.Name.Value);
 
         Assert.Equal(
-            expected.EstablishmentType?.Name,
-            actual.Type?.Value);
+            expected.EstablishmentType?.Name ?? string.Empty,
+            actual.Type?.Value ?? string.Empty);
 
         // Site / Address
         Site? expectedSite = expected.Site.FirstOrDefault();
 
         Assert.Equal(
-            expectedSite?.AddressLine1,
-            actual.Address?.Street);
+            expectedSite?.AddressLine1 ?? string.Empty,
+            actual.Address?.Street ?? string.Empty);
 
         Assert.Equal(
-            expectedSite?.Town,
-            actual.Address?.Town);
+            expectedSite?.Town ?? string.Empty,
+            actual.Address?.Town ?? string.Empty);
 
         Assert.Equal(
-            expectedSite?.County,
-            actual.Address?.County);
+            expectedSite?.County ?? string.Empty,
+            actual.Address?.County ?? string.Empty);
 
         Assert.Equal(
-            expectedSite?.Postcode,
-            actual.Address?.Postcode);
+            expectedSite?.Postcode ?? string.Empty,
+            actual.Address?.Postcode ?? string.Empty);
 
         // Local Authority
         EstablishmentAuthority? expectedAuthority =
             expected.EstablishmentAuthority.FirstOrDefault();
 
         Assert.Equal(
-            expectedAuthority?.AuthorityName,
-            actual.LocalAuthority?.Name);
+            expectedAuthority?.AuthorityName ?? string.Empty,
+            actual.LocalAuthority?.Name ?? string.Empty);
 
         Assert.Equal(
-            expectedAuthority?.AuthorityCode,
-            actual.LocalAuthority?.Code);
+            expectedAuthority?.AuthorityCode ?? string.Empty,
+            actual.LocalAuthority?.Code ?? string.Empty);
 
         // Establishment > Group
         EstablishmentGroupMembership? membership =
@@ -58,11 +58,11 @@ internal static class SearchResponseAssertions
                 .FirstOrDefault();
 
         Assert.Equal(
-            membership?.Group?.Name,
-            actual.Group?.PartOfName);
+            membership?.Group?.Name ?? string.Empty,
+            actual.Group?.PartOfName ?? string.Empty);
 
         Assert.Equal(
-            membership?.Group?.Code,
-            actual.Group?.PartOfCode);
+            membership?.Group?.Code ?? string.Empty,
+            actual.Group?.PartOfCode ?? string.Empty);
     }
 }
