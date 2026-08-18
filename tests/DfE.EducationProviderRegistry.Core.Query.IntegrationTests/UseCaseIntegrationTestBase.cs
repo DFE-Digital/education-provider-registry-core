@@ -21,7 +21,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
-    internal ISearchEstablishmentFactory SearchEstablishmentFactory { get; private set; }
+    internal ISearchEstablishmentSeeder SeedSearchEstablishments { get; private set; }
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
 #nullable enable
     protected UseCaseIntegrationTestBase(IServiceProvider testServicesProvider)
@@ -54,7 +54,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
 
         string connectionString = await GetDatabaseConnectionString(Database, _postgresOptions.Database!);
 
-        SearchEstablishmentFactory = new SearchEstablishmentFactory(CreateDbContext(connectionString))!;
+        SeedSearchEstablishments = new SearchEstablishmentSeeder(CreateDbContext(connectionString))!;
         QueryCollector = new PostgresQueryCollector(connectionString);
         await Database.StartAsync(ct);
     }

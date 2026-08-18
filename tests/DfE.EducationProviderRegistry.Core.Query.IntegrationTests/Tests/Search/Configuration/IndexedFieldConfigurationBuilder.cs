@@ -1,11 +1,8 @@
-﻿using System.Reflection;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 
-internal sealed class IndexedFieldConfigurationBuilder
+public sealed class IndexedFieldConfigurationBuilder
 {
     private string _fieldChainingPredicate;
     private string? _name;
@@ -17,8 +14,8 @@ internal sealed class IndexedFieldConfigurationBuilder
         _behaviours = [];
     }
 
-    internal static IndexedFieldConfigurationBuilder Create() => new();
-    internal IndexedFieldConfigurationBuilder WithChainingPredicate(string value)
+    public static IndexedFieldConfigurationBuilder Create() => new();
+    public IndexedFieldConfigurationBuilder WithChainingPredicate(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -28,9 +25,8 @@ internal sealed class IndexedFieldConfigurationBuilder
         return this;
     }
 
-    internal IndexedFieldConfigurationBuilder WithFieldName<TSearchedEntity>(string name) where TSearchedEntity : class
+    public IndexedFieldConfigurationBuilder WithFieldName(string name)
     {
-        ValidateFieldExistsOn<TSearchedEntity>(name);
         _name = name;
         return this;
     }
@@ -62,13 +58,6 @@ internal sealed class IndexedFieldConfigurationBuilder
             ChainingPredicate = _fieldChainingPredicate,
             SearchBehaviours = MapBehavioursToConfiguration(_behaviours).ToArray()
         };
-    }
-
-    private static void ValidateFieldExistsOn<T>(string prop)
-    {
-        // Search uses reflection to construct Expressions, these expressions require the target field to exist on the reflected type
-        Type targetType = typeof(T);
-        PropertyInfo _ = targetType.GetProperty(prop) ?? throw new ArgumentException($"Property {prop} does not exist on {targetType.FullName}");
     }
 
     private static IEnumerable<SearchBehaviourConfiguration> MapBehavioursToConfiguration(IEnumerable<(string behaviour, string behaviourChainingPredicate)> behaviours)

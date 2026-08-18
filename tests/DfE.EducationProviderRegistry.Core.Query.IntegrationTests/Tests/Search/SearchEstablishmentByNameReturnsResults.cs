@@ -1,4 +1,5 @@
 ﻿//using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+//using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 //using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 //using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 //using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
@@ -24,7 +25,21 @@
 
 //    protected override void ConfigureApplicationConfiguration(IConfigurationBuilder builder)
 //    {
-//        builder.AddDefaultSearchConfiguration();
+//        builder
+//            .StubFilterOptions()
+//            .StubSearchCriteriaOptions();
+
+//        builder.AddSearchConfiguration(
+//        (
+//            termKey: "term-1",
+//            fieldsConfigure: [
+//                (builder) =>
+//                    builder
+//                        .WithFieldName("Name")
+//                        .WithPartialMatchBehaviour()
+//                        .Build()
+//            ]
+//        ));
 //    }
 
 //    [Theory]
@@ -34,10 +49,9 @@
 //        // arrange
 //        CancellationToken ct = TestContext.Current.CancellationToken;
 
-//        SearchableEstablishmentsResponse searchedEstablishments =
+//        SearchableEstablishments searchedEstablishments =
 //            await SearchEstablishmentFactory.CreateManyAsync(
 //                totalToCreate: 100_000,
-//                searchTerm: scenario.searchTerm,
 //                matches: scenario.matches,
 //                ct);
 
@@ -58,9 +72,9 @@
 
 //        IReadOnlyCollection<EstablishmentSearchResult> actualResults = response.Model.EstablishmentResults!.EstablishmentCollection;
 
-//        Assert.Equal(searchedEstablishments.SearchTermMatches.Count, actualResults.Count);
+//        Assert.Equal(searchedEstablishments.Establishments.Count, actualResults.Count);
 
-//        foreach (Establishment matchedEstablishment in searchedEstablishments.SearchTermMatches)
+//        foreach (Establishment matchedEstablishment in searchedEstablishments.Establishments)
 //        {
 //            EstablishmentSearchResult result =
 //                Assert.Single(actualResults, (estab) => estab.Urn.Value == matchedEstablishment.Urn);

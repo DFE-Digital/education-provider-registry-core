@@ -1,4 +1,6 @@
-﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+﻿using System.Linq.Expressions;
+using System.Reflection;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
@@ -34,18 +36,35 @@ public sealed class SearchEstablishmentBuilder
             });
     }
 
-    public SearchEstablishmentBuilder WithName(string value)
+    public SearchEstablishmentBuilder SetValue(string property, string value)
     {
-        _establishment.Name = value;
+        if (string.IsNullOrWhiteSpace(property))
+        {
+            throw new ArgumentException(
+                "Property cannot be null or whitespace.",
+                nameof(property));
+        }
+
+        PropertyInfo? propertyInfo = _establishment.GetType().GetProperty(property);
+
+        if (propertyInfo is null)
+        {
+            throw new ArgumentException(
+                $"Property '{property}' does not exist on {nameof(Establishment)}.",
+                nameof(property));
+        }
+
+        if (!propertyInfo.CanWrite)
+        {
+            throw new ArgumentException(
+                $"Property '{property}' is read-only.",
+                nameof(property));
+        }
+
+        propertyInfo.SetValue(_establishment, value);
+
         return this;
     }
-
-    public SearchEstablishmentBuilder WithUrn(string value)
-    {
-        _establishment.Urn = value;
-        return this;
-    }
-
     public Establishment Build() => _establishment;
 
     public static SearchEstablishmentBuilder Create() => new();
