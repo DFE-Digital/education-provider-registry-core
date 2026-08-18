@@ -1,69 +1,80 @@
-﻿//using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-//using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
-//using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
-//using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.DependencyInjection;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-//namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search;
 
-//public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegrationTestBase
-//{
-//    public SearchEstablishmentByNameReturnsSingleMatch(IServiceProvider testServicesProvider) : base(testServicesProvider)
-//    {
-//    }
+public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegrationTestBase
+{
+    public SearchEstablishmentByNameReturnsSingleMatch(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    {
+    }
 
-//    protected override void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
-//    {
-//        services.AddSearch(configuration);
-//    }
+    protected override void ConfigureApplicationServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSearch(configuration);
+    }
 
-//    protected override void ConfigureApplicationConfiguration(IConfigurationBuilder builder)
-//    {
-//        builder.AddDefaultSearchConfiguration();
-//    }
+    protected override void ConfigureApplicationConfiguration(IConfigurationBuilder builder)
+    {
+        IndexedFieldConfiguration fieldBehaviour =
+            IndexedFieldConfigurationBuilder.Create()
+                .WithName("field")
+                .WithChainingPredicate("AND")
+                .WithBehaviour("behaviour", "AND")
+                .Build();
 
-//    [Fact]
-//    public async Task Returns_Single_Result_Mapped()
-//    {
-//        // arrange
-//        CancellationToken ct = TestContext.Current.CancellationToken;
+        SearchConfigurationBuilder
+            .Create()
+            .WithBehaviourForSearchTerm(term: "term-1", [fieldBehaviour]);
+    }
 
-//        const string searchTerm = "TEST";
+    [Fact]
+    public async Task Returns_Single_Result_Mapped()
+    {
+        // arrange
+        CancellationToken ct = TestContext.Current.CancellationToken;
 
-//        SearchableEstablishmentsResponse searchedEstablishments =
-//            await SearchEstablishmentFactory.CreateManyAsync(
-//                totalToCreate: 100_000,
-//                searchTerm: searchTerm,
-//                matches: SearchByNameTerms.Create(searchTerm, matchCount: 1),
-//                ct);
+        const string searchTerm = "TEST";
 
-//        SearchRequest request =
-//            SearchRequestBuilder.Create()
-//                .WithSearchKeywords(searchTerm)
-//                .Build();
+        SearchableEstablishmentsResponse searchedEstablishments =
+            await SearchEstablishmentFactory.CreateManyAsync(
+                totalToCreate: 100_000,
+                searchTerm: searchTerm,
+                matches: SearchByNameTerms.Create(searchTerm, matchCount: 1),
+                ct);
 
-//        // act
-//        UseCaseResponse<SearchResponse> response =
-//            await ExecuteUseCase<SearchRequest, SearchResponse>(request);
+        SearchRequest request =
+            SearchRequestBuilder.Create()
+                .WithSearchTerm("what", searchTerm)
+                .Build();
 
-//        // assert
-//        Assert.NotNull(response);
-//        Assert.Null(response.ErrorMessage);
+        // act
+        UseCaseResponse<SearchResponse> response =
+            await ExecuteUseCase<SearchRequest, SearchResponse>(request);
 
-//        Assert.NotNull(response.Model);
-//        Assert.Equal(1, response.Model.TotalNumberOfResults);
-//        Assert.NotNull(response.Model.EstablishmentResults);
+        // assert
+        Assert.NotNull(response);
+        Assert.Null(response.ErrorMessage);
 
-//        EstablishmentSearchResult result =
-//            Assert.Single(
-//                response.Model.EstablishmentResults.EstablishmentCollection);
+        Assert.NotNull(response.Model);
+        Assert.Equal(1, response.Model.TotalNumberOfResults);
+        Assert.NotNull(response.Model.EstablishmentResults);
 
-//        SearchResponseAssertions.AssertMapped(
-//            searchedEstablishments.SearchTermMatches.Single(),
-//            result);
-//    }
-//}
+        EstablishmentSearchResult result =
+            Assert.Single(
+                response.Model.EstablishmentResults.EstablishmentCollection);
+
+        SearchResponseAssertions.AssertMapped(
+            searchedEstablishments.SearchTermMatches.Single(),
+            result);
+    }
+}
