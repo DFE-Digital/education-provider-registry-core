@@ -89,26 +89,22 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         Assert.Null(response.ErrorMessage);
 
         Assert.NotNull(response.Model);
-        Assert.Equal(
-            matchSearchTerm.Count,
-            response.Model.TotalNumberOfResults);
-
+        Assert.Equal(matchSearchTerm.Count, response.Model.TotalNumberOfResults);
         Assert.NotNull(response.Model.EstablishmentResults);
-
-        Assert.Equal(
-            matchSearchTerm.Count,
-            response.Model.EstablishmentResults.EstablishmentCollection.Count);
+        Assert.Equal(matchSearchTerm.Count, response.Model.EstablishmentResults.EstablishmentCollection.Count);
 
         List<EstablishmentSearchResult> results = [.. response.Model.EstablishmentResults.EstablishmentCollection];
 
+        HashSet<string> resultUrns = [.. results.Select(t => t.Urn.Value)];
+        Assert.DoesNotContain(nonMatchSearchTerm, establishment => resultUrns.Contains(establishment.Urn!));
+
         for (int index = 0; index < results.Count; index++)
         {
-            EstablishmentSearchResult establishmentResponse =
-                results[index];
+            EstablishmentSearchResult establishmentResponse = results[index];
 
             Establishment seededEstablishment =
                 searchedEstablishments.Establishments.Single(
-                    t => t.Urn == establishmentResponse.Urn.Value);
+                    (t) => t.Urn == establishmentResponse.Urn.Value);
 
             SearchResponseAssertions.AssertMapped(
                 expected: seededEstablishment,
