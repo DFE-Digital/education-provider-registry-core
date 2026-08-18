@@ -8,19 +8,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class FuzzySearchBehaviourTests
 {
     [Fact]
-    public void Name_ReturnsFuzzy()
-    {
-        // arrange
-        FuzzySearchBehaviour<TestEntity> behaviour = new();
-
-        // act
-        string result = behaviour.Name;
-
-        // assert
-        Assert.Equal("fuzzy", result);
-    }
-
-    [Fact]
     public void Build_ReturnsTrigramFuzzySpecification()
     {
         // arrange

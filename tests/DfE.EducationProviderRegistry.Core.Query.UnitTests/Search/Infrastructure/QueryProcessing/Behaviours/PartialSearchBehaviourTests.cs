@@ -8,19 +8,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class PartialSearchBehaviourTests
 {
     [Fact]
-    public void Name_ReturnsPartial()
-    {
-        // arrange
-        PartialSearchBehaviour<TestEntity> behaviour = new();
-
-        // act
-        string result = behaviour.Name;
-
-        // assert
-        Assert.Equal("partial", result);
-    }
-
-    [Fact]
     public void Build_ReturnsLikeSpecification()
     {
         // arrange

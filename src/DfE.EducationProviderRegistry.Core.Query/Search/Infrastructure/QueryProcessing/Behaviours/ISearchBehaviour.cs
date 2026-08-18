@@ -4,7 +4,5 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryPr
 
 public interface ISearchBehaviour<TEntity>
 {
-    string Name { get; }
-
     ISpecification<TEntity> Build(string propertyPath, string value);
 }

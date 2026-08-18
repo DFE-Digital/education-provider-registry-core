@@ -12,7 +12,9 @@ public sealed class SearchBehaviourRegistryTests
         ExactSearchBehaviour<TestEntity> behaviour = new();
 
         SearchBehaviourRegistry<TestEntity> registry =
-            new([behaviour]);
+            new(
+                [new("exact", behaviour)]
+            );
 
         // act
         ISearchBehaviour<TestEntity> result = registry.Get("exact");
@@ -28,7 +30,9 @@ public sealed class SearchBehaviourRegistryTests
         ExactSearchBehaviour<TestEntity> behaviour = new();
 
         SearchBehaviourRegistry<TestEntity> registry =
-            new([behaviour]);
+            new(
+                [new("exact", behaviour)]
+            );
 
         // act
         ISearchBehaviour<TestEntity> result = registry.Get("EXACT");
@@ -42,7 +46,9 @@ public sealed class SearchBehaviourRegistryTests
     {
         // arrange
         SearchBehaviourRegistry<TestEntity> registry =
-            new([new ExactSearchBehaviour<TestEntity>()]);
+            new([
+                new("exact", new ExactSearchBehaviour<TestEntity>())
+                ]);
 
         // act / assert
         Assert.Throws<KeyNotFoundException>(() =>
@@ -58,6 +64,6 @@ public sealed class SearchBehaviourRegistryTests
 
         // act / assert
         Assert.Throws<ArgumentException>(() =>
-            new SearchBehaviourRegistry<TestEntity>([first, second]));
+            new SearchBehaviourRegistry<TestEntity>([new("exact", first), new("exact", second)]));
     }
 }
