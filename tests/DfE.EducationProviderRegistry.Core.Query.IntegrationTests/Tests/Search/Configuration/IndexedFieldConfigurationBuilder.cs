@@ -1,4 +1,7 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+﻿using System.Reflection;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 
@@ -25,13 +28,18 @@ internal sealed class IndexedFieldConfigurationBuilder
         return this;
     }
 
-    internal IndexedFieldConfigurationBuilder WithName(string name)
+    internal IndexedFieldConfigurationBuilder WithFieldName<TSearchedEntity>(string name) where TSearchedEntity : class
     {
+        ValidateFieldExistsOn<TSearchedEntity>(name);
         _name = name;
         return this;
     }
 
-    internal IndexedFieldConfigurationBuilder WithBehaviour(string name, string behaviourChainingPredicate = "OR")
+    public IndexedFieldConfigurationBuilder WithExactMatchBehaviour(string behaviourChainingPredicate = "OR") => WithBehaviour("exact", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder WithPartialMatchBehaviour(string behaviourChainingPredicate = "OR") => WithBehaviour("partial", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder WithFuzzyMatchBehaviour(string behaviourChainingPredicate = "OR") => WithBehaviour("fuzzy", behaviourChainingPredicate);
+
+    private IndexedFieldConfigurationBuilder WithBehaviour(string name, string behaviourChainingPredicate = "OR")
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -54,6 +62,13 @@ internal sealed class IndexedFieldConfigurationBuilder
             ChainingPredicate = _fieldChainingPredicate,
             SearchBehaviours = MapBehavioursToConfiguration(_behaviours).ToArray()
         };
+    }
+
+    private static void ValidateFieldExistsOn<T>(string prop)
+    {
+        // Search uses reflection to construct Expressions, these expressions require the target field to exist on the reflected type
+        Type targetType = typeof(T);
+        PropertyInfo _ = targetType.GetProperty(prop) ?? throw new ArgumentException($"Property {prop} does not exist on {targetType.FullName}");
     }
 
     private static IEnumerable<SearchBehaviourConfiguration> MapBehavioursToConfiguration(IEnumerable<(string behaviour, string behaviourChainingPredicate)> behaviours)

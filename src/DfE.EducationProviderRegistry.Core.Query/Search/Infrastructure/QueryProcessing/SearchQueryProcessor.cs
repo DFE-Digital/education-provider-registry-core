@@ -11,7 +11,7 @@ public sealed class SearchQueryProcessor<TEntity> : ISearchQueryProcessor<TEntit
 {
     private readonly ISearchTermSpecificationOrchestrator<TEntity> _specificationOrchestrator;
     private readonly IChainingPredicateRegistry<TEntity> _predicateRegistry;
-    
+
 
     public SearchQueryProcessor(
         ISearchTermSpecificationOrchestrator<TEntity> specificationOrchestrator,

@@ -15,9 +15,8 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
         _dbContext = dbContext;
     }
 
-    public async Task<SearchableEstablishmentsResponse> CreateManyAsync(int totalToCreate, string searchTerm, SearchByNameTerms matches, CancellationToken ct = default)
+    public async Task<SearchableEstablishmentsResponse> CreateManyAsync(int totalToCreate, SearchByNameTerms matches, CancellationToken ct = default)
     {
-
         IReadOnlyCollection<Establishment> matching =
         [
             .. matches.matchingNames.Select((name) =>
@@ -93,13 +92,34 @@ internal sealed class SearchEstablishmentFactory : ISearchEstablishmentFactory
                 establishmentStatusId;
         }
 
-        // Insert everything in one batch
+        // Batch insert Establishments Note: this does not automatically include entity-relationships
         await dbContext.BulkInsertAsync(
             establishments,
             bulkConfig: new BulkConfig()
             {
-                SetOutputIdentity = true
+                SetOutputIdentity = true,
+                // IncludeGraph = true (For large datasets this takes a lot of time)
             },
             cancellationToken: ct);
+
+        // Set relationship from EstablishmentAuthority -> Establishment for BulkInsert
+        foreach (Establishment establishment in
+            establishments.Where(t => t.EstablishmentAuthority.Count > 0))
+        {
+            foreach (EstablishmentAuthority authority in establishment.EstablishmentAuthority)
+            {
+                authority.EstablishmentId = establishment.EstablishmentId;
+            }
+        }
+
+        // Batch insert all EstablishmentAuthority (LocalAuthorities)
+        List<EstablishmentAuthority> authorities =
+        [
+            ..establishments
+                .Where(t => t.EstablishmentAuthority.Count > 0)
+                .SelectMany(e => e.EstablishmentAuthority)
+        ];
+
+        await dbContext.BulkInsertAsync(authorities, cancellationToken: ct);
     }
 }

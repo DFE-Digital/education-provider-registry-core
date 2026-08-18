@@ -7,6 +7,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establi
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,36 +26,41 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
 
     protected override void ConfigureApplicationConfiguration(IConfigurationBuilder builder)
     {
+        builder
+            .StubFilterOptions()
+            .StubSearchCriteriaOptions();
+
         IndexedFieldConfiguration fieldBehaviour =
             IndexedFieldConfigurationBuilder.Create()
-                .WithName("field")
-                .WithChainingPredicate("AND")
-                .WithBehaviour("behaviour", "AND")
+                .WithFieldName<Establishment>("Name")
+                .WithExactMatchBehaviour()
                 .Build();
 
-        SearchConfigurationBuilder
-            .Create()
-            .WithBehaviourForSearchTerm(term: "term-1", [fieldBehaviour]);
+        Dictionary<string, string?> configuration =
+            SearchConfigurationBuilder
+                .Create()
+                .WithBehaviourForSearchTerm(term: "term-1", [fieldBehaviour])
+                .Build();
+
+        builder.AddInMemoryCollection(configuration);
     }
 
     [Fact]
-    public async Task Returns_Single_Result_Mapped()
+    public async Task Returns_Exact_Match()
     {
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        const string searchTerm = "TEST";
+        const string searchTerm = "Test School";
+
+        SearchByNameTerms matchTerms = new(matchingNames: [searchTerm]);
 
         SearchableEstablishmentsResponse searchedEstablishments =
-            await SearchEstablishmentFactory.CreateManyAsync(
-                totalToCreate: 100_000,
-                searchTerm: searchTerm,
-                matches: SearchByNameTerms.Create(searchTerm, matchCount: 1),
-                ct);
+            await SearchEstablishmentFactory.CreateManyAsync(totalToCreate: 100_000, matchTerms, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchTerm("what", searchTerm)
+                .WithSearchTerm("term-1", searchTerm)
                 .Build();
 
         // act
@@ -69,9 +75,7 @@ public sealed class SearchEstablishmentByNameReturnsSingleMatch : UseCaseIntegra
         Assert.Equal(1, response.Model.TotalNumberOfResults);
         Assert.NotNull(response.Model.EstablishmentResults);
 
-        EstablishmentSearchResult result =
-            Assert.Single(
-                response.Model.EstablishmentResults.EstablishmentCollection);
+        EstablishmentSearchResult result = Assert.Single(response.Model.EstablishmentResults.EstablishmentCollection);
 
         SearchResponseAssertions.AssertMapped(
             searchedEstablishments.SearchTermMatches.Single(),

@@ -24,14 +24,12 @@ internal sealed class SearchConfigurationBuilder
 
     public Dictionary<string, string?> Build()
     {
-        StringBuilder rootConfigurationKey = new(nameof(SearchConfiguration));
+        string rootConfigurationKey = $"{nameof(SearchConfiguration)}:keys";
 
         Dictionary<string, string?> output = [];
 
         for (int index = 0; index < _behaviour.Count; index++)
         {
-            rootConfigurationKey.Append("keys");
-
             (string term, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string chainingPredicate) = _behaviour[index];
 
             output.Add($"{rootConfigurationKey}:{index}:searchTermKey", term);

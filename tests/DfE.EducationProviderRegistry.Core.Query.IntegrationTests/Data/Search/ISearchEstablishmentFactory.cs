@@ -6,7 +6,6 @@ internal interface ISearchEstablishmentFactory
 {
     Task<SearchableEstablishmentsResponse> CreateManyAsync(
         int totalToCreate,
-        string searchTerm,
         SearchByNameTerms matches,
         CancellationToken ct = default);
 }

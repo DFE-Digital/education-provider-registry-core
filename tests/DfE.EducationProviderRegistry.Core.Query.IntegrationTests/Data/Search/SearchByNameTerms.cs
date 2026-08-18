@@ -4,12 +4,12 @@ public sealed record SearchByNameTerms(IReadOnlyList<string> matchingNames)
 {
     public static SearchByNameTerms Create(
         string searchTerm,
-        int matchCount)
+        int matchCount,
+        string termSuffix = "-")
     {
         return new SearchByNameTerms(
         [
-            .. Enumerable.Range(1, matchCount)
-                .Select(number => $"{searchTerm}-{number}")
+            .. Enumerable.Range(1, matchCount).Select(number => $"{searchTerm}{termSuffix}")
         ]);
     }
 }
