@@ -18,10 +18,6 @@ internal static class ServiceProviderBuilder
             new()
             {
                 {
-                    "FilterKeyToFilterExpressionMapOptions:FilterChainingLogicalOperator",
-                    "AndLogicalOperator"
-                },
-                {
                     "FilterKeyToFilterExpressionMapOptions:SearchFilterToExpressionMap:t.establishment_type_id:FilterExpressionKey",
                     "SingleOrMultiValueEqualsExpression"
                 },
@@ -30,12 +26,12 @@ internal static class ServiceProviderBuilder
                     ""
                 },
                 {
-                    "FilterKeyToFilterExpressionMapOptions:Map:establishmenttypeid",
-                    "SingleOrMultiValueEqualsExpression"
-                },
-                {
                     "eprweb_eprdat_dotnet_db_connection",
                     "Host=test;Port=5432;Database=test;Username=test;Password=test"
+                },
+                {
+                    "SearchConfiguration:keys:0", // STUB
+                    ""
                 }
             };
 
