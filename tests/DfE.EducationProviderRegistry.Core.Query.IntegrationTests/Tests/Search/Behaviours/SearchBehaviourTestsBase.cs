@@ -99,8 +99,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
             matchSearchTerm.Count,
             response.Model.EstablishmentResults.EstablishmentCollection.Count);
 
-        List<EstablishmentSearchResult> results =
-            response.Model.EstablishmentResults.EstablishmentCollection.ToList();
+        List<EstablishmentSearchResult> results = [.. response.Model.EstablishmentResults.EstablishmentCollection];
 
         for (int index = 0; index < results.Count; index++)
         {
