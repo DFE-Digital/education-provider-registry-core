@@ -5,8 +5,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryPr
 
 internal sealed class ExactSearchBehaviour<TEntity> : ISearchBehaviour<TEntity>
 {
-    public string Name => "exact";
-
     public ISpecification<TEntity> Build(string propertyPath, string value)
         => new PropertyEqualsSpecification<TEntity>(propertyPath, value);
 }

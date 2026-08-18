@@ -5,7 +5,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryPr
 
 internal sealed class PartialSearchBehaviour<TEntity> : ISearchBehaviour<TEntity>
 {
-    public string Name => "partial";
 
     public ISpecification<TEntity> Build(string propertyPath, string value)
         => new LikeSpecification<TEntity>(propertyPath, value);

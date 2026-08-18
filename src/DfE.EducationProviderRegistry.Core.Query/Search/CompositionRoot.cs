@@ -190,16 +190,6 @@ public static class CompositionRoot
                         establishment => establishment.EstablishmentTypeId,
                         establishment => establishment.EstablishmentType.Name)
             });
-        // ---------------------------------------------------------
-        // Facet selectors
-        // ---------------------------------------------------------
-        services.AddSingleton
-            (
-                new Dictionary<string, Expression<Func<Establishment, object>>>(StringComparer.OrdinalIgnoreCase)
-                {
-                    { "establishmenttypeid", e => e.EstablishmentTypeId }
-                }
-            );
 
         services.AddScoped<IFacetAggregator, FacetAggregator>();
 
@@ -231,10 +221,19 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Search behaviours
         // ---------------------------------------------------------
-        services.AddSingleton(typeof(ISearchBehaviour<>), typeof(ExactSearchBehaviour<>));
-        services.AddSingleton(typeof(ISearchBehaviour<>), typeof(PartialSearchBehaviour<>));
-        services.AddSingleton(typeof(ISearchBehaviour<>), typeof(FuzzySearchBehaviour<>));
-        services.AddSingleton(typeof(ISearchBehaviourRegistry<>), typeof(SearchBehaviourRegistry<>));
+        services.AddSingleton(typeof(ExactSearchBehaviour<>));
+        services.AddSingleton(typeof(PartialSearchBehaviour<>));
+        services.AddSingleton(typeof(FuzzySearchBehaviour<>));
+
+        services.AddSingleton<ISearchBehaviourRegistry<Establishment>>((sp) =>
+        {
+            return new SearchBehaviourRegistry<Establishment>([
+                    new("exact", sp.GetRequiredService<ExactSearchBehaviour<Establishment>>()),
+                    new("partial", sp.GetRequiredService<PartialSearchBehaviour<Establishment>>()),
+                    new("fuzzy", sp.GetRequiredService<FuzzySearchBehaviour<Establishment>>())
+                ]
+            );
+        });
 
         // ---------------------------------------------------------
         // Search specification orchestration

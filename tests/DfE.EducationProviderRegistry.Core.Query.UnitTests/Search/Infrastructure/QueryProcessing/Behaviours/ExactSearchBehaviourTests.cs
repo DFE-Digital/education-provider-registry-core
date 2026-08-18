@@ -8,19 +8,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class ExactSearchBehaviourTests
 {
     [Fact]
-    public void Name_ReturnsExact()
-    {
-        // arrange
-        ExactSearchBehaviour<TestEntity> behaviour = new();
-
-        // act
-        string result = behaviour.Name;
-
-        // assert
-        Assert.Equal("exact", result);
-    }
-
-    [Fact]
     public void Build_ReturnsPropertyEqualsSpecification()
     {
         // arrange

@@ -10,25 +10,12 @@ public static class SearchBehaviourTestDouble
         where TEntity : class =>
         new(MockBehavior.Strict);
 
-    private static Mock<ISearchBehaviour<TEntity>> CreateInternal<TEntity>(
-        string behaviourName)
-        where TEntity : class
-    {
-        Mock<ISearchBehaviour<TEntity>> mock = Mock<TEntity>();
-
-        mock.Setup(searchBehaviour => searchBehaviour.Name)
-            .Returns(behaviourName)
-            .Verifiable();
-
-        return mock;
-    }
-
     public static Mock<ISearchBehaviour<TEntity>> Create<TEntity>(
         string behaviourName,
         ISpecification<TEntity> specification)
         where TEntity : class
     {
-        Mock<ISearchBehaviour<TEntity>> mock = CreateInternal<TEntity>(behaviourName);
+        Mock<ISearchBehaviour<TEntity>> mock = Mock<TEntity>();
 
         mock.Setup(searchBehaviour =>
             searchBehaviour.Build(It.IsAny<string>(), It.IsAny<string>()))
@@ -43,7 +30,7 @@ public static class SearchBehaviourTestDouble
         Func<string, string, ISpecification<TEntity>> builder)
         where TEntity : class
     {
-        Mock<ISearchBehaviour<TEntity>> mock = CreateInternal<TEntity>(behaviourName);
+        Mock<ISearchBehaviour<TEntity>> mock = Mock<TEntity>();
 
         mock.Setup(searchBehaviour =>
             searchBehaviour.Build(It.IsAny<string>(), It.IsAny<string>()))
