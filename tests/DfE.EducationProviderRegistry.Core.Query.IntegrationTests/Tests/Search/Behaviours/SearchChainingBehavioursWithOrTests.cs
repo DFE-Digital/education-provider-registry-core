@@ -6,16 +6,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchChainingBehavioursWithOrTests : SearchBehaviourTestsBase
 {
-    private const string OR_CHAINING_PREDICATE = "OR";
-
     public SearchChainingBehavioursWithOrTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
     protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder)
         => builder
-            .AppendExactMatchBehaviour(behaviourChainingPredicate: OR_CHAINING_PREDICATE)
-            .AppendPartialMatchBehaviour(behaviourChainingPredicate: OR_CHAINING_PREDICATE);
+            .AppendExactMatchBehaviour()
+            .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE);
 
 
     [Fact]

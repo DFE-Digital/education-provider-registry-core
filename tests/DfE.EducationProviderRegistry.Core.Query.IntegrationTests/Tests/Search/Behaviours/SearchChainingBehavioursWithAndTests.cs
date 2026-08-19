@@ -16,7 +16,7 @@ public sealed class SearchChainingBehavioursWithAndTests : SearchBehaviourTestsB
             .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.AND_CHAINING_PREDICATE);
 
     [Fact]
-    public async Task Returns_Intersection_Of_Matches_Of_All_Behaviours_When_Chained_With_And()
+    public async Task Returns_Intersection_Of_Matches_Of_All_Behaviours_When_And_Chained()
     {
         // arrange
         string searchTerm = "school";
