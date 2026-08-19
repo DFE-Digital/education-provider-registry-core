@@ -35,6 +35,12 @@ public sealed class SearchEstablishmentBuilder
             });
     }
 
+    public SearchEstablishmentBuilder WithUrn(string urn)
+    {
+        _establishment.Urn = urn;
+        return this;
+    }
+
     public SearchEstablishmentBuilder SetValue(string property, string value)
     {
         if (string.IsNullOrWhiteSpace(property))

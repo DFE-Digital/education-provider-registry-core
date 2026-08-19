@@ -6,13 +6,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
 {
-    public SearchPartialMatchBehaviourTests(
-        IServiceProvider testServicesProvider)
-        : base(testServicesProvider)
+    public SearchPartialMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureBehaviour(IndexedFieldConfigurationBuilder builder) => builder.WithPartialMatchBehaviour();
+    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.AppendPartialMatchBehaviour();
 
     [Fact]
     public async Task Returns_Matches_When_Search_Term_Is_A_Substring_Of_The_Value()

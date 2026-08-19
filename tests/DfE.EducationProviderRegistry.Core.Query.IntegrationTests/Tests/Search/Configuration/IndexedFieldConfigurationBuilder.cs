@@ -4,13 +4,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class IndexedFieldConfigurationBuilder
 {
+    public const string AND_CHAINING_PREDICATE = "AND";
+    public const string OR_CHAINING_PREDICATE = "OR";
     private string _fieldChainingPredicate;
     private string? _name;
-    private readonly List<(string behaviour, string behaviourChainingPredicate)> _behaviours;
+    private readonly List<(string behaviour, string? behaviourChainingPredicate)> _behaviours;
 
     public IndexedFieldConfigurationBuilder()
     {
-        _fieldChainingPredicate = "OR";
+        _fieldChainingPredicate = OR_CHAINING_PREDICATE;
         _behaviours = [];
     }
 
@@ -31,16 +33,12 @@ public sealed class IndexedFieldConfigurationBuilder
         return this;
     }
 
-    public IndexedFieldConfigurationBuilder WithExactMatchBehaviour(string behaviourChainingPredicate = "OR") => WithBehaviour("exact", behaviourChainingPredicate);
-    public IndexedFieldConfigurationBuilder WithPartialMatchBehaviour(string behaviourChainingPredicate = "OR") => WithBehaviour("partial", behaviourChainingPredicate);
-    public IndexedFieldConfigurationBuilder WithFuzzyMatchBehaviour(string behaviourChainingPredicate = "OR") => WithBehaviour("fuzzy", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder AppendExactMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("exact", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder AppendPartialMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("partial", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder WithFuzzyMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("fuzzy", behaviourChainingPredicate);
 
-    private IndexedFieldConfigurationBuilder WithBehaviour(string name, string behaviourChainingPredicate = "OR")
+    private IndexedFieldConfigurationBuilder WithBehaviour(string name, string? behaviourChainingPredicate = null)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException("Behaviour name for field cannot be null or empty");
-        }
         _behaviours.Add((name, behaviourChainingPredicate));
         return this;
     }
@@ -60,7 +58,7 @@ public sealed class IndexedFieldConfigurationBuilder
         };
     }
 
-    private static IEnumerable<SearchBehaviourConfiguration> MapBehavioursToConfiguration(IEnumerable<(string behaviour, string behaviourChainingPredicate)> behaviours)
+    private static IEnumerable<SearchBehaviourConfiguration> MapBehavioursToConfiguration(IEnumerable<(string behaviour, string? behaviourChainingPredicate)> behaviours)
     {
         return behaviours.Select((behaviour) =>
             new SearchBehaviourConfiguration()

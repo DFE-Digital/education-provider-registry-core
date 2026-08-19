@@ -10,7 +10,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
     {
     }
 
-    protected override void ConfigureBehaviour(IndexedFieldConfigurationBuilder builder) => builder.WithFuzzyMatchBehaviour();
+    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.WithFuzzyMatchBehaviour();
 
     [Fact]
     public async Task Returns_Similar_Words()
