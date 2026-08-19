@@ -16,13 +16,11 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 {
     protected const string SearchField = nameof(Establishment.Name);
 
-    protected SearchBehaviourTestsBase(
-        IServiceProvider testServicesProvider)
-        : base(testServicesProvider)
+    protected SearchBehaviourTestsBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected abstract void ConfigureBehaviour(IndexedFieldConfigurationBuilder builder);
+    protected abstract void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder);
 
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
@@ -52,7 +50,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                     fieldBuilder =>
                     {
                         fieldBuilder.WithFieldName(SearchField);
-                        ConfigureBehaviour(fieldBuilder);
+                        ConfigureIndexedField(fieldBuilder);
                         fieldBuilder.Build();
                     }
                 ]

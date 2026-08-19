@@ -6,13 +6,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
 {
-    public SearchExactMatchBehaviourTests(
-        IServiceProvider testServicesProvider)
-        : base(testServicesProvider)
+    public SearchExactMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureBehaviour(IndexedFieldConfigurationBuilder builder) => builder.WithExactMatchBehaviour();
+    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.AppendExactMatchBehaviour();
 
     [Fact]
     public async Task Returns_Exact_Match_Only_Case_Sensitive()
