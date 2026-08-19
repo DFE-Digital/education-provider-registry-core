@@ -35,10 +35,31 @@ public sealed class EstablishmentToDetailsModelMapper :
                 new EstablishmentLifeCycleReason(e.ClosedReason?.Name)))
             .FirstOrDefault();
 
-        string? uid = dto.Uid;
-        string? groupName = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name;
-        string? groupType = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name;
-        DateOnly? groupOpenDate = dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate;
+        EstablishmentGroupMembership? groupMembership = dto.EstablishmentGroupMembership.FirstOrDefault();
+        string? groupName = groupMembership?.Group.Name;
+        string? groupType = groupMembership?.Group.GroupType.Name;
+        DateOnly? groupOpenDate = groupMembership?.StartDate;
+
+        Site? site = dto.Site.FirstOrDefault();
+        SiteAddressModel? address = site is null
+            ? null
+            : new SiteAddressModel(
+                Name: site.Name,
+                AddressLine1: site.AddressLine1,
+                AddressLine2: site.AddressLine2,
+                Town: site.Town,
+                County: site.County,
+                Postcode: site.Postcode
+            );
+
+        LocalAuthority? localAuthority = dto.EstablishmentAuthority is null ? null : new LocalAuthority(dto.EstablishmentAuthority.FirstOrDefault().AuthorityName, dto.EstablishmentAuthority.FirstOrDefault().AuthorityCode);
+        string? religiousCharacter = dto.EstablishmentReligion.FirstOrDefault()?.ReligiousCharacter;
+        EstablishmentInspection? ofsted = dto.EstablishmentInspection.FirstOrDefault();
+
+        string? ageRange = dto.EstablishmentAdmissions?.StatutoryLowAge is not null && dto.EstablishmentAdmissions.StatutoryHighAge is not null
+            ? $"{dto.EstablishmentAdmissions.StatutoryLowAge} to {dto.EstablishmentAdmissions.StatutoryHighAge}"
+            : null;
+
         List<GovernorModel> governors = dto.RoleAssignment
             .Where(ra => ra.Role?.Person != null)
             .Select(ra => new GovernorModel(
@@ -46,7 +67,6 @@ public sealed class EstablishmentToDetailsModelMapper :
                 Name: new Name(ra.Role.Person.DisplayName)
             ))
             .ToList();
-
 
         return new EstablishmentDetailsModel
         {
@@ -58,10 +78,16 @@ public sealed class EstablishmentToDetailsModelMapper :
             Phase = phase,
             LifecycleEventOpened = openedEvent,
             LifecycleEventClosed = closedEvent,
-            Uid = uid,
+            Uid = dto.Uid,
             GroupName = groupName,
             GroupType = groupType,
             GroupOpenDate = groupOpenDate,
+            Address = address,
+            LocalAuthority = localAuthority,
+            AgeRange = ageRange,
+            //Gender = gender, // cant find
+            ReligiousCharacter = religiousCharacter,
+            Ofsted = ofsted,
             Governors = governors
         };
     }

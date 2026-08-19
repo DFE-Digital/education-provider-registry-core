@@ -1,4 +1,7 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
 public sealed record EstablishmentDetailsModel
 {
@@ -21,8 +24,15 @@ public sealed record EstablishmentDetailsModel
 
     public IEnumerable<GovernorModel> Governors { get; init; }
 
-    public EstablishmentDetailsModel()
-    {
+    public SiteAddressModel? Address { get; init; }
 
-    }
+    public LocalAuthority? LocalAuthority { get; init; }
+
+    public string? AgeRange { get; init; }
+
+    public string? Gender { get; init; }
+
+    public string? ReligiousCharacter { get; init; }
+
+    public EstablishmentInspection? Ofsted { get; init; }
 }

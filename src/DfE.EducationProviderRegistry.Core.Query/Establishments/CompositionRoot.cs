@@ -35,7 +35,7 @@ public static class CompositionRoot
         ArgumentNullException.ThrowIfNull(services);
 
         return services
-            .AddScoped<IEstablishmentsRepository, EfPostgresEstablishmensRepository>()
+            .AddScoped<IEstablishmentsRepository, EfPostgresEstablishmentRepository>()
 
             .AddSingleton<IMapper<
                 IEnumerable<Establishment>,

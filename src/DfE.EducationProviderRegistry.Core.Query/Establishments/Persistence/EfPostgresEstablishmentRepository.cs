@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 
-internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsRepository
+internal sealed class EfPostgresEstablishmentRepository : IEstablishmentsRepository
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
     private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentDetailsMapper;
 
-    public EfPostgresEstablishmensRepository(
+    public EfPostgresEstablishmentRepository(
         EducationProviderRegistryDbContext appDbContext,
         IMapper<Establishment, EstablishmentDetailsModel> establishmentDetailsMapper)
     {
@@ -27,6 +27,7 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
     {
         EstablishmentDetailsModel? result = await _dbContext.Establishment
             .AsNoTracking()
+            .AsSplitQuery() // consider this for performance if the query is complex and involves multiple related entities
             .Where(e => e.Urn == identifier.Value)
             .Include(e => e.EstablishmentGroupMembership)
                 .ThenInclude(gm => gm.Group)
@@ -39,6 +40,12 @@ internal sealed class EfPostgresEstablishmensRepository : IEstablishmentsReposit
             .Include(e => e.RoleAssignment)
                 .ThenInclude(ra => ra.Role)
                     .ThenInclude(r => r.Person)
+
+            .Include(e => e.Site)
+            .Include(e => e.EstablishmentAuthority)
+            .Include(e => e.EstablishmentReligion)
+            .Include(e => e.EstablishmentInspection)
+            .Include(e => e.EstablishmentAdmissions)
 
             .Select(e => _establishmentDetailsMapper.Map(e))
             .FirstOrDefaultAsync(cancellationToken);
