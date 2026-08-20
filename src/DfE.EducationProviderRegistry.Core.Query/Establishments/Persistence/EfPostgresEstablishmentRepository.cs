@@ -22,30 +22,42 @@ internal sealed class EfPostgresEstablishmentRepository : IEstablishmentsReposit
         _establishmentDetailsMapper = establishmentDetailsMapper;
     }
 
-
-    public async Task<EstablishmentDetailsModel?> GetEstablishmentById(EstablishmentUrnModel identifier, CancellationToken cancellationToken = default)
+    public async Task<EstablishmentDetailsModel?> GetEstablishmentById(
+        EstablishmentUrnModel identifier,
+        CancellationToken cancellationToken = default)
     {
         EstablishmentDetailsModel? result = await _dbContext.Establishment
             .AsNoTracking()
-            .AsSplitQuery() // consider this for performance if the query is complex and involves multiple related entities
+            .AsSplitQuery()
             .Where(e => e.Urn == identifier.Value)
+
             .Include(e => e.EstablishmentGroupMembership)
                 .ThenInclude(gm => gm.Group)
                     .ThenInclude(g => g.GroupType)
+
             .Include(e => e.EstablishmentStatus)
             .Include(e => e.EstablishmentType)
+
             .Include(e => e.EstablishmentProvision)
                 .ThenInclude(ep => ep.EducationPhase)
+
             .Include(e => e.EstablishmentLifecycleEvent)
+
             .Include(e => e.RoleAssignment)
                 .ThenInclude(ra => ra.Role)
                     .ThenInclude(r => r.Person)
+
+            .Include(e => e.RoleAssignment)
+                .ThenInclude(ra => ra.Role)
+                    .ThenInclude(r => r.RoleType)
 
             .Include(e => e.Site)
             .Include(e => e.EstablishmentAuthority)
             .Include(e => e.EstablishmentReligion)
             .Include(e => e.EstablishmentInspection)
             .Include(e => e.EstablishmentAdmissions)
+            .Include(e => e.EstablishmentSen)
+            .Include(e => e.Contact)
 
             .Select(e => _establishmentDetailsMapper.Map(e))
             .FirstOrDefaultAsync(cancellationToken);

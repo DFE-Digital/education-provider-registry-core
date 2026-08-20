@@ -35,4 +35,10 @@ public sealed record EstablishmentDetailsModel
     public string? ReligiousCharacter { get; init; }
 
     public EstablishmentInspection? Ofsted { get; init; }
+
+    public string? Headteacher { get; set; }
+
+    public string? SenProvision { get; set; }
+
+    public EstablishmentContactDetails? ContactDetails { get; set; }
 }

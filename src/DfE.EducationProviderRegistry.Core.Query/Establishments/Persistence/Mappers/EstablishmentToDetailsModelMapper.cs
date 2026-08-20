@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-
+                    
 public sealed class EstablishmentToDetailsModelMapper :
     IMapper<Establishment, EstablishmentDetailsModel>
 {
@@ -60,13 +60,17 @@ public sealed class EstablishmentToDetailsModelMapper :
             ? $"{dto.EstablishmentAdmissions.StatutoryLowAge} to {dto.EstablishmentAdmissions.StatutoryHighAge}"
             : null;
 
-        List<GovernorModel> governors = dto.RoleAssignment
+        List<GovernorModel> governors = [.. dto.RoleAssignment
             .Where(ra => ra.Role?.Person != null)
             .Select(ra => new GovernorModel(
                 Identifier: new GovernanceIdentifier(ra.Role.Person.PersonId.ToString()),
                 Name: new Name(ra.Role.Person.DisplayName)
-            ))
-            .ToList();
+            ))];
+
+        //todo update role type code mapping to not use magic string
+        string headTeacherDisplayName = dto.RoleAssignment?.FirstOrDefault(x => x.Role?.RoleType.Code == "HT")?.Role?.Person?.DisplayName ?? string.Empty;
+        string senProvision = dto.EstablishmentSen?.SenProvision ?? string.Empty;
+        EstablishmentContactDetails? contactDetails = new EstablishmentContactDetails(dto.Contact.FirstOrDefault()?.Website ?? string.Empty, dto.Contact.FirstOrDefault()?.TelephoneNumber ?? string.Empty);
 
         return new EstablishmentDetailsModel
         {
@@ -85,10 +89,12 @@ public sealed class EstablishmentToDetailsModelMapper :
             Address = address,
             LocalAuthority = localAuthority,
             AgeRange = ageRange,
-            //Gender = gender, // cant find
             ReligiousCharacter = religiousCharacter,
             Ofsted = ofsted,
-            Governors = governors
+            Governors = governors,
+            Headteacher = headTeacherDisplayName,
+            SenProvision = senProvision,
+            ContactDetails = contactDetails
         };
     }
 }
