@@ -14,14 +14,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 {
-    protected const string DefaultSearchField = nameof(Establishment.Name);
+    protected const string DefaultSearchFieldName = nameof(Establishment.Name);
+    protected const string SecondarySearchFieldName = nameof(Establishment.EstablishmentNumber); // ensure field doesn't have UK constraints
 
     protected SearchBehaviourTestsBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    // termKey : behaviour
-    protected abstract Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm();
+    protected abstract (string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration();
 
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
@@ -43,10 +43,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
             .StubFilterOptions()
             .StubSearchCriteriaOptions();
 
-        ConfigureSearchTerm()
-            .Select((dict) => (dict.Key, dict.Value))
-            .ToList()
-            .ForEach(t => builder.AddSearchConfiguration(t));
+        builder.AddSearchConfiguration(CreateSearchTermsConfiguration());
     }
 
     protected async Task AssertExecutedSearchAsync(

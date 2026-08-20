@@ -12,10 +12,16 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
     {
     }
 
-    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
-    {
-        {  SearchTermKey, [(builder) => builder.WithFieldName(DefaultSearchField).AppendExactMatchBehaviour()] }
-    };
+    protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
+    [
+        (
+                SearchTermKey,
+                IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+                [
+                    (builder) => builder.WithFieldName(DefaultSearchFieldName).AppendExactMatchBehaviour()
+                ]
+            )
+    ];
 
     [Fact]
     public async Task Returns_Exact_Match_Only_Case_Sensitive()
@@ -26,20 +32,20 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "school")
+                .SetValue(DefaultSearchFieldName, "school")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "ScHoOl")
+                .SetValue(DefaultSearchFieldName, "ScHoOl")
                 .Build()
         ];
 
@@ -59,22 +65,22 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "My School Academy")
+                .SetValue(DefaultSearchFieldName, "My School Academy")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "School Academy")
+                .SetValue(DefaultSearchFieldName, "School Academy")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "Secondary School")
+                .SetValue(DefaultSearchFieldName, "Secondary School")
                 .Build()
         ];
 

@@ -11,10 +11,17 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
     {
     }
 
-    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
-    {
-        {  SearchTermKey, [(builder) => builder.WithFieldName(DefaultSearchField).AppendFuzzyMatchBehaviour()] }
-    };
+    protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
+    [
+        (
+            SearchTermKey,
+            IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+            [
+                (builder) =>
+                    builder.WithFieldName(DefaultSearchFieldName).AppendFuzzyMatchBehaviour()
+            ]
+        )
+    ];
 
     [Fact]
     public async Task Returns_Similar_Words()
@@ -25,22 +32,22 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "Schools")
+                .SetValue(DefaultSearchFieldName, "Schools")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "University")
+                .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
 
@@ -60,17 +67,17 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "school")
+                .SetValue(DefaultSearchFieldName, "school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
 
@@ -90,22 +97,22 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "Banana")
+                .SetValue(DefaultSearchFieldName, "Banana")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "University")
+                .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
 

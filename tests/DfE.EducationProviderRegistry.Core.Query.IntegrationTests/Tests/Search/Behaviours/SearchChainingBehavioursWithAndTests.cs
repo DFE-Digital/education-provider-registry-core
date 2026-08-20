@@ -12,15 +12,20 @@ public sealed class SearchChainingBehavioursWithAndTests : SearchBehaviourTestsB
     {
     }
 
-    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
-    {
-        {  SearchTermKey, [
-            (builder) =>
-                builder.WithFieldName(DefaultSearchField)
-                    .AppendExactMatchBehaviour()
-                    .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.AND_CHAINING_PREDICATE)]
-        }
-    };
+    protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
+    [
+        (
+            SearchTermKey,
+            IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+            [
+                (builder) =>
+                    builder
+                        .WithFieldName(DefaultSearchFieldName)
+                        .AppendExactMatchBehaviour()
+                        .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.AND_CHAINING_PREDICATE)
+            ]
+        )
+    ];
 
     [Fact]
     public async Task Returns_Intersection_Of_Matches_Of_All_Behaviours_When_And_Chained()
@@ -31,17 +36,17 @@ public sealed class SearchChainingBehavioursWithAndTests : SearchBehaviourTestsB
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "school")
+                .SetValue(DefaultSearchFieldName, "school")
                 .Build(),
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchField, "My school")
+                .SetValue(DefaultSearchFieldName, "My school")
                 .Build()
         ];
 
