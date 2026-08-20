@@ -6,11 +6,16 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
+
     public SearchExactMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.AppendExactMatchBehaviour();
+    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
+    {
+        {  SearchTermKey, [(builder) => builder.WithFieldName(DefaultSearchField).AppendExactMatchBehaviour()] }
+    };
 
     [Fact]
     public async Task Returns_Exact_Match_Only_Case_Sensitive()
@@ -21,26 +26,26 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchField, "school")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "ScHoOl")
+                .SetValue(DefaultSearchField, "ScHoOl")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -54,28 +59,28 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My School Academy")
+                .SetValue(DefaultSearchField, "My School Academy")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School Academy")
+                .SetValue(DefaultSearchField, "School Academy")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Secondary School")
+                .SetValue(DefaultSearchField, "Secondary School")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }

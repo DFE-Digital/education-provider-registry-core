@@ -6,11 +6,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
     public SearchPartialMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.AppendPartialMatchBehaviour();
+    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
+    {
+        {  SearchTermKey, [(builder) => builder.WithFieldName(DefaultSearchField).AppendPartialMatchBehaviour()] }
+    };
 
     [Fact]
     public async Task Returns_Matches_When_Search_Term_Is_A_Substring_Of_The_Value()
@@ -21,24 +25,24 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My school")
+                .SetValue(DefaultSearchField, "My school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -52,20 +56,20 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School Academy")
+                .SetValue(DefaultSearchField, "School Academy")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Academy College")
+                .SetValue(DefaultSearchField, "Academy College")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -79,20 +83,20 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My School Academy")
+                .SetValue(DefaultSearchField, "My School Academy")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Academy College")
+                .SetValue(DefaultSearchField, "Academy College")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -106,20 +110,20 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Secondary School")
+                .SetValue(DefaultSearchField, "Secondary School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Academy College")
+                .SetValue(DefaultSearchField, "Academy College")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -133,28 +137,28 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "SCHOOL")
+                .SetValue(DefaultSearchField, "SCHOOL")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchField, "school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }

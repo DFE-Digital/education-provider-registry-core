@@ -35,7 +35,7 @@ public sealed class IndexedFieldConfigurationBuilder
 
     public IndexedFieldConfigurationBuilder AppendExactMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("exact", behaviourChainingPredicate);
     public IndexedFieldConfigurationBuilder AppendPartialMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("partial", behaviourChainingPredicate);
-    public IndexedFieldConfigurationBuilder WithFuzzyMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("fuzzy", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder AppendFuzzyMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("fuzzy", behaviourChainingPredicate);
 
     private IndexedFieldConfigurationBuilder WithBehaviour(string name, string? behaviourChainingPredicate = null)
     {

@@ -14,13 +14,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 {
-    protected const string SearchField = nameof(Establishment.Name);
+    protected const string DefaultSearchField = nameof(Establishment.Name);
 
     protected SearchBehaviourTestsBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected abstract void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder);
+    // termKey : behaviour
+    protected abstract Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm();
 
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
@@ -42,23 +43,14 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
             .StubFilterOptions()
             .StubSearchCriteriaOptions();
 
-        builder.AddSearchConfiguration(
-            (
-                termKey: "term-1",
-                fieldsConfigure:
-                [
-                    fieldBuilder =>
-                    {
-                        fieldBuilder.WithFieldName(SearchField);
-                        ConfigureIndexedField(fieldBuilder);
-                        fieldBuilder.Build();
-                    }
-                ]
-            ));
+        ConfigureSearchTerm()
+            .Select((dict) => (dict.Key, dict.Value))
+            .ToList()
+            .ForEach(t => builder.AddSearchConfiguration(t));
     }
 
     protected async Task AssertExecutedSearchAsync(
-        string searchTerm,
+        IEnumerable<(string key, string value)> searchTerms,
         IReadOnlyCollection<Establishment> matchSearchTerm,
         IReadOnlyCollection<Establishment> nonMatchSearchTerm)
     {
@@ -73,10 +65,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                 ],
                 ct);
 
-        SearchRequest request =
-            SearchRequestBuilder.Create()
-                .WithSearchTerm("term-1", searchTerm)
-                .Build();
+        SearchRequest request = BuildSearchRequest(searchTerms);
 
         // act
         UseCaseResponse<SearchResponse> response =
@@ -108,5 +97,17 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                 expected: seededEstablishment,
                 actual: establishmentResponse);
         }
+    }
+
+    private static SearchRequest BuildSearchRequest(IEnumerable<(string key, string value)> searchTerms)
+    {
+        SearchRequestBuilder requestBuilder = SearchRequestBuilder.Create();
+
+        foreach ((string key, string value) termTuple in searchTerms)
+        {
+            requestBuilder.WithSearchTerm(termTuple);
+        }
+
+        return requestBuilder.Build();
     }
 }

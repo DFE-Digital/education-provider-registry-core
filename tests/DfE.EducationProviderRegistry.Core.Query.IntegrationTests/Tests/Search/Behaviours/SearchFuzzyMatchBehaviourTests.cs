@@ -6,11 +6,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
     public SearchFuzzyMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.WithFuzzyMatchBehaviour();
+    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
+    {
+        {  SearchTermKey, [(builder) => builder.WithFieldName(DefaultSearchField).AppendFuzzyMatchBehaviour()] }
+    };
 
     [Fact]
     public async Task Returns_Similar_Words()
@@ -21,28 +25,28 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Schools")
+                .SetValue(DefaultSearchField, "Schools")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "University")
+                .SetValue(DefaultSearchField, "University")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -56,23 +60,23 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchField, "school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -86,28 +90,28 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchField, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Banana")
+                .SetValue(DefaultSearchField, "Banana")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "University")
+                .SetValue(DefaultSearchField, "University")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }

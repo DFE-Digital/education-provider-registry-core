@@ -6,14 +6,21 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchChainingBehavioursWithAndTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
+
     public SearchChainingBehavioursWithAndTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder)
-        => builder
-            .AppendExactMatchBehaviour()
-            .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.AND_CHAINING_PREDICATE);
+    protected override Dictionary<string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>> ConfigureSearchTerm() => new()
+    {
+        {  SearchTermKey, [
+            (builder) =>
+                builder.WithFieldName(DefaultSearchField)
+                    .AppendExactMatchBehaviour()
+                    .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.AND_CHAINING_PREDICATE)]
+        }
+    };
 
     [Fact]
     public async Task Returns_Intersection_Of_Matches_Of_All_Behaviours_When_And_Chained()
@@ -24,23 +31,23 @@ public sealed class SearchChainingBehavioursWithAndTests : SearchBehaviourTestsB
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchField, "school")
                 .Build(),
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchField, "College")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My school")
+                .SetValue(DefaultSearchField, "My school")
                 .Build()
         ];
 
         // act / assert
         await AssertExecutedSearchAsync(
-            searchTerm,
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
