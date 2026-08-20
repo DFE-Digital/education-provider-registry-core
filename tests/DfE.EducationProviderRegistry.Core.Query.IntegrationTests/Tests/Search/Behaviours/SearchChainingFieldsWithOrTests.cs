@@ -4,21 +4,20 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
 
-public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
+public sealed class SearchChainingFieldsWithOrTests : SearchBehaviourTestsBase
 {
     private const string SearchTermKey = "term-1";
 
-    public SearchChainingFieldsWithAndTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public SearchChainingFieldsWithOrTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
-        
     }
 
     protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
-        [
-            (
+    [
+        (
                 SearchTermKey,
-                IndexedFieldConfigurationBuilder.AND_CHAINING_PREDICATE,
-                [
+                IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+                 [
                     (builder) =>
                         builder
                             .WithFieldName(DefaultSearchFieldName)
@@ -29,10 +28,10 @@ public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
                             .AppendPartialMatchBehaviour(),
                 ]
             )
-        ];
+    ];
 
     [Fact]
-    public async Task Returns_Intersection_Of_Matches_Of_All_Fields_When_And_Chained()
+    public async Task Returns_Matches_From_First_Field_When_Or_Chained()
     {
         // arrange
         string searchTerm = "school";
@@ -41,23 +40,13 @@ public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
         [
             SearchEstablishmentBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "My school")
+            .SetValue(SecondarySearchFieldName, "College")
             .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "College")
-            .Build(),
-
-        SearchEstablishmentBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "Academy")
-            .SetValue(SecondarySearchFieldName, "My school")
-            .Build(),
-
-        SearchEstablishmentBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "College")
             .Build()
@@ -71,23 +60,63 @@ public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
     }
 
     [Fact]
-    public async Task Returns_No_Results_When_No_Fields_Match()
+    public async Task Returns_Matches_From_Second_Field_When_Or_Chained()
     {
         // arrange
         string searchTerm = "school";
 
-        Establishment[] matchingEstablishments = [];
+        Establishment[] matchingEstablishments =
+        [
+            SearchEstablishmentBuilder.Create()
+            .SetValue(DefaultSearchFieldName, "Academy")
+            .SetValue(SecondarySearchFieldName, "My school")
+            .Build()
+        ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "College")
+            .Build()
+        ];
+
+        // act / assert
+        await AssertExecutedSearchAsync(
+            [(SearchTermKey, searchTerm)],
+            matchingEstablishments,
+            nonMatchingEstablishments);
+    }
+
+    [Fact]
+    public async Task Returns_Matches_From_Both_Fields_When_Or_Chained()
+    {
+        // arrange
+        string searchTerm = "school";
+
+        Establishment[] matchingEstablishments =
+        [
+            SearchEstablishmentBuilder.Create()
+            .SetValue(DefaultSearchFieldName, "school")
+            .SetValue(SecondarySearchFieldName, "College")
             .Build(),
 
         SearchEstablishmentBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "University")
-            .SetValue(SecondarySearchFieldName, "Institute")
+            .SetValue(DefaultSearchFieldName, "Academy")
+            .SetValue(SecondarySearchFieldName, "My school")
+            .Build(),
+
+        SearchEstablishmentBuilder.Create()
+            .SetValue(DefaultSearchFieldName, "school")
+            .SetValue(SecondarySearchFieldName, "My school")
+            .Build()
+        ];
+
+        Establishment[] nonMatchingEstablishments =
+        [
+            SearchEstablishmentBuilder.Create()
+            .SetValue(DefaultSearchFieldName, "Academy")
+            .SetValue(SecondarySearchFieldName, "College")
             .Build()
         ];
 

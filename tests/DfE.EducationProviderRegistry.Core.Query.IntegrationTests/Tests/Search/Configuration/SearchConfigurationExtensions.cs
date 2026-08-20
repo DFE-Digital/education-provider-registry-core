@@ -11,7 +11,7 @@ internal static class SearchConfigurationExtensions
     {
         SearchConfigurationBuilder configBuilder = SearchConfigurationBuilder.Create();
 
-        foreach ((string termKey, string chainFieldsWithPredicate, IEnumerable < Action<IndexedFieldConfigurationBuilder>> fieldsConfigure) in termBehaviours)
+        foreach ((string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>> fieldsConfigure) in termBehaviours)
         {
             IndexedFieldConfiguration[] fields =
             [.. fieldsConfigure.Select(fieldConfigure =>
@@ -23,7 +23,7 @@ internal static class SearchConfigurationExtensions
 
             configBuilder.WithBehaviourForSearchTerm(termKey, fields, fieldChainingPredicate: chainFieldsWithPredicate);
         }
-        
+
         Dictionary<string, string?> configuration = configBuilder.Build();
 
         builder.AddInMemoryCollection(configuration);

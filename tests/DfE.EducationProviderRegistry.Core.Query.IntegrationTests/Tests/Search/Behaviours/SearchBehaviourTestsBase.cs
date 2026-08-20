@@ -14,8 +14,9 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 {
+    // ensure fields do not have UK constraints
     protected const string DefaultSearchFieldName = nameof(Establishment.Name);
-    protected const string SecondarySearchFieldName = nameof(Establishment.EstablishmentNumber); // ensure field doesn't have UK constraints
+    protected const string SecondarySearchFieldName = nameof(Establishment.EstablishmentNumber);
 
     protected SearchBehaviourTestsBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
@@ -65,6 +66,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         SearchRequest request = BuildSearchRequest(searchTerms);
 
         // act
+
         UseCaseResponse<SearchResponse> response =
             await ExecuteUseCase<SearchRequest, SearchResponse>(request);
 
