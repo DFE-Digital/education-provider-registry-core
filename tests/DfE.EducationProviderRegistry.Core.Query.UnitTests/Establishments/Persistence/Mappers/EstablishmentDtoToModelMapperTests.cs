@@ -26,6 +26,9 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Equal(dto.EstablishmentType.Name, result.Type.Value);
         Assert.Equal(dto.EstablishmentProvision?.EducationPhase?.Name, result.Phase.Value);
         Assert.Equal(dto.Uid, result.Uid);
+        Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name, result.GroupName);
+        Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name, result.GroupType);
+        Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate, result.GroupOpenDate);
     }
 
     [Fact]

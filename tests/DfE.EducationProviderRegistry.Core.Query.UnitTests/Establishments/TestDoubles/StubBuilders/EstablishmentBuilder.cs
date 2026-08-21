@@ -76,7 +76,23 @@ internal sealed class EstablishmentBuilder
                     AuthorityName = "Test Authority",
                     AuthorityCode = "TEST"
                 }
-            }
+            },
+
+            EstablishmentGroupMembership = new List<EstablishmentGroupMembership>
+            {
+                new()
+                {
+                    StartDate = new DateOnly(2010, 1, 1),
+                    Group = new GroupRecord
+                    {
+                        Name = "Test Group",
+                        GroupType = new GroupType
+                        {
+                            Name = "Multi-academy trust"
+                        }
+                    }
+                }
+            },
         };
     }
 
