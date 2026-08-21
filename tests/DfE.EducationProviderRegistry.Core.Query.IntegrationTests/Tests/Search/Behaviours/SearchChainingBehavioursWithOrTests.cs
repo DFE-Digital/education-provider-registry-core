@@ -51,7 +51,7 @@ public sealed class SearchChainingBehavioursWithOrTests : SearchBehaviourTestsBa
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);

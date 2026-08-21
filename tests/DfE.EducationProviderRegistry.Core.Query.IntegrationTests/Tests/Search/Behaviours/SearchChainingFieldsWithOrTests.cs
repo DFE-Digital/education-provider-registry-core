@@ -53,7 +53,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -82,7 +82,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -121,7 +121,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);

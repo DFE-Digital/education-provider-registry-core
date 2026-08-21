@@ -52,7 +52,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -82,7 +82,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -117,7 +117,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);

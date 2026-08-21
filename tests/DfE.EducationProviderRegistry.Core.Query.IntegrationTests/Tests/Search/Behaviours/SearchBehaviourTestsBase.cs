@@ -47,7 +47,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         builder.AddSearchConfiguration(CreateSearchTermsConfiguration());
     }
 
-    protected async Task AssertExecutedSearchAsync(
+    protected async Task<UseCaseResponse<SearchResponse>> ExecuteAndAssertSearchAsync(
         IEnumerable<(string key, string value)> searchTerms,
         IReadOnlyCollection<Establishment> matchSearchTerm,
         IReadOnlyCollection<Establishment> nonMatchSearchTerm)
@@ -96,6 +96,8 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                 expected: seededEstablishment,
                 actual: establishmentResponse);
         }
+
+        return response;
     }
 
     private static SearchRequest BuildSearchRequest(IEnumerable<(string key, string value)> searchTerms)

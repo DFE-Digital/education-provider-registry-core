@@ -10,7 +10,7 @@ public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
 
     public SearchChainingFieldsWithAndTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
-        
+
     }
 
     protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
@@ -64,7 +64,7 @@ public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -92,7 +92,7 @@ public sealed class SearchChainingFieldsWithAndTests : SearchBehaviourTestsBase
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
+        await ExecuteAndAssertSearchAsync(
             [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
