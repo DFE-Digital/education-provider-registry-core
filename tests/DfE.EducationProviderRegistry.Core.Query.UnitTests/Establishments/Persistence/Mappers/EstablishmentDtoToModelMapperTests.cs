@@ -21,11 +21,11 @@ public sealed class EstablishmentDtoToModelMapperTests
 
         // Assert
         Assert.Equal(dto.Urn, result.Urn.Value);
-        Assert.Equal(dto.Name, result.Name.Value);
-        Assert.Equal(dto.EstablishmentNumber, result.Number.Value);
-        Assert.Equal(dto.EstablishmentStatus.Name, result.Status.Value);
-        Assert.Equal(dto.EstablishmentType.Name, result.Type.Value);
-        Assert.Equal(dto.EstablishmentProvision?.EducationPhase?.Name, result.Phase.Value);
+        Assert.Equal(dto.Name, result.Name?.Value);
+        Assert.Equal(dto.EstablishmentNumber, result.Number?.Value);
+        Assert.Equal(dto.EstablishmentStatus.Name, result.Status?.Value);
+        Assert.Equal(dto.EstablishmentType.Name, result.Type?.Value);
+        Assert.Equal(dto.EstablishmentProvision?.EducationPhase?.Name, result.Phase?.Value);
         Assert.Equal(dto.Uid, result.Uid);
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name, result.GroupName);
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name, result.GroupType);
@@ -101,7 +101,7 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Null(result.Headteacher);
         Assert.Null(result.SenProvision);
         Assert.Null(result.Headteacher);
-        Assert.Null(result.Phase.Value);
+        Assert.Null(result.Phase?.Value);
     }
 
     [Fact]

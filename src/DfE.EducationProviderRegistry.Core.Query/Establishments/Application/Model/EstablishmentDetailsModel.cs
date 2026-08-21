@@ -7,7 +7,7 @@ public sealed record EstablishmentDetailsModel
 {
     public required EstablishmentUrnModel Urn { get; init; }
 
-    public required EstablishmentNameModel Name { get; init; }
+    public EstablishmentNameModel? Name { get; init; }
     public EstablishmentNumberModel? Number { get; init; }
 
     public EstablishmentStatusModel? Status { get; init; }
