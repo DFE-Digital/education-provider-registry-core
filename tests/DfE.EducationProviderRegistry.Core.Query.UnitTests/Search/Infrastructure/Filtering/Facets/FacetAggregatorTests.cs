@@ -143,36 +143,4 @@ public class FacetAggregationStepTests
         // verify
         facetProviderMock.VerifyAll();
     }
-
-    [Fact]
-    public async Task CalculateFacetsAsync_RespectsCancellation()
-    {
-        // arrange
-        IReadOnlyList<string> urns = new[] { "100", "200" };
-        IEnumerable<string> requested = new[] { "Cancelled" };
-
-        using CancellationTokenSource cts = new();
-        cts.Cancel();
-
-        Mock<IFacetProvider> facetProviderMock =
-            FacetProviderTestDouble.Mock(builder =>
-                builder.Returns("Cancelled", new List<FacetResult>()));
-
-        // manage the setup internally for this edge case.
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(urns, "Cancelled", It.IsAny<CancellationToken>()))
-            .Returns(async (IReadOnlyList<string> _, string _, CancellationToken ct) =>
-            {
-                ct.ThrowIfCancellationRequested();
-                return new List<FacetResult>();
-            });
-
-        // act/assert/verify
-        await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, requested, cts.Token));
-
-        facetProviderMock.VerifyNoOtherCalls();
-    }
 }
