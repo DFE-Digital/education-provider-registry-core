@@ -6,11 +6,22 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
     public SearchPartialMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.AppendPartialMatchBehaviour();
+    protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
+    [
+        (
+            SearchTermKey,
+            IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+            [
+                (builder) =>
+                        builder.WithFieldName(DefaultSearchFieldName).AppendPartialMatchBehaviour()
+            ]
+        )
+    ];
 
     [Fact]
     public async Task Returns_Matches_When_Search_Term_Is_A_Substring_Of_The_Value()
@@ -21,24 +32,24 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My school")
+                .SetValue(DefaultSearchFieldName, "My school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -52,20 +63,20 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School Academy")
+                .SetValue(DefaultSearchFieldName, "School Academy")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Academy College")
+                .SetValue(DefaultSearchFieldName, "Academy College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -79,20 +90,20 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My School Academy")
+                .SetValue(DefaultSearchFieldName, "My School Academy")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Academy College")
+                .SetValue(DefaultSearchFieldName, "Academy College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -106,20 +117,20 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Secondary School")
+                .SetValue(DefaultSearchFieldName, "Secondary School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Academy College")
+                .SetValue(DefaultSearchFieldName, "Academy College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -133,28 +144,28 @@ public sealed class SearchPartialMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "SCHOOL")
+                .SetValue(DefaultSearchFieldName, "SCHOOL")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchFieldName, "school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }

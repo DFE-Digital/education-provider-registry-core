@@ -7,20 +7,24 @@ internal static class SearchConfigurationExtensions
 {
     public static IConfigurationBuilder AddSearchConfiguration(
         this IConfigurationBuilder builder,
-        (string termKey, IEnumerable<Action<IndexedFieldConfigurationBuilder>> fieldsConfigure) configure)
+        (string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>> fieldsConfigure)[] termBehaviours)
     {
-        IndexedFieldConfiguration[] fields =
-            [.. configure.fieldsConfigure.Select(fieldConfigure =>
+        SearchConfigurationBuilder configBuilder = SearchConfigurationBuilder.Create();
+
+        foreach ((string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>> fieldsConfigure) in termBehaviours)
+        {
+            IndexedFieldConfiguration[] fields =
+            [.. fieldsConfigure.Select(fieldConfigure =>
                 {
                     IndexedFieldConfigurationBuilder builder = IndexedFieldConfigurationBuilder.Create();
                     fieldConfigure.Invoke(builder);
                     return builder.Build();
                 })];
 
-        Dictionary<string, string?> configuration =
-            SearchConfigurationBuilder.Create()
-                .WithBehaviourForSearchTerm(configure.termKey, fields)
-                .Build();
+            configBuilder.WithBehaviourForSearchTerm(termKey, fields, fieldChainingPredicate: chainFieldsWithPredicate);
+        }
+
+        Dictionary<string, string?> configuration = configBuilder.Build();
 
         builder.AddInMemoryCollection(configuration);
 

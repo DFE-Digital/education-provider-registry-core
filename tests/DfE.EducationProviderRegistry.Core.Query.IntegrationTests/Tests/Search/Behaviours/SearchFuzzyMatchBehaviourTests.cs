@@ -6,11 +6,22 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
     public SearchFuzzyMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder) => builder.WithFuzzyMatchBehaviour();
+    protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
+    [
+        (
+            SearchTermKey,
+            IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+            [
+                (builder) =>
+                    builder.WithFieldName(DefaultSearchFieldName).AppendFuzzyMatchBehaviour()
+            ]
+        )
+    ];
 
     [Fact]
     public async Task Returns_Similar_Words()
@@ -21,28 +32,28 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Schools")
+                .SetValue(DefaultSearchFieldName, "Schools")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "University")
+                .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -56,23 +67,23 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchFieldName, "school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -86,28 +97,28 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "School")
+                .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "Banana")
+                .SetValue(DefaultSearchFieldName, "Banana")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "University")
+                .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }

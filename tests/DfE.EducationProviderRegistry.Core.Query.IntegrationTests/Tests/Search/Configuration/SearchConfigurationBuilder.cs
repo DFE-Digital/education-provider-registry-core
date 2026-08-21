@@ -5,7 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 internal sealed class SearchConfigurationBuilder
 {
-    private readonly List<(string term, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string chainingPredicate)> _behaviour;
+    private readonly List<(string term, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string fieldChainingPredicate)> _behaviour;
 
     public SearchConfigurationBuilder()
     {
@@ -14,10 +14,10 @@ internal sealed class SearchConfigurationBuilder
 
     public static SearchConfigurationBuilder Create() => new();
 
-    public SearchConfigurationBuilder WithBehaviourForSearchTerm(string searchTermKey, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string chainingPredicate = "OR")
+    public SearchConfigurationBuilder WithBehaviourForSearchTerm(string termKey, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string fieldChainingPredicate)
     {
         _behaviour.Add(
-            item: (searchTermKey, fieldConfiguration, chainingPredicate));
+            item: (termKey, fieldConfiguration, fieldChainingPredicate));
 
         return this;
     }

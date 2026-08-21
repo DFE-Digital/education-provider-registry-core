@@ -12,20 +12,11 @@ public sealed class IndexedFieldConfigurationBuilder
 
     public IndexedFieldConfigurationBuilder()
     {
-        _fieldChainingPredicate = OR_CHAINING_PREDICATE;
+        _fieldChainingPredicate = OR_CHAINING_PREDICATE; // DEFAULT assume each field should chain
         _behaviours = [];
     }
 
     public static IndexedFieldConfigurationBuilder Create() => new();
-    public IndexedFieldConfigurationBuilder WithChainingPredicate(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new ArgumentException("Chaining predicate for field cannot be null or empty");
-        }
-        _fieldChainingPredicate = value;
-        return this;
-    }
 
     public IndexedFieldConfigurationBuilder WithFieldName(string name)
     {
@@ -33,9 +24,18 @@ public sealed class IndexedFieldConfigurationBuilder
         return this;
     }
 
+    public IndexedFieldConfigurationBuilder WithFieldDefaultBehaviourChainingAnd() => WithFieldChainingPredicate(AND_CHAINING_PREDICATE);
+    public IndexedFieldConfigurationBuilder WithFieldDefaultBehaviourChainingOr() => WithFieldChainingPredicate(OR_CHAINING_PREDICATE);
+
+    private IndexedFieldConfigurationBuilder WithFieldChainingPredicate(string value)
+    {
+        _fieldChainingPredicate = value;
+        return this;
+    }
+
     public IndexedFieldConfigurationBuilder AppendExactMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("exact", behaviourChainingPredicate);
     public IndexedFieldConfigurationBuilder AppendPartialMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("partial", behaviourChainingPredicate);
-    public IndexedFieldConfigurationBuilder WithFuzzyMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("fuzzy", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder AppendFuzzyMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("fuzzy", behaviourChainingPredicate);
 
     private IndexedFieldConfigurationBuilder WithBehaviour(string name, string? behaviourChainingPredicate = null)
     {

@@ -14,13 +14,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 {
-    protected const string SearchField = nameof(Establishment.Name);
+    // ensure fields do not have UK constraints
+    protected const string DefaultSearchFieldName = nameof(Establishment.Name);
+    protected const string SecondarySearchFieldName = nameof(Establishment.EstablishmentNumber);
 
     protected SearchBehaviourTestsBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected abstract void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder);
+    protected abstract (string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration();
 
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
@@ -42,23 +44,11 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
             .StubFilterOptions()
             .StubSearchCriteriaOptions();
 
-        builder.AddSearchConfiguration(
-            (
-                termKey: "term-1",
-                fieldsConfigure:
-                [
-                    fieldBuilder =>
-                    {
-                        fieldBuilder.WithFieldName(SearchField);
-                        ConfigureIndexedField(fieldBuilder);
-                        fieldBuilder.Build();
-                    }
-                ]
-            ));
+        builder.AddSearchConfiguration(CreateSearchTermsConfiguration());
     }
 
-    protected async Task AssertExecutedSearchAsync(
-        string searchTerm,
+    protected async Task<UseCaseResponse<SearchResponse>> ExecuteAndAssertSearchAsync(
+        IEnumerable<(string key, string value)> searchTerms,
         IReadOnlyCollection<Establishment> matchSearchTerm,
         IReadOnlyCollection<Establishment> nonMatchSearchTerm)
     {
@@ -73,12 +63,10 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                 ],
                 ct);
 
-        SearchRequest request =
-            SearchRequestBuilder.Create()
-                .WithSearchTerm("term-1", searchTerm)
-                .Build();
+        SearchRequest request = BuildSearchRequest(searchTerms);
 
         // act
+
         UseCaseResponse<SearchResponse> response =
             await ExecuteUseCase<SearchRequest, SearchResponse>(request);
 
@@ -108,5 +96,19 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                 expected: seededEstablishment,
                 actual: establishmentResponse);
         }
+
+        return response;
+    }
+
+    private static SearchRequest BuildSearchRequest(IEnumerable<(string key, string value)> searchTerms)
+    {
+        SearchRequestBuilder requestBuilder = SearchRequestBuilder.Create();
+
+        foreach ((string key, string value) termTuple in searchTerms)
+        {
+            requestBuilder.WithSearchTerm(termTuple);
+        }
+
+        return requestBuilder.Build();
     }
 }

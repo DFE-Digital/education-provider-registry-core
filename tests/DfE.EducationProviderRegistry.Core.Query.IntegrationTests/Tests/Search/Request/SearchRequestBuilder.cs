@@ -6,17 +6,18 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 internal sealed class SearchRequestBuilder
 {
-    private const string DefaultSearchKeywords = "search-term";
     private const string DefaultSortField = "UNDEFINED";
 
     private int _offset;
     private IList<FilterRequest>? _filterRequests;
-    private IList<SearchTerm> _searchTerms = [];
+    private readonly IList<SearchTerm> _searchTerms = [];
     private SortOrder _sortOrder =
         new(
             sortField: DefaultSortField,
             sortDirection: "asc",
             validSortFields: [DefaultSortField]);
+
+    public SearchRequestBuilder WithSearchTerm((string key, string term) value) => WithSearchTerm(value.key, value.term);
 
     public SearchRequestBuilder WithSearchTerm(string key, string term)
     {

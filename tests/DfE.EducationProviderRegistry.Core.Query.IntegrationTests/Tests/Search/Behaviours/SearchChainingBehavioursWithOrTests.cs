@@ -6,15 +6,25 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchChainingBehavioursWithOrTests : SearchBehaviourTestsBase
 {
+    private const string SearchTermKey = "term-1";
+
     public SearchChainingBehavioursWithOrTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
-    protected override void ConfigureIndexedField(IndexedFieldConfigurationBuilder builder)
-        => builder
-            .AppendExactMatchBehaviour()
-            .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE);
-
+    protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
+    [
+        (
+                SearchTermKey,
+                IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+                [
+                    (builder) =>
+                        builder.WithFieldName(DefaultSearchFieldName)
+                            .AppendExactMatchBehaviour()
+                            .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE)
+                ]
+            )
+    ];
 
     [Fact]
     public async Task Returns_Matches_From_All_Behaviours_When_Chained_With_Or()
@@ -25,24 +35,24 @@ public sealed class SearchChainingBehavioursWithOrTests : SearchBehaviourTestsBa
         Establishment[] matchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "school")
+                .SetValue(DefaultSearchFieldName, "school")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "My school")
+                .SetValue(DefaultSearchFieldName, "My school")
                 .Build()
         ];
 
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(SearchField, "College")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
 
         // act / assert
-        await AssertExecutedSearchAsync(
-            searchTerm,
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
             matchingEstablishments,
             nonMatchingEstablishments);
     }
