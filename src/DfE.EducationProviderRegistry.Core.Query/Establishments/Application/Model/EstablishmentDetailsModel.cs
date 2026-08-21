@@ -5,14 +5,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Mo
 
 public sealed record EstablishmentDetailsModel
 {
-    public EstablishmentUrnModel Urn { get; init; }
+    public required EstablishmentUrnModel Urn { get; init; }
 
-    public EstablishmentNameModel Name { get; init; }
-    public EstablishmentNumberModel Number { get; init; }
+    public required EstablishmentNameModel Name { get; init; }
+    public EstablishmentNumberModel? Number { get; init; }
 
-    public EstablishmentStatusModel Status { get; init; }
-    public EstablishmentTypeModel Type { get; init; }
-    public PhaseOfEducationModel Phase { get; init; }
+    public EstablishmentStatusModel? Status { get; init; }
+    public EstablishmentTypeModel? Type { get; init; }
+    public PhaseOfEducationModel? Phase { get; init; }
 
     public EstablishmentLifecycleEventModel? LifecycleEventOpened { get; init; }
     public EstablishmentLifecycleEventModel? LifecycleEventClosed { get; init; }
@@ -22,7 +22,7 @@ public sealed record EstablishmentDetailsModel
     public string? GroupType { get; init; }
     public DateOnly? GroupOpenDate { get; init; }
 
-    public IEnumerable<GovernorModel> Governors { get; init; }
+    public IEnumerable<GovernorModel>? Governors { get; init; }
 
     public SiteAddressModel? Address { get; init; }
 

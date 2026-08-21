@@ -39,7 +39,7 @@ internal sealed class EfPostgresEstablishmentRepository : IEstablishmentsReposit
             .Include(e => e.EstablishmentType)
 
             .Include(e => e.EstablishmentProvision)
-                .ThenInclude(ep => ep.EducationPhase)
+                .ThenInclude(ep => ep!.EducationPhase)
 
             .Include(e => e.EstablishmentLifecycleEvent)
 
@@ -71,7 +71,7 @@ internal sealed class EfPostgresEstablishmentRepository : IEstablishmentsReposit
             .AsNoTracking()
             .Select(e => new EstablishmentDetailsModel
             {
-                Urn = EstablishmentUrnModel.Create(e.Urn),
+                Urn = EstablishmentUrnModel.Create(e.Urn!),
                 Name = new EstablishmentNameModel(e.Name),
             })
             .ToListAsync(cancellationToken);
