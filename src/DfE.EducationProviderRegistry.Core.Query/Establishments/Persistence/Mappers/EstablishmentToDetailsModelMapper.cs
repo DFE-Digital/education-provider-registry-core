@@ -71,9 +71,13 @@ public sealed class EstablishmentToDetailsModelMapper :
             ))];
 
         //TODO: update role type code mapping to not use magic string -- probably worth waiting for new schema to be released before doing this as it will possibly change the way we map role types
-        string headTeacherDisplayName = dto.RoleAssignment?.FirstOrDefault(x => x.Role?.RoleType.Code == "HT")?.Role?.Person?.DisplayName ?? string.Empty;
-        string senProvision = dto.EstablishmentSen?.SenProvision ?? string.Empty;
-        EstablishmentContactDetails? contactDetails = new(dto.Contact.FirstOrDefault()?.Website ?? string.Empty, dto.Contact.FirstOrDefault()?.TelephoneNumber ?? string.Empty);
+        string? headTeacherDisplayName = dto.RoleAssignment?.FirstOrDefault(x => x.Role?.RoleType.Code == "HT")?.Role?.Person?.DisplayName ?? null;
+
+        string? senProvision = dto.EstablishmentSen?.SenProvision ?? null;
+
+        EstablishmentContactDetails? contactDetails = dto.Contact.FirstOrDefault() is not null
+            ? new(dto.Contact.FirstOrDefault()?.Website ?? string.Empty, dto.Contact.FirstOrDefault()?.TelephoneNumber ?? string.Empty)
+            : null;
 
         return new EstablishmentDetailsModel
         {

@@ -1,22 +1,24 @@
+using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using Microsoft.Extensions.DependencyModel;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
 
 public sealed class EstablishmentDtoToModelMapperTests
 {
+    private readonly EstablishmentToDetailsModelMapper _mapper = new();
+
     [Fact]
     public void Map_WithValidDto_ReturnsMappedEstablishment()
     {
         // Arrange
         Establishment dto = EstablishmentFactory.Create();
 
-        EstablishmentToDetailsModelMapper mapper = new();
-
         // Act
-        EstablishmentDetailsModel result = mapper.Map(dto);
+        EstablishmentDetailsModel result = _mapper.Map(dto);
 
         // Assert
         Assert.Equal(dto.Urn, result.Urn.Value);
@@ -39,10 +41,8 @@ public sealed class EstablishmentDtoToModelMapperTests
 
         Site site = dto.Site.First();
 
-        EstablishmentToDetailsModelMapper mapper = new();
-
         // Act
-        EstablishmentDetailsModel result = mapper.Map(dto);
+        EstablishmentDetailsModel result = _mapper.Map(dto);
 
         // Assert
         Assert.NotNull(result.Address);
@@ -62,15 +62,45 @@ public sealed class EstablishmentDtoToModelMapperTests
 
         EstablishmentAuthority authority = dto.EstablishmentAuthority.First();
 
-        EstablishmentToDetailsModelMapper mapper = new();
-
         // Act
-        EstablishmentDetailsModel result = mapper.Map(dto);
+        EstablishmentDetailsModel result = _mapper.Map(dto);
 
         // Assert
         Assert.NotNull(result.LocalAuthority);
         Assert.Equal(authority.AuthorityName, result.LocalAuthority.Name);
         Assert.Equal(authority.AuthorityCode, result.LocalAuthority.Code);
+    }
+
+    [Fact]
+    public void Map_WithAuthority_MapsNullNonRequiredValues()
+    {
+        // Arrange
+        Establishment input = new()
+        {
+            Urn = "12345",
+            Name = "TestName",
+            EstablishmentStatus = new EstablishmentStatus { Name = "testStatus"},
+            EstablishmentType = new EstablishmentType { Name = "testType"},
+            EstablishmentProvision = new EstablishmentProvision { EducationPhase = new EducationPhase() },
+            EstablishmentGroupMembership = []
+        };
+
+        // Act
+        EstablishmentDetailsModel result = _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.GroupName);
+        Assert.Null(result.GroupType);
+        Assert.Null(result.GroupOpenDate);
+        Assert.Null(result.LocalAuthority);
+        Assert.Null(result.AgeRange);
+        Assert.Null(result.ReligiousCharacter);
+        Assert.Null(result.Address);
+        Assert.Null(result.ContactDetails);
+        Assert.Null(result.Headteacher);
+        Assert.Null(result.SenProvision);
+        Assert.Null(result.Headteacher);
+        Assert.Null(result.Phase.Value);
     }
 
     [Fact]
