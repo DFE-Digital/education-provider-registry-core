@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-                    
+
 public sealed class EstablishmentToDetailsModelMapper :
     IMapper<Establishment, EstablishmentDetailsModel>
 {
