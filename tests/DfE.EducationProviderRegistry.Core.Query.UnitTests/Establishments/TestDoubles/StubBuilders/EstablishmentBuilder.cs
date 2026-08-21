@@ -58,8 +58,8 @@ internal sealed class EstablishmentBuilder
                 }
             },
 
-            Site = new List<Site>
-            {
+            Site =
+            [
                 new() {
                     Name = "Main Site",
                     AddressLine1 = "1 Test Street",
@@ -68,18 +68,18 @@ internal sealed class EstablishmentBuilder
                     County = "Test County",
                     Postcode = "TE1 1ST"
                 }
-            },
+            ],
 
-            EstablishmentAuthority = new List<EstablishmentAuthority>
-            {
+            EstablishmentAuthority =
+            [
                 new() {
                     AuthorityName = "Test Authority",
                     AuthorityCode = "TEST"
                 }
-            },
+            ],
 
-            EstablishmentGroupMembership = new List<EstablishmentGroupMembership>
-            {
+            EstablishmentGroupMembership =
+            [
                 new()
                 {
                     StartDate = new DateOnly(2010, 1, 1),
@@ -92,7 +92,16 @@ internal sealed class EstablishmentBuilder
                         }
                     }
                 }
-            },
+            ],
+
+            Contact =
+            [
+                new()
+                {
+                    Website = "https://www.testschool.com",
+                    TelephoneNumber = "0123456789"
+                }
+            ],
         };
     }
 

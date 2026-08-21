@@ -3,7 +3,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
-using Microsoft.Extensions.DependencyModel;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
 
@@ -31,6 +30,9 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name, result.GroupName);
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name, result.GroupType);
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate, result.GroupOpenDate);
+        Assert.Equal(dto.Contact.FirstOrDefault()?.Website, result.ContactDetails?.Website);
+        Assert.Equal(dto.Contact.FirstOrDefault()?.TelephoneNumber, result.ContactDetails?.TelephoneNumber);
+
     }
 
     [Fact]
@@ -52,6 +54,7 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Equal(site.Town ?? string.Empty, result.Address.Town);
         Assert.Equal(site.County ?? string.Empty, result.Address.County);
         Assert.Equal(site.Postcode ?? string.Empty, result.Address.Postcode);
+
     }
 
     [Fact]
