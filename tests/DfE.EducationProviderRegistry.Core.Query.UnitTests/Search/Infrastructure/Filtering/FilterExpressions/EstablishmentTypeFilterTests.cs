@@ -1,6 +1,6 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 

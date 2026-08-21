@@ -1,7 +1,7 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
 public sealed class EstablishmentTypeFilter : ISearchFilter<Establishment>
 {
