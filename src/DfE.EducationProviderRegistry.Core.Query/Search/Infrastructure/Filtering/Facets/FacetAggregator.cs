@@ -17,8 +17,6 @@ public class FacetAggregator : IFacetAggregator
         IEnumerable<string>? requestedFacets,
         CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         if (requestedFacets is null || !requestedFacets.Any())
             return Array.Empty<AggregatedFacetResult>();
 
@@ -29,8 +27,6 @@ public class FacetAggregator : IFacetAggregator
 
         foreach (string facet in distinct)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             IReadOnlyList<FacetResult> providerResults =
                 await _facetProvider.GetFacetsAsync(
                     urns,
