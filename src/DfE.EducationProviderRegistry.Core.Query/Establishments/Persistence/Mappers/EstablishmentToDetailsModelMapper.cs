@@ -12,7 +12,7 @@ public sealed class EstablishmentToDetailsModelMapper :
     {
         ArgumentNullException.ThrowIfNull(dto);
 
-        EstablishmentUrnModel urn = EstablishmentUrnModel.Create(dto.Urn.ToString());
+        EstablishmentUrnModel urn = EstablishmentUrnModel.Create(dto.Urn!);
         EstablishmentNameModel name = new(dto.Name);
         EstablishmentNumberModel number = new(dto.EstablishmentNumber);
         EstablishmentStatusModel status = new(dto.EstablishmentStatus.Name);
@@ -44,15 +44,18 @@ public sealed class EstablishmentToDetailsModelMapper :
         SiteAddressModel? address = site is null
             ? null
             : new SiteAddressModel(
-                Name: site.Name,
-                AddressLine1: site.AddressLine1,
-                AddressLine2: site.AddressLine2,
-                Town: site.Town,
-                County: site.County,
-                Postcode: site.Postcode
+                Name: site.Name ?? string.Empty,
+                AddressLine1: site.AddressLine1 ?? string.Empty,
+                AddressLine2: site.AddressLine2 ?? string.Empty,
+                Town: site.Town ?? string.Empty,
+                County: site.County ?? string.Empty,
+                Postcode: site.Postcode ?? string.Empty
             );
 
-        LocalAuthority? localAuthority = dto.EstablishmentAuthority is null ? null : new LocalAuthority(dto.EstablishmentAuthority.FirstOrDefault().AuthorityName, dto.EstablishmentAuthority.FirstOrDefault().AuthorityCode);
+        LocalAuthority? localAuthority = dto.EstablishmentAuthority.FirstOrDefault() is EstablishmentAuthority authority
+            ? new LocalAuthority(authority.AuthorityName!, authority.AuthorityCode!)
+            : null;
+
         string? religiousCharacter = dto.EstablishmentReligion.FirstOrDefault()?.ReligiousCharacter;
         EstablishmentInspection? ofsted = dto.EstablishmentInspection.FirstOrDefault();
 
@@ -63,14 +66,14 @@ public sealed class EstablishmentToDetailsModelMapper :
         List<GovernorModel> governors = [.. dto.RoleAssignment
             .Where(ra => ra.Role?.Person != null)
             .Select(ra => new GovernorModel(
-                Identifier: new GovernanceIdentifier(ra.Role.Person.PersonId.ToString()),
-                Name: new Name(ra.Role.Person.DisplayName)
+                Identifier: new GovernanceIdentifier(ra.Role?.Person?.PersonId.ToString()),
+                Name: new Name(ra.Role?.Person?.DisplayName ?? string.Empty)
             ))];
 
-        //todo update role type code mapping to not use magic string
+        //TODO: update role type code mapping to not use magic string -- probably worth waiting for new schema to be released before doing this as it will possibly change the way we map role types
         string headTeacherDisplayName = dto.RoleAssignment?.FirstOrDefault(x => x.Role?.RoleType.Code == "HT")?.Role?.Person?.DisplayName ?? string.Empty;
         string senProvision = dto.EstablishmentSen?.SenProvision ?? string.Empty;
-        EstablishmentContactDetails? contactDetails = new EstablishmentContactDetails(dto.Contact.FirstOrDefault()?.Website ?? string.Empty, dto.Contact.FirstOrDefault()?.TelephoneNumber ?? string.Empty);
+        EstablishmentContactDetails? contactDetails = new(dto.Contact.FirstOrDefault()?.Website ?? string.Empty, dto.Contact.FirstOrDefault()?.TelephoneNumber ?? string.Empty);
 
         return new EstablishmentDetailsModel
         {

@@ -24,7 +24,7 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();
         services.AddSingleton<ILogger<GetEstablishmentByIdUseCase>, InMemoryLogger<GetEstablishmentByIdUseCase>>();
-        services.AddScoped<IEstablishmentsRepository, EfPostgresEstablishmensRepository>();
+        services.AddScoped<IEstablishmentsRepository, EfPostgresEstablishmentRepository>();
 
         services.AddDbContext<EducationProviderRegistryDbContext>(options =>
         {
