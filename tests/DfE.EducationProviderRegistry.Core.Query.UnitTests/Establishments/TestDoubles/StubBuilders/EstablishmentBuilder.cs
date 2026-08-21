@@ -68,6 +68,14 @@ internal sealed class EstablishmentBuilder
                     County = "Test County",
                     Postcode = "TE1 1ST"
                 }
+            },
+
+            EstablishmentAuthority = new List<EstablishmentAuthority>
+            {
+                new() {
+                    AuthorityName = "Test Authority",
+                    AuthorityCode = "TEST"
+                }
             }
         };
     }
