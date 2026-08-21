@@ -32,7 +32,6 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate, result.GroupOpenDate);
         Assert.Equal(dto.Contact.FirstOrDefault()?.Website, result.ContactDetails?.Website);
         Assert.Equal(dto.Contact.FirstOrDefault()?.TelephoneNumber, result.ContactDetails?.TelephoneNumber);
-
     }
 
     [Fact]
@@ -54,7 +53,6 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Equal(site.Town ?? string.Empty, result.Address.Town);
         Assert.Equal(site.County ?? string.Empty, result.Address.County);
         Assert.Equal(site.Postcode ?? string.Empty, result.Address.Postcode);
-
     }
 
     [Fact]
@@ -82,8 +80,8 @@ public sealed class EstablishmentDtoToModelMapperTests
         {
             Urn = "12345",
             Name = "TestName",
-            EstablishmentStatus = new EstablishmentStatus { Name = "testStatus"},
-            EstablishmentType = new EstablishmentType { Name = "testType"},
+            EstablishmentStatus = new EstablishmentStatus { Name = "testStatus" },
+            EstablishmentType = new EstablishmentType { Name = "testType" },
             EstablishmentProvision = new EstablishmentProvision { EducationPhase = new EducationPhase() },
             EstablishmentGroupMembership = []
         };
