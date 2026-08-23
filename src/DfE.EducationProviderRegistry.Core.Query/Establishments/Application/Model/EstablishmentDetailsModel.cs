@@ -1,15 +1,18 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
 public sealed record EstablishmentDetailsModel
 {
-    public EstablishmentUrnModel Urn { get; init; }
+    public required EstablishmentUrnModel Urn { get; init; }
 
-    public EstablishmentNameModel Name { get; init; }
-    public EstablishmentNumberModel Number { get; init; }
+    public EstablishmentNameModel? Name { get; init; }
+    public EstablishmentNumberModel? Number { get; init; }
 
-    public EstablishmentStatusModel Status { get; init; }
-    public EstablishmentTypeModel Type { get; init; }
-    public PhaseOfEducationModel Phase { get; init; }
+    public EstablishmentStatusModel? Status { get; init; }
+    public EstablishmentTypeModel? Type { get; init; }
+    public PhaseOfEducationModel? Phase { get; init; }
 
     public EstablishmentLifecycleEventModel? LifecycleEventOpened { get; init; }
     public EstablishmentLifecycleEventModel? LifecycleEventClosed { get; init; }
@@ -19,10 +22,23 @@ public sealed record EstablishmentDetailsModel
     public string? GroupType { get; init; }
     public DateOnly? GroupOpenDate { get; init; }
 
-    public IEnumerable<GovernorModel> Governors { get; init; }
+    public IEnumerable<GovernorModel>? Governors { get; init; }
 
-    public EstablishmentDetailsModel()
-    {
+    public SiteAddressModel? Address { get; init; }
 
-    }
+    public LocalAuthority? LocalAuthority { get; init; }
+
+    public string? AgeRange { get; init; }
+
+    public string? Gender { get; init; }
+
+    public string? ReligiousCharacter { get; init; }
+
+    public EstablishmentInspection? Ofsted { get; init; }
+
+    public string? Headteacher { get; set; }
+
+    public string? SenProvision { get; set; }
+
+    public EstablishmentContactDetails? ContactDetails { get; set; }
 }

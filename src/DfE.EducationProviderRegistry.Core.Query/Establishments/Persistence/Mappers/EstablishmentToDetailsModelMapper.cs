@@ -12,7 +12,7 @@ public sealed class EstablishmentToDetailsModelMapper :
     {
         ArgumentNullException.ThrowIfNull(dto);
 
-        EstablishmentUrnModel urn = EstablishmentUrnModel.Create(dto.Urn.ToString());
+        EstablishmentUrnModel urn = EstablishmentUrnModel.Create(dto.Urn!);
         EstablishmentNameModel name = new(dto.Name);
         EstablishmentNumberModel number = new(dto.EstablishmentNumber);
         EstablishmentStatusModel status = new(dto.EstablishmentStatus.Name);
@@ -35,18 +35,49 @@ public sealed class EstablishmentToDetailsModelMapper :
                 new EstablishmentLifeCycleReason(e.ClosedReason?.Name)))
             .FirstOrDefault();
 
-        string? uid = dto.Uid;
-        string? groupName = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name;
-        string? groupType = dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name;
-        DateOnly? groupOpenDate = dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate;
-        List<GovernorModel> governors = dto.RoleAssignment
+        EstablishmentGroupMembership? groupMembership = dto.EstablishmentGroupMembership.FirstOrDefault();
+        string? groupName = groupMembership?.Group.Name;
+        string? groupType = groupMembership?.Group.GroupType.Name;
+        DateOnly? groupOpenDate = groupMembership?.StartDate;
+
+        Site? site = dto.Site.FirstOrDefault();
+        SiteAddressModel? address = site is null
+            ? null
+            : new SiteAddressModel(
+                Name: site.Name ?? string.Empty,
+                AddressLine1: site.AddressLine1 ?? string.Empty,
+                AddressLine2: site.AddressLine2 ?? string.Empty,
+                Town: site.Town ?? string.Empty,
+                County: site.County ?? string.Empty,
+                Postcode: site.Postcode ?? string.Empty
+            );
+
+        LocalAuthority? localAuthority = dto.EstablishmentAuthority.FirstOrDefault() is EstablishmentAuthority authority
+            ? new LocalAuthority(authority.AuthorityName!, authority.AuthorityCode!)
+            : null;
+
+        string? religiousCharacter = dto.EstablishmentReligion.FirstOrDefault()?.ReligiousCharacter;
+        EstablishmentInspection? ofsted = dto.EstablishmentInspection.FirstOrDefault();
+
+        string? ageRange = dto.EstablishmentAdmissions?.StatutoryLowAge is not null && dto.EstablishmentAdmissions.StatutoryHighAge is not null
+            ? $"{dto.EstablishmentAdmissions.StatutoryLowAge} to {dto.EstablishmentAdmissions.StatutoryHighAge}"
+            : null;
+
+        List<GovernorModel> governors = [.. dto.RoleAssignment
             .Where(ra => ra.Role?.Person != null)
             .Select(ra => new GovernorModel(
-                Identifier: new GovernanceIdentifier(ra.Role.Person.PersonId.ToString()),
-                Name: new Name(ra.Role.Person.DisplayName)
-            ))
-            .ToList();
+                Identifier: new GovernanceIdentifier(ra.Role?.Person?.PersonId.ToString()),
+                Name: new Name(ra.Role?.Person?.DisplayName ?? string.Empty)
+            ))];
 
+        //TODO: update role type code mapping to not use magic string -- probably worth waiting for new schema to be released before doing this as it will possibly change the way we map role types
+        string? headTeacherDisplayName = dto.RoleAssignment?.FirstOrDefault(x => x.Role?.RoleType.Code == "HT")?.Role?.Person?.DisplayName ?? null;
+
+        string? senProvision = dto.EstablishmentSen?.SenProvision ?? null;
+
+        EstablishmentContactDetails? contactDetails = dto.Contact.FirstOrDefault() is not null
+            ? new(dto.Contact.FirstOrDefault()?.Website ?? string.Empty, dto.Contact.FirstOrDefault()?.TelephoneNumber ?? string.Empty)
+            : null;
 
         return new EstablishmentDetailsModel
         {
@@ -58,11 +89,19 @@ public sealed class EstablishmentToDetailsModelMapper :
             Phase = phase,
             LifecycleEventOpened = openedEvent,
             LifecycleEventClosed = closedEvent,
-            Uid = uid,
+            Uid = dto.Uid,
             GroupName = groupName,
             GroupType = groupType,
             GroupOpenDate = groupOpenDate,
-            Governors = governors
+            Address = address,
+            LocalAuthority = localAuthority,
+            AgeRange = ageRange,
+            ReligiousCharacter = religiousCharacter,
+            Ofsted = ofsted,
+            Governors = governors,
+            Headteacher = headTeacherDisplayName,
+            SenProvision = senProvision,
+            ContactDetails = contactDetails
         };
     }
 }
