@@ -58,8 +58,8 @@ internal sealed class EstablishmentBuilder
                 }
             },
 
-            Site = new List<Site>
-            {
+            Site =
+            [
                 new() {
                     Name = "Main Site",
                     AddressLine1 = "1 Test Street",
@@ -68,7 +68,40 @@ internal sealed class EstablishmentBuilder
                     County = "Test County",
                     Postcode = "TE1 1ST"
                 }
-            }
+            ],
+
+            EstablishmentAuthority =
+            [
+                new() {
+                    AuthorityName = "Test Authority",
+                    AuthorityCode = "TEST"
+                }
+            ],
+
+            EstablishmentGroupMembership =
+            [
+                new()
+                {
+                    StartDate = new DateOnly(2010, 1, 1),
+                    Group = new GroupRecord
+                    {
+                        Name = "Test Group",
+                        GroupType = new GroupType
+                        {
+                            Name = "Multi-academy trust"
+                        }
+                    }
+                }
+            ],
+
+            Contact =
+            [
+                new()
+                {
+                    Website = "https://www.testschool.com",
+                    TelephoneNumber = "0123456789"
+                }
+            ],
         };
     }
 

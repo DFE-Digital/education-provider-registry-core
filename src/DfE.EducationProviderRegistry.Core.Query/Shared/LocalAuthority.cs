@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared;
 
 /// <summary>
 /// Represents the local authority associated with an establishment.
@@ -30,8 +30,8 @@ public sealed record class LocalAuthority
     /// </exception>
     public LocalAuthority(string localAuthorityName, string localAuthorityCode)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityName);
         ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityCode);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityName);
 
         Name = localAuthorityName;
         Code = localAuthorityCode;
