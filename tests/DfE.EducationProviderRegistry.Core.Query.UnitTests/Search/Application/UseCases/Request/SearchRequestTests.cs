@@ -1,97 +1,147 @@
-﻿//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
-//using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
-//namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.Request;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.Request;
 
-//public class SearchRequestTests
-//{
-//    [Fact]
-//    public void Constructor_WithFilterParam_PopulatesFilterRequests()
-//    {
-//        // arrange
-//        List<FilterRequest> filterRequests = [FilterRequestTestDouble.Fake()];
-//        SortOrder sortOrder = SortOrderTestDouble.Stub();
+public sealed class SearchRequestTests
+{
+    [Fact]
+    public void Constructor_WithNullSortOrder_ThrowsArgumentNullException()
+    {
+        // arrange
+        IReadOnlyCollection<SearchTerm?> searchTerms = [SearchTermTestDouble.Stub()];
 
-//        // act
-//        SearchRequest request = new(
-//            searchIndexKey: "stubIndexKey",
-//            searchKeywords: "searchKeyword",
-//            filterRequests: filterRequests,
-//            sortOrder: sortOrder);
+        Func<SearchRequest> construct = () =>
+            new SearchRequest(searchTerms, null!);
 
-//        // assert
-//        Assert.NotNull(request.FilterRequests);
-//        Assert.NotNull(request.SortOrder);
+        // act / assert
+        Assert.Throws<ArgumentNullException>(construct);
+    }
 
-//        FilterRequest expected = filterRequests[0];
+    [Fact]
+    public void Constructor_WithNullFilterRequests_ThrowsArgumentNullException()
+    {
+        // arrange
+        IReadOnlyCollection<SearchTerm?> searchTerms = [SearchTermTestDouble.Stub()];
+        SortOrder sortOrder = SortOrderTestDouble.Stub();
 
-//        FilterRequest? actual =
-//            request.FilterRequests!
-//                .FirstOrDefault(fr => fr.FilterName == expected.FilterName);
+        Func<SearchRequest> construct = () =>
+            new SearchRequest(
+                searchTerms,
+                null!,
+                sortOrder);
 
-//        Assert.NotNull(actual);
-//        Assert.Equal(expected.FilterValues.Count, actual!.FilterValues.Count);
+        // act / assert
+        Assert.Throws<ArgumentNullException>(construct);
+    }
 
-//        Assert.True(actual.FilterValues.CollectionsMatch(
-//            expected.FilterValues,
-//            (expected, actual) => Equals(expected, actual)));
-//    }
+    [Fact]
+    public void Constructor_WithFilterParam_PopulatesFilterRequests()
+    {
+        // arrange
+        List<FilterRequest> filterRequests = [FilterRequestTestDouble.Fake()];
+        IReadOnlyCollection<SearchTerm?> searchTerms = [SearchTermTestDouble.Stub()];
+        SortOrder sortOrder = SortOrderTestDouble.Stub();
 
-//    [Fact]
-//    public void Constructor_WithNoFilterParam_HasFilterRequestsNull()
-//    {
-//        // arrange
-//        SortOrder sortOrder = SortOrderTestDouble.Stub();
+        // act
+        SearchRequest request = new(
+            searchTerms: searchTerms,
+            filterRequests: filterRequests,
+            sortOrder: sortOrder);
 
-//        // act
-//        SearchRequest request =
-//            new(
-//                searchIndexKey: "stubIndexKey",
-//                searchKeywords: "searchKeyword",
-//                sortOrder: sortOrder);
+        // assert
+        Assert.NotNull(request.SearchTerms);
+        Assert.NotNull(request.FilterRequests);
+        Assert.NotNull(request.SortOrder);
 
-//        // assert
-//        Assert.NotNull(request.SortOrder);
-//        Assert.Null(request.FilterRequests);
-//    }
+        Assert.Equal(searchTerms.Count, request.SearchTerms.Count);
 
-//    [Fact]
-//    public void Constructor_WithSetOffsetValue_AssignsCorrectPropertyValue()
-//    {
-//        // arrange
-//        SortOrder sortOrder = SortOrderTestDouble.Stub();
-//        const int Offset = 10;
+        FilterRequest expected = filterRequests[0];
 
-//        // act
-//        SearchRequest request =
-//            new(
-//                searchIndexKey: "stubIndexKey",
-//                searchKeywords: "searchKeyword",
-//                sortOrder: sortOrder,
-//                offset: Offset);
+        FilterRequest? actual =
+            request.FilterRequests!
+                .FirstOrDefault(fr => fr.FilterName == expected.FilterName);
 
-//        // assert
-//        Assert.NotNull(request.SortOrder);
-//        Assert.Equal(Offset, request.Offset);
-//    }
+        Assert.NotNull(actual);
+        Assert.Equal(expected.FilterValues.Count, actual!.FilterValues.Count);
 
-//    [Fact]
-//    public void Constructor_WithDefaultOffsetValue_AssignsDefaultPropertyValue()
-//    {
-//        // arrange
-//        SortOrder sortOrder = SortOrderTestDouble.Stub();
+        Assert.True(actual.FilterValues.CollectionsMatch(
+            expected.FilterValues,
+            (expected, actual) => Equals(expected, actual)));
+    }
 
-//        // act
-//        SearchRequest request =
-//            new(
-//                searchIndexKey: "stubIndexKey",
-//                searchKeywords: "searchKeyword",
-//                sortOrder: sortOrder);
+    [Fact]
+    public void Constructor_WithNoFilterParam_HasFilterRequestsNull()
+    {
+        // arrange
+        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubSingle();
+        SortOrder sortOrder = SortOrderTestDouble.Stub();
 
-//        // assert
-//        Assert.NotNull(request.SortOrder);
-//        Assert.Equal(0, request.Offset); // default means no records skipped
-//    }
-//}
+        // act
+        SearchRequest request = new(
+            searchTerms: searchTerms,
+            sortOrder: sortOrder);
+
+        // assert
+        Assert.NotNull(request.SearchTerms);
+        Assert.NotNull(request.SortOrder);
+        Assert.Null(request.FilterRequests);
+    }
+
+    [Fact]
+    public void Constructor_WithSetOffsetValue_AssignsCorrectPropertyValue()
+    {
+        // arrange
+        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubSingle();
+        SortOrder sortOrder = SortOrderTestDouble.Stub();
+        const int offset = 10;
+
+        // act
+        SearchRequest request = new(
+            searchTerms: searchTerms,
+            sortOrder: sortOrder,
+            offset: offset);
+
+        // assert
+        Assert.NotNull(request.SearchTerms);
+        Assert.NotNull(request.SortOrder);
+        Assert.Equal(offset, request.Offset);
+    }
+
+    [Fact]
+    public void Constructor_WithDefaultOffsetValue_AssignsDefaultPropertyValue()
+    {
+        // arrange
+        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubSingle();
+        SortOrder sortOrder = SortOrderTestDouble.Stub();
+
+        // act
+        SearchRequest request = new(
+            searchTerms: searchTerms,
+            sortOrder: sortOrder);
+
+        // assert
+        Assert.NotNull(request.SearchTerms);
+        Assert.NotNull(request.SortOrder);
+        Assert.Equal(0, request.Offset);
+    }
+
+    [Fact]
+    public void Constructor_AssignsSearchTerms()
+    {
+        // arrange
+        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubMultiple();
+
+        SortOrder sortOrder = SortOrderTestDouble.Stub();
+
+        // act
+        SearchRequest request = new(
+            searchTerms: searchTerms,
+            sortOrder: sortOrder);
+
+        // assert
+        Assert.Same(searchTerms, request.SearchTerms);
+    }
+}
