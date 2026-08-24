@@ -5,6 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
 public sealed class SearchEstablishmentBuilder
 {
+    private const string stubLocalAuthorityCode = "001";
     // temp as seed range 10_000->9_010_000 avoids conflicts
     private static int _urnCounter = 9_010_001;
 
@@ -30,7 +31,7 @@ public sealed class SearchEstablishmentBuilder
         _establishment.EstablishmentAuthority.Add(
             new EstablishmentAuthority
             {
-                AuthorityCode = "001",
+                AuthorityCode = stubLocalAuthorityCode,
                 AuthorityName = "Test Authority"
             });
     }
@@ -38,6 +39,18 @@ public sealed class SearchEstablishmentBuilder
     public SearchEstablishmentBuilder WithUrn(string urn)
     {
         _establishment.Urn = urn;
+        return this;
+    }
+
+    internal SearchEstablishmentBuilder WithAuthorityName(string name)
+    {
+        _establishment.EstablishmentAuthority.Add(
+            new EstablishmentAuthority
+            {
+                AuthorityCode = stubLocalAuthorityCode,
+                AuthorityName = name
+            });
+
         return this;
     }
 
