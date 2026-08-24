@@ -4,7 +4,7 @@ public sealed class SearchIndexKeyConfiguration
 {
     public string SearchTermKey { get; init; } = string.Empty;
 
-    public string? ChainingPredicate { get; set; }
+    public string? FieldChainingPredicate { get; set; }
 
     public IReadOnlyList<IndexedFieldConfiguration> IndexedFields { get; init; } = [];
 }

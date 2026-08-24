@@ -12,12 +12,12 @@ public static class SearchConfigurationStub
             {
                 new() {
                     SearchTermKey = "Name",
-                    ChainingPredicate = "AND",
+                    FieldChainingPredicate = "AND",
                     IndexedFields = new List<IndexedFieldConfiguration>
                     {
                         new() {
                             FieldName = "Name",
-                            ChainingPredicate = "AND",
+                            DefaultBehaviourChainingPredicate = "AND",
                             SearchBehaviours = new List<SearchBehaviourConfiguration>
                             {
                                 new() {
@@ -40,12 +40,12 @@ public static class SearchConfigurationStub
             {
                 new() {
                     SearchTermKey = "Person",
-                    ChainingPredicate = "AND",
+                    FieldChainingPredicate = "AND",
                     IndexedFields = new List<IndexedFieldConfiguration>
                     {
                         new() {
                             FieldName = "Name",
-                            ChainingPredicate = "AND",
+                            DefaultBehaviourChainingPredicate = "AND",
                             SearchBehaviours = new List<SearchBehaviourConfiguration>
                             {
                                 new() {
@@ -56,7 +56,7 @@ public static class SearchConfigurationStub
                         },
                         new() {
                             FieldName = "Age",
-                            ChainingPredicate = "AND",
+                            DefaultBehaviourChainingPredicate = "AND",
                             SearchBehaviours = new List<SearchBehaviourConfiguration>
                             {
                                 new() {

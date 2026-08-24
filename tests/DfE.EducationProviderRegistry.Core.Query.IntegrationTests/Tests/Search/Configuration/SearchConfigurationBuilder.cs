@@ -33,12 +33,12 @@ internal sealed class SearchConfigurationBuilder
             (string term, IReadOnlyList<IndexedFieldConfiguration> fieldConfiguration, string chainingPredicate) = _behaviour[index];
 
             output.Add($"{rootConfigurationKey}:{index}:searchTermKey", term);
-            output.Add($"{rootConfigurationKey}:{index}:chainingPredicate", chainingPredicate);
+            output.Add($"{rootConfigurationKey}:{index}:fieldChainingPredicate", chainingPredicate);
 
             for (int fieldIndex = 0; fieldIndex < fieldConfiguration.Count; fieldIndex++)
             {
                 output.Add($"{rootConfigurationKey}:{index}:indexedFields:{fieldIndex}:fieldName", fieldConfiguration[fieldIndex].FieldName);
-                output.Add($"{rootConfigurationKey}:{index}:indexedFields:{fieldIndex}:chainingPredicate", fieldConfiguration[fieldIndex].ChainingPredicate);
+                output.Add($"{rootConfigurationKey}:{index}:indexedFields:{fieldIndex}:defaultBehaviourChainingPredicate", fieldConfiguration[fieldIndex].DefaultBehaviourChainingPredicate);
 
                 IReadOnlyList<SearchBehaviourConfiguration> fieldBehaviours = fieldConfiguration[fieldIndex].SearchBehaviours;
                 for (int searchBehavioursIndex = 0; searchBehavioursIndex < fieldBehaviours.Count; searchBehavioursIndex++)
