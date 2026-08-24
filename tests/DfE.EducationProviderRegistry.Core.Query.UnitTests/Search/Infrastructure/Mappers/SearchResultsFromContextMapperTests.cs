@@ -6,6 +6,9 @@
 
 //namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Mappers;
 
+
+// NOTE: Commented when SearchTerm added to request contract. No longer consuming pipeline of handlers mapping out from context; https://github.com/DFE-Digital/education-provider-registry-core/pull/120/changes
+
 //public sealed class SearchResultsFromContextMapperTests
 //{
 //    private static SearchPipelineContext BuildContextWithResults(
