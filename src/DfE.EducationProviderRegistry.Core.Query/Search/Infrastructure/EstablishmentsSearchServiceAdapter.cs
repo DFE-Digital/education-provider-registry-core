@@ -1,113 +1,138 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
-/// <summary>
-/// Adapts search requests for <see cref="Establishment"/> entities into the
-/// trigram‑based search pipeline, executes the pipeline, and maps the results
-/// into <see cref="SearchResults{TResults, TFacets}"/>.
-/// </summary>
 internal sealed class EstablishmentsSearchServiceAdapter
     : ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>
 {
-    private readonly ISearchProvider<Establishment> _idProvider;
-
-    private readonly IEvaluator<SearchPipelineContext> _searchPipelineEvaluator;
-
+    private readonly EducationProviderRegistryDbContext _dbContext;
+    private readonly ISearchQueryProcessor<Establishment> _searchSpecOrchestrator;
+    private readonly ISearchFilterExpressionsBuilder<Establishment> _searchFilterExpressionsBuilder;
+    private readonly IFacetAggregator _facetAggregator;
     private readonly IMapper<
-        SearchPipelineContext,
-        SearchResults<EstablishmentSearchResults, SearchFacets>> _searchResultsFromContextMapper;
-
+        (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+        SearchResults<EstablishmentSearchResults, SearchFacets>> _resultsMapper;
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
-        ReadOnlyCollection<SearchFilterRequest>> _searchRequestFiltersToCoreFiltersMapper;
+        ReadOnlyCollection<SearchFilterRequest>> _filterMapper;
 
-    /// <summary>
-    /// Creates a new search service adapter for establishments.
-    /// </summary>
-    /// <param name="idProvider">Provides trigram‑based search over establishments.</param>
-    /// <param name="facetProvider">Ensures facet provider is available for pipeline steps.</param>
-    /// <param name="pipeline">The ordered pipeline steps to execute.</param>
-    /// <param name="searchResultsFromContextMapper">Maps pipeline context to search results.</param>
-    /// <param name="searchRequestFiltersToCoreFiltersMapper">Maps API filter requests to core filter requests.</param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when any required dependency is <c>null</c>.
-    /// </exception>
     public EstablishmentsSearchServiceAdapter(
-        ISearchProvider<Establishment> idProvider,
-        IFacetProvider facetProvider,
-        IEvaluator<SearchPipelineContext> evaluator,
+        EducationProviderRegistryDbContext dbContext,
+        ISearchQueryProcessor<Establishment> searchSpecOrchestrator,
+        ISearchFilterExpressionsBuilder<Establishment> searchFilterExpressionsBuilder,
+        IFacetAggregator facetAggregator,
         IMapper<
-            SearchPipelineContext,
-            SearchResults<EstablishmentSearchResults, SearchFacets>> searchResultsFromContextMapper,
+            (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            SearchResults<EstablishmentSearchResults, SearchFacets>> resultsMapper,
         IMapper<
             ReadOnlyCollection<FilterRequest>,
-            ReadOnlyCollection<SearchFilterRequest>> searchRequestFiltersToCoreFiltersMapper)
+            ReadOnlyCollection<SearchFilterRequest>> filterMapper)
     {
-        _idProvider = idProvider ??
-            throw new ArgumentNullException(nameof(idProvider));
-        _searchResultsFromContextMapper = searchResultsFromContextMapper ??
-            throw new ArgumentNullException(nameof(searchResultsFromContextMapper));
-        _searchRequestFiltersToCoreFiltersMapper = searchRequestFiltersToCoreFiltersMapper ??
-            throw new ArgumentNullException(nameof(searchRequestFiltersToCoreFiltersMapper));
-
-        ArgumentNullException.ThrowIfNull(evaluator);
-        _searchPipelineEvaluator = evaluator;
-
-        ArgumentNullException.ThrowIfNull(facetProvider);
+        _dbContext = dbContext;
+        _searchSpecOrchestrator = searchSpecOrchestrator;
+        _searchFilterExpressionsBuilder = searchFilterExpressionsBuilder;
+        _facetAggregator = facetAggregator;
+        _resultsMapper = resultsMapper;
+        _filterMapper = filterMapper;
     }
 
-    /// <summary>
-    /// Executes a trigram search for establishments, applies pipeline steps,
-    /// and maps the results into <see cref="SearchResults{TResults, TFacets}"/>.
-    /// </summary>
-    /// <param name="request">The search request containing keyword, filters, and paging.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>
-    /// A <see cref="SearchResults{TResults, TFacets}"/> instance containing
-    /// establishment search results and facet information.
-    /// </returns>
     public async Task<SearchResults<EstablishmentSearchResults, SearchFacets>> SearchAsync(
         SearchServiceAdapterRequest request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        IReadOnlyList<Establishment> establishments =
-            await _idProvider.GetMatchingIdsAsync(
-                searchTerm: request.SearchKeyword,
-                pageSize: 50,
-                offset: request.Offset,
-                filters: _searchRequestFiltersToCoreFiltersMapper
-                    .Map(request.SearchFilterRequests.AsReadOnly()),
+        IQueryable<Establishment> baseQuery = _dbContext.Establishment.AsNoTracking();
+
+        // 1. Map incoming filter requests.
+        ReadOnlyCollection<SearchFilterRequest> filterRequests =
+            _filterMapper.Map(request.SearchFilterRequests.AsReadOnly());
+
+        // 2. Build the composed filter predicate.
+        Expression<Func<Establishment, bool>> filterPredicate =
+            _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
+
+        // 3. Apply filter predicate to the base query.
+        IQueryable<Establishment> filteredQuery =
+            baseQuery.Where(filterPredicate);
+
+        // 4. Apply search-term specification on top of filtered results.
+        IQueryable<Establishment> searchResult =
+            _searchSpecOrchestrator.ProcessSearch(filteredQuery, request.SearchTerms);
+
+        // 5. Execute projection.
+        List<EstablishmentReadModel> items =
+            await searchResult
+                .OrderBy(e => e.Name ?? string.Empty)
+                .Skip(request.Offset)
+                .Take(request.PageSize)
+                .Select(e => new EstablishmentReadModel(
+                    int.Parse(e.EstablishmentId.ToString()),
+                    e.Urn ?? string.Empty,
+                    e.Uid ?? string.Empty,
+                    e.Name ?? string.Empty,
+                    e.Site.Select(s => s.AddressLine1).FirstOrDefault() ?? string.Empty,
+                    e.Site.Select(s => s.Town).FirstOrDefault() ?? string.Empty,
+                    e.Site.Select(s => s.County).FirstOrDefault() ?? string.Empty,
+                    e.Site.Select(s => s.Postcode).FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentType.Name ?? string.Empty,
+                    e.EstablishmentStatus.Name ?? string.Empty,
+                    e.EstablishmentGroupMembership
+                        .Select(g => g.Group.Name)
+                        .FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentGroupMembership
+                        .Select(g => g.Group.Code)
+                        .FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentAuthority
+                        .Select(a => a.AuthorityName)
+                        .FirstOrDefault() ?? string.Empty,
+                    e.EstablishmentAuthority
+                        .Select(a => a.AuthorityCode)
+                        .FirstOrDefault() ?? string.Empty
+                ))
+                .ToListAsync(cancellationToken);
+
+        // 6. Extract URNs from projected items for facet aggregation.
+        IReadOnlyList<string> urns =
+            items.Select(entity => entity.Urn).ToList().AsReadOnly();
+
+        // 7. Calculate facet results based on URNs and requested facet keys.
+        IReadOnlyList<AggregatedFacetResult> facets =
+            await _facetAggregator.CalculateFacetsAsync(
+                urns,
+                request.Facets,
                 cancellationToken);
 
-        ReadOnlyCollection<string?> availableEstablishmentIids =
-            establishments.Select(establishment =>
-                establishment.Urn).ToList().AsReadOnly();
-
-        if (availableEstablishmentIids.Count == 0)
-        {
-            return new SearchResults<EstablishmentSearchResults, SearchFacets>();
-        }
-
-        SearchPipelineContext context = new();
-        context.Set(availableEstablishmentIids);
-        context.Set(establishments);
-        context.Set(new List<string> { "EstablishmentTypeId" });
-
-        await _searchPipelineEvaluator.EvaluateAsync(context, cancellationToken);
-
-        return _searchResultsFromContextMapper.Map(context);
+        // 8. Map final results into SearchResults wrapper.
+        return _resultsMapper.Map((items, facets));
     }
 }
+
+public record EstablishmentReadModel(
+    int Id,
+    string Urn,
+    string Ukprn,
+    string Name,
+    string AddressLine1,
+    string? City,
+    string? County,
+    string? Postcode,
+    string Type,
+    string Status,
+    string GroupName,
+    string GroupCode,
+    string LocalAuthorityName,
+    string LocalAuthorityCode
+);

@@ -31,8 +31,8 @@ public sealed record class GroupDetail
     /// </exception>
     public GroupDetail(string partOfName, string partOfCode)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(partOfName);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(partOfCode);
+        ArgumentNullException.ThrowIfNull(partOfName);
+        ArgumentNullException.ThrowIfNull(partOfCode);
 
         PartOfName = partOfName;
         PartOfCode = partOfCode;

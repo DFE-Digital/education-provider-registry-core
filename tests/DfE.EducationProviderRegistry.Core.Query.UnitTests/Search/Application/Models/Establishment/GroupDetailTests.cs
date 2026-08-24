@@ -58,48 +58,4 @@ public sealed class GroupDetailTests
         Assert.Throws<ArgumentNullException>(() =>
             GroupDetail.Create("Mock Trust", null!));
     }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public void Constructor_ShouldThrowArgumentException_WhenPartOfNameIsEmptyOrWhitespace(string invalid)
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentException>(() =>
-            new GroupDetail(invalid, "TRUST001"));
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public void Constructor_ShouldThrowArgumentException_WhenPartOfCodeIsEmptyOrWhitespace(string invalid)
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentException>(() =>
-            new GroupDetail("Mock Trust", invalid));
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public void FactoryMethod_ShouldThrowArgumentException_WhenPartOfNameIsEmptyOrWhitespace(string invalid)
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentException>(() =>
-            GroupDetail.Create(invalid, "TRUST001"));
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public void FactoryMethod_ShouldThrowArgumentException_WhenPartOfCodeIsEmptyOrWhitespace(string invalid)
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentException>(() =>
-            GroupDetail.Create("Mock Trust", invalid));
-    }
 }

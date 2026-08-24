@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq.Expressions;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
@@ -11,8 +12,9 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Reque
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
@@ -23,6 +25,11 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.S
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram.Translation;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
 using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -30,7 +37,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search;
@@ -116,7 +122,9 @@ public static class CompositionRoot
             return new PipelineEvaluator(handlers);
         });
 
+        // ---------------------------------------------------------
         // Mappers
+        // ---------------------------------------------------------
         services.TryAddSingleton<
             IMapper<Establishment, EstablishmentSearchResult>,
             EstablishmentToSearchResultMapper>();
@@ -125,6 +133,11 @@ public static class CompositionRoot
             IMapper<SearchPipelineContext,
             SearchResults<EstablishmentSearchResults, SearchFacets>>,
             SearchResultsFromContextMapper>();
+
+        services.TryAddSingleton<IMapper<
+            (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            SearchResults<EstablishmentSearchResults, SearchFacets>>,
+                    SearchResultsFromQueryResultsMapper>();
 
         return services;
     }
@@ -139,6 +152,10 @@ public static class CompositionRoot
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddOptions<SearchConfiguration>()
+            .Bind(configuration.GetRequiredSection(nameof(SearchConfiguration)));
 
         services.TryAddScoped<EstablishmentTypeFilter>();
 
@@ -172,6 +189,11 @@ public static class CompositionRoot
                         establishment => establishment.EstablishmentType.Name)
             });
 
+        services.AddScoped<IFacetAggregator, FacetAggregator>();
+
+        // ---------------------------------------------------------
+        // Logical operator factory
+        // ---------------------------------------------------------
         services.AddOptions<FilterKeyToFilterExpressionMapOptions>()
             .Configure<IConfiguration>((settings, cfg) =>
                 cfg.GetSection("FilterKeyToFilterExpressionMapOptions").Bind(settings))
@@ -181,5 +203,60 @@ public static class CompositionRoot
         services.AddScoped<
             ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
             EstablishmentsSearchServiceAdapter>();
+
+        // ---------------------------------------------------------
+        // Supporting mappers
+        // ---------------------------------------------------------
+        services.TryAddSingleton<
+            IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>,
+            SearchRequestFiltersToCoreFiltersMapper>();
+
+        services.TryAddSingleton<
+            IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            SearchResults<EstablishmentSearchResults, SearchFacets>>,
+            SearchResultsFromQueryResultsMapper>();
+
+        // ---------------------------------------------------------
+        // Search behaviours
+        // ---------------------------------------------------------
+        services.AddSingleton(typeof(ExactSearchBehaviour<>));
+        services.AddSingleton(typeof(PartialSearchBehaviour<>));
+        services.AddSingleton(typeof(FuzzySearchBehaviour<>));
+
+        services.AddSingleton<ISearchBehaviourRegistry<Establishment>>((sp) =>
+        {
+            return new SearchBehaviourRegistry<Establishment>([
+                    new("exact", sp.GetRequiredService<ExactSearchBehaviour<Establishment>>()),
+                    new("partial", sp.GetRequiredService<PartialSearchBehaviour<Establishment>>()),
+                    new("fuzzy", sp.GetRequiredService<FuzzySearchBehaviour<Establishment>>())
+                ]
+            );
+        });
+
+        // ---------------------------------------------------------
+        // Search specification orchestration
+        // ---------------------------------------------------------
+        services.AddSingleton<IChainingPredicateRegistry<Establishment>>(provider =>
+        {
+            Dictionary<string, Func<
+                ISpecification<Establishment>,
+                ISpecification<Establishment>,
+                ISpecification<Establishment>>> map =
+                    new(StringComparer.OrdinalIgnoreCase)
+                    {
+                        ["AND"] = (left, right) => left.And(right),
+                        ["OR"] = (left, right) => left.Or(right)
+                    };
+
+            return new ChainingPredicateRegistry<Establishment>(map);
+        });
+
+        services.AddScoped<ISearchIndexFieldSpecificationOrchestrator<Establishment>,
+            SearchIndexFieldSpecificationOrchestrator<Establishment>>();
+
+        services.AddScoped<ISearchTermSpecificationOrchestrator<Establishment>,
+            SearchTermSpecificationOrchestrator<Establishment>>();
+
+        services.AddScoped(typeof(ISearchQueryProcessor<>), typeof(SearchQueryProcessor<>));
     }
 }

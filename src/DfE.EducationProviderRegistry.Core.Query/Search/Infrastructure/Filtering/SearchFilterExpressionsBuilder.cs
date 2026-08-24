@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.FilterExpressions.Factories;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using Microsoft.Extensions.Options;
 
@@ -22,13 +22,13 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
     private readonly FilterKeyToFilterExpressionMapOptions _filterKeyMapOptions;
 
     public SearchFilterExpressionsBuilder(
-        ISearchFilterSpecificationFactory<TProjection> filterExpressionFactory,
+        ISearchFilterSpecificationFactory<TProjection> filterSpecificationFactory,
         IOptions<FilterKeyToFilterExpressionMapOptions> filterKeyMapOptions)
     {
-        ArgumentNullException.ThrowIfNull(filterExpressionFactory);
+        ArgumentNullException.ThrowIfNull(filterSpecificationFactory);
         ArgumentNullException.ThrowIfNull(filterKeyMapOptions);
 
-        _filterSpecificationFactory = filterExpressionFactory;
+        _filterSpecificationFactory = filterSpecificationFactory;
         _filterKeyMapOptions = filterKeyMapOptions.Value;
     }
 
