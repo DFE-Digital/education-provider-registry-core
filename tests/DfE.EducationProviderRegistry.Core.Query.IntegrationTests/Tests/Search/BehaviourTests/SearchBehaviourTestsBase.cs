@@ -63,7 +63,7 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
                 ],
                 ct);
 
-        SearchRequest request = BuildSearchRequest(searchTerms);
+        SearchRequest request = SearchRequestFactory.BuildSearchRequest(searchTerms);
 
         // act
 
@@ -98,17 +98,5 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         }
 
         return response;
-    }
-
-    private static SearchRequest BuildSearchRequest(IEnumerable<(string key, string value)> searchTerms)
-    {
-        SearchRequestBuilder requestBuilder = SearchRequestBuilder.Create();
-
-        foreach ((string key, string value) termTuple in searchTerms)
-        {
-            requestBuilder.WithSearchTerm(termTuple);
-        }
-
-        return requestBuilder.Build();
     }
 }
