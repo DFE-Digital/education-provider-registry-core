@@ -4,7 +4,7 @@ public sealed class IndexedFieldConfiguration
 {
     public string FieldName { get; init; } = string.Empty;
 
-    public string? ChainingPredicate { get; init; }
+    public string? DefaultBehaviourChainingPredicate { get; init; }
 
     public IReadOnlyList<SearchBehaviourConfiguration> SearchBehaviours { get; init; } = [];
 }

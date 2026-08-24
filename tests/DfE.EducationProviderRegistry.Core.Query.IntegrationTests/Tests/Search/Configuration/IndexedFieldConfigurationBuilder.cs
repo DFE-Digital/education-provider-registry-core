@@ -53,7 +53,7 @@ public sealed class IndexedFieldConfigurationBuilder
         return new IndexedFieldConfiguration()
         {
             FieldName = _name,
-            ChainingPredicate = _fieldChainingPredicate,
+            DefaultBehaviourChainingPredicate = _fieldChainingPredicate,
             SearchBehaviours = MapBehavioursToConfiguration(_behaviours).ToArray()
         };
     }

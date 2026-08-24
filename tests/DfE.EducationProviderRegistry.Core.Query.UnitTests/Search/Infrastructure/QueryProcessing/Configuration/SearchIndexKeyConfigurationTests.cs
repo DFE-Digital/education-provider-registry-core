@@ -12,7 +12,7 @@ public sealed class SearchIndexKeyConfigurationTests
 
         // assert
         Assert.Equal(string.Empty, result.SearchTermKey);
-        Assert.Null(result.ChainingPredicate);
+        Assert.Null(result.FieldChainingPredicate);
         Assert.Empty(result.IndexedFields);
     }
 
@@ -26,13 +26,13 @@ public sealed class SearchIndexKeyConfigurationTests
         SearchIndexKeyConfiguration result = new()
         {
             SearchTermKey = "Name",
-            ChainingPredicate = "And",
+            FieldChainingPredicate = "And",
             IndexedFields = [indexedField]
         };
 
         // assert
         Assert.Equal("Name", result.SearchTermKey);
-        Assert.Equal("And", result.ChainingPredicate);
+        Assert.Equal("And", result.FieldChainingPredicate);
         Assert.Single(result.IndexedFields);
         Assert.Same(indexedField, result.IndexedFields[0]);
     }

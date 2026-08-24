@@ -12,7 +12,7 @@ public sealed class IndexedFieldConfigurationTests
 
         // assert
         Assert.Equal(string.Empty, result.FieldName);
-        Assert.Null(result.ChainingPredicate);
+        Assert.Null(result.DefaultBehaviourChainingPredicate);
         Assert.Empty(result.SearchBehaviours);
     }
 
@@ -26,13 +26,13 @@ public sealed class IndexedFieldConfigurationTests
         IndexedFieldConfiguration result = new()
         {
             FieldName = "Name",
-            ChainingPredicate = "And",
+            DefaultBehaviourChainingPredicate = "And",
             SearchBehaviours = [behaviour]
         };
 
         // assert
         Assert.Equal("Name", result.FieldName);
-        Assert.Equal("And", result.ChainingPredicate);
+        Assert.Equal("And", result.DefaultBehaviourChainingPredicate);
         Assert.Single(result.SearchBehaviours);
         Assert.Same(behaviour, result.SearchBehaviours[0]);
     }

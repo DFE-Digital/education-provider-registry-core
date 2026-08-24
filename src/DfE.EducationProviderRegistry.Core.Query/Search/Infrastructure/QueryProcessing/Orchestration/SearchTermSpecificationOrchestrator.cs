@@ -49,13 +49,13 @@ public sealed class SearchTermSpecificationOrchestrator<TEntity>
                 _indexFieldOrchestrator.Orchestrate(
                     fieldConfig.FieldName,
                     behaviours,
-                    fieldConfig.ChainingPredicate,
+                    fieldConfig.DefaultBehaviourChainingPredicate,
                     value);
 
             combined = _predicateRegistry.Chain(
                 combined,
                 fieldSpec,
-                keyConfig.ChainingPredicate);
+                keyConfig.FieldChainingPredicate);
         }
 
         return combined!;
