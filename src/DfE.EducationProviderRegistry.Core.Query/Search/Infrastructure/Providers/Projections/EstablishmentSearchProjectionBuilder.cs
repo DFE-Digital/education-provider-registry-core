@@ -31,6 +31,7 @@ internal sealed class EstablishmentSearchProjectionBuilder
 
         return ctx.Establishment
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(establishemnt => establishemnt.Site)
             .Include(establishemnt => establishemnt.EstablishmentType)
             .Include(establishemnt => establishemnt.EstablishmentAuthority)
