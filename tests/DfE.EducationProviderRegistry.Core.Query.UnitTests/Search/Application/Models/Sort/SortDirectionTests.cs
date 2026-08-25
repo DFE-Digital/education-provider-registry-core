@@ -62,7 +62,8 @@ public sealed class SortDirectionTests
     [InlineData("desc", true)]
     [InlineData("ASC", false)]
     [InlineData("up", false)]
-    public void IsValid_ShouldReturnExpectedResult(string input, bool expected)
+    [InlineData(null, false)]
+    public void IsValid_ShouldReturnExpectedResult(string? input, bool expected)
     {
         // act
         bool result = SortDirection.IsValid(input);
@@ -79,5 +80,52 @@ public sealed class SortDirectionTests
 
         // Assert
         Assert.Equal("desc", sortDirection.Value);
+    }
+
+    [Fact]
+    public void Ascending_ShouldHaveExpectedValue()
+    {
+        // Act
+        SortDirection sortDirection = SortDirection.Ascending;
+
+        // Assert
+        Assert.Equal("asc", sortDirection.Value);
+    }
+
+    [Fact]
+    public void Descending_ShouldHaveExpectedValue()
+    {
+        // Act
+        SortDirection sortDirection = SortDirection.Descending;
+
+        // Assert
+        Assert.Equal("desc", sortDirection.Value);
+    }
+
+    [Fact]
+    public void Ascending_ShouldNotEqualDescending()
+    {
+        // Assert
+        Assert.NotEqual(SortDirection.Ascending, SortDirection.Descending);
+    }
+
+    [Fact]
+    public void Constructor_WithDescendingValue_ShouldEqualDescending()
+    {
+        // Act
+        SortDirection sortDirection = new("desc");
+
+        // Assert
+        Assert.Equal(SortDirection.Descending, sortDirection);
+    }
+
+    [Fact]
+    public void Constructor_WithAsccendingValue_ShouldEqualAscending()
+    {
+        // Act
+        SortDirection sortDirection = new("asc");
+
+        // Assert
+        Assert.Equal(SortDirection.Ascending, sortDirection);
     }
 }
