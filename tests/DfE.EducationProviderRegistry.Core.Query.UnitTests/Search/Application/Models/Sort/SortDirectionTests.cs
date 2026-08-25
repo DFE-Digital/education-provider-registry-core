@@ -106,8 +106,26 @@ public sealed class SortDirectionTests
     public void Ascending_ShouldNotEqualDescending()
     {
         // Assert
-        Assert.NotEqual(
-            SortDirection.Ascending,
-            SortDirection.Descending);
+        Assert.NotEqual(SortDirection.Ascending, SortDirection.Descending);
+    }
+
+    [Fact]
+    public void Constructor_WithDescendingValue_ShouldEqualDescending()
+    {
+        // Act
+        SortDirection sortDirection = new("desc");
+
+        // Assert
+        Assert.Equal(SortDirection.Descending, sortDirection);
+    }
+
+    [Fact]
+    public void Constructor_WithAsccendingValue_ShouldEqualAscending()
+    {
+        // Act
+        SortDirection sortDirection = new("asc");
+
+        // Assert
+        Assert.Equal(SortDirection.Ascending, sortDirection);
     }
 }
