@@ -17,7 +17,7 @@ public sealed class SortDirectionTests
         SortDirection sortDirection = new(input);
 
         // Assert
-        Assert.Equal(input.ToLowerInvariant(), sortDirection.Direction);
+        Assert.Equal(input.ToLowerInvariant(), sortDirection.Value);
     }
 
     [Fact]
@@ -78,6 +78,6 @@ public sealed class SortDirectionTests
         SortDirection sortDirection = SortDirection.Create("DESC");
 
         // Assert
-        Assert.Equal("desc", sortDirection.Direction);
+        Assert.Equal("desc", sortDirection.Value);
     }
 }
