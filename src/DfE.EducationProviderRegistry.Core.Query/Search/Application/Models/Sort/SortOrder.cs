@@ -8,22 +8,6 @@
 public sealed class SortOrder
 {
     /// <summary>
-    /// The validated field to sort by.
-    /// </summary>
-    private readonly SortField _field;
-
-    /// <summary>
-    /// The validated direction of sorting (<c>"asc"</c> or <c>"desc"</c>).
-    /// </summary>
-    private readonly SortDirection _direction;
-
-    /// <summary>
-    /// Gets the combined sort expression in the format
-    /// <c>"{field} {direction}"</c>, normalized for use in search queries.
-    /// </summary>
-    public string Value => $"{_field.Field} {_direction.Direction}";
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="SortOrder"/> class
     /// by validating both the sort field and sort direction.
     /// </summary>
@@ -36,9 +20,25 @@ public sealed class SortOrder
     /// </exception>
     public SortOrder(string sortField, string sortDirection, IReadOnlyList<string> validSortFields)
     {
-        _field = SortField.Create(sortField, validSortFields);
-        _direction = SortDirection.Create(sortDirection);
+        Field = SortField.Create(sortField, validSortFields);
+        Direction = SortDirection.Create(sortDirection);
     }
+
+    /// <summary>
+    /// The validated field to sort by.
+    /// </summary>
+    public SortField Field { get; }
+
+    /// <summary>
+    /// The validated direction of sorting (<c>"asc"</c> or <c>"desc"</c>).
+    /// </summary>
+    public SortDirection Direction { get; }
+
+    /// <summary>
+    /// Gets the combined sort expression in the format
+    /// <c>"{field} {direction}"</c>, normalized for use in search queries.
+    /// </summary>
+    public string Value => $"{Field.Value} {Direction.Value}";
 
     /// <summary>
     /// Creates a new validated <see cref="SortOrder"/> instance.

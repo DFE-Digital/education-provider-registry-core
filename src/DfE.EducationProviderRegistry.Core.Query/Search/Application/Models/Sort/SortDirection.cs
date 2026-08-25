@@ -22,7 +22,7 @@ public sealed class SortDirection
     /// Always stored in lowercase (<c>"asc"</c> or <c>"desc"</c>) for compatibility
     /// with Azure Search and other search providers.
     /// </summary>
-    public string Direction { get; }
+    public string Value { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SortDirection"/> class
@@ -51,7 +51,7 @@ public sealed class SortDirection
         }
 
         // Store the normalized direction
-        Direction = normalizedSortDirection;
+        Value = normalizedSortDirection;
     }
 
     /// <summary>
