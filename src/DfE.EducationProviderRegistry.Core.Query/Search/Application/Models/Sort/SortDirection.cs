@@ -5,24 +5,28 @@
 /// search results. Ensures consistency with the expected values required by
 /// the underlying search provider.
 /// </summary>
-public sealed class SortDirection
+public sealed record SortDirection
 {
+    public static readonly SortDirection Ascending = new(AscendingSort);
+
+    public static readonly SortDirection Descending = new(DescendingSort);
+
     /// <summary>
     /// Constant representing descending sort direction.
     /// </summary>
-    private const string Descending = "desc";
+    private const string DescendingSort = "desc";
 
     /// <summary>
     /// Constant representing ascending sort direction.
     /// </summary>
-    private const string Ascending = "asc";
+    private const string AscendingSort = "asc";
 
     /// <summary>
     /// Gets the normalized and validated sort direction string.
     /// Always stored in lowercase (<c>"asc"</c> or <c>"desc"</c>) for compatibility
     /// with Azure Search and other search providers.
     /// </summary>
-    public string Direction { get; }
+    public string Value { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SortDirection"/> class
@@ -51,7 +55,7 @@ public sealed class SortDirection
         }
 
         // Store the normalized direction
-        Direction = normalizedSortDirection;
+        Value = normalizedSortDirection;
     }
 
     /// <summary>
@@ -64,8 +68,9 @@ public sealed class SortDirection
     /// <c>true</c> if the direction is <c>"asc"</c> or <c>"desc"</c>;
     /// otherwise, <c>false</c>.
     /// </returns>
-    public static bool IsValid(string direction) =>
-        direction.Equals(Descending) || direction.Equals(Ascending);
+    public static bool IsValid(string? direction) =>
+        direction is not null &&
+            (direction.Equals(DescendingSort) || direction.Equals(AscendingSort));
 
     /// <summary>
     /// Creates a new validated <see cref="SortDirection"/> instance.
