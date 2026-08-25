@@ -5,17 +5,21 @@
 /// search results. Ensures consistency with the expected values required by
 /// the underlying search provider.
 /// </summary>
-public sealed class SortDirection
+public sealed record SortDirection
 {
+    public static readonly SortDirection Ascending = new(AscendingSort);
+
+    public static readonly SortDirection Descending = new(AscendingSort);
+
     /// <summary>
     /// Constant representing descending sort direction.
     /// </summary>
-    private const string Descending = "desc";
+    private const string DescendingSort = "desc";
 
     /// <summary>
     /// Constant representing ascending sort direction.
     /// </summary>
-    private const string Ascending = "asc";
+    private const string AscendingSort = "asc";
 
     /// <summary>
     /// Gets the normalized and validated sort direction string.
@@ -65,7 +69,7 @@ public sealed class SortDirection
     /// otherwise, <c>false</c>.
     /// </returns>
     public static bool IsValid(string direction) =>
-        direction.Equals(Descending) || direction.Equals(Ascending);
+        direction.Equals(DescendingSort) || direction.Equals(AscendingSort);
 
     /// <summary>
     /// Creates a new validated <see cref="SortDirection"/> instance.

@@ -146,7 +146,7 @@ public static class QueryableExtensions
         Expression<Func<T, TKey>> keySelector,
         SortDirection sortDirection)
     {
-        return sortDirection.Value == "desc"
+        return sortDirection == SortDirection.Descending
             ? query.OrderByDescending(keySelector)
             : query.OrderBy(keySelector);
     }
