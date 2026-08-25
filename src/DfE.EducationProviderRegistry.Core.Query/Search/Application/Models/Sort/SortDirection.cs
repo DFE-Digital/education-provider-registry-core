@@ -9,7 +9,7 @@ public sealed record SortDirection
 {
     public static readonly SortDirection Ascending = new(AscendingSort);
 
-    public static readonly SortDirection Descending = new(AscendingSort);
+    public static readonly SortDirection Descending = new(DescendingSort);
 
     /// <summary>
     /// Constant representing descending sort direction.
