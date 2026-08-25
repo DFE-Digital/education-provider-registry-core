@@ -4,14 +4,22 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 internal static class FilterKeyToFilterExpressionMapOptionsStub
 {
-    private static readonly Dictionary<string, string?> _stubFilter = new()
+    private const string rootConfigurationKey = "FilterKeyToFilterExpressionMapOptions:SearchFilterToExpressionMap";
+
+    internal static readonly Dictionary<string, string?> StubFilter = new()
     {
-        {"FilterKeyToFilterExpressionMapOptions:SearchFilterToExpressionMap:STUB:FilterExpressionKey", "STUBBED_FILTER" }
+        {$"{rootConfigurationKey}:STUB:FilterExpressionKey", "STUBBED_FILTER" }
     };
 
-    internal static IConfigurationBuilder StubFilterOptions(this IConfigurationBuilder builder)
+    internal static IConfigurationBuilder StubFilterOptions(this IConfigurationBuilder builder, IEnumerable<KeyValuePair<string, string?>> filterKeyToFilterMapping)
     {
-        builder.AddInMemoryCollection(_stubFilter);
+        Dictionary<string, string?> configuration =
+            filterKeyToFilterMapping.ToDictionary(
+                keySelector: (t) => $"{rootConfigurationKey}:{t.Key}:FilterExpressionKey",
+                elementSelector: (t) => t.Value);
+
+        builder.AddInMemoryCollection(configuration);
+
         return builder;
     }
 }

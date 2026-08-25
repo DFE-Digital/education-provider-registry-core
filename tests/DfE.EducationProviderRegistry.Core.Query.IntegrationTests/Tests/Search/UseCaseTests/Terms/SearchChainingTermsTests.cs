@@ -1,9 +1,9 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.BehaviourTests;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Terms;
 
 public sealed class SearchChainingTermsTests : SearchBehaviourTestsBase
 {

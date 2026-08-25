@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
@@ -9,7 +8,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Reque
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.PerformanceTests;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
 public sealed class SearchUseCasePerformanceTests : SearchBehaviourTestsBase
 {

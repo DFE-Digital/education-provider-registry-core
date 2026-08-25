@@ -2,29 +2,29 @@
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Behaviours;
 
-public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
+public sealed class SearchFuzzyMatchBehaviourTests : SearchBehaviourTestsBase
 {
     private const string SearchTermKey = "term-1";
-
-    public SearchExactMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public SearchFuzzyMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
     protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
     [
         (
-                SearchTermKey,
-                IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
-                [
-                    (builder) => builder.WithFieldName(DefaultSearchFieldName).AppendExactMatchBehaviour()
-                ]
-            )
+            SearchTermKey,
+            IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+            [
+                (builder) =>
+                    builder.WithFieldName(DefaultSearchFieldName).AppendFuzzyMatchBehaviour()
+            ]
+        )
     ];
 
     [Fact]
-    public async Task Returns_Exact_Match_Only_Case_Sensitive()
+    public async Task Returns_Similar_Words()
     {
         // arrange
         string searchTerm = "School";
@@ -33,6 +33,10 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
         [
             SearchEstablishmentBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School")
+                .Build(),
+
+            SearchEstablishmentBuilder.Create()
+                .SetValue(DefaultSearchFieldName, "Schools")
                 .Build()
         ];
 
@@ -41,11 +45,9 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
             SearchEstablishmentBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
+
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchFieldName, "school")
-                .Build(),
-            SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchFieldName, "ScHoOl")
+                .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
 
@@ -57,7 +59,37 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
     }
 
     [Fact]
-    public async Task Does_Not_Return_Partial_Matches()
+    public async Task Returns_Matches_Regardless_Of_Casing()
+    {
+        // arrange
+        string searchTerm = "sChOoL";
+
+        Establishment[] matchingEstablishments =
+        [
+            SearchEstablishmentBuilder.Create()
+                .SetValue(DefaultSearchFieldName, "School")
+                .Build(),
+            SearchEstablishmentBuilder.Create()
+                .SetValue(DefaultSearchFieldName, "school")
+                .Build()
+        ];
+
+        Establishment[] nonMatchingEstablishments =
+        [
+            SearchEstablishmentBuilder.Create()
+                .SetValue(DefaultSearchFieldName, "College")
+                .Build()
+        ];
+
+        // act / assert
+        await ExecuteAndAssertSearchAsync(
+            [(SearchTermKey, searchTerm)],
+            matchingEstablishments,
+            nonMatchingEstablishments);
+    }
+
+    [Fact]
+    public async Task Does_Not_Return_Completely_Unrelated_Words()
     {
         // arrange
         string searchTerm = "School";
@@ -72,15 +104,15 @@ public sealed class SearchExactMatchBehaviourTests : SearchBehaviourTestsBase
         Establishment[] nonMatchingEstablishments =
         [
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchFieldName, "My School Academy")
+                .SetValue(DefaultSearchFieldName, "Banana")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchFieldName, "School Academy")
+                .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
             SearchEstablishmentBuilder.Create()
-                .SetValue(DefaultSearchFieldName, "Secondary School")
+                .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
 

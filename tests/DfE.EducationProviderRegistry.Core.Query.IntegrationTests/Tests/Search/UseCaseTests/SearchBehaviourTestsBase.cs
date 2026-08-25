@@ -10,7 +10,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
 public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 {
@@ -25,25 +25,27 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
 
     protected abstract (string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration();
 
+    protected virtual IEnumerable<KeyValuePair<string, string?>> CreateFilterExpressionOptions() => FilterKeyToFilterExpressionMapOptionsStub.StubFilter;
+
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
         // Clear all establishments and assoc to avoid conflicts with searchTerms
         await SeedSearchEstablishments.ClearAsync(ct);
     }
 
-    protected override void ConfigureApplicationServices(
+    protected sealed override void ConfigureApplicationServices(
         IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddSearch(configuration);
     }
 
-    protected override void ConfigureApplicationConfiguration(
+    protected sealed override void ConfigureApplicationConfiguration(
         IConfigurationBuilder builder)
     {
-        builder
-            .StubFilterOptions()
-            .StubSearchCriteriaOptions();
+        builder.StubFilterOptions(filterKeyToFilterMapping: CreateFilterExpressionOptions());
+
+        builder.StubSearchCriteriaOptions();
 
         builder.AddSearchConfiguration(CreateSearchTermsConfiguration());
     }
