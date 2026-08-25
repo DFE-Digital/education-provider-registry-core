@@ -1,11 +1,12 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Terms;
 
-public sealed class SearchChainingTermsTests : SearchBehaviourTestsBase
+public sealed class SearchChainingTermsTests : SearchUseCaseBase
 {
     private const string Term1Key = "what";
     private const string Term2Key = "where";
@@ -66,11 +67,16 @@ public sealed class SearchChainingTermsTests : SearchBehaviourTestsBase
             .Build()
         ];
 
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [
+                    (Term1Key, "school"),
+                    (Term2Key, "SW1A")
+                ],
+                filters: []);
+
         await ExecuteAndAssertSearchAsync(
-            [
-                (Term1Key, "school"),
-                (Term2Key, "SW1A")
-            ],
+            request,
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -94,11 +100,16 @@ public sealed class SearchChainingTermsTests : SearchBehaviourTestsBase
             .Build()
         ];
 
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [
+                    (Term1Key, "school"),
+                    (Term2Key, "SW1A")
+                ],
+                filters: []);
+
         await ExecuteAndAssertSearchAsync(
-            [
-                (Term1Key, "school"),
-                (Term2Key, "SW1A")
-            ],
+            request,
             matchingEstablishments,
             nonMatchingEstablishments);
     }

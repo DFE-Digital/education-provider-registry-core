@@ -10,7 +10,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
-public sealed class SearchUseCasePerformanceTests : SearchBehaviourTestsBase
+public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
 {
     private const string SearchTermKey = "term-1";
 
@@ -68,7 +68,10 @@ public sealed class SearchUseCasePerformanceTests : SearchBehaviourTestsBase
 
         await SeedSearchEstablishments.SeedAsync(establishments, ct);
 
-        SearchRequest request = SearchRequestFactory.BuildSearchRequest(searchTerms: [(SearchTermKey, searchTerm)]);
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [(SearchTermKey, searchTerm)],
+                filters: []);
 
         // act
         await QueryCollector.StartAsync(ct);
