@@ -68,8 +68,9 @@ public sealed record SortDirection
     /// <c>true</c> if the direction is <c>"asc"</c> or <c>"desc"</c>;
     /// otherwise, <c>false</c>.
     /// </returns>
-    public static bool IsValid(string direction) =>
-        direction.Equals(DescendingSort) || direction.Equals(AscendingSort);
+    public static bool IsValid(string? direction) =>
+        direction is not null &&
+            (direction.Equals(DescendingSort) || direction.Equals(AscendingSort));
 
     /// <summary>
     /// Creates a new validated <see cref="SortDirection"/> instance.

@@ -80,4 +80,33 @@ public sealed class SortDirectionTests
         // Assert
         Assert.Equal("desc", sortDirection.Value);
     }
+
+    [Fact]
+    public void Ascending_ShouldHaveExpectedValue()
+    {
+        // Act
+        SortDirection sortDirection = SortDirection.Ascending;
+
+        // Assert
+        Assert.Equal("asc", sortDirection.Value);
+    }
+
+    [Fact]
+    public void Descending_ShouldHaveExpectedValue()
+    {
+        // Act
+        SortDirection sortDirection = SortDirection.Descending;
+
+        // Assert
+        Assert.Equal("desc", sortDirection.Value);
+    }
+
+    [Fact]
+    public void Ascending_ShouldNotEqualDescending()
+    {
+        // Assert
+        Assert.NotEqual(
+            SortDirection.Ascending,
+            SortDirection.Descending);
+    }
 }
