@@ -62,7 +62,8 @@ public sealed class SortDirectionTests
     [InlineData("desc", true)]
     [InlineData("ASC", false)]
     [InlineData("up", false)]
-    public void IsValid_ShouldReturnExpectedResult(string input, bool expected)
+    [InlineData(null, false)]
+    public void IsValid_ShouldReturnExpectedResult(string? input, bool expected)
     {
         // act
         bool result = SortDirection.IsValid(input);
