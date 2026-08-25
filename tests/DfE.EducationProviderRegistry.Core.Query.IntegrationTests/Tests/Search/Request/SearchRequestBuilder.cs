@@ -32,9 +32,9 @@ internal sealed class SearchRequestBuilder
     }
 
     public SearchRequestBuilder WithFilterRequests(
-        IList<FilterRequest> filterRequests)
+        IEnumerable<FilterRequest> filterRequests)
     {
-        _filterRequests = filterRequests;
+        _filterRequests = [.. filterRequests];
         return this;
     }
 

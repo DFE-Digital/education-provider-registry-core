@@ -1,15 +1,16 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.CollectionTests;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Fields;
 
-public sealed class SearchCollectionAndScalarFieldTests : SearchBehaviourTestsBase
+public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseBase
 {
     private const string SearchTermKey = "term-1";
 
-    public SearchCollectionAndScalarFieldTests(
+    public SearchUseCaseCollectionAndScalarFieldTests(
         IServiceProvider testServicesProvider)
         : base(testServicesProvider)
     {
@@ -65,9 +66,14 @@ public sealed class SearchCollectionAndScalarFieldTests : SearchBehaviourTestsBa
                 .Build()
         ];
 
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [(SearchTermKey, searchTerm)],
+                filters: []);
+
         // act / assert
         await ExecuteAndAssertSearchAsync(
-            [(SearchTermKey, searchTerm)],
+            request,
             matchingEstablishments,
             nonMatchingEstablishments);
     }

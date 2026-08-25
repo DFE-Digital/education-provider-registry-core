@@ -5,7 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 
 public sealed class SearchEstablishmentBuilder
 {
-    private const string stubLocalAuthorityCode = "001";
+    private const string StubLocalAuthorityCode = "001";
     // temp as seed range 10_000->9_010_000 avoids conflicts
     private static int _urnCounter = 9_010_001;
 
@@ -31,7 +31,7 @@ public sealed class SearchEstablishmentBuilder
         _establishment.EstablishmentAuthority.Add(
             new EstablishmentAuthority
             {
-                AuthorityCode = stubLocalAuthorityCode,
+                AuthorityCode = StubLocalAuthorityCode,
                 AuthorityName = "Test Authority"
             });
     }
@@ -42,15 +42,27 @@ public sealed class SearchEstablishmentBuilder
         return this;
     }
 
-    internal SearchEstablishmentBuilder WithAuthorityName(string name)
+    public SearchEstablishmentBuilder WithAuthorityName(string name)
     {
         _establishment.EstablishmentAuthority.Add(
             new EstablishmentAuthority
             {
-                AuthorityCode = stubLocalAuthorityCode,
+                AuthorityCode = StubLocalAuthorityCode,
                 AuthorityName = name
             });
 
+        return this;
+    }
+
+    public SearchEstablishmentBuilder WithName(string name)
+    {
+        _establishment.Name = name;
+        return this;
+    }
+
+    public SearchEstablishmentBuilder WithEstablishmentTypeId(long typeId)
+    {
+        _establishment.EstablishmentTypeId = typeId;
         return this;
     }
 
@@ -63,14 +75,9 @@ public sealed class SearchEstablishmentBuilder
                 nameof(property));
         }
 
-        PropertyInfo? propertyInfo = _establishment.GetType().GetProperty(property);
-
-        if (propertyInfo is null)
-        {
-            throw new ArgumentException(
-                $"Property '{property}' does not exist on {nameof(Establishment)}.",
-                nameof(property));
-        }
+        PropertyInfo? propertyInfo =
+            _establishment.GetType().GetProperty(property) ??
+                throw new ArgumentException($"Property '{property}' does not exist on {nameof(Establishment)}.", nameof(property));
 
         if (!propertyInfo.CanWrite)
         {
