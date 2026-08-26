@@ -1,26 +1,23 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.CollectionTests;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Fields;
 
-public sealed class SearchCollectionFieldTests
-    : SearchBehaviourTestsBase
+public sealed class SearchUseCaseCollectionFieldTests
+    : SearchUseCaseBase
 {
     private const string SearchTermKey = "term-1";
 
-    public SearchCollectionFieldTests(
+    public SearchUseCaseCollectionFieldTests(
         IServiceProvider testServicesProvider)
         : base(testServicesProvider)
     {
     }
 
-    protected override (
-        string termKey,
-        string chainFieldsWithPredicate,
-        IEnumerable<Action<IndexedFieldConfigurationBuilder>>
-    )[] CreateSearchTermsConfiguration() =>
+    protected override (string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
     [
         (
             SearchTermKey,
@@ -54,9 +51,14 @@ public sealed class SearchCollectionFieldTests
                 .Build()
         ];
 
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [(SearchTermKey, searchTerm)],
+                filters: []);
+
         // act / assert
         await ExecuteAndAssertSearchAsync(
-            [(SearchTermKey, searchTerm)],
+            request,
             matchingEstablishments,
             nonMatchingEstablishments);
     }
@@ -73,11 +75,16 @@ public sealed class SearchCollectionFieldTests
                 .WithAuthorityName("School Authority")
                 .Build();
 
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [(SearchTermKey, searchTerm)],
+                filters: []);
+
         // act / assert
         await ExecuteAndAssertSearchAsync(
-            [(SearchTermKey, searchTerm)],
-            matchSearchTerm: [establishment],
-            nonMatchSearchTerm: []);
+            request,
+            expectednResults: [establishment],
+            notExpectedInResults: []);
     }
 
     [Fact]
@@ -96,10 +103,15 @@ public sealed class SearchCollectionFieldTests
                 .Build()
         ];
 
+        SearchRequest request =
+            SearchRequestFactory.BuildSearchRequest(
+                searchTerms: [(SearchTermKey, searchTerm)],
+                filters: []);
+
         // act / assert
         await ExecuteAndAssertSearchAsync(
-            [(SearchTermKey, searchTerm)],
-            matchSearchTerm: matchingEstablishments,
-            nonMatchSearchTerm: nonMatchingEstablishments);
+            request,
+            expectednResults: matchingEstablishments,
+            notExpectedInResults: nonMatchingEstablishments);
     }
 }

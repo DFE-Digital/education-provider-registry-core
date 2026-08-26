@@ -15,7 +15,7 @@ public sealed class SortFieldTests
         SortField sortField = new(inputField, validFields);
 
         // Assert
-        Assert.Equal(inputField, sortField.Field);
+        Assert.Equal(inputField, sortField.Value);
         Assert.Equal(validFields.Count, sortField.ValidFields.Count);
 
         bool allMatch = validFields
@@ -111,7 +111,7 @@ public sealed class SortFieldTests
             SortField.Create("Level", validFields);
 
         // Assert
-        Assert.Equal("Level", sortField.Field);
+        Assert.Equal("Level", sortField.Value);
 
         Assert.Equal(validFields.Count, sortField.ValidFields.Count);
 

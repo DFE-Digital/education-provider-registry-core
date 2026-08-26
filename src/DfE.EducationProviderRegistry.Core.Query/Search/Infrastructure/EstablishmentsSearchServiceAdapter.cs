@@ -5,6 +5,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
@@ -88,7 +89,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
         // 6. Execute paged projection.
         List<EstablishmentReadModel> items =
             await searchResult
-                .OrderBy(e => e.Name ?? string.Empty)
+                .OrderByDirection(e => e.Name ?? string.Empty, request.SortOrdering.Direction)
                 .Skip(request.Offset)
                 .Take(request.PageSize)
                 .Select(e => new EstablishmentReadModel(
@@ -152,3 +153,17 @@ public record EstablishmentReadModel(
     string LocalAuthorityName,
     string LocalAuthorityCode
 );
+
+
+public static class QueryableExtensions
+{
+    public static IOrderedQueryable<T> OrderByDirection<T, TKey>(
+        this IQueryable<T> query,
+        Expression<Func<T, TKey>> keySelector,
+        SortDirection sortDirection)
+    {
+        return sortDirection == SortDirection.Descending
+            ? query.OrderByDescending(keySelector)
+            : query.OrderBy(keySelector);
+    }
+}

@@ -4,26 +4,29 @@ using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Ext
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Behaviours;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
-public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
+public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 {
     // ensure fields do not have UK constraints
     protected const string DefaultSearchFieldName = nameof(Establishment.Name);
     protected const string SecondarySearchFieldName = nameof(Establishment.EstablishmentNumber);
     protected const string CollectionFieldName = "EstablishmentAuthority[].AuthorityName";
 
-    protected SearchBehaviourTestsBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    protected SearchUseCaseBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
     protected abstract (string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration();
+
+    protected virtual IEnumerable<KeyValuePair<string, string?>> CreateFilterExpressionOptions() => FilterKeyToFilterExpressionMapOptionsStub.StubFilter;
 
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
@@ -31,27 +34,27 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         await SeedSearchEstablishments.ClearAsync(ct);
     }
 
-    protected override void ConfigureApplicationServices(
+    protected sealed override void ConfigureApplicationServices(
         IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddSearch(configuration);
     }
 
-    protected override void ConfigureApplicationConfiguration(
+    protected sealed override void ConfigureApplicationConfiguration(
         IConfigurationBuilder builder)
     {
-        builder
-            .StubFilterOptions()
-            .StubSearchCriteriaOptions();
+        builder.StubFilterOptions(filterKeyToFilterMapping: CreateFilterExpressionOptions());
+
+        builder.StubSearchCriteriaOptions();
 
         builder.AddSearchConfiguration(CreateSearchTermsConfiguration());
     }
 
     protected async Task<UseCaseResponse<SearchResponse>> ExecuteAndAssertSearchAsync(
-        IEnumerable<(string key, string value)> searchTerms,
-        IReadOnlyCollection<Establishment> matchSearchTerm,
-        IReadOnlyCollection<Establishment> nonMatchSearchTerm)
+        SearchRequest request,
+        IReadOnlyCollection<Establishment> expectednResults,
+        IReadOnlyCollection<Establishment> notExpectedInResults)
     {
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -59,12 +62,10 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         SearchableEstablishments searchedEstablishments =
             await SeedSearchEstablishments.SeedAsync(
                 [
-                    .. matchSearchTerm,
-                    .. nonMatchSearchTerm
+                    .. expectednResults,
+                    .. notExpectedInResults
                 ],
                 ct);
-
-        SearchRequest request = SearchRequestFactory.BuildSearchRequest(searchTerms);
 
         // act
 
@@ -76,14 +77,15 @@ public abstract class SearchBehaviourTestsBase : UseCaseIntegrationTestBase
         Assert.Null(response.ErrorMessage);
 
         Assert.NotNull(response.Model);
-        Assert.Equal(matchSearchTerm.Count, response.Model.TotalNumberOfResults);
+        Assert.Equal(expectednResults.Count, response.Model.TotalNumberOfResults);
         Assert.NotNull(response.Model.EstablishmentResults);
-        Assert.Equal(matchSearchTerm.Count, response.Model.EstablishmentResults.EstablishmentCollection.Count);
+        Assert.Equal(expectednResults.Count, response.Model.EstablishmentResults.EstablishmentCollection.Count);
 
         List<EstablishmentSearchResult> results = [.. response.Model.EstablishmentResults.EstablishmentCollection];
 
         HashSet<string> resultUrns = [.. results.Select(t => t.Urn.Value)];
-        Assert.DoesNotContain(nonMatchSearchTerm, establishment => resultUrns.Contains(establishment.Urn!));
+
+        Assert.DoesNotContain(notExpectedInResults, establishment => resultUrns.Contains(establishment.Urn!));
 
         for (int index = 0; index < results.Count; index++)
         {

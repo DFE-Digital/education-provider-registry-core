@@ -10,7 +10,7 @@ public sealed class SortField
     /// Gets the validated field name to sort by.
     /// This value is guaranteed to be one of the allowed fields and retains its original casing.
     /// </summary>
-    public string Field { get; }
+    public string Value { get; }
 
     /// <summary>
     /// Internal set of allowed field names for sorting.
@@ -57,7 +57,7 @@ public sealed class SortField
                 $"Unknown sort field '{sortField}'", nameof(sortField));
         }
 
-        Field = sortField;
+        Value = sortField;
     }
 
     /// <summary>

@@ -71,8 +71,10 @@ internal sealed class SearchEstablishmentSeeder : ISearchEstablishmentSeeder
         // Configure all graphs
         foreach (Establishment establishment in establishments)
         {
-            establishment.EstablishmentTypeId =
-                establishmentTypeId;
+            if (establishment.EstablishmentTypeId == default) // if not set by client
+            {
+                establishment.EstablishmentTypeId = establishmentTypeId;
+            }
 
             establishment.EstablishmentStatusId =
                 establishmentStatusId;
