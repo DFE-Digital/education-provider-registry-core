@@ -84,6 +84,16 @@ jobs:
       #    -s coverage.runsettings \
       #    -ll Verbose
 
+    - name: Inspect Cobertura coverage report
+      run: |
+        echo "Coverage report files:"
+        find . -path '*/TestResults/coverage.cobertura.xml' -print
+
+        echo ""
+        echo "SearchResultsFromQueryResultsMapper entries:"
+        find . -path '*/TestResults/coverage.cobertura.xml' \
+          -exec grep -nH "SearchResultsFromQueryResultsMapper" {} \; || true
+
     - name: Convert coverage to SonarQube format
       run: |
         dotnet tool run reportgenerator \
@@ -91,6 +101,16 @@ jobs:
           -targetdir:coverage-sonar \
           -reporttypes:SonarQube \
           -sourcedirs:.
+
+    - name: Inspect Sonar coverage report
+      run: |
+        echo "SearchResultsFromQueryResultsMapper entries:"
+        grep -n "SearchResultsFromQueryResultsMapper.cs" \
+          coverage-sonar/SonarQube.xml || true
+
+        echo ""
+        echo "First 40 lines of Sonar coverage report:"
+        head -40 coverage-sonar/SonarQube.xml || true
     
     - name: Upload Sonar coverage report
       uses: actions/upload-artifact@v7
