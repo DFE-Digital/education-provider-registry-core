@@ -27,7 +27,7 @@ public sealed class EstablishmentSearchResultsTests
             EstablishmentSearchResultTestDouble.WithUrn("10002")
         ];
 
-        EstablishmentSearchResults results = new(list);
+        EstablishmentSearchResults results = new(list, 1);
 
         // assert
         Assert.Equal(2, results.Count);
@@ -38,7 +38,7 @@ public sealed class EstablishmentSearchResultsTests
     public void Constructor_ShouldUseEmptyCollection_WhenNullProvided()
     {
         // arrange
-        EstablishmentSearchResults results = new(null!);
+        EstablishmentSearchResults results = new(null!, 1);
 
         // assert
         Assert.NotNull(results.EstablishmentCollection);
@@ -55,7 +55,7 @@ public sealed class EstablishmentSearchResultsTests
             EstablishmentSearchResultTestDouble.WithUrn("10001")
         ];
 
-        EstablishmentSearchResults results = new(list);
+        EstablishmentSearchResults results = new(list, 1);
 
         IReadOnlyCollection<EstablishmentSearchResult> readOnly = results.EstablishmentCollection;
 
@@ -74,7 +74,7 @@ public sealed class EstablishmentSearchResultsTests
             EstablishmentSearchResultTestDouble.WithUrn("10001")
         ];
 
-        EstablishmentSearchResults results = new(list);
+        EstablishmentSearchResults results = new(list, 1);
 
         list.Add(EstablishmentSearchResultTestDouble.WithUrn("10002"));
 

@@ -6,7 +6,7 @@ public interface ISearchIndexFieldSpecificationOrchestrator<TEntity> where TEnti
 {
     ISpecification<TEntity> Orchestrate(
         string fieldName,
-        IEnumerable<(string BehaviourName, string BehaviourPredicate)> behaviours,
+        IEnumerable<(string BehaviourName, string? BehaviourPredicate)> behaviours,
         string fieldPredicate,
         string value);
 }

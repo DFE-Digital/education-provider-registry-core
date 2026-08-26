@@ -21,7 +21,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public class EstablishmentsSearchServiceAdapterTests
 {
     private readonly Mock<ISearchFilterExpressionsBuilder<Establishment>> _filterBuilderMock;
-    private readonly Mock<IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+    private readonly Mock<IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
         SearchResults<EstablishmentSearchResults, SearchFacets>>> _resultsMapperMock;
     private readonly Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> _filterMapperMock;
     private readonly EstablishmentsSearchServiceAdapter _sut;
@@ -168,7 +168,7 @@ public class EstablishmentsSearchServiceAdapterTests
         // verify
         _resultsMapperMock.Verify(mapper =>
             mapper.Map(It.Is<(IReadOnlyList<EstablishmentReadModel> items,
-                IReadOnlyList<AggregatedFacetResult> facets)>(projection =>
+                IReadOnlyList<AggregatedFacetResult> facets, int totalResults)>(projection =>
                     projection.items.Count == 1 &&
                     projection.items[0].Urn == "100" &&
                     projection.items[0].Name == "School A" &&

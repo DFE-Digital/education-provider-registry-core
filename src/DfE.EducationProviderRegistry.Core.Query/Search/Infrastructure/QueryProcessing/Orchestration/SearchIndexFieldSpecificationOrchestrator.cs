@@ -23,15 +23,15 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
 
     public ISpecification<TEntity> Orchestrate(
         string fieldName,
-        IEnumerable<(string BehaviourName, string BehaviourPredicate)> behaviours,
+        IEnumerable<(string BehaviourName, string? BehaviourPredicate)> behaviours,
         string fieldPredicate,
         string value)
     {
         ArgumentNullException.ThrowIfNull(behaviours);
 
-        List<(string BehaviourName, string BehaviourPredicate)> behaviourList = behaviours.ToList();
+        List<(string BehaviourName, string? BehaviourPredicate)>? behaviourList = behaviours?.ToList();
 
-        if (behaviourList.Count == 0)
+        if (behaviourList?.Count == 0)
         {
             throw new InvalidOperationException(
                 $"At least one behaviour must be configured for field '{fieldName}'.");
@@ -39,20 +39,23 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
 
         ISpecification<TEntity>? combined = null;
 
-        foreach ((string? behaviourName, string? behaviourPredicate) in behaviourList)
+        if (behaviourList != null)
         {
-            ISpecification<TEntity> spec =
-                _behaviourRegistry.ResolveBehaviourSpec(
-                    behaviourName,
-                    fieldName,
-                    value);
+            foreach ((string? behaviourName, string? behaviourPredicate) in behaviourList)
+            {
+                ISpecification<TEntity> spec =
+                    _behaviourRegistry.ResolveBehaviourSpec(
+                        behaviourName,
+                        fieldName,
+                        value);
 
-            string predicateToUse = behaviourPredicate ?? fieldPredicate;
+                string predicateToUse = behaviourPredicate ?? fieldPredicate;
 
-            combined = _predicateRegistry.Chain(
-                combined,
-                spec,
-                predicateToUse);
+                combined = _predicateRegistry.Chain(
+                    combined,
+                    spec,
+                    predicateToUse);
+            }
         }
 
         return combined!;
