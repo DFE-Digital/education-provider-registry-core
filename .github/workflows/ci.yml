@@ -75,40 +75,14 @@ jobs:
           --report-xunit-trx \
           --coverage \
           --coverage-output coverage.cobertura.xml \
-          --coverage-output-format cobertura
+          --coverage-output-format cobertura \
+          --coverage-settings coverage.runsettings
 
       #  dotnet tool run dotnet-coverage collect "dotnet test --verbosity normal --report-xunit-trx" \
       #    -f cobertura \
       #    -o coverage.cobertura.xml \
       #    -s coverage.runsettings \
       #    -ll Verbose
-
-    - name: Inspect Cobertura coverage report
-      run: |
-        echo "Coverage report files:"
-        find . -path '*/TestResults/coverage.cobertura.xml' -print
-
-        echo ""
-        echo "Coverage report size:"
-        wc -c ./TestResults/coverage.cobertura.xml || true
-
-        echo ""
-        echo "First 40 lines:"
-        head -40 ./TestResults/coverage.cobertura.xml || true
-
-        echo ""
-        echo "Packages:"
-        grep -n "<package" ./TestResults/coverage.cobertura.xml | head -20 || true
-
-        echo ""
-        echo "Core.Query assembly/classes:"
-        grep -n "DfE.EducationProviderRegistry.Core.Query" \
-          ./TestResults/coverage.cobertura.xml | head -20 || true
-
-        echo ""
-        echo "SearchResultsFromQueryResultsMapper:"
-        grep -n "SearchResultsFromQueryResultsMapper" \
-          ./TestResults/coverage.cobertura.xml || true
 
     - name: Convert coverage to SonarQube format
       run: |
@@ -117,17 +91,7 @@ jobs:
           -targetdir:coverage-sonar \
           -reporttypes:SonarQube \
           -sourcedirs:.
-
-    - name: Inspect Sonar coverage report
-      run: |
-        echo "SearchResultsFromQueryResultsMapper entries:"
-        grep -n "SearchResultsFromQueryResultsMapper.cs" \
-          coverage-sonar/SonarQube.xml || true
-
-        echo ""
-        echo "First 40 lines of Sonar coverage report:"
-        head -40 coverage-sonar/SonarQube.xml || true
-    
+  
     - name: Upload Sonar coverage report
       uses: actions/upload-artifact@v7
       with:
