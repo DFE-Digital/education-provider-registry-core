@@ -1,30 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <CodeCoverage>
-    
+
     <ModulePaths>
       <Include>
         <!-- src assemblies -->
-        <ModulePath>.*DfE\.EducationProviderRegistry\..*</ModulePath>
+        <ModulePath>.*DfE\.EducationProviderRegistry\..*\.dll$</ModulePath>
       </Include>
-
-      <Exclude>
-        <!-- Exclude test projects -->
-        <ModulePath>.*Tests.dll</ModulePath>
-        <ModulePath>.*IntegrationTests.*</ModulePath>
-        <ModulePath>.*Tests.Shared.*</ModulePath>
-
-        <!-- Exclude common external dependencies -->
-        <ModulePath>.*xunit.*</ModulePath>
-        <ModulePath>.*Xunit.*</ModulePath>
-        <ModulePath>.*Microsoft.*</ModulePath>
-        <ModulePath>.*System.*</ModulePath>
-        <ModulePath>.*Docker.*</ModulePath>
-        <ModulePath>.*Testcontainers.*</ModulePath>
-      </Exclude>
     </ModulePaths>
 
-   <Attributes>
+    <Attributes>
       <Exclude>
         <!-- compiler-generated (async, lambdas, closures, <>c etc) -->
         <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
@@ -49,5 +34,5 @@
     </Sources>
 
     <UseSourceLink>true</UseSourceLink>
-  </CodeCoverage>
+      </CodeCoverage>
 </Configuration>
