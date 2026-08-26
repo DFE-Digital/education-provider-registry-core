@@ -75,8 +75,7 @@ jobs:
           --report-xunit-trx \
           --coverage \
           --coverage-output coverage.cobertura.xml \
-          --coverage-output-format cobertura \
-          --coverage-settings coverage.runsettings
+          --coverage-output-format cobertura
 
       #  dotnet tool run dotnet-coverage collect "dotnet test --verbosity normal --report-xunit-trx" \
       #    -f cobertura \
@@ -90,9 +89,26 @@ jobs:
         find . -path '*/TestResults/coverage.cobertura.xml' -print
 
         echo ""
-        echo "SearchResultsFromQueryResultsMapper entries:"
-        find . -path '*/TestResults/coverage.cobertura.xml' \
-          -exec grep -nH "SearchResultsFromQueryResultsMapper" {} \; || true
+        echo "Coverage report size:"
+        wc -c ./TestResults/coverage.cobertura.xml || true
+
+        echo ""
+        echo "First 40 lines:"
+        head -40 ./TestResults/coverage.cobertura.xml || true
+
+        echo ""
+        echo "Packages:"
+        grep -n "<package" ./TestResults/coverage.cobertura.xml | head -20 || true
+
+        echo ""
+        echo "Core.Query assembly/classes:"
+        grep -n "DfE.EducationProviderRegistry.Core.Query" \
+          ./TestResults/coverage.cobertura.xml | head -20 || true
+
+        echo ""
+        echo "SearchResultsFromQueryResultsMapper:"
+        grep -n "SearchResultsFromQueryResultsMapper" \
+          ./TestResults/coverage.cobertura.xml || true
 
     - name: Convert coverage to SonarQube format
       run: |
