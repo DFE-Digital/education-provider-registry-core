@@ -29,9 +29,9 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
     {
         ArgumentNullException.ThrowIfNull(behaviours);
 
-        List<(string BehaviourName, string? BehaviourPredicate)>? behaviourList = behaviours?.ToList();
+        List<(string BehaviourName, string? BehaviourPredicate)> behaviourList = behaviours.ToList();
 
-        if (behaviourList?.Count == 0)
+        if (behaviourList.Count == 0)
         {
             throw new InvalidOperationException(
                 $"At least one behaviour must be configured for field '{fieldName}'.");
@@ -39,23 +39,20 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
 
         ISpecification<TEntity>? combined = null;
 
-        if (behaviourList != null)
+        foreach ((string behaviourName, string? behaviourPredicate) in behaviourList)
         {
-            foreach ((string? behaviourName, string? behaviourPredicate) in behaviourList)
-            {
-                ISpecification<TEntity> spec =
-                    _behaviourRegistry.ResolveBehaviourSpec(
-                        behaviourName,
-                        fieldName,
-                        value);
+            ISpecification<TEntity> spec =
+                _behaviourRegistry.ResolveBehaviourSpec(
+                    behaviourName,
+                    fieldName,
+                    value);
 
-                string predicateToUse = behaviourPredicate ?? fieldPredicate;
+            string predicateToUse = behaviourPredicate ?? fieldPredicate;
 
-                combined = _predicateRegistry.Chain(
-                    combined,
-                    spec,
-                    predicateToUse);
-            }
+            combined = _predicateRegistry.Chain(
+                combined,
+                spec,
+                predicateToUse);
         }
 
         return combined!;
