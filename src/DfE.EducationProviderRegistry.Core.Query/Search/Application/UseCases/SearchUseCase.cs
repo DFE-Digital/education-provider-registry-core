@@ -71,7 +71,8 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                         _searchCriteria.Facets,
                         request.SortOrder,
                         request.FilterRequests,
-                        request.Offset),
+                        request.Offset,
+                        request.PageSize),
                     cancellationToken);
 
             SearchResponse model = new(searchResults.Results!, searchResults.FacetResults!);

@@ -22,21 +22,28 @@ internal sealed class SearchResultsFromContextMapper
     /// <exception cref="ArgumentNullException">
     /// Thrown when the context or required components are missing.
     /// </exception>
-    public SearchResults<EstablishmentSearchResults, SearchFacets> Map(SearchPipelineContext context)
+    public SearchResults<EstablishmentSearchResults, SearchFacets> Map(
+        SearchPipelineContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
         EstablishmentSearchResult[] mapped =
             context.Get<EstablishmentSearchResult[]>()
-            ?? throw new ArgumentNullException(nameof(context),
+            ?? throw new ArgumentNullException(
+                nameof(context),
                 "SearchPipelineContext does not contain EstablishmentSearchResult[].");
 
         List<SearchFacet> facets =
             context.Get<List<SearchFacet>>()
-            ?? throw new ArgumentNullException(nameof(context),
+            ?? throw new ArgumentNullException(
+                nameof(context),
                 "SearchPipelineContext does not contain List<SearchFacet>.");
 
-        EstablishmentSearchResults wrappedResults = new(mapped);
+        int? totalCount = context.Get<int?>();
+
+        EstablishmentSearchResults wrappedResults =
+            new(mapped, totalCount ?? mapped.Length);
+
         SearchFacets wrappedFacets = new(facets);
 
         return new SearchResults<EstablishmentSearchResults, SearchFacets>

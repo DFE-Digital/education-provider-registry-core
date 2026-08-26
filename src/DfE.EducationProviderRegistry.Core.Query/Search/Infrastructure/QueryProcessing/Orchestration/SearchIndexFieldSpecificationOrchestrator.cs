@@ -23,13 +23,13 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
 
     public ISpecification<TEntity> Orchestrate(
         string fieldName,
-        IEnumerable<(string BehaviourName, string? BehaviourPredicate)> behaviours,
+        IEnumerable<(string BehaviourName, string BehaviourPredicate)> behaviours,
         string fieldPredicate,
         string value)
     {
         ArgumentNullException.ThrowIfNull(behaviours);
 
-        List<(string BehaviourName, string? BehaviourPredicate)> behaviourList = behaviours.ToList();
+        List<(string BehaviourName, string BehaviourPredicate)> behaviourList = behaviours.ToList();
 
         if (behaviourList.Count == 0)
         {

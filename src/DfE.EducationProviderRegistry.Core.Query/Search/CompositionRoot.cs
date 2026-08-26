@@ -134,10 +134,15 @@ public static class CompositionRoot
             SearchResults<EstablishmentSearchResults, SearchFacets>>,
             SearchResultsFromContextMapper>();
 
-        services.TryAddSingleton<IMapper<
-            (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
-            SearchResults<EstablishmentSearchResults, SearchFacets>>,
-                    SearchResultsFromQueryResultsMapper>();
+        services.TryAddSingleton<
+            IMapper<
+                (
+                    IReadOnlyList<EstablishmentReadModel> Results,
+                    IReadOnlyList<AggregatedFacetResult> Facets,
+                    int TotalCount
+                ),
+                SearchResults<EstablishmentSearchResults, SearchFacets>>,
+            SearchResultsFromQueryResultsMapper>();
 
         return services;
     }
@@ -203,18 +208,6 @@ public static class CompositionRoot
         services.AddScoped<
             ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
             EstablishmentsSearchServiceAdapter>();
-
-        // ---------------------------------------------------------
-        // Supporting mappers
-        // ---------------------------------------------------------
-        services.TryAddSingleton<
-            IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>,
-            SearchRequestFiltersToCoreFiltersMapper>();
-
-        services.TryAddSingleton<
-            IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
-            SearchResults<EstablishmentSearchResults, SearchFacets>>,
-            SearchResultsFromQueryResultsMapper>();
 
         // ---------------------------------------------------------
         // Search behaviours

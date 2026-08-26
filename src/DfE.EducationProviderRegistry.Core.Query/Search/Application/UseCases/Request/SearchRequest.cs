@@ -17,12 +17,14 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     /// </summary>
     /// <param name="searchKeywords">The keyword(s) used to query data.</param>
     /// <param name="offset">Offset for pagination (defaults to 0).</param>
+    /// <param name="pageSize">The number of results to return per page (defaults to 10).</param>
     /// <exception cref="ArgumentException">Thrown if searchKeyword is null or empty.</exception>
-    public SearchRequest(IReadOnlyCollection<SearchTerm?> searchTerms, SortOrder sortOrder, int offset = 0)
+    public SearchRequest(IReadOnlyCollection<SearchTerm?> searchTerms, SortOrder sortOrder, int offset = 0, int pageSize = 10)
     {
         SearchTerms = searchTerms;
         SortOrder = sortOrder ?? throw new ArgumentNullException(nameof(sortOrder));
         Offset = offset;
+        PageSize = pageSize;
     }
 
     /// <summary>
@@ -35,7 +37,8 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
         IReadOnlyCollection<SearchTerm?> searchTerms,
         IList<FilterRequest> filterRequests,
         SortOrder sortOrder,
-        int offset = 0) : this(searchTerms, sortOrder, offset)
+        int offset = 0,
+        int pageSize = 10) : this(searchTerms, sortOrder, offset, pageSize)
     {
         FilterRequests = filterRequests ??
             throw new ArgumentNullException(nameof(filterRequests));
@@ -59,4 +62,10 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     /// Specifies the order in which search results should be sorted.
     /// </summary>
     public SortOrder SortOrder { get; }
+
+    /// <summary>
+    /// Specifies the number of results to return per page.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    public int PageSize { get; }
 }

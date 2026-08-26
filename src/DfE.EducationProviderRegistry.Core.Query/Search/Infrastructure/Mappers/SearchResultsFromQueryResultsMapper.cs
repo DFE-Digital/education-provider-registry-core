@@ -7,37 +7,46 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 
 internal sealed class SearchResultsFromQueryResultsMapper
-    : IMapper<(IReadOnlyList<EstablishmentReadModel> Results, IReadOnlyList<AggregatedFacetResult> Facets),
-              SearchResults<EstablishmentSearchResults, SearchFacets>>
+    : IMapper<
+        (
+            IReadOnlyList<EstablishmentReadModel> Results,
+            IReadOnlyList<AggregatedFacetResult> Facets,
+            int TotalCount
+        ),
+        SearchResults<EstablishmentSearchResults, SearchFacets>>
 {
     public SearchResults<EstablishmentSearchResults, SearchFacets> Map(
-        (IReadOnlyList<EstablishmentReadModel> Results, IReadOnlyList<AggregatedFacetResult> Facets) context)
+        (
+            IReadOnlyList<EstablishmentReadModel> Results,
+            IReadOnlyList<AggregatedFacetResult> Facets,
+            int TotalCount
+        ) context)
     {
         if (context.Results is null)
         {
-            throw new ArgumentNullException(nameof(context),
+            throw new ArgumentNullException(
+                nameof(context),
                 "Tuple does not contain establishment results.");
         }
 
         if (context.Facets is null)
         {
-            throw new ArgumentNullException(nameof(context),
+            throw new ArgumentNullException(
+                nameof(context),
                 "Tuple does not contain facet results.");
         }
 
-        EstablishmentSearchResult[] mapped = null!;
-
-        mapped =
+        EstablishmentSearchResult[] mapped =
         [
             .. context.Results.Select(r =>
                 EstablishmentSearchResult.Create(
-                    new Shared.UniqueReferenceNumber(r.Urn),
-                    new Shared.Name(r.Name ?? string.Empty),
-                    new Shared.Address(
-                        Street:   r.AddressLine1 ?? string.Empty,
-                        Town:     r.City         ?? string.Empty,
-                        County:   r.County       ?? string.Empty,
-                        Postcode: r.Postcode     ?? string.Empty),
+                    new UniqueReferenceNumber(r.Urn),
+                    new Name(r.Name ?? string.Empty),
+                    new Address(
+                        Street: r.AddressLine1 ?? string.Empty,
+                        Town: r.City ?? string.Empty,
+                        County: r.County ?? string.Empty,
+                        Postcode: r.Postcode ?? string.Empty),
                     new EstablishmentType(r.Type ?? string.Empty),
                     new GroupDetail(
                         partOfName: r.GroupName ?? string.Empty,
@@ -46,20 +55,29 @@ internal sealed class SearchResultsFromQueryResultsMapper
                         localAuthorityName: r.LocalAuthorityName ?? string.Empty,
                         localAuthorityCode: r.LocalAuthorityCode ?? string.Empty)
                 )
-        )];
+            )
+        ];
 
         List<SearchFacet> facets =
-            [.. context.Facets
-                   .Select(facetResult =>
-                       new SearchFacet(
-                           facetResult.FacetName,
-                           [.. facetResult.Values.Select(facetValue => new FacetResult(facetValue.Value, facetValue.Label, facetValue.Count))]
-                       )
-                   )];
+        [
+            .. context.Facets.Select(facetResult =>
+                new SearchFacet(
+                    facetResult.FacetName,
+                    [
+                        .. facetResult.Values.Select(facetValue =>
+                            new FacetResult(
+                                facetValue.Value,
+                                facetValue.Label,
+                                facetValue.Count))
+                    ]))
+        ];
 
         return new SearchResults<EstablishmentSearchResults, SearchFacets>
         {
-            Results = new EstablishmentSearchResults(mapped),
+            Results = new EstablishmentSearchResults(
+                mapped,
+                context.TotalCount),
+
             FacetResults = new SearchFacets(facets)
         };
     }

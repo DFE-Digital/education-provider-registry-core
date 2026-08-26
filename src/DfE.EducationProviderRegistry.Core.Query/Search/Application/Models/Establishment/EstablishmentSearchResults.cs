@@ -25,6 +25,7 @@ public sealed class EstablishmentSearchResults
     public EstablishmentSearchResults()
     {
         _establishments = [];
+        TotalCount = 0;
     }
 
     /// <summary>
@@ -35,9 +36,10 @@ public sealed class EstablishmentSearchResults
     /// The collection of establishment search results to populate the instance with.
     /// If <c>null</c>, an empty collection is used.
     /// </param>
-    public EstablishmentSearchResults(IEnumerable<EstablishmentSearchResult> establishments)
+    public EstablishmentSearchResults(IEnumerable<EstablishmentSearchResult> establishments, int totalCount)
     {
         _establishments = establishments?.ToList() ?? [];
+        TotalCount = totalCount;
     }
 
     /// <summary>
@@ -47,4 +49,6 @@ public sealed class EstablishmentSearchResults
     /// A new <see cref="EstablishmentSearchResults"/> with no contained results.
     /// </returns>
     public static EstablishmentSearchResults CreateEmpty() => new();
+
+    public int TotalCount { get; }
 }
