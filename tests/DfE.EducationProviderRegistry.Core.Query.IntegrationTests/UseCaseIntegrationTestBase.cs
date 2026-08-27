@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests;
 
-public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLifetime
+public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAsyncLifetime
 {
     private readonly IPostgresDatabaseProvider _databaseProvider;
     private string? _postgresLocalConnectionString;
@@ -46,7 +46,7 @@ public abstract class UseCaseIntegrationTestBase : IntegrationTestBase, IAsyncLi
         await Database.StartAsync(ct);
     }
 
-    protected sealed override async Task<IConfiguration> GetApplicationConfigurationAsync()
+    protected sealed override async Task<IConfiguration> BuildApplicationConfigurationAsync()
     {
         return
             ConfigurationDefault
