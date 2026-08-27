@@ -124,7 +124,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 .ToList()
                 .AsReadOnly();
 
-        // 8. Calculate facets.
+        // 8. Calculate facet results based on URNs and requested facet keys.
         IReadOnlyList<AggregatedFacetResult> facets =
             await _facetAggregator.CalculateFacetsAsync(
                 urns,

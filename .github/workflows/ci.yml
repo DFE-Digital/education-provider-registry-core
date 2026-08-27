@@ -91,7 +91,6 @@ jobs:
           -targetdir:coverage-sonar \
           -reporttypes:SonarQube \
           -sourcedirs:.
-  
     - name: Upload Sonar coverage report
       uses: actions/upload-artifact@v7
       with:
