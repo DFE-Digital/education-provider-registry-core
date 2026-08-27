@@ -38,5 +38,5 @@ public sealed class SearchResponse
             ? SearchResponseStatus.Success
             : SearchResponseStatus.NoResultsFound;
 
-    public int TotalNumberOfResults => EstablishmentResults?.Count ?? 0;
+    public int TotalNumberOfResults => EstablishmentResults?.TotalCount ?? 0;
 }

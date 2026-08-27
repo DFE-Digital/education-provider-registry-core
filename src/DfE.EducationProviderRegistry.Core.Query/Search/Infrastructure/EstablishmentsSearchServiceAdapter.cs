@@ -32,6 +32,7 @@ internal sealed class EstablishmentsSearchServiceAdapter
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
         ReadOnlyCollection<SearchFilterRequest>> _filterMapper;
+
     public EstablishmentsSearchServiceAdapter(
         EducationProviderRegistryDbContext dbContext,
         ISearchQueryProcessor<Establishment> searchSpecOrchestrator,
