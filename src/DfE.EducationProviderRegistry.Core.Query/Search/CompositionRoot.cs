@@ -130,11 +130,6 @@ public static class CompositionRoot
             EstablishmentToSearchResultMapper>();
 
         services.TryAddSingleton<
-            IMapper<SearchPipelineContext,
-            SearchResults<EstablishmentSearchResults, SearchFacets>>,
-            SearchResultsFromContextMapper>();
-
-        services.TryAddSingleton<
             IMapper<
                 (
                     IReadOnlyList<EstablishmentReadModel> Results,
