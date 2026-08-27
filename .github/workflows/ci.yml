@@ -100,13 +100,11 @@ jobs:
 
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
-      uses: DFE-Digital/github-actions/sonarscan-dotnet@55a8e7a08fa418bf49ac5fbf4633282d3da663de
+      uses: DFE-Digital/github-actions/sonarscan-dotnet@e1f86e30746687554ae0aaabf7d8feb7a502f19a
       with:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
-          # awaiting completion of https://github.com/DFE-Digital/github-actions/pull/236/changes then defaults handle
-          java-version: 21
           coverage-report-path: coverage-sonar/SonarQube.xml
 
     - name: Run verify format
