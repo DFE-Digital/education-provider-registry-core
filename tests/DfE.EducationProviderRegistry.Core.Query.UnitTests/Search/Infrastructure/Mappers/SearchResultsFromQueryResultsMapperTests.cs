@@ -125,7 +125,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
             "LA1",
             mappedEstablishment.LocalAuthority?.Code);
 
-        Assert.Equal(totalCount, mapped.Results.TotalCount);
+        Assert.Equal(totalCount, mapped.TotalCount);
 
         SearchFacet mappedFacet =
             Assert.Single(mapped.FacetResults!.Facets);
@@ -205,7 +205,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
 
         // assert
         Assert.Empty(mapped.Results!.EstablishmentCollection);
-        Assert.Equal(0, mapped.Results.TotalCount);
+        Assert.Equal(0, mapped.TotalCount);
         Assert.Empty(mapped.FacetResults!.Facets);
     }
 
@@ -270,7 +270,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
                 Assert.Equal("Test Establishment Two", second.Name.Value);
             });
 
-        Assert.Equal(10, mapped.Results.TotalCount);
+        Assert.Equal(10, mapped.TotalCount);
     }
 
     [Fact]

@@ -16,8 +16,8 @@ internal static class EstablishmentSearchResultsTestDouble
                 EstablishmentSearchResultTestDouble.Fake()); // Generate synthetic establishment search results instance
         }
 
-        return new EstablishmentSearchResults(establishmentSearchResults, 1);
+        return new EstablishmentSearchResults(establishmentSearchResults);
     }
 
-    public static EstablishmentSearchResults EmptyStub() => new(null!, 1);
+    public static EstablishmentSearchResults EmptyStub() => new(null!);
 }

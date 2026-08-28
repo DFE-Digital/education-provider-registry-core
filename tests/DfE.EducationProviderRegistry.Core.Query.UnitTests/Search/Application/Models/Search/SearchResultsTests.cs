@@ -32,7 +32,8 @@ public sealed class SearchResultsTests
                 {
                     CreateMockEstablishment(123, "Test School 1"),
                     CreateMockEstablishment(456, "Test School 2"),
-                }, 1);
+                });
+
 
         SearchFacets facets =
             new(
