@@ -75,7 +75,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                         request.PageSize),
                     cancellationToken);
 
-            SearchResponse model = new(searchResults.Results!, searchResults.FacetResults!);
+            SearchResponse model = new(searchResults.Results!, searchResults.FacetResults!, searchResults.TotalCount);
 
             return UseCaseResponse<SearchResponse>.Success(model);
         }

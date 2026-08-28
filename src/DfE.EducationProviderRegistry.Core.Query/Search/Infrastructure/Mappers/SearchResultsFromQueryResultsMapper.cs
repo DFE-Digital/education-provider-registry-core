@@ -74,11 +74,9 @@ internal sealed class SearchResultsFromQueryResultsMapper
 
         return new SearchResults<EstablishmentSearchResults, SearchFacets>
         {
-            Results = new EstablishmentSearchResults(
-                mapped,
-                context.TotalCount),
-
-            FacetResults = new SearchFacets(facets)
+            Results = new EstablishmentSearchResults(mapped),
+            FacetResults = new SearchFacets(facets),
+            TotalCount = context.TotalCount
         };
     }
 }
