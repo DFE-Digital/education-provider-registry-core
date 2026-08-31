@@ -19,4 +19,10 @@ public class SearchResults<TResults, TFacetResults>
     /// that is built from the underlying search response.
     /// </summary>
     public TFacetResults? FacetResults { get; init; }
+
+    /// <summary>
+    ///     Gets the total number of results returned from the underlying search system.
+    /// </summary>
+    public int TotalCount { get; init; }
+
 }

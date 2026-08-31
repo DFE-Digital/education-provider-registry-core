@@ -11,21 +11,26 @@ public static class ResultsMapperTestDouble
 {
     public static Mock<IMapper<(
         IReadOnlyList<EstablishmentReadModel>,
-        IReadOnlyList<AggregatedFacetResult>),
+        IReadOnlyList<AggregatedFacetResult>,
+        int),
         SearchResults<EstablishmentSearchResults, SearchFacets>>> Mock()
     {
         Mock<IMapper<
-            (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            (
+                IReadOnlyList<EstablishmentReadModel>,
+                IReadOnlyList<AggregatedFacetResult>,
+                int
+            ),
             SearchResults<EstablishmentSearchResults, SearchFacets>>> mock = new(MockBehavior.Strict);
 
         mock.Setup(mapper =>
             mapper.Map(
                 It.IsAny<(
                     IReadOnlyList<EstablishmentReadModel>,
-                    IReadOnlyList<AggregatedFacetResult>)>()))
+                    IReadOnlyList<AggregatedFacetResult>,
+                    int)>()))
             .Returns(new SearchResults<EstablishmentSearchResults, SearchFacets>());
 
         return mock;
     }
 }
-

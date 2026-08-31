@@ -14,7 +14,7 @@ public sealed class EstablishmentSearchResults
     public IReadOnlyCollection<EstablishmentSearchResult> EstablishmentCollection => _establishments.AsReadOnly();
 
     /// <summary>
-    /// Gets the number of establishment search results contained in the collection.
+    /// Gets the number of establishment search results contained in the collection on this page.
     /// Returns <c>0</c> if the underlying list is <c>null</c>.
     /// </summary>
     public int Count => _establishments?.Count ?? 0;

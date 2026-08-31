@@ -21,7 +21,7 @@ public sealed class SearchServiceAdapterRequest
         IList<string>? facets = null,
         IList<FilterRequest>? searchFilterRequests = null,
         int offset = 0,
-        int pageSize = 20)
+        int pageSize = 10)
     {
         SearchFields = searchFields?.Count > 0
             ? searchFields
