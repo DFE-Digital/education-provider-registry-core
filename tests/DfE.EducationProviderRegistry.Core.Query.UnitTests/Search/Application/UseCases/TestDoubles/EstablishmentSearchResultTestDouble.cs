@@ -22,8 +22,10 @@ internal static class EstablishmentSearchResultTestDouble
         return EstablishmentSearchResult.Create(
             urn: new UniqueReferenceNumber(FakeUrn(faker).ToString()),
             name: new Name(FakeName(faker)),
-            address: new Address(
-                Street: FakeStreet(faker),
+            address: new SiteAddressModel(
+                Name: string.Empty,
+                AddressLine1: FakeStreet(faker),
+                AddressLine2: string.Empty,
                 Town: FakeTown(faker),
                 County: FakeCounty(faker),
                 Postcode: FakePostcode(faker)),

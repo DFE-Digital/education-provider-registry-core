@@ -1,4 +1,5 @@
-﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+﻿using System.Net;
+using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
@@ -39,7 +40,7 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
         };
     }
 
-    private static string DisplayAddress(Address address) => $"{address.Street}, {address.Town}, {address.County}, {address.Postcode}";
+    private static string DisplayAddress(SiteAddressModel address) => $"{address.AddressLine1}, {address.AddressLine2}, {address.Town}, {address.County}, {address.Postcode}";
 
     private static string DisplayStatus(GroupStatus status)
         => $"{(status.State == GroupOpenState.Open ? "Opened" : "Closed")} on {status.EffectiveDate.ToString("d MMMM yyyy")}";

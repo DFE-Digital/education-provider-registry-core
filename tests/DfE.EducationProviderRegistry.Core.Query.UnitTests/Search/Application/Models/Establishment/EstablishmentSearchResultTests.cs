@@ -20,7 +20,7 @@ public sealed class EstablishmentSearchResultTests
         // assert
         Assert.Equal("12345", result.Urn.Value);
         Assert.Equal("Test School", result.Name.Value);
-        Assert.Equal("123 Example Street", result.Address?.Street);
+        Assert.Equal("123 Example Street", result.Address?.AddressLine1);
         Assert.Equal("Academy", result.Type?.Value);
         Assert.Equal("Mock Trust", result.Group?.PartOfName);
         Assert.Equal("Test LA", result.LocalAuthority?.Name);

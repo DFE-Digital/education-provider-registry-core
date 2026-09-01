@@ -77,7 +77,7 @@ public sealed class GroupCharacteristicsTests
     {
         // Arrange
         Name name = NameTestDoubles.Create();
-        Address address = AddressTestDoubles.Generate();
+        SiteAddressModel address = AddressTestDoubles.Generate();
         GroupType type = GroupTypeTestDoubles.Create();
         GroupStatus status = GroupStatusTestDoubles.Create();
 
@@ -144,13 +144,13 @@ public sealed class GroupCharacteristicsTests
         // Arrange
         GroupCharacteristics left = new(
             NameTestDoubles.Create(),
-            AddressTestDoubles.Create(street: "Address A"),
+            AddressTestDoubles.Create(AddressLine1: "Address A"),
             GroupTypeTestDoubles.Create(),
             GroupStatusTestDoubles.Create());
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create(),
-            AddressTestDoubles.Create(street: "Address B"),
+            AddressTestDoubles.Create(AddressLine1: "Address B"),
             GroupTypeTestDoubles.Create(),
             GroupStatusTestDoubles.Create());
 

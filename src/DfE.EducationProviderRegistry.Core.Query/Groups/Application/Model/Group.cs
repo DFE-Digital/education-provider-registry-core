@@ -39,7 +39,7 @@ public sealed record Group
     public Ukprn Ukprn { get; }
     public CompaniesHouseId? CompaniesHouseId { get; }
     public Name Name { get; }
-    public Address Address { get; }
+    public SiteAddressModel Address { get; }
     public GroupType GroupType { get; }
     public GroupStatus Status { get; }
     public IReadOnlyCollection<Academy> Academies => _composition.Academies;

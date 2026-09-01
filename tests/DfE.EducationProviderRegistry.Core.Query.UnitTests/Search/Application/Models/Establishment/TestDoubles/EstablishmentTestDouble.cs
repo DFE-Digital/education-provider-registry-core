@@ -11,9 +11,11 @@ internal static class EstablishmentTestDouble
 
     public static Name ValidName => new("Test School");
 
-    public static Address ValidAddress =>
+    public static SiteAddressModel ValidAddress =>
         new(
-            Street: "123 Example Street",
+            Name: string.Empty,
+            AddressLine1: "123 Example Street",
+            AddressLine2: string.Empty,
             Town: "Testville",
             County: "Testshire",
             Postcode: "TE5 7ST");

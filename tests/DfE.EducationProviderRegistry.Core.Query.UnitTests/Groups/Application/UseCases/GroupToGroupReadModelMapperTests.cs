@@ -2,10 +2,10 @@
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 using Moq;
-using Address = DfE.EducationProviderRegistry.Core.Query.Shared.Address;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 
@@ -20,8 +20,6 @@ public sealed class GroupToGroupReadModelMapperTests
     {
         return IMapperTestDouble.Map<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>(mapOut ?? []);
     }
-
-
 
     [Fact]
     public void Constructor_Should_Throw_When_MemberMapper_Is_Null()
@@ -70,7 +68,7 @@ public sealed class GroupToGroupReadModelMapperTests
 
         GroupToGroupReadModelMapper sut = new(memberMapper.Object, trusteeMapper.Object);
 
-        Address stubAddress = AddressTestDoubles.Generate();
+        SiteAddressModel stubAddress = AddressTestDoubles.Generate();
 
         Group input = new GroupBuilder()
             .WithName("Test Group Name")
@@ -78,7 +76,7 @@ public sealed class GroupToGroupReadModelMapperTests
             .WithGroupUid(123)
             .WithCompaniesHouseId("Corpo")
             .WithUkprn("test-ukprn")
-            .WithAddress(stubAddress.Street, stubAddress.Town, stubAddress.County, stubAddress.Postcode)
+            .WithAddress(stubAddress.AddressLine1, stubAddress.AddressLine2, stubAddress.Town, stubAddress.County, stubAddress.Postcode)
             .WithGroupStatus(GroupOpenState.Closed, new(2020, 10, 10))
             .WithType("mat")
             .WithAcademies(AcademyTestDouble.Create(3))
@@ -95,7 +93,7 @@ public sealed class GroupToGroupReadModelMapperTests
         Assert.Equal(123, result.GroupUID);
         Assert.Equal("test-ukprn", result.UKPRN);
         Assert.Equal("Corpo", result.CompaniesHouseId);
-        Assert.Equal($"{stubAddress.Street}, {stubAddress.Town}, {stubAddress.County}, {stubAddress.Postcode}", result.Address);
+        Assert.Equal($"{stubAddress.AddressLine1}, {stubAddress.AddressLine2}, {stubAddress.Town}, {stubAddress.County}, {stubAddress.Postcode}", result.Address);
         Assert.Equal("mat", result.Type);
         Assert.Equal("Closed on 10 October 2020", result.Status);
 

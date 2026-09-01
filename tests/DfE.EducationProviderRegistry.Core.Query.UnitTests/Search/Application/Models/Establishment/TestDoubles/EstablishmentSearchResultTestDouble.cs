@@ -18,9 +18,11 @@ public static class EstablishmentSearchResultTestDouble
         Name name =
             new(_faker.Company.CompanyName());
 
-        Address address =
+        SiteAddressModel address =
             new(
-                Street: _faker.Address.StreetAddress(),
+                Name: string.Empty,
+                AddressLine1: _faker.Address.StreetAddress(),
+                AddressLine2: _faker.Address.SecondaryAddress(),
                 Town: _faker.Address.City(),
                 County: _faker.Address.County(),
                 Postcode: _faker.Address.ZipCode());
@@ -47,7 +49,14 @@ public static class EstablishmentSearchResultTestDouble
         EstablishmentSearchResult.Create(
             new UniqueReferenceNumber(urn),
             new Name("Test School"),
-            new Address("123 Street", "Town", "County", "PC1 1AA"),
+            new SiteAddressModel(
+                Name: string.Empty,
+                AddressLine1: "123 Street",
+                AddressLine2: string.Empty,
+                Town: "Town",
+                County: "County",
+                Postcode: "PC1 1AA"
+            ),
             EstablishmentType.Create("Academy"),
             GroupDetail.Create("Mock Trust", "TRUST001"),
             LocalAuthority.Create("Test LA", "LA001"));

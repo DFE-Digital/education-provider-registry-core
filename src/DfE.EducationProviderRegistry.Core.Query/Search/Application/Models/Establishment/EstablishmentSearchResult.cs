@@ -22,7 +22,7 @@ public sealed record EstablishmentSearchResult
     /// <summary>
     /// Gets the postal address associated with the establishment.
     /// </summary>
-    public Address? Address { get; }
+    public SiteAddressModel? Address { get; }
 
     /// <summary>
     /// Gets the establishment type classification (e.g., Academy, Free School).
@@ -56,7 +56,7 @@ public sealed record EstablishmentSearchResult
     public EstablishmentSearchResult(
         UniqueReferenceNumber urn,
         Name name,
-        Address? address,
+        SiteAddressModel? address,
         EstablishmentType? type,
         GroupDetail? group,
         LocalAuthority? localAuthority)
@@ -86,7 +86,7 @@ public sealed record EstablishmentSearchResult
     public static EstablishmentSearchResult Create(
         UniqueReferenceNumber urn,
         Name name,
-        Address? address,
+        SiteAddressModel? address,
         EstablishmentType? type,
         GroupDetail? group,
         LocalAuthority? localAuthority)

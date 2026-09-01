@@ -42,8 +42,10 @@ internal sealed class SearchResultsFromQueryResultsMapper
                 EstablishmentSearchResult.Create(
                     new UniqueReferenceNumber(r.Urn),
                     new Name(r.Name ?? string.Empty),
-                    new Address(
-                        Street: r.AddressLine1 ?? string.Empty,
+                    new SiteAddressModel(
+                        Name: r.Name ?? string.Empty,
+                        AddressLine1: r.AddressLine1 ?? string.Empty,
+                        AddressLine2: r.AddressLine2 ?? string.Empty,
                         Town: r.City ?? string.Empty,
                         County: r.County ?? string.Empty,
                         Postcode: r.Postcode ?? string.Empty),

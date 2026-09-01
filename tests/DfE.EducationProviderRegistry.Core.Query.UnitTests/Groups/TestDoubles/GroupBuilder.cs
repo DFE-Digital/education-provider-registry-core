@@ -12,7 +12,7 @@ internal sealed class GroupBuilder
     private string _ukprn = "UKPRN-1";
     private string _companiesHouseId = "CH1";
     private GroupType _type = GroupTypeTestDoubles.Create();
-    private Address _address = AddressTestDoubles.Generate();
+    private SiteAddressModel _address = AddressTestDoubles.Generate();
     private GroupStatus _status = new(GroupOpenState.Open, new(2025, 01, 02));
 
     private IEnumerable<Academy> _academies = [];
@@ -55,9 +55,16 @@ internal sealed class GroupBuilder
         return this;
     }
 
-    public GroupBuilder WithAddress(string? street = null, string? town = null, string? county = null, string? postcode = null)
+    public GroupBuilder WithAddress(string? AddressLine1 = null, string? AddressLine2 = null, string? town = null, string? county = null, string? postcode = null)
     {
-        _address = new Address(street!, town!, county!, postcode!);
+        _address = new SiteAddressModel(
+            Name: string.Empty,
+            AddressLine1: AddressLine1 ?? string.Empty,
+            AddressLine2: AddressLine2 ?? string.Empty,
+            Town: town ?? string.Empty,
+            County: county ?? string.Empty,
+            Postcode: postcode ?? string.Empty
+        );
         return this;
     }
 

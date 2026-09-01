@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
 public sealed record GroupCharacteristics
 {
-    public GroupCharacteristics(Name name, Address address, GroupType type, GroupStatus status)
+    public GroupCharacteristics(Name name, SiteAddressModel address, GroupType type, GroupStatus status)
     {
         ArgumentNullException.ThrowIfNull(name);
         ArgumentNullException.ThrowIfNull(address);
@@ -17,7 +17,7 @@ public sealed record GroupCharacteristics
     }
 
     public Name Name { get; }
-    public Address Address { get; }
+    public SiteAddressModel Address { get; }
     public GroupStatus Status { get; }
     public GroupType Type { get; }
 }
