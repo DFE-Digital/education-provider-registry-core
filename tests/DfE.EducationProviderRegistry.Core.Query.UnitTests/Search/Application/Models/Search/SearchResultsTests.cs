@@ -11,8 +11,10 @@ public sealed class SearchResultsTests
         return EstablishmentSearchResult.Create(
             urn: new UniqueReferenceNumber(urn.ToString("D5")),
             name: new Name(name),
-            address: new Address(
-                Street: "123 Example Street",
+            address: new SiteAddressModel(
+                Name: string.Empty,
+                AddressLine1: "123 Example Street",
+                AddressLine2: string.Empty,
                 Town: "Testville",
                 County: "Testshire",
                 Postcode: "TE5 7ST"),

@@ -36,7 +36,7 @@ public sealed class EstablishmentToDetailsModelMapper :
             .FirstOrDefault();
 
         EstablishmentGroupMembership? groupMembership = dto.EstablishmentGroupMembership.FirstOrDefault();
-        EstablishmentGroupModel? group = new(groupMembership?.Group?.Name ?? string.Empty, groupMembership?.Group?.Code ?? string.Empty);
+        EstablishmentGroupModel? group = new(groupMembership?.Group?.Name, groupMembership?.Group?.Code);
         string? groupType = groupMembership?.Group.GroupType.Name;
 
         DateOnly? groupOpenDate = groupMembership?.StartDate;

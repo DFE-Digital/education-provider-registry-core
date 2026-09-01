@@ -9,8 +9,10 @@ internal sealed class EstablishmentSearchResultBuilder
 {
     private UniqueReferenceNumber _urn = new("12345");
     private Name _name = new("Test School");
-    private Address _address = new(
-        Street: "123 Example Street",
+    private SiteAddressModel _address = new(
+        Name: string.Empty,
+        AddressLine1: "123 Example Street",
+        AddressLine2: string.Empty,
         Town: "Testville",
         County: "Testshire",
         Postcode: "TE5 7ST");
@@ -30,7 +32,7 @@ internal sealed class EstablishmentSearchResultBuilder
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithAddress(Address address)
+    public EstablishmentSearchResultBuilder WithAddress(SiteAddressModel address)
     {
         _address = address;
         return this;

@@ -45,7 +45,14 @@ public sealed class ParallelMappingStepUnitTests
                 new EstablishmentSearchResult(
                     new UniqueReferenceNumber("00001"),
                     new Name("School A"),
-                    new Address("Street", "Town", "County", "AA1 1AA"),
+                    new SiteAddressModel(
+                        Name: string.Empty,
+                        AddressLine1: "123 Street",
+                        AddressLine2: string.Empty,
+                        Town: "Town",
+                        County: "County",
+                        Postcode: "AA1 1AA"
+                    ),
                     new EstablishmentType("Academy"),
                     new GroupDetail("Group", "G"),
                     new LocalAuthority("LA", "Authority")));
@@ -81,7 +88,14 @@ public sealed class ParallelMappingStepUnitTests
                     new EstablishmentSearchResult(
                         new UniqueReferenceNumber(establishment.Urn!),
                         new Name($"Mapped {establishment.Urn}"),
-                        new Address("Street", "Town", "County", "AA1 1AA"),
+                        new SiteAddressModel(
+                            Name: string.Empty,
+                            AddressLine1: "123 Street",
+                            AddressLine2: string.Empty,
+                            Town: "Town",
+                            County: "County",
+                            Postcode: "AA1 1AA"
+                        ),
                         new EstablishmentType("Academy"),
                         new GroupDetail("Group", "G"),
                         new LocalAuthority("LA", "Authority")));

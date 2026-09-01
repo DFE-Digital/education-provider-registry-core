@@ -5,35 +5,39 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
 internal static class AddressTestDoubles
 {
-    internal static Address Stub() =>
+    internal static SiteAddressModel Stub() =>
         Create(
-            street: "123 Example Street",
-            town: "Testville",
-            county: "Testshire",
-            postcode: "TE5 7ST");
+            AddressLine1: "123 Example Street",
+            Town: "Testville",
+            County: "Testshire",
+            Postcode: "TE5 7ST");
 
 
-    internal static Address Generate()
+    internal static SiteAddressModel Generate()
     {
         Faker faker = new();
 
         return Create(
-            street: faker.Address.StreetName(),
-            town: faker.Address.City(),
-            county: faker.Address.County(),
-            postcode: faker.Address.ZipCode());
+            AddressLine1: faker.Address.StreetName(),
+            AddressLine2: faker.Address.SecondaryAddress(),
+            Town: faker.Address.City(),
+            County: faker.Address.County(),
+            Postcode: faker.Address.ZipCode());
     }
 
-    internal static Address Create(
-        string? street,
-        string? town = null,
-        string? county = null,
-        string? postcode = null)
+    internal static SiteAddressModel Create(
+        string? AddressLine1,
+        string? AddressLine2 = null,
+        string? Town = null,
+        string? County = null,
+        string? Postcode = null)
     {
         return new(
-            street!,
-            town!,
-            county!,
-            postcode!);
+            Name: string.Empty,
+            AddressLine1: AddressLine1!,
+            AddressLine2: AddressLine2!,
+            Town: Town!,
+            County: County!,
+            Postcode: Postcode!);
     }
 }

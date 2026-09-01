@@ -26,7 +26,8 @@ public sealed class EstablishmentDtoToModelMapperTests
         Assert.Equal(dto.EstablishmentType.Name, result.Type?.Value);
         Assert.Equal(dto.EstablishmentProvision?.EducationPhase?.Name, result.Phase?.Value);
         Assert.Equal(dto.Uid, result.Uid);
-        Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name, result.GroupName);
+        Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Name, result.Group?.GroupName);
+        Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.Code, result.Group?.Code);
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.Group.GroupType.Name, result.GroupType);
         Assert.Equal(dto.EstablishmentGroupMembership.FirstOrDefault()?.StartDate, result.GroupOpenDate);
         Assert.Equal(dto.Contact.FirstOrDefault()?.Website, result.ContactDetails?.Website);
@@ -89,7 +90,8 @@ public sealed class EstablishmentDtoToModelMapperTests
         EstablishmentDetailsModel result = _mapper.Map(input);
 
         // Assert
-        Assert.Null(result.GroupName);
+        Assert.Null(result.Group?.GroupName);
+        Assert.Null(result.Group?.Code);
         Assert.Null(result.GroupType);
         Assert.Null(result.GroupOpenDate);
         Assert.Null(result.LocalAuthority);

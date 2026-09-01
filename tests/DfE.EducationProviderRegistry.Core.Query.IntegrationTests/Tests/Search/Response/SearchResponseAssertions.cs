@@ -26,7 +26,10 @@ internal static class SearchResponseAssertions
 
         Assert.Equal(
             expectedSite?.AddressLine1 ?? string.Empty,
-            actual.Address?.Street ?? string.Empty);
+            actual.Address?.AddressLine1 ?? string.Empty);
+
+        Assert.Equal(expectedSite?.AddressLine2 ?? string.Empty,
+            actual.Address?.AddressLine2 ?? string.Empty);
 
         Assert.Equal(
             expectedSite?.Town ?? string.Empty,

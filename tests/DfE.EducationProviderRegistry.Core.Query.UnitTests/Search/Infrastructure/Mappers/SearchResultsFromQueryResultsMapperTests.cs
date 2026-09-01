@@ -62,6 +62,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
             Ukprn: "10012345",
             Name: "Test Establishment",
             AddressLine1: "Test Address Line",
+            AddressLine2: "Test Addres line 2",
             City: "Test City",
             County: "Test County",
             Postcode: "AA1 1AA",
@@ -103,7 +104,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
 
         Assert.Equal("123456", mappedEstablishment.Urn.Value);
         Assert.Equal("Test Establishment", mappedEstablishment.Name.Value);
-        Assert.Equal("Test Address Line", mappedEstablishment.Address?.Street);
+        Assert.Equal("Test Address Line", mappedEstablishment.Address?.AddressLine1);
         Assert.Equal("Test City", mappedEstablishment.Address?.Town);
         Assert.Equal("Test County", mappedEstablishment.Address?.County);
         Assert.Equal("AA1 1AA", mappedEstablishment.Address?.Postcode);
@@ -150,6 +151,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
             Ukprn: "10012345",
             Name: "Test Establishment",
             AddressLine1: "Test Address Line",
+            AddressLine2: "Test Addres line 2",
             City: null,
             County: null,
             Postcode: null,
@@ -221,6 +223,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
             Ukprn: "10012345",
             Name: "Test Establishment One",
             AddressLine1: "Test Address One",
+            AddressLine2: "Test Address line 2",
             City: "Test City",
             County: "Test County",
             Postcode: "AA1 1AA",
@@ -237,6 +240,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
             Ukprn: "10054321",
             Name: "Test Establishment Two",
             AddressLine1: "Test Address Two",
+            AddressLine2: "Test Address line 2",
             City: "Test City",
             County: "Test County",
             Postcode: "BB1 1BB",
