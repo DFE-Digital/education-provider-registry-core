@@ -31,13 +31,15 @@ internal sealed class SearchResultsFromQueryResultsMapper
         [
             .. context.Results.Select(r =>
                 EstablishmentSearchResult.Create(
-                    new Shared.UniqueReferenceNumber(r.Urn),
-                    new Shared.Name(r.Name ?? string.Empty),
-                    new Shared.Address(
-                        Street:   r.AddressLine1 ?? string.Empty,
-                        Town:     r.City         ?? string.Empty,
-                        County:   r.County       ?? string.Empty,
-                        Postcode: r.Postcode     ?? string.Empty),
+                    new UniqueReferenceNumber(r.Urn),
+                    new Name(r.Name ?? string.Empty),
+                    new SiteAddressModel(
+                        Name: r.Name ?? string.Empty,
+                        AddressLine1: r.AddressLine1 ?? string.Empty,
+                        AddressLine2: r.AddressLine2 ?? string.Empty,
+                        Town: r.City ?? string.Empty,
+                        County: r.County ?? string.Empty,
+                        Postcode: r.Postcode ?? string.Empty),
                     new EstablishmentType(r.Type ?? string.Empty),
                     new GroupDetail(
                         partOfName: r.GroupName ?? string.Empty,

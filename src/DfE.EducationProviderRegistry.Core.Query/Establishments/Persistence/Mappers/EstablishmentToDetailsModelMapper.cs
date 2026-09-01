@@ -36,8 +36,9 @@ public sealed class EstablishmentToDetailsModelMapper :
             .FirstOrDefault();
 
         EstablishmentGroupMembership? groupMembership = dto.EstablishmentGroupMembership.FirstOrDefault();
-        string? groupName = groupMembership?.Group.Name;
+        EstablishmentGroupModel? group = new(groupMembership?.Group?.Name ?? string.Empty, groupMembership?.Group?.Code ?? string.Empty);
         string? groupType = groupMembership?.Group.GroupType.Name;
+
         DateOnly? groupOpenDate = groupMembership?.StartDate;
 
         Site? site = dto.Site.FirstOrDefault();
@@ -90,7 +91,7 @@ public sealed class EstablishmentToDetailsModelMapper :
             LifecycleEventOpened = openedEvent,
             LifecycleEventClosed = closedEvent,
             Uid = dto.Uid,
-            GroupName = groupName,
+            Group = group,
             GroupType = groupType,
             GroupOpenDate = groupOpenDate,
             Address = address,

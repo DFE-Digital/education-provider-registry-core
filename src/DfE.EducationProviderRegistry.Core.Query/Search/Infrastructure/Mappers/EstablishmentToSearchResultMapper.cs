@@ -28,10 +28,12 @@ internal sealed class EstablishmentToSearchResultMapper
 
         Site? site = input.Site.FirstOrDefault();
 
-        Address? address = site is null
+        SiteAddressModel? address = site is null
             ? null
-            : new Address(
-                Street: site.AddressLine1!,
+            : new SiteAddressModel(
+                Name: site.Name ?? string.Empty,
+                AddressLine1: site.AddressLine1!,
+                AddressLine2: site.AddressLine2!,
                 Town: site.Town!,
                 County: site.County!,
                 Postcode: site.Postcode!);

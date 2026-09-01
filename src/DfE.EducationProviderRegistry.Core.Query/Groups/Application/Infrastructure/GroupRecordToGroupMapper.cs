@@ -28,7 +28,7 @@ internal sealed class GroupRecordToGroupMapper : IMapper<GroupRecord, Group>
 
         GroupCharacteristics characteristics = new(
             name: new Name(input.Name),
-            address: new Address("123 Test Street", "Testville", "Testshire", "TE5 5ST"), // STUB
+            address: new SiteAddressModel("TestName", "123 Test Street", "Test Street 2", "Testville", "Testshire", "TE5 5ST"), // STUB
             type: new GroupType(input.GroupType.Name),
             status: new GroupStatus(GroupOpenState.Open, new(2026, 01, 01)) // STUB
         );
