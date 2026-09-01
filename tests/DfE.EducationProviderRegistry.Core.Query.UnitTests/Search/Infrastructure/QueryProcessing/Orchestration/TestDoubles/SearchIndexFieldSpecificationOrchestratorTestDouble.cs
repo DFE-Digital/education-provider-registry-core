@@ -19,7 +19,7 @@ public static class SearchIndexFieldSpecificationOrchestratorTestDouble
         mock.Setup(orchestrator =>
             orchestrator.Orchestrate(
                 fieldName,
-                It.IsAny<IEnumerable<(string BehaviourName, string BehaviourPredicate)>>(),
+                It.IsAny<IEnumerable<(string BehaviourName, string? BehaviourPredicate)>>(),
                 It.IsAny<string>(),
                 It.IsAny<string>()))
             .Returns(specification)

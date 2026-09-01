@@ -39,7 +39,7 @@ public sealed class SearchIndexFieldSpecificationOrchestrator<TEntity>
 
         ISpecification<TEntity>? combined = null;
 
-        foreach ((string? behaviourName, string? behaviourPredicate) in behaviourList)
+        foreach ((string behaviourName, string? behaviourPredicate) in behaviourList)
         {
             ISpecification<TEntity> spec =
                 _behaviourRegistry.ResolveBehaviourSpec(

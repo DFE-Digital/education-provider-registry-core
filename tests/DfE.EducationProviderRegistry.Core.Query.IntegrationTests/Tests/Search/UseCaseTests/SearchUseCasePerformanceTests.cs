@@ -91,7 +91,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
         Assert.True(stopwatch.Elapsed < TimeSpan.FromSeconds(2));
 
         // 1 query for retrieving matches, 1 query for Facets
-        Assert.Equal(2, queries.Count);
+        Assert.Equal(3, queries.Count);
 
         // Assumption: Search queries should execute within 1s
         TimeSpan expectedQueryExecutionTime = TimeSpan.FromSeconds(1);

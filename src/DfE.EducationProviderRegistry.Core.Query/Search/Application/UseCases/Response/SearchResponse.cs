@@ -8,16 +8,23 @@ public sealed class SearchResponse
     /// <summary>
     /// Initializes a new response with the specified search status and total result count.
     /// </summary>
-    /// <param name="status">Indicates the outcome of the search operation.</param>
+    /// <param name="establishmentSearchResults">
+    /// The results of the establishment search.
+    /// </param>
+    /// <param name="facetedResults">
+    /// The faceted aggregation results used for UI filtering.
+    /// </param>
     /// <param name="totalNumberOfResults">
     /// The total number of matching learner records found. Defaults to zero if null or negative.
     /// </param>
     public SearchResponse(
         EstablishmentSearchResults establishmentSearchResults,
-        SearchFacets? facetedResults)
+        SearchFacets? facetedResults,
+        int totalNumberOfResults)
     {
         EstablishmentResults = establishmentSearchResults;
         FacetedResults = facetedResults;
+        TotalNumberOfResults = totalNumberOfResults;
     }
 
     /// <summary>
@@ -38,5 +45,5 @@ public sealed class SearchResponse
             ? SearchResponseStatus.Success
             : SearchResponseStatus.NoResultsFound;
 
-    public int TotalNumberOfResults => EstablishmentResults?.Count ?? 0;
+    public int TotalNumberOfResults { get; }
 }

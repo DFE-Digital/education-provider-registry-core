@@ -7,27 +7,36 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 
 internal sealed class SearchResultsFromQueryResultsMapper
-    : IMapper<(IReadOnlyList<EstablishmentReadModel> Results, IReadOnlyList<AggregatedFacetResult> Facets),
-              SearchResults<EstablishmentSearchResults, SearchFacets>>
+    : IMapper<
+        (
+            IReadOnlyList<EstablishmentReadModel> Results,
+            IReadOnlyList<AggregatedFacetResult> Facets,
+            int TotalCount
+        ),
+        SearchResults<EstablishmentSearchResults, SearchFacets>>
 {
     public SearchResults<EstablishmentSearchResults, SearchFacets> Map(
-        (IReadOnlyList<EstablishmentReadModel> Results, IReadOnlyList<AggregatedFacetResult> Facets) context)
+        (
+            IReadOnlyList<EstablishmentReadModel> Results,
+            IReadOnlyList<AggregatedFacetResult> Facets,
+            int TotalCount
+        ) context)
     {
         if (context.Results is null)
         {
-            throw new ArgumentNullException(nameof(context),
+            throw new ArgumentNullException(
+                nameof(context),
                 "Tuple does not contain establishment results.");
         }
 
         if (context.Facets is null)
         {
-            throw new ArgumentNullException(nameof(context),
+            throw new ArgumentNullException(
+                nameof(context),
                 "Tuple does not contain facet results.");
         }
 
-        EstablishmentSearchResult[] mapped = null!;
-
-        mapped =
+        EstablishmentSearchResult[] mapped =
         [
             .. context.Results.Select(r =>
                 EstablishmentSearchResult.Create(
@@ -48,21 +57,28 @@ internal sealed class SearchResultsFromQueryResultsMapper
                         localAuthorityName: r.LocalAuthorityName ?? string.Empty,
                         localAuthorityCode: r.LocalAuthorityCode ?? string.Empty)
                 )
-        )];
+            )
+        ];
 
         List<SearchFacet> facets =
-            [.. context.Facets
-                   .Select(facetResult =>
-                       new SearchFacet(
-                           facetResult.FacetName,
-                           [.. facetResult.Values.Select(facetValue => new FacetResult(facetValue.Value, facetValue.Label, facetValue.Count))]
-                       )
-                   )];
+        [
+            .. context.Facets.Select(facetResult =>
+                new SearchFacet(
+                    facetResult.FacetName,
+                    [
+                        .. facetResult.Values.Select(facetValue =>
+                            new FacetResult(
+                                facetValue.Value,
+                                facetValue.Label,
+                                facetValue.Count))
+                    ]))
+        ];
 
         return new SearchResults<EstablishmentSearchResults, SearchFacets>
         {
             Results = new EstablishmentSearchResults(mapped),
-            FacetResults = new SearchFacets(facets)
+            FacetResults = new SearchFacets(facets),
+            TotalCount = context.TotalCount
         };
     }
 }

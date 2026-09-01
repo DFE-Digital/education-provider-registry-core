@@ -91,7 +91,6 @@ jobs:
           -targetdir:coverage-sonar \
           -reporttypes:SonarQube \
           -sourcedirs:.
-    
     - name: Upload Sonar coverage report
       uses: actions/upload-artifact@v7
       with:
@@ -100,13 +99,11 @@ jobs:
 
     - name: SonarCloud scan
       if: github.actor != 'dependabot[bot]'
-      uses: DFE-Digital/github-actions/sonarscan-dotnet@04dc86b7b6324cede39801218871d1f44400039c
+      uses: DFE-Digital/github-actions/sonarscan-dotnet@e1f86e30746687554ae0aaabf7d8feb7a502f19a
       with:
           sonarcloud-project-key: DFE-Digital_education-provider-registry-core
           sonarcloud-token: ${{ secrets.SONAR_TOKEN }}
           use-global-json: true
-          # awaiting completion of https://github.com/DFE-Digital/github-actions/pull/236/changes then defaults handle
-          java-version: 21
           coverage-report-path: coverage-sonar/SonarQube.xml
 
     - name: Run verify format

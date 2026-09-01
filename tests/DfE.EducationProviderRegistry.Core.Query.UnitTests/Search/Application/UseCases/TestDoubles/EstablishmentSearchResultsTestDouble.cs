@@ -19,5 +19,5 @@ internal static class EstablishmentSearchResultsTestDouble
         return new EstablishmentSearchResults(establishmentSearchResults);
     }
 
-    public static EstablishmentSearchResults EmptyStub() => new();
+    public static EstablishmentSearchResults EmptyStub() => new(null!);
 }

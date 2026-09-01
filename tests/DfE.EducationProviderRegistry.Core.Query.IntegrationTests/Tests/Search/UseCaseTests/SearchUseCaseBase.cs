@@ -1,10 +1,8 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;

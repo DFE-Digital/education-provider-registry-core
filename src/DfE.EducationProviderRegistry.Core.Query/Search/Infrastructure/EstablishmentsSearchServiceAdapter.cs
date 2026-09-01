@@ -23,7 +23,11 @@ internal sealed class EstablishmentsSearchServiceAdapter
     private readonly ISearchFilterExpressionsBuilder<Establishment> _searchFilterExpressionsBuilder;
     private readonly IFacetAggregator _facetAggregator;
     private readonly IMapper<
-        (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+        (
+            IReadOnlyList<EstablishmentReadModel> Items,
+            IReadOnlyList<AggregatedFacetResult> Facets,
+            int TotalCount
+        ),
         SearchResults<EstablishmentSearchResults, SearchFacets>> _resultsMapper;
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
@@ -35,7 +39,11 @@ internal sealed class EstablishmentsSearchServiceAdapter
         ISearchFilterExpressionsBuilder<Establishment> searchFilterExpressionsBuilder,
         IFacetAggregator facetAggregator,
         IMapper<
-            (IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>),
+            (
+                IReadOnlyList<EstablishmentReadModel> Items,
+                IReadOnlyList<AggregatedFacetResult> Facets,
+                int TotalCount
+            ),
             SearchResults<EstablishmentSearchResults, SearchFacets>> resultsMapper,
         IMapper<
             ReadOnlyCollection<FilterRequest>,
@@ -71,9 +79,15 @@ internal sealed class EstablishmentsSearchServiceAdapter
 
         // 4. Apply search-term specification on top of filtered results.
         IQueryable<Establishment> searchResult =
-            _searchSpecOrchestrator.ProcessSearch(filteredQuery, request.SearchTerms);
+            _searchSpecOrchestrator.ProcessSearch(
+                filteredQuery,
+                request.SearchTerms);
 
-        // 5. Execute projection.
+        // 5. Get the total number of matching establishments before paging.
+        int totalCount =
+            await searchResult.CountAsync(cancellationToken);
+
+        // 6. Execute paged projection.
         List<EstablishmentReadModel> items =
             await searchResult
                 .OrderByDirection(e => e.Name ?? string.Empty, request.SortOrdering.Direction)
@@ -106,19 +120,22 @@ internal sealed class EstablishmentsSearchServiceAdapter
                 ))
                 .ToListAsync(cancellationToken);
 
-        // 6. Extract URNs from projected items for facet aggregation.
+        // 7. Extract URNs from projected items for facet aggregation.
         IReadOnlyList<string> urns =
-            items.Select(entity => entity.Urn).ToList().AsReadOnly();
+            items.Select(entity => entity.Urn)
+                .ToList()
+                .AsReadOnly();
 
-        // 7. Calculate facet results based on URNs and requested facet keys.
+        // 8. Calculate facet results based on URNs and requested facet keys.
         IReadOnlyList<AggregatedFacetResult> facets =
             await _facetAggregator.CalculateFacetsAsync(
                 urns,
                 request.Facets,
                 cancellationToken);
 
-        // 8. Map final results into SearchResults wrapper.
-        return _resultsMapper.Map((items, facets));
+        // 9. Map results.
+        return _resultsMapper.Map(
+            (items, facets, totalCount));
     }
 }
 

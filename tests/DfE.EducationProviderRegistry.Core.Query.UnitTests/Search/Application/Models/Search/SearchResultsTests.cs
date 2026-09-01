@@ -31,8 +31,9 @@ public sealed class SearchResultsTests
                 new List<EstablishmentSearchResult>
                 {
                     CreateMockEstablishment(123, "Test School 1"),
-                    CreateMockEstablishment(456, "Test School 2")
+                    CreateMockEstablishment(456, "Test School 2"),
                 });
+
 
         SearchFacets facets =
             new(
