@@ -34,6 +34,7 @@ public sealed class IndexedFieldConfigurationBuilder
     }
 
     public IndexedFieldConfigurationBuilder AppendExactMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("exact", behaviourChainingPredicate);
+    public IndexedFieldConfigurationBuilder AppendStartsWithMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("startswith", behaviourChainingPredicate);
     public IndexedFieldConfigurationBuilder AppendContainsMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("contains", behaviourChainingPredicate);
     public IndexedFieldConfigurationBuilder AppendFuzzyMatchBehaviour(string? behaviourChainingPredicate = null) => WithBehaviour("fuzzy", behaviourChainingPredicate);
 
