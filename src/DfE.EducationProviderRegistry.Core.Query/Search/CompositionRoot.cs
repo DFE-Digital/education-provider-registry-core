@@ -208,14 +208,16 @@ public static class CompositionRoot
         // Search behaviours
         // ---------------------------------------------------------
         services.AddSingleton(typeof(ExactSearchBehaviour<>));
-        services.AddSingleton(typeof(PartialSearchBehaviour<>));
+        services.AddSingleton(typeof(ContainsSearchBehaviour<>));
+        services.AddSingleton(typeof(StartsWithSearchBehaviour<>));
         services.AddSingleton(typeof(FuzzySearchBehaviour<>));
 
         services.AddSingleton<ISearchBehaviourRegistry<Establishment>>((sp) =>
         {
             return new SearchBehaviourRegistry<Establishment>([
                     new("exact", sp.GetRequiredService<ExactSearchBehaviour<Establishment>>()),
-                    new("partial", sp.GetRequiredService<PartialSearchBehaviour<Establishment>>()),
+                    new("startswith", sp.GetRequiredService<StartsWithSearchBehaviour<Establishment>>()),
+                    new("contains", sp.GetRequiredService<ContainsSearchBehaviour<Establishment>>()),
                     new("fuzzy", sp.GetRequiredService<FuzzySearchBehaviour<Establishment>>())
                 ]
             );

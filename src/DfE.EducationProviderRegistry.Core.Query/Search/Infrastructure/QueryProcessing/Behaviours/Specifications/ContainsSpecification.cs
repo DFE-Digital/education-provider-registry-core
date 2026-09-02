@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours.Specifications;
 
-internal sealed class LikeSpecification<TEntity> : PropertyPathSpecification<TEntity>
+internal sealed class ContainsSpecification<TEntity> : PropertyPathSpecification<TEntity>
 {
     private readonly string _value;
 
-    public LikeSpecification(string propertyPath, string value)
+    public ContainsSpecification(string propertyPath, string value)
         : base(propertyPath)
     {
         ArgumentNullException.ThrowIfNull(propertyPath);

@@ -5,19 +5,19 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Q
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.QueryProcessing.Behaviours;
 
-public sealed class PartialSearchBehaviourTests
+public sealed class ContainsSearchBehaviourTests
 {
     [Fact]
-    public void Build_ReturnsLikeSpecification()
+    public void Build_ReturnsContainsSpecification()
     {
         // arrange
-        PartialSearchBehaviour<TestEntity> behaviour = new();
+        ContainsSearchBehaviour<TestEntity> behaviour = new();
 
         // act
         ISpecification<TestEntity> result =
             behaviour.Build("Name", "Bob");
 
         // assert
-        Assert.IsType<LikeSpecification<TestEntity>>(result);
+        Assert.IsType<ContainsSpecification<TestEntity>>(result);
     }
 }

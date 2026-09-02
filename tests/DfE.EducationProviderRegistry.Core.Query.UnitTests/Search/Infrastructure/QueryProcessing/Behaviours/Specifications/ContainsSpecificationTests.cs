@@ -4,13 +4,13 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Q
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.QueryProcessing.Behaviours.Specifications;
 
-public sealed class LikeSpecificationTests
+public sealed class ContainsSpecificationTests
 {
     [Fact]
     public void ToExpression_ScalarPath_BuildsExpectedILikeExpression()
     {
         // arrange
-        LikeSpecification<TestEntity> spec = new("Name", "school");
+        ContainsSpecification<TestEntity> spec = new("Name", "school");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -31,7 +31,7 @@ public sealed class LikeSpecificationTests
     public void ToExpression_CollectionPath_BuildsExpectedILikeExpression()
     {
         // arrange
-        LikeSpecification<TestEntity> spec = new("Sites[].Code", "abc");
+        ContainsSpecification<TestEntity> spec = new("Sites[].Code", "abc");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -61,7 +61,7 @@ public sealed class LikeSpecificationTests
     {
         // act / assert
         Assert.Throws<ArgumentNullException>(() =>
-            new LikeSpecification<TestEntity>(null!, "school"));
+            new ContainsSpecification<TestEntity>(null!, "school"));
     }
 
     [Fact]
@@ -69,6 +69,6 @@ public sealed class LikeSpecificationTests
     {
         // act / assert
         Assert.Throws<ArgumentNullException>(() =>
-            new LikeSpecification<TestEntity>("Name", null!));
+            new ContainsSpecification<TestEntity>("Name", null!));
     }
 }

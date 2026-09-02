@@ -3,9 +3,9 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProces
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Behaviours;
 
-internal sealed class PartialSearchBehaviour<TEntity> : ISearchBehaviour<TEntity>
+internal sealed class StartsWithSearchBehaviour<TEntity> : ISearchBehaviour<TEntity>
 {
 
     public ISpecification<TEntity> Build(string propertyPath, string value)
-        => new LikeSpecification<TEntity>(propertyPath, value);
+        => new StartsWithSpecification<TEntity>(propertyPath, value);
 }
