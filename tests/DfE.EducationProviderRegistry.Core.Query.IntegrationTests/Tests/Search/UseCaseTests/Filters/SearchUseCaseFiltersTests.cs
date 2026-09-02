@@ -23,7 +23,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
                     builder =>
                     builder
                         .WithFieldName(nameof(Establishment.Name))
-                        .AppendPartialMatchBehaviour()
+                        .AppendContainsMatchBehaviour()
                 ]
             )
         ];

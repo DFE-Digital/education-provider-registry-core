@@ -34,7 +34,7 @@ public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseBa
                 builder =>
                     builder
                         .WithFieldName(CollectionFieldName)
-                        .AppendPartialMatchBehaviour()
+                        .AppendContainsMatchBehaviour()
             ]
         )
     ];

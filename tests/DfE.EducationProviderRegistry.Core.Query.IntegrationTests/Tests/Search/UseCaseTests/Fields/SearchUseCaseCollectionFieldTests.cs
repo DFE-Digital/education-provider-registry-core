@@ -26,7 +26,7 @@ public sealed class SearchUseCaseCollectionFieldTests
                 builder =>
                     builder
                         .WithFieldName(CollectionFieldName)
-                        .AppendPartialMatchBehaviour()
+                        .AppendContainsMatchBehaviour()
             ]
         )
     ];

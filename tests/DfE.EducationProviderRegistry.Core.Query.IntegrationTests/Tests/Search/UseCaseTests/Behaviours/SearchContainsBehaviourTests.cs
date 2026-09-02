@@ -6,10 +6,10 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Behaviours;
 
-public sealed class SearchPartialMatchBehaviourTests : SearchUseCaseBase
+public sealed class SearchContainsBehaviourTests : SearchUseCaseBase
 {
     private const string SearchTermKey = "term-1";
-    public SearchPartialMatchBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public SearchContainsBehaviourTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
@@ -19,7 +19,7 @@ public sealed class SearchPartialMatchBehaviourTests : SearchUseCaseBase
             SearchTermKey,
             IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
             [
-                (builder) => builder.WithFieldName(DefaultSearchFieldName).AppendPartialMatchBehaviour()
+                (builder) => builder.WithFieldName(DefaultSearchFieldName).AppendContainsMatchBehaviour()
             ]
         )
     ];

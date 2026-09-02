@@ -4,13 +4,13 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Q
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.QueryProcessing.Behaviours.Specifications;
 
-public sealed class LikeSpecificationTests
+public sealed class StartsWithSpecificationTests
 {
     [Fact]
     public void ToExpression_ScalarPath_BuildsExpectedILikeExpression()
     {
         // arrange
-        LikeSpecification<TestEntity> spec = new("Name", "school");
+        StartsWithSpecification<TestEntity> spec = new("Name", "school");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -24,14 +24,14 @@ public sealed class LikeSpecificationTests
         ConstantExpression pattern =
             Assert.IsType<ConstantExpression>(call.Arguments[2], exactMatch: false);
 
-        Assert.Equal("%school%", pattern.Value);
+        Assert.Equal("school%", pattern.Value);
     }
 
     [Fact]
     public void ToExpression_CollectionPath_BuildsExpectedILikeExpression()
     {
         // arrange
-        LikeSpecification<TestEntity> spec = new("Sites[].Code", "abc");
+        StartsWithSpecification<TestEntity> spec = new("Sites[].Code", "abc");
 
         // act
         Expression<Func<TestEntity, bool>> expr = spec.ToExpression();
@@ -53,7 +53,7 @@ public sealed class LikeSpecificationTests
         ConstantExpression pattern =
             Assert.IsType<ConstantExpression>(ilikeCall.Arguments[2], exactMatch: false);
 
-        Assert.Equal("%abc%", pattern.Value);
+        Assert.Equal("abc%", pattern.Value);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class LikeSpecificationTests
     {
         // act / assert
         Assert.Throws<ArgumentNullException>(() =>
-            new LikeSpecification<TestEntity>(null!, "school"));
+            new StartsWithSpecification<TestEntity>(null!, "school"));
     }
 
     [Fact]
@@ -69,6 +69,6 @@ public sealed class LikeSpecificationTests
     {
         // act / assert
         Assert.Throws<ArgumentNullException>(() =>
-            new LikeSpecification<TestEntity>("Name", null!));
+            new StartsWithSpecification<TestEntity>("Name", null!));
     }
 }
