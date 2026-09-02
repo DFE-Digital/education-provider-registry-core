@@ -28,7 +28,7 @@ public sealed class SearchChainingFieldsWithAndTests : SearchUseCaseBase
                     (builder) =>
                         builder
                             .WithFieldName(SecondarySearchFieldName)
-                            .AppendPartialMatchBehaviour(),
+                            .AppendContainsMatchBehaviour(),
                 ]
             )
         ];

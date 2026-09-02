@@ -32,7 +32,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
                 builder =>
                     builder
                         .WithFieldName(SecondarySearchFieldName)
-                        .AppendPartialMatchBehaviour()
+                        .AppendContainsMatchBehaviour()
             ]
         )
     ];

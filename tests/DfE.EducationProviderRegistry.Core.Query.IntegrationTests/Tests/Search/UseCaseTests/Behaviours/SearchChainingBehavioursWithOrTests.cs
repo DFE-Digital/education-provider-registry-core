@@ -23,7 +23,7 @@ public sealed class SearchChainingBehavioursWithOrTests : SearchUseCaseBase
                     (builder) =>
                         builder.WithFieldName(DefaultSearchFieldName)
                             .AppendExactMatchBehaviour()
-                            .AppendPartialMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE)
+                            .AppendContainsMatchBehaviour(behaviourChainingPredicate: IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE)
                 ]
             )
     ];
