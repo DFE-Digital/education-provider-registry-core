@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
-using EstablishmentType = DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment.EstablishmentType;
+using SearchProviderType = DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search.SearchProviderType;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps;
 
@@ -43,7 +43,7 @@ public sealed class ParallelMappingStepUnitTests
         Mock<IMapper<Establishment, EstablishmentSearchResult>> mapperMock =
             EstablishmentToSearchResultMapperTestDouble.MockFor(
                 new EstablishmentSearchResult(
-                    new UniqueReferenceNumber("00001"),
+                    new ProviderIdentifier("00001"),
                     new Name("School A"),
                     new SiteAddressModel(
                         Name: string.Empty,

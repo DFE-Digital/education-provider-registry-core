@@ -1,4 +1,6 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 
 /// <summary>
 /// Represents a strongly typed collection of <see cref="EstablishmentSearchResult"/> items
@@ -20,7 +22,7 @@ public sealed class EstablishmentSearchResults
     public int Count => _establishments?.Count ?? 0;
 
     /// <summary>
-    /// Initializes a new, empty instance of the <see cref="EstablishmentSearchResults"/> class.
+    /// Initializes a new, empty instance of the <see cref="SearchProviderResults"/> class.
     /// </summary>
     public EstablishmentSearchResults()
     {
@@ -28,7 +30,7 @@ public sealed class EstablishmentSearchResults
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EstablishmentSearchResults"/> class
+    /// Initializes a new instance of the <see cref="SearchProviderResults"/> class
     /// using the provided collection of <see cref="EstablishmentSearchResult"/> items.
     /// </summary>
     /// <param name="establishments">
@@ -41,10 +43,10 @@ public sealed class EstablishmentSearchResults
     }
 
     /// <summary>
-    /// Creates an empty <see cref="EstablishmentSearchResults"/> instance.
+    /// Creates an empty <see cref="SearchProviderResults"/> instance.
     /// </summary>
     /// <returns>
-    /// A new <see cref="EstablishmentSearchResults"/> with no contained results.
+    /// A new <see cref="SearchProviderResults"/> with no contained results.
     /// </returns>
-    public static EstablishmentSearchResults CreateEmpty() => new();
+    public static SearchProviderResults CreateEmpty() => new();
 }

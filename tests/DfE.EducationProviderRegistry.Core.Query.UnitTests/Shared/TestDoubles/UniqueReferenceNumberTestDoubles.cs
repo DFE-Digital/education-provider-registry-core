@@ -6,6 +6,6 @@ internal static class UniqueReferenceNumberTestDoubles
 {
     public static UniqueReferenceNumber Create(string value = "123456")
     {
-        return new UniqueReferenceNumber(value);
+        return new ProviderIdentifier(value);
     }
 }

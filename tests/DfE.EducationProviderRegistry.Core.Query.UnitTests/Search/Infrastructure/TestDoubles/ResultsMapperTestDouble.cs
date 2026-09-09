@@ -1,5 +1,4 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
@@ -13,7 +12,7 @@ public static class ResultsMapperTestDouble
         IReadOnlyList<EstablishmentReadModel>,
         IReadOnlyList<AggregatedFacetResult>,
         int),
-        SearchResults<EstablishmentSearchResults, SearchFacets>>> Mock()
+        SearchResults<SearchProviderResults, SearchFacets>>> Mock()
     {
         Mock<IMapper<
             (
@@ -21,7 +20,7 @@ public static class ResultsMapperTestDouble
                 IReadOnlyList<AggregatedFacetResult>,
                 int
             ),
-            SearchResults<EstablishmentSearchResults, SearchFacets>>> mock = new(MockBehavior.Strict);
+            SearchResults<SearchProviderResults, SearchFacets>>> mock = new(MockBehavior.Strict);
 
         mock.Setup(mapper =>
             mapper.Map(
@@ -29,7 +28,7 @@ public static class ResultsMapperTestDouble
                     IReadOnlyList<EstablishmentReadModel>,
                     IReadOnlyList<AggregatedFacetResult>,
                     int)>()))
-            .Returns(new SearchResults<EstablishmentSearchResults, SearchFacets>());
+            .Returns(new SearchResults<SearchProviderResults, SearchFacets>());
 
         return mock;
     }

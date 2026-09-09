@@ -77,7 +77,7 @@ public sealed class GroupCharacteristicsTests
     {
         // Arrange
         Name name = NameTestDoubles.Create();
-        SiteAddressModel address = AddressTestDoubles.Generate();
+        SearchProviderAddress address = AddressTestDoubles.Generate();
         GroupType type = GroupTypeTestDoubles.Create();
         GroupStatus status = GroupStatusTestDoubles.Create();
 

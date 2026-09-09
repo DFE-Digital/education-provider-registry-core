@@ -13,7 +13,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Provide
 public sealed class EstablishmentFacetProvider : IFacetProvider
 {
     private readonly IDbContextFactory<EducationProviderRegistryDbContext> _contextFactory;
-    private readonly Dictionary<string, FacetDefinition<Establishment>> _facetDefinitions;
+    private readonly Dictionary<string, FacetDefinition<SearchProvider>> _facetDefinitions;
 
     /// <summary>
     /// Creates a new facet provider using the supplied context factory and facet selector map.
@@ -24,7 +24,7 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
     /// </param>
     public EstablishmentFacetProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> contextFactory,
-        Dictionary<string, FacetDefinition<Establishment>> facetDefinitions)
+        Dictionary<string, FacetDefinition<SearchProvider>> facetDefinitions)
     {
         _contextFactory = contextFactory;
         _facetDefinitions = facetDefinitions;
@@ -53,16 +53,16 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
 
         await using (context)
         {
-            if (!_facetDefinitions.TryGetValue(facetName, out FacetDefinition<Establishment>? facetDefinition))
+            if (!_facetDefinitions.TryGetValue(facetName, out FacetDefinition<SearchProvider>? facetDefinition))
             {
                 throw new InvalidOperationException($"Unknown facet '{facetName}'.");
             }
 
-            IQueryable<Establishment> filtered =
-                context.Establishment.Where(establishment =>
-                    ids.Contains(establishment.Urn));
+            IQueryable<SearchProvider> filtered =
+                context.SearchProvider.Where(establishment =>
+                    ids.Contains(establishment.ProviderTypeId.ToString()));
 
-            IQueryable<IGrouping<object, Establishment>> grouped =
+            IQueryable<IGrouping<object, SearchProvider>> grouped =
                 filtered.GroupBy(facetDefinition.ValueSelector);
 
             IQueryable<dynamic> sqlProjection =

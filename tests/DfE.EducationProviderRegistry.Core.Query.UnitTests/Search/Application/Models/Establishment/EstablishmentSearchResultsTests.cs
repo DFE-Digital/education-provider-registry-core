@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment;
@@ -9,7 +10,7 @@ public sealed class EstablishmentSearchResultsTests
     public void DefaultConstructor_ShouldCreateEmptyCollection()
     {
         // arrange
-        EstablishmentSearchResults results = new();
+        SearchProviderResults results = new();
 
         // assert
         Assert.NotNull(results.EstablishmentCollection);
@@ -27,7 +28,7 @@ public sealed class EstablishmentSearchResultsTests
             EstablishmentSearchResultTestDouble.WithUrn("10002")
         ];
 
-        EstablishmentSearchResults results = new(list);
+        SearchProviderResults results = new(list);
 
         // assert
         Assert.Equal(2, results.Count);
@@ -38,7 +39,7 @@ public sealed class EstablishmentSearchResultsTests
     public void Constructor_ShouldUseEmptyCollection_WhenNullProvided()
     {
         // arrange
-        EstablishmentSearchResults results = new(null!);
+        SearchProviderResults results = new(null!);
 
         // assert
         Assert.NotNull(results.EstablishmentCollection);
@@ -55,7 +56,7 @@ public sealed class EstablishmentSearchResultsTests
             EstablishmentSearchResultTestDouble.WithUrn("10001")
         ];
 
-        EstablishmentSearchResults results = new(list);
+        SearchProviderResults results = new(list);
 
         IReadOnlyCollection<EstablishmentSearchResult> readOnly = results.EstablishmentCollection;
 
@@ -74,7 +75,7 @@ public sealed class EstablishmentSearchResultsTests
             EstablishmentSearchResultTestDouble.WithUrn("10001")
         ];
 
-        EstablishmentSearchResults results = new(list);
+        SearchProviderResults results = new(list);
 
         list.Add(EstablishmentSearchResultTestDouble.WithUrn("10002"));
 
@@ -86,7 +87,7 @@ public sealed class EstablishmentSearchResultsTests
     public void CreateEmpty_ShouldReturnEmptyInstance()
     {
         // arrange
-        EstablishmentSearchResults results = EstablishmentSearchResults.CreateEmpty();
+        SearchProviderResults results = SearchProviderResults.CreateEmpty();
 
         // assert
         Assert.NotNull(results.EstablishmentCollection);

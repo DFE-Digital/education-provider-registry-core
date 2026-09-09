@@ -8,7 +8,7 @@ public sealed class LocalAuthorityTests
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        LocalAuthority authority = new("Test LA", "LA001");
+        SearchProviderLocalAuthority authority = new("Test LA", "LA001");
 
         // assert
         Assert.Equal("Test LA", authority.Name);
@@ -19,8 +19,8 @@ public sealed class LocalAuthorityTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        LocalAuthority viaCtor = new("Test LA", "LA001");
-        LocalAuthority viaFactory = LocalAuthority.Create("Test LA", "LA001");
+        SearchProviderLocalAuthority viaCtor = new("Test LA", "LA001");
+        SearchProviderLocalAuthority viaFactory = SearchProviderLocalAuthority.Create("Test LA", "LA001");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
@@ -48,7 +48,7 @@ public sealed class LocalAuthorityTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            LocalAuthority.Create(null!, "LA001"));
+            SearchProviderLocalAuthority.Create(null!, "LA001"));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public sealed class LocalAuthorityTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            LocalAuthority.Create("Test LA", null!));
+            SearchProviderLocalAuthority.Create("Test LA", null!));
     }
 
     [Theory]
@@ -89,7 +89,7 @@ public sealed class LocalAuthorityTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            LocalAuthority.Create(invalid, "LA001"));
+            SearchProviderLocalAuthority.Create(invalid, "LA001"));
     }
 
     [Theory]
@@ -100,6 +100,6 @@ public sealed class LocalAuthorityTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            LocalAuthority.Create("Test LA", invalid));
+            SearchProviderLocalAuthority.Create("Test LA", invalid));
     }
 }

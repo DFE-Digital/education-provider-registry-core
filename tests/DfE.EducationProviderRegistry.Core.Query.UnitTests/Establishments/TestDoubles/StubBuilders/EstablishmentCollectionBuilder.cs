@@ -23,7 +23,7 @@ internal sealed class EstablishmentCollectionBuilder
             establishmentList.Add(
                 new EstablishmentDetailsModel()
                 {
-                    Urn = new EstablishmentUrnModel(new UniqueReferenceNumber(urn)),
+                    Urn = new EstablishmentUrnModel(new ProviderIdentifier(urn)),
                 });
         }
 

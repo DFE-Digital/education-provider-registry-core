@@ -68,7 +68,7 @@ public sealed class GroupToGroupReadModelMapperTests
 
         GroupToGroupReadModelMapper sut = new(memberMapper.Object, trusteeMapper.Object);
 
-        SiteAddressModel stubAddress = AddressTestDoubles.Generate();
+        SearchProviderAddress stubAddress = AddressTestDoubles.Generate();
 
         Group input = new GroupBuilder()
             .WithName("Test Group Name")

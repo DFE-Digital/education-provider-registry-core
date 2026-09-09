@@ -9,7 +9,7 @@ public sealed class SearchResultsTests
     private static EstablishmentSearchResult CreateMockEstablishment(int urn, string name)
     {
         return EstablishmentSearchResult.Create(
-            urn: new UniqueReferenceNumber(urn.ToString("D5")),
+            urn: new ProviderIdentifier(urn.ToString("D5")),
             name: new Name(name),
             address: new SiteAddressModel(
                 Name: string.Empty,
@@ -18,9 +18,9 @@ public sealed class SearchResultsTests
                 Town: "Testville",
                 County: "Testshire",
                 Postcode: "TE5 7ST"),
-            type: EstablishmentType.Create("Academy"),
+            type: SearchProviderType.Create("Academy"),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
-            localAuthority: LocalAuthority.Create("Test LA", "LA001")
+            localAuthority: SearchProviderLocalAuthority.Create("Test LA", "LA001")
         );
     }
 
@@ -28,7 +28,7 @@ public sealed class SearchResultsTests
     public void Properties_CanBeInitializedViaObjectInitializer()
     {
         // arrange
-        EstablishmentSearchResults establishmentSearchResults =
+        SearchProviderResults establishmentSearchResults =
             new(
                 new List<EstablishmentSearchResult>
                 {
@@ -48,7 +48,7 @@ public sealed class SearchResultsTests
                 });
 
         // act
-        SearchResults<EstablishmentSearchResults, SearchFacets> result =
+        SearchResults<SearchProviderResults, SearchFacets> result =
             new()
             {
                 Results = establishmentSearchResults,
@@ -64,7 +64,7 @@ public sealed class SearchResultsTests
     public void Properties_WhenUninitialized_ShouldBeNull()
     {
         // act
-        SearchResults<EstablishmentSearchResults, SearchFacets> result = new();
+        SearchResults<SearchProviderResults, SearchFacets> result = new();
 
         // assert
         Assert.Null(result.Results);

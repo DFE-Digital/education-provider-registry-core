@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
@@ -7,14 +6,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 [ExcludeFromCodeCoverage]
 internal static class SearchResultsTestDouble
 {
-    public static SearchResults<EstablishmentSearchResults, SearchFacets> Stub() =>
+    public static SearchResults<SearchProviderResults, SearchFacets> Stub() =>
         new()
         {
             Results = EstablishmentSearchResultsTestDouble.Stub(),  // Populated establishment search results
             FacetResults = SearchFacetsTestDouble.Stub()            // Populated facet results
         };
 
-    public static SearchResults<EstablishmentSearchResults, SearchFacets> StubWithNoResults() =>
+    public static SearchResults<SearchProviderResults, SearchFacets> StubWithNoResults() =>
         new()
         {
             Results = EstablishmentSearchResultsTestDouble.EmptyStub(), // Unpopulated establishment search results

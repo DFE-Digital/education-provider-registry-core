@@ -11,7 +11,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Provide
 /// </summary>
 [ExcludeFromCodeCoverage]
 internal sealed class EstablishmentSearchProjectionBuilder
-    : ISearchProjectionBuilder<Establishment>
+    : ISearchProjectionBuilder<SearchProvider>
 {
     /// <summary>
     /// Produces an <see cref="IQueryable{Establishment}"/> with all navigation
@@ -22,21 +22,15 @@ internal sealed class EstablishmentSearchProjectionBuilder
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="db"/> is null.
     /// </exception>
-    public IQueryable<Establishment> Build(DbContext db)
+    public IQueryable<SearchProvider> Build(DbContext db)
     {
         ArgumentNullException.ThrowIfNull(db);
 
         EducationProviderRegistryDbContext ctx =
             (EducationProviderRegistryDbContext)db;
 
-        return ctx.Establishment
+        return ctx.SearchProvider
             .AsNoTracking()
-            .AsSplitQuery()
-            .Include(establishemnt => establishemnt.Site)
-            .Include(establishemnt => establishemnt.EstablishmentType)
-            .Include(establishemnt => establishemnt.EstablishmentAuthority)
-            .Include(establishemnt => establishemnt.EstablishmentGroupMembership)
-                .ThenInclude(groupMembership => groupMembership.Group)
-                    .ThenInclude(group => group.GroupType);
+            .AsSplitQuery();
     }
 }

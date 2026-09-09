@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 
@@ -22,12 +23,12 @@ public sealed record EstablishmentSearchResult
     /// <summary>
     /// Gets the postal address associated with the establishment.
     /// </summary>
-    public SiteAddressModel? Address { get; }
+    public SearchProviderAddress? Address { get; }
 
     /// <summary>
     /// Gets the establishment type classification (e.g., Academy, Free School).
     /// </summary>
-    public EstablishmentType? Type { get; }
+    public SearchProviderType? Type { get; }
 
     /// <summary>
     /// Gets the group‑level details associated with the establishment,
@@ -38,7 +39,7 @@ public sealed record EstablishmentSearchResult
     /// <summary>
     /// Gets the local authority responsible for the establishment.
     /// </summary>
-    public LocalAuthority? LocalAuthority { get; }
+    public SearchProviderLocalAuthority? LocalAuthority { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EstablishmentSearchResult"/> record
@@ -56,10 +57,10 @@ public sealed record EstablishmentSearchResult
     public EstablishmentSearchResult(
         UniqueReferenceNumber urn,
         Name name,
-        SiteAddressModel? address,
-        EstablishmentType? type,
+        SearchProviderAddress? address,
+        SearchProviderType? type,
         GroupDetail? group,
-        LocalAuthority? localAuthority)
+        SearchProviderLocalAuthority? localAuthority)
     {
         Urn = urn;
         Name = name;
@@ -86,9 +87,9 @@ public sealed record EstablishmentSearchResult
     public static EstablishmentSearchResult Create(
         UniqueReferenceNumber urn,
         Name name,
-        SiteAddressModel? address,
-        EstablishmentType? type,
+        SearchProviderAddress? address,
+        SearchProviderType? type,
         GroupDetail? group,
-        LocalAuthority? localAuthority)
+        SearchProviderLocalAuthority? localAuthority)
         => new(urn, name, address, type, group, localAuthority);
 }

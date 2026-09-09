@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
@@ -18,7 +19,7 @@ public static class EstablishmentSearchResultTestDouble
         Name name =
             new(_faker.Company.CompanyName());
 
-        SiteAddressModel address =
+        SearchProviderAddress address =
             new(
                 Name: string.Empty,
                 AddressLine1: _faker.Address.StreetAddress(),
@@ -27,14 +28,14 @@ public static class EstablishmentSearchResultTestDouble
                 County: _faker.Address.County(),
                 Postcode: _faker.Address.ZipCode());
 
-        EstablishmentType type =
-            EstablishmentType.Create("Academy");
+        SearchProviderType type =
+            SearchProviderType.Create("Academy");
 
         GroupDetail group =
             GroupDetail.Create("Mock Trust", "TRUST001");
 
-        LocalAuthority localAuthority =
-            LocalAuthority.Create("Test LA", "LA001");
+        SearchProviderLocalAuthority localAuthority =
+            SearchProviderLocalAuthority.Create("Test LA", "LA001");
 
         return EstablishmentSearchResult.Create(
             urn,
@@ -47,7 +48,7 @@ public static class EstablishmentSearchResultTestDouble
 
     public static EstablishmentSearchResult WithUrn(string urn) =>
         EstablishmentSearchResult.Create(
-            new UniqueReferenceNumber(urn),
+            new ProviderIdentifier(urn),
             new Name("Test School"),
             new SiteAddressModel(
                 Name: string.Empty,
@@ -57,7 +58,7 @@ public static class EstablishmentSearchResultTestDouble
                 County: "County",
                 Postcode: "PC1 1AA"
             ),
-            EstablishmentType.Create("Academy"),
+            SearchProviderType.Create("Academy"),
             GroupDetail.Create("Mock Trust", "TRUST001"),
-            LocalAuthority.Create("Test LA", "LA001"));
+            SearchProviderLocalAuthority.Create("Test LA", "LA001"));
 }

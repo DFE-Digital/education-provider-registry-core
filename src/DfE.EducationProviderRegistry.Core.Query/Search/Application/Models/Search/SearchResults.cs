@@ -21,8 +21,7 @@ public class SearchResults<TResults, TFacetResults>
     public TFacetResults? FacetResults { get; init; }
 
     /// <summary>
-    ///     Gets the total number of results returned from the underlying search system.
+    /// Gets the total number of results returned from the underlying search system.
     /// </summary>
     public int TotalCount { get; init; }
-
 }

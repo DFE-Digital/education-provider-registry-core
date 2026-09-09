@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DfE.Core.Libraries.CrossCutting.Mapper;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
 using Moq;
@@ -12,14 +11,14 @@ internal static class SearchResultsMapperTestDouble
 {
     public static Mock<IMapper<
         SearchPipelineContext,
-        SearchResults<EstablishmentSearchResults, SearchFacets>>> Mock() => new(MockBehavior.Strict);
+        SearchResults<SearchProviderResults, SearchFacets>>> Mock() => new(MockBehavior.Strict);
 
     public static Mock<IMapper<
         SearchPipelineContext,
-        SearchResults<EstablishmentSearchResults, SearchFacets>>> MockFor(
-        SearchResults<EstablishmentSearchResults, SearchFacets> searchResults)
+        SearchResults<SearchProviderResults, SearchFacets>>> MockFor(
+        SearchResults<SearchProviderResults, SearchFacets> searchResults)
     {
-        Mock<IMapper<SearchPipelineContext, SearchResults<EstablishmentSearchResults, SearchFacets>>> searchResultsMapper = Mock();
+        Mock<IMapper<SearchPipelineContext, SearchResults<SearchProviderResults, SearchFacets>>> searchResultsMapper = Mock();
 
         searchResultsMapper
             .Setup(mapper =>

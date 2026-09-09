@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
@@ -22,7 +21,7 @@ public class EstablishmentsSearchServiceAdapterTests
 {
     private readonly Mock<ISearchFilterExpressionsBuilder<Establishment>> _filterBuilderMock;
     private readonly Mock<IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
-        SearchResults<EstablishmentSearchResults, SearchFacets>>> _resultsMapperMock;
+        SearchResults<SearchProviderResults, SearchFacets>>> _resultsMapperMock;
     private readonly Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> _filterMapperMock;
     private readonly EstablishmentsSearchServiceAdapter _sut;
     private readonly EducationProviderRegistryDbContext _db;
@@ -163,7 +162,7 @@ public class EstablishmentsSearchServiceAdapterTests
             sortOrdering: new SortOrder("Name", "asc", new List<string> { "Name" }));
 
         // act
-        SearchResults<EstablishmentSearchResults, SearchFacets> result = await _sut.SearchAsync(request, CancellationToken.None);
+        SearchResults<SearchProviderResults, SearchFacets> result = await _sut.SearchAsync(request, CancellationToken.None);
 
         // verify
         _resultsMapperMock.Verify(mapper =>

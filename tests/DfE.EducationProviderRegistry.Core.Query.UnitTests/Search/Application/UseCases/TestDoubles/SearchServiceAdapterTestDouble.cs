@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using Moq;
 
@@ -9,18 +8,18 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 [ExcludeFromCodeCoverage]
 internal sealed class SearchServiceAdapterTestDouble
 {
-    private readonly Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> _mock;
+    private readonly Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> _mock;
 
     public SearchServiceAdapterTestDouble()
     {
         _mock = new Mock<ISearchServiceAdapter<
-            EstablishmentSearchResults, SearchFacets>>(MockBehavior.Strict);
+            SearchProviderResults, SearchFacets>>(MockBehavior.Strict);
     }
 
     public SearchServiceAdapterRequest? CapturedRequest { get; private set; }
 
-    public Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> Returning(
-        SearchResults<EstablishmentSearchResults, SearchFacets> results)
+    public Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> Returning(
+        SearchResults<SearchProviderResults, SearchFacets> results)
     {
         _mock
             .Setup(adapter =>
@@ -32,7 +31,7 @@ internal sealed class SearchServiceAdapterTestDouble
         return _mock;
     }
 
-    public Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> Throwing(Exception exception)
+    public Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> Throwing(Exception exception)
     {
         _mock
             .Setup(adapter =>
@@ -44,8 +43,8 @@ internal sealed class SearchServiceAdapterTestDouble
         return _mock;
     }
 
-    public Mock<ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>> CapturingAndReturning(
-        SearchResults<EstablishmentSearchResults, SearchFacets> results)
+    public Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> CapturingAndReturning(
+        SearchResults<SearchProviderResults, SearchFacets> results)
     {
         _mock
             .Setup(adapter =>

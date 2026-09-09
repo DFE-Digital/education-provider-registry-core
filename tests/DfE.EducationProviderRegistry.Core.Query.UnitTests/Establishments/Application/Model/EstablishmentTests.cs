@@ -8,13 +8,13 @@ public sealed class EstablishmentTests
     [Fact]
     public void Urn_ShouldThrow_WhenInvalid()
     {
-        Assert.Throws<ArgumentException>(() => new EstablishmentUrnModel(new UniqueReferenceNumber("ABC")));
+        Assert.Throws<ArgumentException>(() => new EstablishmentUrnModel(new ProviderIdentifier("ABC")));
     }
 
     [Fact]
     public void ShouldSetUrn_WhenInitialized()
     {
-        EstablishmentUrnModel urn = new(new UniqueReferenceNumber("123456"));
+        EstablishmentUrnModel urn = new(new ProviderIdentifier("123456"));
 
         EstablishmentDetailsModel establishment = new()
         {
@@ -29,7 +29,7 @@ public sealed class EstablishmentTests
     {
         EstablishmentDetailsModel establishment = new()
         {
-            Urn = new EstablishmentUrnModel(new UniqueReferenceNumber("123456")),
+            Urn = new EstablishmentUrnModel(new ProviderIdentifier("123456")),
             Name = new EstablishmentNameModel("Test School"),
             Number = new EstablishmentNumberModel("123"),
             Status = new EstablishmentStatusModel("Open"),

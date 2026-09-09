@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
@@ -11,7 +12,7 @@ internal static class EstablishmentTestDouble
 
     public static Name ValidName => new("Test School");
 
-    public static SiteAddressModel ValidAddress =>
+    public static SearchProviderAddress ValidAddress =>
         new(
             Name: string.Empty,
             AddressLine1: "123 Example Street",
@@ -20,13 +21,13 @@ internal static class EstablishmentTestDouble
             County: "Testshire",
             Postcode: "TE5 7ST");
 
-    public static EstablishmentType ValidType =>
-        EstablishmentType.Create("Academy");
+    public static SearchProviderType ValidType =>
+        SearchProviderType.Create("Academy");
 
     public static GroupDetail ValidGroup =>
         GroupDetail.Create("Mock Trust", "TRUST001");
 
-    public static LocalAuthority ValidLocalAuthority =>
-        LocalAuthority.Create("Test LA", "LA001");
+    public static SearchProviderLocalAuthority ValidLocalAuthority =>
+        SearchProviderLocalAuthority.Create("Test LA", "LA001");
 }
 

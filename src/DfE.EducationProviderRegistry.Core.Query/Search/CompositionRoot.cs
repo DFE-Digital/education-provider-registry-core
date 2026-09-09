@@ -4,7 +4,6 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
@@ -17,8 +16,6 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.F
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
@@ -30,10 +27,10 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProces
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -83,13 +80,13 @@ public static class CompositionRoot
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddScoped<ISqlFilterExpressionTranslator<Establishment>,
-            SqlFilterExpressionTranslator<Establishment>>();
+        services.TryAddScoped<ISqlFilterExpressionTranslator<SearchProvider>,
+            SqlFilterExpressionTranslator<SearchProvider>>();
 
-        services.TryAddScoped<ISearchOrchestrator<Establishment>,
-            TrigramSearchOrchestrator<Establishment>>();
+        services.TryAddScoped<ISearchOrchestrator<SearchProvider>,
+            TrigramSearchOrchestrator<SearchProvider>>();
 
-        services.TryAddScoped<ISearchProjectionBuilder<Establishment>,
+        services.TryAddScoped<ISearchProjectionBuilder<SearchProvider>,
             EstablishmentSearchProjectionBuilder>();
 
         services.AddSingleton(typeof(IEntityMetadataResolver<>),
@@ -97,46 +94,27 @@ public static class CompositionRoot
 
         services.AddScoped(typeof(ISqlExecutor<>), typeof(SqlExecutor<>));
 
-        services.TryAddScoped<ISearchProvider<Establishment>>(sp =>
+        services.TryAddScoped<ISearchProvider<SearchProvider>>(sp =>
             new EstablishmentsSearchProvider(
                 sp.GetRequiredService<IDbContextFactory<EducationProviderRegistryDbContext>>(),
-                sp.GetRequiredService<ISearchOrchestrator<Establishment>>(),
-                sp.GetRequiredService<ISearchProjectionBuilder<Establishment>>(),
-                sp.GetRequiredService<ISearchFilterExpressionsBuilder<Establishment>>(),
+                sp.GetRequiredService<ISearchOrchestrator<SearchProvider>>(),
+                sp.GetRequiredService<ISearchProjectionBuilder<SearchProvider>>(),
+                sp.GetRequiredService<ISearchFilterExpressionsBuilder<SearchProvider>>(),
                 searchColumn: "name"));
 
         services.TryAddScoped<IFacetProvider, EstablishmentFacetProvider>();
-
-        // Pipeline steps
-        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderMapStep>();
-        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, SearchOrderingStep>();
-        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, ParallelMappingStep>();
-        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryDispatchStep>();
-        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryResolverStep>();
-        services.AddScoped<IEvaluationHandler<SearchPipelineContext>, FacetQueryBuilderStep>();
-
-        services.AddScoped<IEvaluator<SearchPipelineContext>>((sp) =>
-        {
-            IEnumerable<IEvaluationHandler<SearchPipelineContext>> handlers = sp.GetServices<IEvaluationHandler<SearchPipelineContext>>();
-
-            return new PipelineEvaluator(handlers);
-        });
 
         // ---------------------------------------------------------
         // Mappers
         // ---------------------------------------------------------
         services.TryAddSingleton<
-            IMapper<Establishment, EstablishmentSearchResult>,
-            EstablishmentToSearchResultMapper>();
-
-        services.TryAddSingleton<
             IMapper<
                 (
-                    IReadOnlyList<EstablishmentReadModel> Results,
+                    IReadOnlyList<SearchReadModel> Results,
                     IReadOnlyList<AggregatedFacetResult> Facets,
                     int TotalCount
                 ),
-                SearchResults<EstablishmentSearchResults, SearchFacets>>,
+                SearchResults<SearchProviderResults, SearchFacets>>,
             SearchResultsFromQueryResultsMapper>();
 
         return services;
@@ -159,21 +137,21 @@ public static class CompositionRoot
 
         services.TryAddScoped<EstablishmentTypeFilter>();
 
-        services.TryAddScoped<ISearchFilterSpecificationFactory<Establishment>>(provider =>
+        services.TryAddScoped<ISearchFilterSpecificationFactory<SearchProvider>>(provider =>
         {
-            Dictionary<string, Func<ISearchFilter<Establishment>>> map =
+            Dictionary<string, Func<ISearchFilter<SearchProvider>>> map =
                 new()
                 {
                     ["EstablishmentTypeFilter"] = () =>
                         provider.GetRequiredService<EstablishmentTypeFilter>()
                 };
 
-            return new SearchFilterSpecificationFactory<Establishment>(map);
+            return new SearchFilterSpecificationFactory<SearchProvider>(map);
         });
 
         services.TryAddScoped<
-            ISearchFilterExpressionsBuilder<Establishment>,
-            SearchFilterExpressionsBuilder<Establishment>>();
+            ISearchFilterExpressionsBuilder<SearchProvider>,
+            SearchFilterExpressionsBuilder<SearchProvider>>();
 
         services.TryAddSingleton<IMapper<
             ReadOnlyCollection<FilterRequest>,
@@ -181,12 +159,12 @@ public static class CompositionRoot
             SearchRequestFiltersToCoreFiltersMapper>();
 
         services.AddSingleton(
-            new Dictionary<string, FacetDefinition<Establishment>>(StringComparer.OrdinalIgnoreCase)
+            new Dictionary<string, FacetDefinition<SearchProvider>>(StringComparer.OrdinalIgnoreCase)
             {
                 ["establishmenttypeid"] =
-                    new FacetDefinition<Establishment>(
-                        establishment => establishment.EstablishmentTypeId,
-                        establishment => establishment.EstablishmentType.Name)
+                    new FacetDefinition<SearchProvider>(
+                        searchProvider => searchProvider.ProviderId,
+                        searchProvider => searchProvider.ProviderName)
             });
 
         services.AddScoped<IFacetAggregator, FacetAggregator>();
@@ -201,7 +179,7 @@ public static class CompositionRoot
             .ValidateOnStart();
 
         services.AddScoped<
-            ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>,
+            ISearchServiceAdapter<SearchProviderResults, SearchFacets>,
             EstablishmentsSearchServiceAdapter>();
 
         // ---------------------------------------------------------
@@ -212,13 +190,13 @@ public static class CompositionRoot
         services.AddSingleton(typeof(StartsWithSearchBehaviour<>));
         services.AddSingleton(typeof(FuzzySearchBehaviour<>));
 
-        services.AddSingleton<ISearchBehaviourRegistry<Establishment>>((sp) =>
+        services.AddSingleton<ISearchBehaviourRegistry<SearchProvider>>((sp) =>
         {
-            return new SearchBehaviourRegistry<Establishment>([
-                    new("exact", sp.GetRequiredService<ExactSearchBehaviour<Establishment>>()),
-                    new("startswith", sp.GetRequiredService<StartsWithSearchBehaviour<Establishment>>()),
-                    new("contains", sp.GetRequiredService<ContainsSearchBehaviour<Establishment>>()),
-                    new("fuzzy", sp.GetRequiredService<FuzzySearchBehaviour<Establishment>>())
+            return new SearchBehaviourRegistry<SearchProvider>([
+                    new("exact", sp.GetRequiredService<ExactSearchBehaviour<SearchProvider>>()),
+                    new("startswith", sp.GetRequiredService<StartsWithSearchBehaviour<SearchProvider>>()),
+                    new("contains", sp.GetRequiredService<ContainsSearchBehaviour<SearchProvider>>()),
+                    new("fuzzy", sp.GetRequiredService<FuzzySearchBehaviour<SearchProvider>>())
                 ]
             );
         });
@@ -226,26 +204,26 @@ public static class CompositionRoot
         // ---------------------------------------------------------
         // Search specification orchestration
         // ---------------------------------------------------------
-        services.AddSingleton<IChainingPredicateRegistry<Establishment>>(provider =>
+        services.AddSingleton<IChainingPredicateRegistry<SearchProvider>>(provider =>
         {
             Dictionary<string, Func<
-                ISpecification<Establishment>,
-                ISpecification<Establishment>,
-                ISpecification<Establishment>>> map =
+                ISpecification<SearchProvider>,
+                ISpecification<SearchProvider>,
+                ISpecification<SearchProvider>>> map =
                     new(StringComparer.OrdinalIgnoreCase)
                     {
                         ["AND"] = (left, right) => left.And(right),
                         ["OR"] = (left, right) => left.Or(right)
                     };
 
-            return new ChainingPredicateRegistry<Establishment>(map);
+            return new ChainingPredicateRegistry<SearchProvider>(map);
         });
 
-        services.AddScoped<ISearchIndexFieldSpecificationOrchestrator<Establishment>,
-            SearchIndexFieldSpecificationOrchestrator<Establishment>>();
+        services.AddScoped<ISearchIndexFieldSpecificationOrchestrator<SearchProvider>,
+            SearchIndexFieldSpecificationOrchestrator<SearchProvider>>();
 
-        services.AddScoped<ISearchTermSpecificationOrchestrator<Establishment>,
-            SearchTermSpecificationOrchestrator<Establishment>>();
+        services.AddScoped<ISearchTermSpecificationOrchestrator<SearchProvider>,
+            SearchTermSpecificationOrchestrator<SearchProvider>>();
 
         services.AddScoped(typeof(ISearchQueryProcessor<>), typeof(SearchQueryProcessor<>));
     }

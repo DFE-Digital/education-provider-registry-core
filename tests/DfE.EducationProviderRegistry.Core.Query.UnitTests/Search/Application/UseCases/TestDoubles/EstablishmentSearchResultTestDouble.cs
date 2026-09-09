@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
@@ -20,7 +21,7 @@ internal static class EstablishmentSearchResultTestDouble
         Faker faker = new();
 
         return EstablishmentSearchResult.Create(
-            urn: new UniqueReferenceNumber(FakeUrn(faker).ToString()),
+            urn: new ProviderIdentifier(FakeUrn(faker).ToString()),
             name: new Name(FakeName(faker)),
             address: new SiteAddressModel(
                 Name: string.Empty,
@@ -29,9 +30,9 @@ internal static class EstablishmentSearchResultTestDouble
                 Town: FakeTown(faker),
                 County: FakeCounty(faker),
                 Postcode: FakePostcode(faker)),
-            type: EstablishmentType.Create("Academy"),
+            type: SearchProviderType.Create("Academy"),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
-            localAuthority: LocalAuthority.Create("Test LA", "LA001")
+            localAuthority: SearchProviderLocalAuthority.Create("Test LA", "LA001")
         );
     }
 }

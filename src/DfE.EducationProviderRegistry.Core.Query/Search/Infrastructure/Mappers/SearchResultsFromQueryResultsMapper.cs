@@ -9,15 +9,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers
 internal sealed class SearchResultsFromQueryResultsMapper
     : IMapper<
         (
-            IReadOnlyList<EstablishmentReadModel> Results,
+            IReadOnlyList<SearchReadModel> Results,
             IReadOnlyList<AggregatedFacetResult> Facets,
             int TotalCount
         ),
-        SearchResults<EstablishmentSearchResults, SearchFacets>>
+        SearchResults<SearchProviderResults, SearchFacets>>
 {
-    public SearchResults<EstablishmentSearchResults, SearchFacets> Map(
+    public SearchResults<SearchProviderResults, SearchFacets> Map(
         (
-            IReadOnlyList<EstablishmentReadModel> Results,
+            IReadOnlyList<SearchReadModel> Results,
             IReadOnlyList<AggregatedFacetResult> Facets,
             int TotalCount
         ) context)
@@ -26,7 +26,7 @@ internal sealed class SearchResultsFromQueryResultsMapper
         {
             throw new ArgumentNullException(
                 nameof(context),
-                "Tuple does not contain establishment results.");
+                "Tuple does not contain search provider results.");
         }
 
         if (context.Facets is null)
@@ -36,26 +36,21 @@ internal sealed class SearchResultsFromQueryResultsMapper
                 "Tuple does not contain facet results.");
         }
 
-        EstablishmentSearchResult[] mapped =
+        SearchProviderResult[] mapped =
         [
             .. context.Results.Select(r =>
-                EstablishmentSearchResult.Create(
-                    new UniqueReferenceNumber(r.Urn),
+                SearchProviderResult.Create(
+                    new ProviderIdentifier(r.Id),
                     new Name(r.Name ?? string.Empty),
-                    new SiteAddressModel(
-                        Name: r.Name ?? string.Empty,
-                        AddressLine1: r.AddressLine1 ?? string.Empty,
-                        AddressLine2: r.AddressLine2 ?? string.Empty,
-                        Town: r.City ?? string.Empty,
-                        County: r.County ?? string.Empty,
-                        Postcode: r.Postcode ?? string.Empty),
-                    new EstablishmentType(r.Type ?? string.Empty),
+                    new SearchProviderAddress(
+                        FullAddress: r.Address ?? string.Empty),
+                    new SearchProviderType(r.TypeName ?? string.Empty, r.TypeId),
                     new GroupDetail(
                         partOfName: r.GroupName ?? string.Empty,
                         partOfCode: r.GroupCode ?? string.Empty),
-                    new LocalAuthority(
-                        localAuthorityName: r.LocalAuthorityName ?? string.Empty,
-                        localAuthorityCode: r.LocalAuthorityCode ?? string.Empty)
+                    new SearchProviderLocalAuthority(
+                        localAuthorityName: r.LocalAuthorityName ?? string.Empty),
+                    new SearchProviderCategory(r.ProviderCategory)
                 )
             )
         ];
@@ -74,9 +69,9 @@ internal sealed class SearchResultsFromQueryResultsMapper
                     ]))
         ];
 
-        return new SearchResults<EstablishmentSearchResults, SearchFacets>
+        return new SearchResults<SearchProviderResults, SearchFacets>
         {
-            Results = new EstablishmentSearchResults(mapped),
+            Results = new SearchProviderResults(mapped),
             FacetResults = new SearchFacets(facets),
             TotalCount = context.TotalCount
         };

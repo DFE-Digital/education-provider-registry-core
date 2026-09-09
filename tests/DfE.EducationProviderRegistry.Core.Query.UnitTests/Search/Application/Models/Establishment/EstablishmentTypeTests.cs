@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment;
 
@@ -8,7 +9,7 @@ public sealed class EstablishmentTypeTests
     public void Constructor_ShouldAssignValueCorrectly()
     {
         // arrange
-        EstablishmentType type = new("Academy");
+        SearchProviderType type = new("Academy");
 
         // assert
         Assert.Equal("Academy", type.Value);
@@ -18,8 +19,8 @@ public sealed class EstablishmentTypeTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        EstablishmentType viaCtor = new("Academy");
-        EstablishmentType viaFactory = EstablishmentType.Create("Academy");
+        SearchProviderType viaCtor = new("Academy");
+        SearchProviderType viaFactory = SearchProviderType.Create("Academy");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
@@ -50,7 +51,7 @@ public sealed class EstablishmentTypeTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            EstablishmentType.Create(null!));
+            SearchProviderType.Create(null!));
     }
 
     [Theory]
@@ -61,6 +62,6 @@ public sealed class EstablishmentTypeTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            EstablishmentType.Create(invalid));
+            SearchProviderType.Create(invalid));
     }
 }

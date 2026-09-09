@@ -28,7 +28,7 @@ public sealed class UniqueReferenceNumberTests
     public void Constructor_ShouldThrow_WhenUrnIsInvalid(string urn)
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new UniqueReferenceNumber(urn));
+        Assert.Throws<ArgumentException>(() => new ProviderIdentifier(urn));
     }
 
     [Fact]

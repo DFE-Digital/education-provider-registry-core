@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
 [ExcludeFromCodeCoverage]
 internal static class EstablishmentSearchResultsTestDouble
 {
-    public static EstablishmentSearchResults Stub()
+    public static SearchProviderResults Stub()
     {
         List<EstablishmentSearchResult> establishmentSearchResults = [];
 
@@ -19,5 +20,5 @@ internal static class EstablishmentSearchResultsTestDouble
         return new EstablishmentSearchResults(establishmentSearchResults);
     }
 
-    public static EstablishmentSearchResults EmptyStub() => new(null!);
+    public static SearchProviderResults EmptyStub() => new(null!);
 }

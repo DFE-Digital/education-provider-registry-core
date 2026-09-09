@@ -1,6 +1,5 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
@@ -17,7 +16,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
 {
     private readonly ILogger<SearchUseCase> _logger;
     private readonly SearchCriteria _searchCriteria;
-    private readonly ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets> _searchServiceAdapter;
+    private readonly ISearchServiceAdapter<SearchProviderResults, SearchFacets> _searchServiceAdapter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SearchUseCase"/> class.
@@ -35,7 +34,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
     public SearchUseCase(
         ILogger<SearchUseCase> logger,
         SearchCriteria searchCriteria,
-        ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets> searchServiceAdapter)
+        ISearchServiceAdapter<SearchProviderResults, SearchFacets> searchServiceAdapter)
     {
         _logger = logger ??
             throw new ArgumentNullException(nameof(logger));
@@ -63,7 +62,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
     {
         try
         {
-            SearchResults<EstablishmentSearchResults, SearchFacets>? searchResults =
+            SearchResults<SearchProviderResults, SearchFacets>? searchResults =
                 await _searchServiceAdapter.SearchAsync(
                     SearchServiceAdapterRequest.Create(
                        request.SearchTerms,

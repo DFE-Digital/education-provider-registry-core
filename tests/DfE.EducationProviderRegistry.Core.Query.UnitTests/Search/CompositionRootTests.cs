@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
@@ -134,9 +133,9 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets> adapter =
+        ISearchServiceAdapter<SearchProviderResults, SearchFacets> adapter =
             scope.ServiceProvider.GetRequiredService<
-                ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>>();
+                ISearchServiceAdapter<SearchProviderResults, SearchFacets>>();
 
         // assert
         Assert.IsType<EstablishmentsSearchServiceAdapter>(adapter);

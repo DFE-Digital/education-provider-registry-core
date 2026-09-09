@@ -12,7 +12,7 @@ internal sealed class GroupBuilder
     private string _ukprn = "UKPRN-1";
     private string _companiesHouseId = "CH1";
     private GroupType _type = GroupTypeTestDoubles.Create();
-    private SiteAddressModel _address = AddressTestDoubles.Generate();
+    private SearchProviderAddress _address = AddressTestDoubles.Generate();
     private GroupStatus _status = new(GroupOpenState.Open, new(2025, 01, 02));
 
     private IEnumerable<Academy> _academies = [];
