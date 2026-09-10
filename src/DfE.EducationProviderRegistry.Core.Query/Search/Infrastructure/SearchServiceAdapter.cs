@@ -126,7 +126,7 @@ public record SearchReadModel(
     string Id,                  // Urn OR GroupId.
     string Name,                // Establishment OR Group name.
     string TypeName,            // Establishment OR Group type.
-    long TypeId,
+    long? TypeId,
     string? Address,
     string? LocalAuthorityName,
     string GroupCode,

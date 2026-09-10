@@ -18,7 +18,7 @@ public sealed record class SearchProviderType
     /// Gets the underlying establishment type Id as returned
     /// by the search index or data source.
     /// </summary>
-    public long Id { get; }
+    public long? Id { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SearchProviderType"/> record.
@@ -35,7 +35,7 @@ public sealed record class SearchProviderType
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="type"/> is empty or whitespace.
     /// </exception>
-    public SearchProviderType(string type, long id)
+    public SearchProviderType(string type, long? id)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(type);
 
