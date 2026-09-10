@@ -3,9 +3,9 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
-public sealed class EstablishmentTypeFilter : ISearchFilter<SearchProvider>
+public sealed class SearchProviderTypeFilter : ISearchFilter<SearchAggregate>
 {
-    public ISpecification<SearchProvider> CreateSpecification(
+    public ISpecification<SearchAggregate> CreateSpecification(
         SearchFilterRequest request)
     {
         IReadOnlyCollection<long> values =
@@ -15,8 +15,8 @@ public sealed class EstablishmentTypeFilter : ISearchFilter<SearchProvider>
                 .Select((value) => Convert.ToInt64(value))
         ];
 
-        return new PropertyEqualsAnyValuesSpecification<SearchProvider, long>(
-            x => x.ProviderTypeId,
+        return new PropertyEqualsAnyValuesSpecification<SearchAggregate, long>(
+            searchProvider => searchProvider.ProviderTypeId,
             values);
     }
 }

@@ -63,7 +63,7 @@ public sealed class CompositionRootTests
             scope.ServiceProvider.GetRequiredService<ISearchProjectionBuilder<Establishment>>();
 
         // assert
-        Assert.IsType<EstablishmentSearchProjectionBuilder>(builder);
+        Assert.IsType<SearchAggregateProjectionBuilder>(builder);
     }
 
     [Fact]

@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 
 /// <summary>
-/// Provides facet aggregation for <see cref="Establishment"/> entities by grouping
+/// Provides facet aggregation for <see cref="SearchAggregate"/> entities by grouping
 /// a filtered set of URNs on a specified facet selector and returning bucket counts.
 /// </summary>
-public sealed class EstablishmentFacetProvider : IFacetProvider
+public sealed class FacetProvider : IFacetProvider
 {
     private readonly IDbContextFactory<EducationProviderRegistryDbContext> _contextFactory;
-    private readonly Dictionary<string, FacetDefinition<SearchProvider>> _facetDefinitions;
+    private readonly Dictionary<string, FacetDefinition<SearchAggregate>> _facetDefinitions;
 
     /// <summary>
     /// Creates a new facet provider using the supplied context factory and facet selector map.
@@ -22,9 +21,9 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
     /// <param name="facetSelectors">
     /// A mapping of facet names to expressions selecting the facet value from an <see cref="Establishment"/>.
     /// </param>
-    public EstablishmentFacetProvider(
+    public FacetProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> contextFactory,
-        Dictionary<string, FacetDefinition<SearchProvider>> facetDefinitions)
+        Dictionary<string, FacetDefinition<SearchAggregate>> facetDefinitions)
     {
         _contextFactory = contextFactory;
         _facetDefinitions = facetDefinitions;
@@ -53,26 +52,28 @@ public sealed class EstablishmentFacetProvider : IFacetProvider
 
         await using (context)
         {
-            if (!_facetDefinitions.TryGetValue(facetName, out FacetDefinition<SearchProvider>? facetDefinition))
+            if (!_facetDefinitions.TryGetValue(facetName, out FacetDefinition<SearchAggregate>? facetDefinition))
             {
                 throw new InvalidOperationException($"Unknown facet '{facetName}'.");
             }
 
-            IQueryable<SearchProvider> filtered =
-                context.SearchProvider.Where(establishment =>
-                    ids.Contains(establishment.ProviderTypeId.ToString()));
+            IQueryable<SearchAggregate> filtered =
+                context.SearchAggregate
+                .Where(sp => ids.Contains(sp.ProviderId));
 
-            IQueryable<IGrouping<object, SearchProvider>> grouped =
+            IQueryable<IGrouping<object, SearchAggregate>> grouped =
                 filtered.GroupBy(facetDefinition.ValueSelector);
 
             IQueryable<dynamic> sqlProjection =
                 grouped.Select(groupedFacet => new
                 {
-                    Value = groupedFacet.Key,
-
-                    Label = groupedFacet.AsQueryable().Select(facetDefinition.LabelSelector).FirstOrDefault(),
-
-                    Count = groupedFacet.LongCount()
+                    Value =
+                        groupedFacet.Key,
+                    Label =
+                        groupedFacet.AsQueryable()
+                            .Select(facetDefinition.LabelSelector).FirstOrDefault(),
+                    Count =
+                        groupedFacet.LongCount()
                 });
 
             List<dynamic> rawFacetResults =

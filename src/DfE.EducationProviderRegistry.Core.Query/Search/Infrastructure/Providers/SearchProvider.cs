@@ -10,32 +10,32 @@ using Microsoft.EntityFrameworkCore;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 
 /// <summary>
-/// Provides trigram‑based search over <see cref="SearchProvider"/> entities by
+/// Provides trigram‑based search over <see cref="SearchAggregate"/> entities by
 /// constructing a projection query, applying filter expressions, and delegating
 /// execution to an <see cref="ISearchOrchestrator{TProjection}"/>.
 /// </summary>
-public sealed class EstablishmentsSearchProvider : ISearchProvider<SearchProvider>
+public sealed class SearchProvider : ISearchProvider<SearchAggregate>
 {
     private readonly IDbContextFactory<EducationProviderRegistryDbContext> _factory;
-    private readonly ISearchOrchestrator<SearchProvider> _orchestrator;
-    private readonly ISearchProjectionBuilder<SearchProvider> _projectionBuilder;
-    private readonly ISearchFilterExpressionsBuilder<SearchProvider> _searchFilterExpressionsBuilder;
+    private readonly ISearchOrchestrator<SearchAggregate> _orchestrator;
+    private readonly ISearchProjectionBuilder<SearchAggregate> _projectionBuilder;
+    private readonly ISearchFilterExpressionsBuilder<SearchAggregate> _searchFilterExpressionsBuilder;
 
     private readonly string _searchColumn;
 
     /// <summary>
-    /// Creates a new search provider for <see cref="Establishment"/> entities.
+    /// Creates a new search provider for <see cref="SearchAggregate"/> entities.
     /// </summary>
     /// <param name="factory">Factory used to create EF Core database contexts.</param>
     /// <param name="orchestrator">The trigram search orchestrator.</param>
     /// <param name="projectionBuilder">Builds the base LINQ projection for establishments.</param>
     /// <param name="searchFilterExpressionsBuilder">Builds filter expressions from search filters.</param>
     /// <param name="searchColumn">The database column used for trigram similarity search.</param>
-    public EstablishmentsSearchProvider(
+    public SearchProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> factory,
-        ISearchOrchestrator<SearchProvider> orchestrator,
-        ISearchProjectionBuilder<SearchProvider> projectionBuilder,
-        ISearchFilterExpressionsBuilder<SearchProvider> searchFilterExpressionsBuilder,
+        ISearchOrchestrator<SearchAggregate> orchestrator,
+        ISearchProjectionBuilder<SearchAggregate> projectionBuilder,
+        ISearchFilterExpressionsBuilder<SearchAggregate> searchFilterExpressionsBuilder,
         string searchColumn)
     {
         _factory = factory;
@@ -46,7 +46,7 @@ public sealed class EstablishmentsSearchProvider : ISearchProvider<SearchProvide
     }
 
     /// <summary>
-    /// Executes a trigram similarity search for establishments using the supplied
+    /// Executes a trigram similarity search using the supplied
     /// search term, paging parameters, and filter requests.
     /// </summary>
     /// <param name="searchTerm">The term used for trigram similarity matching.</param>
@@ -54,8 +54,8 @@ public sealed class EstablishmentsSearchProvider : ISearchProvider<SearchProvide
     /// <param name="offset">The number of results to skip.</param>
     /// <param name="filters">Additional filters to apply to the search.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>A read‑only list of matching <see cref="Establishment"/> entities.</returns>
-    public async Task<IReadOnlyList<SearchProvider>> GetMatchingIdsAsync(
+    /// <returns>A read‑only list of matching <see cref="SearchAggregate"/> entities.</returns>
+    public async Task<IReadOnlyList<SearchAggregate>> GetMatchingIdsAsync(
         string searchTerm,
         int pageSize,
         int offset,
@@ -65,12 +65,12 @@ public sealed class EstablishmentsSearchProvider : ISearchProvider<SearchProvide
         await using EducationProviderRegistryDbContext db =
             await _factory.CreateDbContextAsync(cancellationToken);
 
-        IQueryable<SearchProvider> baseQuery = _projectionBuilder.Build(db);
+        IQueryable<SearchAggregate> baseQuery = _projectionBuilder.Build(db);
 
-        Expression<Func<SearchProvider, bool>> filterExpression =
+        Expression<Func<SearchAggregate, bool>> filterExpression =
             _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filters);
 
-        SearchOrchestratorContext<SearchProvider> context =
+        SearchOrchestratorContext<SearchAggregate> context =
             new()
             {
                 SearchColumn = _searchColumn,

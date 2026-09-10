@@ -10,8 +10,8 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Provide
 /// by applying all required includes for related entities.
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal sealed class EstablishmentSearchProjectionBuilder
-    : ISearchProjectionBuilder<SearchProvider>
+internal sealed class SearchAggregateProjectionBuilder
+    : ISearchProjectionBuilder<SearchAggregate>
 {
     /// <summary>
     /// Produces an <see cref="IQueryable{Establishment}"/> with all navigation
@@ -22,14 +22,14 @@ internal sealed class EstablishmentSearchProjectionBuilder
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="db"/> is null.
     /// </exception>
-    public IQueryable<SearchProvider> Build(DbContext db)
+    public IQueryable<SearchAggregate> Build(DbContext db)
     {
         ArgumentNullException.ThrowIfNull(db);
 
         EducationProviderRegistryDbContext ctx =
             (EducationProviderRegistryDbContext)db;
 
-        return ctx.SearchProvider
+        return ctx.SearchAggregate
             .AsNoTracking()
             .AsSplitQuery();
     }

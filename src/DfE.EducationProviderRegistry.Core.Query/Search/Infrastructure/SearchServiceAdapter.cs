@@ -14,12 +14,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
-internal sealed class EstablishmentsSearchServiceAdapter
+internal sealed class SearchServiceAdapter
     : ISearchServiceAdapter<SearchProviderResults, SearchFacets>
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
-    private readonly ISearchQueryProcessor<SearchProvider> _searchSpecOrchestrator;
-    private readonly ISearchFilterExpressionsBuilder<SearchProvider> _searchFilterExpressionsBuilder;
+    private readonly ISearchQueryProcessor<SearchAggregate> _searchSpecOrchestrator;
+    private readonly ISearchFilterExpressionsBuilder<SearchAggregate> _searchFilterExpressionsBuilder;
     private readonly IFacetAggregator _facetAggregator;
     private readonly IMapper<
         (
@@ -32,10 +32,10 @@ internal sealed class EstablishmentsSearchServiceAdapter
         ReadOnlyCollection<FilterRequest>,
         ReadOnlyCollection<SearchFilterRequest>> _filterMapper;
 
-    public EstablishmentsSearchServiceAdapter(
+    public SearchServiceAdapter(
         EducationProviderRegistryDbContext dbContext,
-        ISearchQueryProcessor<SearchProvider> searchSpecOrchestrator,
-        ISearchFilterExpressionsBuilder<SearchProvider> searchFilterExpressionsBuilder,
+        ISearchQueryProcessor<SearchAggregate> searchSpecOrchestrator,
+        ISearchFilterExpressionsBuilder<SearchAggregate> searchFilterExpressionsBuilder,
         IFacetAggregator facetAggregator,
         IMapper<
             (
@@ -62,19 +62,19 @@ internal sealed class EstablishmentsSearchServiceAdapter
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        IQueryable<SearchProvider> establishmentsQuery =
-            _dbContext.SearchProvider.AsNoTracking();
+        IQueryable<SearchAggregate> establishmentsQuery =
+            _dbContext.SearchAggregate.AsNoTracking();
 
         ReadOnlyCollection<SearchFilterRequest> filterRequests =
             _filterMapper.Map(request.SearchFilterRequests.AsReadOnly());
 
-        Expression<Func<SearchProvider, bool>> filterPredicate =
+        Expression<Func<SearchAggregate, bool>> filterPredicate =
             _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
 
-        IQueryable<SearchProvider> filteredEstablishments =
+        IQueryable<SearchAggregate> filteredEstablishments =
             establishmentsQuery.Where(filterPredicate);
 
-        IQueryable<SearchProvider> searchResultsQuery =
+        IQueryable<SearchAggregate> searchResultsQuery =
             _searchSpecOrchestrator.ProcessSearch(
                 filteredEstablishments,
                 request.SearchTerms);
@@ -106,7 +106,6 @@ internal sealed class EstablishmentsSearchServiceAdapter
         // 2. Define available URN's.
         ReadOnlyCollection<string> urns =
             searchResults
-                .Where(entity => entity.ProviderCategory == "Group")
                 .Select(entity => entity.Id)
                 .ToList()
                 .AsReadOnly();
@@ -124,15 +123,15 @@ internal sealed class EstablishmentsSearchServiceAdapter
 }
 
 public record SearchReadModel(
-    string Id,              // Urn OR GroupId.
-    string Name,            // Establishment OR Group name.
+    string Id,                  // Urn OR GroupId.
+    string Name,                // Establishment OR Group name.
     string TypeName,            // Establishment OR Group type.
     long TypeId,
     string? Address,
     string? LocalAuthorityName,
     string GroupCode,
     string? GroupName,
-    string ProviderCategory // Either "Group" OR "Establishment".
+    string ProviderCategory     // Either "Group" OR "Establishment".
 );
 
 public static class QueryableExtensions
