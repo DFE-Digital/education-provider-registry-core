@@ -13,21 +13,15 @@ internal static class EstablishmentTestDouble
     public static Name ValidName => new("Test School");
 
     public static SearchProviderAddress ValidAddress =>
-        new(
-            Name: string.Empty,
-            AddressLine1: "123 Example Street",
-            AddressLine2: string.Empty,
-            Town: "Testville",
-            County: "Testshire",
-            Postcode: "TE5 7ST");
+        new("123 Example Street, Testville, Testshire, TE5 7ST");
 
     public static SearchProviderType ValidType =>
-        SearchProviderType.Create("Academy");
+        SearchProviderType.Create("Academy", 1);
 
     public static GroupDetail ValidGroup =>
         GroupDetail.Create("Mock Trust", "TRUST001");
 
     public static SearchProviderLocalAuthority ValidLocalAuthority =>
-        SearchProviderLocalAuthority.Create("Test LA", "LA001");
+        SearchProviderLocalAuthority.Create("Test LA");
 }
 

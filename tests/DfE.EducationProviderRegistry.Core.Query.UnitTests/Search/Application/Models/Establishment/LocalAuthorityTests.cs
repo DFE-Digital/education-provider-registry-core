@@ -8,19 +8,18 @@ public sealed class LocalAuthorityTests
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        SearchProviderLocalAuthority authority = new("Test LA", "LA001");
+        SearchProviderLocalAuthority authority = new("Test LA");
 
         // assert
         Assert.Equal("Test LA", authority.Name);
-        Assert.Equal("LA001", authority.Code);
     }
 
     [Fact]
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        SearchProviderLocalAuthority viaCtor = new("Test LA", "LA001");
-        SearchProviderLocalAuthority viaFactory = SearchProviderLocalAuthority.Create("Test LA", "LA001");
+        SearchProviderLocalAuthority viaCtor = new("Test LA");
+        SearchProviderLocalAuthority viaFactory = SearchProviderLocalAuthority.Create("Test LA");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
@@ -48,15 +47,7 @@ public sealed class LocalAuthorityTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            SearchProviderLocalAuthority.Create(null!, "LA001"));
-    }
-
-    [Fact]
-    public void FactoryMethod_ShouldThrow_WhenCodeIsNull()
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentNullException>(() =>
-            SearchProviderLocalAuthority.Create("Test LA", null!));
+            SearchProviderLocalAuthority.Create(null!));
     }
 
     [Theory]
@@ -89,17 +80,6 @@ public sealed class LocalAuthorityTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            SearchProviderLocalAuthority.Create(invalid, "LA001"));
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public void FactoryMethod_ShouldThrowArgumentException_WhenCodeIsEmptyOrWhitespace(string invalid)
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentException>(() =>
-            SearchProviderLocalAuthority.Create("Test LA", invalid));
+            SearchProviderLocalAuthority.Create(invalid));
     }
 }

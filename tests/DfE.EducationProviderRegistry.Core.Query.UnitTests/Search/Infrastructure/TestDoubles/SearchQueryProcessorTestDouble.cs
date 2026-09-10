@@ -7,15 +7,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public static class SearchQueryProcessorTestDouble
 {
-    public static Mock<ISearchQueryProcessor<Establishment>> Mock()
+    public static Mock<ISearchQueryProcessor<SearchAggregate>> Mock()
     {
-        Mock<ISearchQueryProcessor<Establishment>> mock = new(MockBehavior.Strict);
+        Mock<ISearchQueryProcessor<SearchAggregate>> mock = new(MockBehavior.Strict);
 
         mock.Setup(searchQueryProcessor =>
             searchQueryProcessor.ProcessSearch(
-                It.IsAny<IQueryable<Establishment>>(),
+                It.IsAny<IQueryable<SearchAggregate>>(),
                 It.IsAny<IEnumerable<SearchTerm?>?>()))
-            .Returns((IQueryable<Establishment> queryable, IEnumerable<SearchTerm?>? _) => queryable);
+            .Returns((IQueryable<SearchAggregate> queryable, IEnumerable<SearchTerm?>? _) => queryable);
 
         return mock;
     }

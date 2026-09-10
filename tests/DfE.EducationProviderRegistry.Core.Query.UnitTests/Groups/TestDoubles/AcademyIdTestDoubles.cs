@@ -8,6 +8,6 @@ internal static class AcademyIdTestDoubles
     public static AcademyId Create(string value = "12345")
     {
         return new(
-            new ProviderIdentifier(value));
+            new UniqueReferenceNumber(value));
     }
 }

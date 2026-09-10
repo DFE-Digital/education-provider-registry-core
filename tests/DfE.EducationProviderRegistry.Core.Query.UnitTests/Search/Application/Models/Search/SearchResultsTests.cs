@@ -6,21 +6,20 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 
 public sealed class SearchResultsTests
 {
-    private static EstablishmentSearchResult CreateMockEstablishment(int urn, string name)
+    private static SearchProviderResult CreateMockEstablishment(int urn, string name)
     {
-        return EstablishmentSearchResult.Create(
-            urn: new ProviderIdentifier(urn.ToString("D5")),
+        return SearchProviderResult.Create(
+            uniqueIdentifier: new ProviderIdentifier(urn.ToString("D5")),
             name: new Name(name),
-            address: new SiteAddressModel(
-                Name: string.Empty,
-                AddressLine1: "123 Example Street",
-                AddressLine2: string.Empty,
-                Town: "Testville",
-                County: "Testshire",
-                Postcode: "TE5 7ST"),
-            type: SearchProviderType.Create("Academy"),
+            address: new SearchProviderAddress(
+                "123 Example Street, " +
+                "Testville, " +
+                "Testshire, " +
+                "TE5 7ST"),
+            type: SearchProviderType.Create("Academy", 1),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
-            localAuthority: SearchProviderLocalAuthority.Create("Test LA", "LA001")
+            localAuthority: SearchProviderLocalAuthority.Create("Test LA"),
+            providerCategory: new SearchProviderCategory("Establishment")
         );
     }
 
@@ -30,7 +29,7 @@ public sealed class SearchResultsTests
         // arrange
         SearchProviderResults establishmentSearchResults =
             new(
-                new List<EstablishmentSearchResult>
+                new List<SearchProviderResult>
                 {
                     CreateMockEstablishment(123, "Test School 1"),
                     CreateMockEstablishment(456, "Test School 2"),

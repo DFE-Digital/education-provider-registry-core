@@ -19,11 +19,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public class EstablishmentsSearchServiceAdapterTests
 {
-    private readonly Mock<ISearchFilterExpressionsBuilder<Establishment>> _filterBuilderMock;
-    private readonly Mock<IMapper<(IReadOnlyList<EstablishmentReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
+    private readonly Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> _filterBuilderMock;
+    private readonly Mock<IMapper<(IReadOnlyList<SearchReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
         SearchResults<SearchProviderResults, SearchFacets>>> _resultsMapperMock;
     private readonly Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> _filterMapperMock;
-    private readonly EstablishmentsSearchServiceAdapter _sut;
+    private readonly SearchServiceAdapter _sut;
     private readonly EducationProviderRegistryDbContext _db;
 
     public EstablishmentsSearchServiceAdapterTests()
@@ -35,14 +35,14 @@ public class EstablishmentsSearchServiceAdapterTests
 
         _db = new EducationProviderRegistryDbContext(options);
 
-        Mock<ISearchQueryProcessor<Establishment>> searchProcessorMock = SearchQueryProcessorTestDouble.Mock();
+        Mock<ISearchQueryProcessor<SearchAggregate>> searchProcessorMock = SearchQueryProcessorTestDouble.Mock();
         Mock<IFacetAggregator> facetAggregatorMock = FacetAggregatorTestDouble.Mock();
 
         _filterBuilderMock = SearchFilterExpressionsBuilderTestDouble.Mock();
         _resultsMapperMock = ResultsMapperTestDouble.Mock();
         _filterMapperMock = FilterMapperTestDouble.Mock();
 
-        _sut = new EstablishmentsSearchServiceAdapter(
+        _sut = new SearchServiceAdapter(
             _db,
             searchProcessorMock.Object,
             _filterBuilderMock.Object,
@@ -166,21 +166,16 @@ public class EstablishmentsSearchServiceAdapterTests
 
         // verify
         _resultsMapperMock.Verify(mapper =>
-            mapper.Map(It.Is<(IReadOnlyList<EstablishmentReadModel> items,
+            mapper.Map(It.Is<(IReadOnlyList<SearchReadModel> items,
                 IReadOnlyList<AggregatedFacetResult> facets, int totalResults)>(projection =>
                     projection.items.Count == 1 &&
-                    projection.items[0].Urn == "100" &&
+                    projection.items[0].Id == "100" &&
                     projection.items[0].Name == "School A" &&
-                    projection.items[0].AddressLine1 == "Addr" &&
-                    projection.items[0].City == "Town" &&
-                    projection.items[0].County == "County" &&
-                    projection.items[0].Postcode == "PC" &&
-                    projection.items[0].Type == "Type" &&
-                    projection.items[0].Status == "Status" &&
+                    projection.items[0].Address == "Addr" &&
+                    projection.items[0].TypeId.ToString() == "Type" &&
                     projection.items[0].GroupName == "Group" &&
                     projection.items[0].GroupCode == "GC" &&
-                    projection.items[0].LocalAuthorityName == "Auth" &&
-                    projection.items[0].LocalAuthorityCode == "AC"
+                    projection.items[0].LocalAuthorityName == "Auth"
                 )), Times.Once);
     }
 }

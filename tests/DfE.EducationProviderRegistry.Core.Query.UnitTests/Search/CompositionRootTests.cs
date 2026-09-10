@@ -1,14 +1,10 @@
-﻿using System.Linq.Expressions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,7 +76,7 @@ public sealed class CompositionRootTests
             scope.ServiceProvider.GetRequiredService<ISearchProvider<Establishment>>();
 
         // assert
-        Assert.IsType<EstablishmentsSearchProvider>(providerInstance);
+        Assert.IsType<SearchProvider>(providerInstance);
     }
 
     [Fact]
@@ -97,30 +93,7 @@ public sealed class CompositionRootTests
             scope.ServiceProvider.GetRequiredService<IFacetProvider>();
 
         // assert
-        Assert.IsType<EstablishmentFacetProvider>(facetProvider);
-    }
-
-    [Fact]
-    public void CompositionRoot_Registers_PipelineSteps()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-
-        // act
-        IEnumerable<IEvaluationHandler<SearchPipelineContext>> steps =
-            scope.ServiceProvider.GetServices<IEvaluationHandler<SearchPipelineContext>>();
-
-        // assert
-        Assert.Contains(steps, step => step is SearchOrderMapStep);
-        Assert.Contains(steps, step => step is SearchOrderingStep);
-        Assert.Contains(steps, step => step is ParallelMappingStep);
-        Assert.Contains(steps, step => step is FacetQueryDispatchStep);
-        Assert.Contains(steps, step => step is FacetQueryResolverStep);
-        Assert.Contains(steps, step => step is FacetQueryBuilderStep);
-        Assert.NotNull(scope.ServiceProvider.GetService<Query.Shared.Pipeline.IEvaluator<SearchPipelineContext>>());
+        Assert.IsType<FacetProvider>(facetProvider);
     }
 
     [Fact]
@@ -138,6 +111,6 @@ public sealed class CompositionRootTests
                 ISearchServiceAdapter<SearchProviderResults, SearchFacets>>();
 
         // assert
-        Assert.IsType<EstablishmentsSearchServiceAdapter>(adapter);
+        Assert.IsType<SearchServiceAdapter>(adapter);
     }
 }

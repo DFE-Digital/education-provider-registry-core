@@ -30,7 +30,7 @@ internal static class AcademyTestDouble
     {
         return new(
             new AcademyId(
-                new ProviderIdentifier(urn)),
+                new UniqueReferenceNumber(urn)),
             new AcademyName(name)
         );
     }

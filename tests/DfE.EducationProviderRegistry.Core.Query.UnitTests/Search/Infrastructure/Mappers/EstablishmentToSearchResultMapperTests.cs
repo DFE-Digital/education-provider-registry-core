@@ -53,8 +53,9 @@ public sealed class EstablishmentToSearchResultMapperTests
     [Fact]
     public void Map_Throws_WhenInputIsNull()
     {
+
         // arrange
-        EstablishmentToSearchResultMapper mapper = new();
+        SearchResultsFromQueryResultsMapper mapper = new();
 
         // act // assert
         Assert.Throws<ArgumentNullException>(() => mapper.Map(null!));

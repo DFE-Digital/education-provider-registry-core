@@ -1,10 +1,9 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment;
 
-public sealed class EstablishmentSearchResultsTests
+public sealed class SearchProviderResultsTests
 {
     [Fact]
     public void DefaultConstructor_ShouldCreateEmptyCollection()
@@ -13,8 +12,8 @@ public sealed class EstablishmentSearchResultsTests
         SearchProviderResults results = new();
 
         // assert
-        Assert.NotNull(results.EstablishmentCollection);
-        Assert.Empty(results.EstablishmentCollection);
+        Assert.NotNull(results.SearchResultCollection);
+        Assert.Empty(results.SearchResultCollection);
         Assert.Equal(0, results.Count);
     }
 
@@ -22,17 +21,17 @@ public sealed class EstablishmentSearchResultsTests
     public void Constructor_ShouldPopulateCollection_WhenListProvided()
     {
         // arrange
-        List<EstablishmentSearchResult> list =
+        List<SearchProviderResult> list =
         [
-            EstablishmentSearchResultTestDouble.WithUrn("10001"),
-            EstablishmentSearchResultTestDouble.WithUrn("10002")
+            SearchResultTestDouble.WithProviderIdentifier("10001"),
+            SearchResultTestDouble.WithProviderIdentifier("10002")
         ];
 
         SearchProviderResults results = new(list);
 
         // assert
         Assert.Equal(2, results.Count);
-        Assert.Equal(2, results.EstablishmentCollection.Count);
+        Assert.Equal(2, results.SearchResultCollection.Count);
     }
 
     [Fact]
@@ -42,8 +41,8 @@ public sealed class EstablishmentSearchResultsTests
         SearchProviderResults results = new(null!);
 
         // assert
-        Assert.NotNull(results.EstablishmentCollection);
-        Assert.Empty(results.EstablishmentCollection);
+        Assert.NotNull(results.SearchResultCollection);
+        Assert.Empty(results.SearchResultCollection);
         Assert.Equal(0, results.Count);
     }
 
@@ -51,33 +50,33 @@ public sealed class EstablishmentSearchResultsTests
     public void EstablishmentCollection_ShouldBeReadOnly()
     {
         // arrange
-        List<EstablishmentSearchResult> list =
+        List<SearchProviderResult> list =
         [
-            EstablishmentSearchResultTestDouble.WithUrn("10001")
+            SearchResultTestDouble.WithProviderIdentifier("10001")
         ];
 
         SearchProviderResults results = new(list);
 
-        IReadOnlyCollection<EstablishmentSearchResult> readOnly = results.EstablishmentCollection;
+        IReadOnlyCollection<SearchProviderResult> readOnly = results.SearchResultCollection;
 
         // assert
         Assert.Throws<NotSupportedException>(() =>
-            ((IList<EstablishmentSearchResult>)readOnly).Add(
-                EstablishmentSearchResultTestDouble.WithUrn("10002")));
+            ((IList<SearchProviderResult>)readOnly).Add(
+                SearchResultTestDouble.WithProviderIdentifier("10002")));
     }
 
     [Fact]
     public void Constructor_ShouldCopyList_NotReferenceIt()
     {
         // arrange
-        List<EstablishmentSearchResult> list =
+        List<SearchProviderResult> list =
         [
-            EstablishmentSearchResultTestDouble.WithUrn("10001")
+            SearchResultTestDouble.WithProviderIdentifier("10001")
         ];
 
         SearchProviderResults results = new(list);
 
-        list.Add(EstablishmentSearchResultTestDouble.WithUrn("10002"));
+        list.Add(SearchResultTestDouble.WithProviderIdentifier("10002"));
 
         // assert
         Assert.Equal(1, results.Count);
@@ -90,8 +89,8 @@ public sealed class EstablishmentSearchResultsTests
         SearchProviderResults results = SearchProviderResults.CreateEmpty();
 
         // assert
-        Assert.NotNull(results.EstablishmentCollection);
-        Assert.Empty(results.EstablishmentCollection);
+        Assert.NotNull(results.SearchResultCollection);
+        Assert.Empty(results.SearchResultCollection);
         Assert.Equal(0, results.Count);
     }
 }
