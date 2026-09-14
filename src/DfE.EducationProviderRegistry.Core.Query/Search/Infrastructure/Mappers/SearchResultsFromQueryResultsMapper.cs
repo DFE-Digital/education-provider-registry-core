@@ -50,7 +50,8 @@ internal sealed class SearchResultsFromQueryResultsMapper
                         partOfCode: r.GroupCode ?? string.Empty),
                     new SearchProviderLocalAuthority(
                         localAuthorityName: r.LocalAuthorityName ?? string.Empty),
-                    new SearchProviderCategory(r.ProviderCategory)
+                    new SearchProviderCategory(r.ProviderCategory),
+                    r.AcademyCount
                 )
             )
         ];
