@@ -3,11 +3,11 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.S
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 
 [ExcludeFromCodeCoverage]
 internal static class SearchOrchestratorTestDouble
 {
-    public static Mock<ISearchOrchestrator<Establishment>> Mock() =>
+    public static Mock<ISearchOrchestrator<SearchAggregate>> Mock() =>
         new(MockBehavior.Strict);
 }

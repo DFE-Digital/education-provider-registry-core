@@ -12,7 +12,7 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenNonNumericValue_ThrowsFormatException()
     {
         // Arrange
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         SearchFilterRequest request = RequestFilterValues(["a"]);
 
@@ -25,7 +25,7 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenValueOutsideInt64Range_ThrowsOverflowException()
     {
         // Arrange
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         SearchFilterRequest request = RequestFilterValues(["999999999999999999999999999999"]);
 
@@ -38,21 +38,21 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenOnlyNullFilterValues_Evaluates_To_True()
     {
         // Arrange
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         SearchFilterRequest request = RequestFilterValues([null!]);
 
-        Establishment establishment = new()
+        SearchAggregate searchAggregate = new()
         {
-            EstablishmentTypeId = 999
+            ProviderTypeId = 999
         };
 
         // Act
-        ISpecification<Establishment> specification =
+        ISpecification<SearchAggregate> specification =
             sut.CreateSpecification(request);
 
         bool result =
-            specification.IsSatisfiedBy(establishment);
+            specification.IsSatisfiedBy(searchAggregate);
 
         // Assert
         Assert.True(result);
@@ -62,21 +62,21 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenNullFilterValues_SomeMatchingFields_Evaluates_To_True()
     {
         // Arrange
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         SearchFilterRequest request = RequestFilterValues(["1", null!, "2"]);
 
-        Establishment establishment = new()
+        SearchAggregate searchAggregate = new()
         {
-            EstablishmentTypeId = 2
+            ProviderTypeId = 2
         };
 
         // Act
-        ISpecification<Establishment> specification =
+        ISpecification<SearchAggregate> specification =
             sut.CreateSpecification(request);
 
         bool result =
-            specification.IsSatisfiedBy(establishment);
+            specification.IsSatisfiedBy(searchAggregate);
 
         // Assert
         Assert.True(result);
@@ -86,21 +86,21 @@ public sealed class EstablishmentTypeFilterTests
     public void CreateSpecification_GivenNullFilterValues_NoMatchingFields_Evaluates_To_False()
     {
         // Arrange
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         SearchFilterRequest request = RequestFilterValues(["1", null!]);
 
-        Establishment establishment = new()
+        SearchAggregate searchAggregate = new()
         {
-            EstablishmentTypeId = 2
+            ProviderTypeId = 2
         };
 
         // Act
-        ISpecification<Establishment> specification =
+        ISpecification<SearchAggregate> specification =
             sut.CreateSpecification(request);
 
         bool result =
-            specification.IsSatisfiedBy(establishment);
+            specification.IsSatisfiedBy(searchAggregate);
 
         // Assert
         Assert.False(result);
@@ -112,17 +112,17 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         SearchFilterRequest request = RequestFilterValues(["1", "2"]);
 
-        Establishment establishment = new()
+        SearchAggregate searchAggregate = new()
         {
-            EstablishmentTypeId = 2
+            ProviderTypeId = 2
         };
 
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         // Act
-        ISpecification<Establishment> specification = sut.CreateSpecification(request);
+        ISpecification<SearchAggregate> specification = sut.CreateSpecification(request);
 
-        bool result = specification.IsSatisfiedBy(establishment);
+        bool result = specification.IsSatisfiedBy(searchAggregate);
 
         // Assert
         Assert.True(result);
@@ -134,19 +134,19 @@ public sealed class EstablishmentTypeFilterTests
         // Arrange
         SearchFilterRequest request = RequestFilterValues(["1", "2"]);
 
-        Establishment establishment = new()
+        SearchAggregate searchAggregate = new()
         {
-            EstablishmentTypeId = 3
+            ProviderTypeId = 3
         };
 
-        EstablishmentTypeFilter sut = new();
+        SearchProviderTypeFilter sut = new();
 
         // Act
-        ISpecification<Establishment> specification =
+        ISpecification<SearchAggregate> specification =
             sut.CreateSpecification(request);
 
         bool result =
-            specification.IsSatisfiedBy(establishment);
+            specification.IsSatisfiedBy(searchAggregate);
 
         // Assert
         Assert.False(result);

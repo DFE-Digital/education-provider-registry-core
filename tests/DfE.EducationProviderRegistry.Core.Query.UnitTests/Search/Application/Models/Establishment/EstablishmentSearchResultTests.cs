@@ -1,27 +1,28 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles.Builders;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment;
 
-public sealed class EstablishmentSearchResultTests
+public sealed class SearchResultTests
 {
-    private static EstablishmentSearchResultBuilder Builder
+    private static SearchResultBuilder Builder
     {
-        get { return new EstablishmentSearchResultBuilder(); }
+        get { return new SearchResultBuilder(); }
     }
 
     [Fact]
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        EstablishmentSearchResult result = Builder.Build();
+        SearchProviderResult result = Builder.Build();
 
         // assert
-        Assert.Equal("12345", result.Urn.Value);
+        Assert.Equal("12345", result.UniqueIdentifier.Value);
         Assert.Equal("Test School", result.Name.Value);
-        Assert.Equal("123 Example Street", result.Address?.AddressLine1);
-        Assert.Equal("Academy", result.Type?.Value);
+        Assert.Equal("123 Example Street", result.Address?.FullAddress);
+        Assert.Equal("Academy", result.Type?.Name);
         Assert.Equal("Mock Trust", result.Group?.PartOfName);
         Assert.Equal("Test LA", result.LocalAuthority?.Name);
     }
@@ -30,7 +31,7 @@ public sealed class EstablishmentSearchResultTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        EstablishmentSearchResult viaCtor =
+        SearchProviderResult viaCtor =
             new(
                 EstablishmentTestDouble.ValidUrn,
                 EstablishmentTestDouble.ValidName,
@@ -39,7 +40,7 @@ public sealed class EstablishmentSearchResultTests
                 EstablishmentTestDouble.ValidGroup,
                 EstablishmentTestDouble.ValidLocalAuthority);
 
-        EstablishmentSearchResult viaFactory = Builder.Build();
+        SearchProviderResult viaFactory = Builder.Build();
 
         // assert
         Assert.Equal(viaCtor, viaFactory);

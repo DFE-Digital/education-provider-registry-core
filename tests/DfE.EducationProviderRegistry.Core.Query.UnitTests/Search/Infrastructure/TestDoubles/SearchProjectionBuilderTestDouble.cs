@@ -4,21 +4,21 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 
 [ExcludeFromCodeCoverage]
 internal static class SearchProjectionBuilderTestDouble
 {
-    public static Mock<ISearchProjectionBuilder<Establishment>> Mock() =>
+    public static Mock<ISearchProjectionBuilder<SearchAggregate>> Mock() =>
         new(MockBehavior.Strict);
 
-    public static Mock<ISearchProjectionBuilder<Establishment>>
+    public static Mock<ISearchProjectionBuilder<SearchAggregate>>
         MockFor(
             EducationProviderRegistryDbContext dbContext,
-            IQueryable<Establishment> baseQuery
+            IQueryable<SearchAggregate> baseQuery
         )
     {
-        Mock<ISearchProjectionBuilder<Establishment>> projectionBuilderMock = Mock();
+        Mock<ISearchProjectionBuilder<SearchAggregate>> projectionBuilderMock = Mock();
 
         projectionBuilderMock
             .Setup(projectionBuilder =>

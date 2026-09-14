@@ -16,23 +16,18 @@ internal static class EstablishmentSearchResultTestDouble
     private static string FakeCounty(Faker faker) => faker.Address.County();
     private static string FakePostcode(Faker faker) => faker.Address.ZipCode();
 
-    public static EstablishmentSearchResult Fake()
+    public static SearchProviderResult Fake()
     {
         Faker faker = new();
 
-        return EstablishmentSearchResult.Create(
-            urn: new ProviderIdentifier(FakeUrn(faker).ToString()),
+        return SearchProviderResult.Create(
+            uniqueIdentifier: new ProviderIdentifier(FakeUrn(faker).ToString()),
             name: new Name(FakeName(faker)),
-            address: new SiteAddressModel(
-                Name: string.Empty,
-                AddressLine1: FakeStreet(faker),
-                AddressLine2: string.Empty,
-                Town: FakeTown(faker),
-                County: FakeCounty(faker),
-                Postcode: FakePostcode(faker)),
-            type: SearchProviderType.Create("Academy"),
+            address: new SearchProviderAddress(faker.Address.FullAddress()),
+            type: SearchProviderType.Create("Academy", 1),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
-            localAuthority: SearchProviderLocalAuthority.Create("Test LA", "LA001")
+            localAuthority: SearchProviderLocalAuthority.Create("Test LA"),
+            providerCategory: new SearchProviderCategory("Establishment")
         );
     }
 }

@@ -1,35 +1,28 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
 
-public static class SearchFilterExpressionsBuilderTestDouble
+[ExcludeFromCodeCoverage]
+internal static class SearchFilterExpressionsBuilderTestDouble
 {
-    public static Mock<ISearchFilterExpressionsBuilder<Establishment>> Mock()
+    public static Mock<ISearchFilterExpressionsBuilder<TProjection>> Mock<TProjection>()
+        where TProjection : class => new(MockBehavior.Strict);
+
+    public static Mock<ISearchFilterExpressionsBuilder<TProjection>> MockFor<TProjection>(
+        Expression<Func<TProjection, bool>> expression)
+        where TProjection : class
     {
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> mock = new(MockBehavior.Strict);
+        Mock<ISearchFilterExpressionsBuilder<TProjection>> builderMock = Mock<TProjection>();
 
-        mock.Setup(expressionBuilder =>
-            expressionBuilder.BuildSearchFilterExpression(
-                It.IsAny<ReadOnlyCollection<SearchFilterRequest>>()))
-            .Returns(establishment => true);
+        builderMock
+            .Setup(searchFilterExpressionBuilder =>
+                searchFilterExpressionBuilder.BuildSearchFilterExpression(
+                    It.IsAny<IEnumerable<SearchFilterRequest>>()))
+            .Returns(expression);
 
-        return mock;
-    }
-
-    public static Mock<ISearchFilterExpressionsBuilder<Establishment>> MockFor(
-        Expression<Func<Establishment, bool>> predicate)
-    {
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> mock = new(MockBehavior.Strict);
-
-        mock.Setup(expressionBuilder =>
-            expressionBuilder.BuildSearchFilterExpression(
-                It.IsAny<ReadOnlyCollection<SearchFilterRequest>>()))
-            .Returns(predicate);
-
-        return mock;
+        return builderMock;
     }
 }

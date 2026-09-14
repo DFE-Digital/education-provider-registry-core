@@ -1,5 +1,4 @@
-﻿using Bogus;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
@@ -77,7 +76,7 @@ public sealed class GroupCharacteristicsTests
     {
         // Arrange
         Name name = NameTestDoubles.Create();
-        SearchProviderAddress address = AddressTestDoubles.Generate();
+        SiteAddressModel address = AddressTestDoubles.Generate();
         GroupType type = GroupTypeTestDoubles.Create();
         GroupStatus status = GroupStatusTestDoubles.Create();
 

@@ -9,14 +9,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public static class ResultsMapperTestDouble
 {
     public static Mock<IMapper<(
-        IReadOnlyList<EstablishmentReadModel>,
+        IReadOnlyList<SearchReadModel>,
         IReadOnlyList<AggregatedFacetResult>,
         int),
         SearchResults<SearchProviderResults, SearchFacets>>> Mock()
     {
         Mock<IMapper<
             (
-                IReadOnlyList<EstablishmentReadModel>,
+                IReadOnlyList<SearchReadModel>,
                 IReadOnlyList<AggregatedFacetResult>,
                 int
             ),
@@ -25,7 +25,7 @@ public static class ResultsMapperTestDouble
         mock.Setup(mapper =>
             mapper.Map(
                 It.IsAny<(
-                    IReadOnlyList<EstablishmentReadModel>,
+                    IReadOnlyList<SearchReadModel>,
                     IReadOnlyList<AggregatedFacetResult>,
                     int)>()))
             .Returns(new SearchResults<SearchProviderResults, SearchFacets>());

@@ -7,58 +7,52 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-public static class EstablishmentSearchResultTestDouble
+public static class SearchResultTestDouble
 {
     private static readonly Faker _faker = new();
 
-    public static EstablishmentSearchResult Create()
+    public static SearchProviderResult Create()
     {
-        UniqueReferenceNumber urn =
+        ProviderIdentifier providerIdentifier =
             new(_faker.Random.Int(10000, 99999).ToString());
 
         Name name =
             new(_faker.Company.CompanyName());
 
         SearchProviderAddress address =
-            new(
-                Name: string.Empty,
-                AddressLine1: _faker.Address.StreetAddress(),
-                AddressLine2: _faker.Address.SecondaryAddress(),
-                Town: _faker.Address.City(),
-                County: _faker.Address.County(),
-                Postcode: _faker.Address.ZipCode());
+            new(_faker.Address.FullAddress());
 
         SearchProviderType type =
-            SearchProviderType.Create("Academy");
+            SearchProviderType.Create("Academy", 1);
 
         GroupDetail group =
             GroupDetail.Create("Mock Trust", "TRUST001");
 
         SearchProviderLocalAuthority localAuthority =
-            SearchProviderLocalAuthority.Create("Test LA", "LA001");
+            SearchProviderLocalAuthority.Create("Test LA");
 
-        return EstablishmentSearchResult.Create(
-            urn,
+        SearchProviderCategory providerCategory = new("Establishment");
+
+        return SearchProviderResult.Create(
+            providerIdentifier,
             name,
             address,
             type,
             group,
-            localAuthority);
+            localAuthority,
+            providerCategory
+            );
     }
 
-    public static EstablishmentSearchResult WithUrn(string urn) =>
-        EstablishmentSearchResult.Create(
+    public static SearchProviderResult WithProviderIdentifier(string urn) =>
+        SearchProviderResult.Create(
             new ProviderIdentifier(urn),
             new Name("Test School"),
-            new SiteAddressModel(
-                Name: string.Empty,
-                AddressLine1: "123 Street",
-                AddressLine2: string.Empty,
-                Town: "Town",
-                County: "County",
-                Postcode: "PC1 1AA"
+            new SearchProviderAddress(
+                "123 Street, Town, County, PC1 1AA"
             ),
-            SearchProviderType.Create("Academy"),
+            SearchProviderType.Create("Academy", 1),
             GroupDetail.Create("Mock Trust", "TRUST001"),
-            SearchProviderLocalAuthority.Create("Test LA", "LA001"));
+            SearchProviderLocalAuthority.Create("Test LA"),
+            new SearchProviderCategory("Establishment"));
 }
