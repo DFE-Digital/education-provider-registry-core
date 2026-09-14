@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="DfE.EducationProviderRegistry.Data.DatabaseModels" Version="1.0.38" />-->
+    <PackageReference Include="DfE.EducationProviderRegistry.Data.DatabaseModels" Version="1.0.46" />
     <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.10" />
     <PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.10" />
     <PackageReference Include="DfE.Core.Libraries.DesignPatterns" Version="1.0.10" />
@@ -24,12 +24,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="DfE.EducationProviderRegistry.Core.Query.UnitTests" />
     <InternalsVisibleTo Include="DfE.EducationProviderRegistry.Core.Query.IntegrationTests" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="DfE.EducationProviderRegistry.Data.DatabaseModels">
-      <HintPath>TestAssemblies\DfE.EducationProviderRegistry.Data.DatabaseModels.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

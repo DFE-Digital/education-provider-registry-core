@@ -47,6 +47,12 @@ public sealed record SearchProviderResult
     public SearchProviderCategory ProviderCategory { get; }
 
     /// <summary>
+    /// Gets the total number of academies associated with the search result provider. O
+    /// Only applicable for group providers. For establishment providers, this value will be zero.
+    /// </summary>
+    public int AcademyCount { get; init; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SearchProviderResult"/> record
     /// using the specified search result provider attributes.
     /// </summary>
@@ -67,7 +73,8 @@ public sealed record SearchProviderResult
         SearchProviderType? type,
         GroupDetail? group,
         SearchProviderLocalAuthority? localAuthority,
-        SearchProviderCategory providerCategory)
+        SearchProviderCategory providerCategory,
+        int academyCount)
     {
         UniqueIdentifier = uniqueIdentifier;
         Name = name;
@@ -76,6 +83,7 @@ public sealed record SearchProviderResult
         Group = group;
         LocalAuthority = localAuthority;
         ProviderCategory = providerCategory;
+        AcademyCount = academyCount;
     }
 
     /// <summary>
@@ -100,6 +108,7 @@ public sealed record SearchProviderResult
         SearchProviderType? type,
         GroupDetail? group,
         SearchProviderLocalAuthority? localAuthority,
-        SearchProviderCategory providerCategory)
-            => new(uniqueIdentifier, name, address, type, group, localAuthority, providerCategory);
+        SearchProviderCategory providerCategory,
+        int academyCount)
+            => new(uniqueIdentifier, name, address, type, group, localAuthority, providerCategory, academyCount);
 }

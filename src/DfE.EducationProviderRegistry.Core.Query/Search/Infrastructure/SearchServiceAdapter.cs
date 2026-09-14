@@ -98,7 +98,8 @@ internal sealed class SearchServiceAdapter
                         LocalAuthorityName: searchProvider.LocalAuthorityName ?? string.Empty,
                         GroupCode: searchProvider.GroupId ?? string.Empty,
                         GroupName: searchProvider.ProviderName ?? string.Empty,
-                        ProviderCategory: searchProvider.ProviderCategory ?? string.Empty
+                        ProviderCategory: searchProvider.ProviderCategory ?? string.Empty,
+                        AcademyCount: searchProvider.AcademyCounts ?? 0
                     )
                 )
                 .ToListAsync(cancellationToken);
@@ -126,12 +127,13 @@ public record SearchReadModel(
     string Id,                  // Urn OR GroupId.
     string Name,                // Establishment OR Group name.
     string TypeName,            // Establishment OR Group type.
-    long TypeId,
+    long? TypeId,
     string? Address,
     string? LocalAuthorityName,
     string GroupCode,
     string? GroupName,
-    string ProviderCategory     // Either "Group" OR "Establishment".
+    string ProviderCategory,     // Either "Group" OR "Establishment".
+    int AcademyCount
 );
 
 public static class QueryableExtensions

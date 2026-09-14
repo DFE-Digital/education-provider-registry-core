@@ -7,7 +7,7 @@ public sealed class SearchResponse
     /// <summary>
     /// Initializes a new response with the specified search status and total result count.
     /// </summary>
-    /// <param name="establishmentSearchResults">
+    /// <param name="searchProviderResults">
     /// The results of the establishment search.
     /// </param>
     /// <param name="facetedResults">
@@ -17,11 +17,11 @@ public sealed class SearchResponse
     /// The total number of matching learner records found. Defaults to zero if null or negative.
     /// </param>
     public SearchResponse(
-        SearchProviderResults establishmentSearchResults,
+        SearchProviderResults searchProviderResults,
         SearchFacets? facetedResults,
         int totalNumberOfResults)
     {
-        EstablishmentResults = establishmentSearchResults;
+        SearchProviderResults = searchProviderResults;
         FacetedResults = facetedResults;
         TotalNumberOfResults = totalNumberOfResults;
     }
@@ -29,7 +29,7 @@ public sealed class SearchResponse
     /// <summary>
     /// Gets the collection of learner search results returned by the query.
     /// </summary>
-    public SearchProviderResults? EstablishmentResults { get; }
+    public SearchProviderResults? SearchProviderResults { get; }
 
     /// <summary>
     /// Gets the faceted aggregation results used for UI filtering, analytics, or navigation.

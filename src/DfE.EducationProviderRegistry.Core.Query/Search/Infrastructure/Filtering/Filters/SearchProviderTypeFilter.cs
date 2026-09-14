@@ -8,14 +8,14 @@ public sealed class SearchProviderTypeFilter : ISearchFilter<SearchAggregate>
     public ISpecification<SearchAggregate> CreateSpecification(
         SearchFilterRequest request)
     {
-        IReadOnlyCollection<long> values =
+        IReadOnlyCollection<long?> values =
         [
             .. request.FilterValues
                 .Where((filterValue) => filterValue != null)
                 .Select((value) => Convert.ToInt64(value))
         ];
 
-        return new PropertyEqualsAnyValuesSpecification<SearchAggregate, long>(
+        return new PropertyEqualsAnyValuesSpecification<SearchAggregate, long?>(
             searchProvider => searchProvider.ProviderTypeId,
             values);
     }

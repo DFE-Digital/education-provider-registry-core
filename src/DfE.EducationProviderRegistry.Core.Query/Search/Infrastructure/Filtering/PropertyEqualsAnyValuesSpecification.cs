@@ -11,7 +11,7 @@ public sealed class PropertyEqualsAnyValuesSpecification<TProjection, TProperty>
 
     public PropertyEqualsAnyValuesSpecification(
         Expression<Func<TProjection, TProperty>> property,
-        IReadOnlyCollection<TProperty> values)
+        IReadOnlyCollection<TProperty?> values)
     {
         ArgumentNullException.ThrowIfNull(property);
         ArgumentNullException.ThrowIfNull(values);
