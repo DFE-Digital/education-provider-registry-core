@@ -88,6 +88,8 @@ internal sealed class SearchServiceAdapter
         // 1. Project directly into EstablishmentReadModel.
         List<SearchReadModel> searchResults =
             await searchResultsQuery
+                .Skip(request.Offset)
+                .Take(request.PageSize)
                 .Select(searchProvider =>
                     new SearchReadModel(
                         Id: searchProvider.ProviderId,
