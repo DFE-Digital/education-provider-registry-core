@@ -21,7 +21,7 @@ public sealed class SearchResultTests
         // assert
         Assert.Equal("12345", result.UniqueIdentifier.Value);
         Assert.Equal("Test School", result.Name.Value);
-        Assert.Equal("123 Example Street", result.Address?.FullAddress);
+        Assert.Equal("123 Example Street, Testville, Testshire, TE5 7ST", result.Address?.FullAddress);
         Assert.Equal("Academy", result.Type?.Name);
         Assert.Equal("Mock Trust", result.Group?.PartOfName);
         Assert.Equal("Test LA", result.LocalAuthority?.Name);
@@ -33,12 +33,14 @@ public sealed class SearchResultTests
         // arrange
         SearchProviderResult viaCtor =
             new(
-                EstablishmentTestDouble.ValidUrn,
-                EstablishmentTestDouble.ValidName,
-                EstablishmentTestDouble.ValidAddress,
-                EstablishmentTestDouble.ValidType,
-                EstablishmentTestDouble.ValidGroup,
-                EstablishmentTestDouble.ValidLocalAuthority);
+                SearchAggregateTestDouble.ValidIdentifier,
+                SearchAggregateTestDouble.ValidName,
+                SearchAggregateTestDouble.ValidAddress,
+                SearchAggregateTestDouble.ValidType,
+                SearchAggregateTestDouble.ValidGroup,
+                SearchAggregateTestDouble.ValidLocalAuthority,
+                SearchAggregateTestDouble.ProviderCategory,
+                academyCount: 10);
 
         SearchProviderResult viaFactory = Builder.Build();
 

@@ -7,7 +7,7 @@ internal static class SearchResponseAssertions
 {
     public static void AssertMapped(
         Establishment expected,
-        EstablishmentSearchResult actual)
+        SearchResult actual)
     {
         Assert.Equal(
             expected.Urn,

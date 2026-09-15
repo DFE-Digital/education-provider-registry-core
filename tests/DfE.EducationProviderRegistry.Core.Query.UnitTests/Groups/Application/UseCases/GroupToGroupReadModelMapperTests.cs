@@ -68,7 +68,7 @@ public sealed class GroupToGroupReadModelMapperTests
 
         GroupToGroupReadModelMapper sut = new(memberMapper.Object, trusteeMapper.Object);
 
-        SearchProviderAddress stubAddress = new("test 1, Test Town, TST 1YZ");
+        SiteAddressModel stubAddress = AddressTestDoubles.Generate();
 
         Group input = new GroupBuilder()
             .WithName("Test Group Name")
@@ -76,7 +76,7 @@ public sealed class GroupToGroupReadModelMapperTests
             .WithGroupUid(123)
             .WithCompaniesHouseId("Corpo")
             .WithUkprn("test-ukprn")
-            .WithAddress(stubAddress.FullAddress)
+            .WithAddress(stubAddress.AddressLine1, stubAddress.AddressLine2, stubAddress.Town, stubAddress.County, stubAddress.Postcode)
             .WithGroupStatus(GroupOpenState.Closed, new(2020, 10, 10))
             .WithType("mat")
             .WithAcademies(AcademyTestDouble.Create(3))
@@ -93,7 +93,7 @@ public sealed class GroupToGroupReadModelMapperTests
         Assert.Equal(123, result.GroupUID);
         Assert.Equal("test-ukprn", result.UKPRN);
         Assert.Equal("Corpo", result.CompaniesHouseId);
-        Assert.Equal($"{stubAddress.FullAddress}", result.Address);
+        Assert.Equal($"{stubAddress.AddressLine1}, {stubAddress.AddressLine2}, {stubAddress.Town}, {stubAddress.County}, {stubAddress.Postcode}", result.Address);
         Assert.Equal("mat", result.Type);
         Assert.Equal("Closed on 10 October 2020", result.Status);
 

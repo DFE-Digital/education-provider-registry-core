@@ -19,7 +19,8 @@ public sealed class SearchResultsTests
             type: SearchProviderType.Create("Academy", 1),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
             localAuthority: SearchProviderLocalAuthority.Create("Test LA"),
-            providerCategory: new SearchProviderCategory("Establishment")
+            providerCategory: new SearchProviderCategory("Establishment"),
+            academyCount: 10
         );
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
@@ -20,8 +19,8 @@ public sealed class EstablishmentFacetProviderUnitTests
         IDbContextFactory<EducationProviderRegistryDbContext> factory =
             TestDbContextFactory.CreateFactory(context);
 
-        Dictionary<string, FacetDefinition<Establishment>> selectors = [];
-        EstablishmentFacetProvider provider = new(factory, selectors);
+        Dictionary<object, FacetDefinition<SearchAggregate>> selectors = [];
+        FacetProvider provider = new(factory, selectors);
 
         // act/assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -37,13 +36,13 @@ public sealed class EstablishmentFacetProviderUnitTests
         IDbContextFactory<EducationProviderRegistryDbContext> factory =
             TestDbContextFactory.CreateFactory(context);
 
-        Dictionary<string, FacetDefinition<Establishment>> selectors =
+        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
             {
-                { "Type", new FacetDefinition<Establishment>(e => e.EstablishmentType.Name, e => e.EstablishmentType.Name) }
+                { "Type", new FacetDefinition<SearchAggregate>(e => e.ProviderName!, e => e.ProviderTypeName!) }
             };
 
-        EstablishmentFacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(factory, selectors);
 
         IReadOnlyList<FacetResult> results =
             await provider.GetFacetsAsync([], "Type", TestContext.Current.CancellationToken);
@@ -68,43 +67,22 @@ public sealed class EstablishmentFacetProviderUnitTests
         IDbContextFactory<EducationProviderRegistryDbContext> factory =
             TestDbContextFactory.CreateFactory(context);
 
-        EstablishmentType primaryType =
-            EstablishmentTypeTestBuilder.Create(
-                establishmentTypeId: 1,
-                establishmentFamilyId: 10,
-                code: "PRI",
-                name: "Primary",
-                isSchool: true,
-                isGroup: false,
-                isEarlyYears: false,
-                isFurtherEducation: false);
+        SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", "primaryType", 1);
+        SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "primaryType", 1);
+        SearchAggregate c = SearchAggregateTestBuilder.Create("C", "C School", "secondaryType", 2);
 
-
-        EstablishmentType secondaryType =
-            EstablishmentTypeTestBuilder.Create(
-                establishmentTypeId: 2,
-                establishmentFamilyId: 10,
-                code: "SEC",
-                name: "Secondary",
-                isSchool: true,
-                isGroup: false,
-                isEarlyYears: false,
-                isFurtherEducation: false);
-
-        Establishment a = EstablishmentTestBuilder.Create("A", "A School", primaryType);
-        Establishment b = EstablishmentTestBuilder.Create("B", "B School", primaryType);
-        Establishment c = EstablishmentTestBuilder.Create("C", "C School", secondaryType);
-
-        context.Establishment.AddRange(a, b, c);
+        context.SearchAggregate.AddRange(a, b, c);
         context.SaveChanges();
 
-        Dictionary<string, FacetDefinition<Establishment>> selectors =
+        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
             {
-                { "Type", new FacetDefinition<Establishment>(e => e.EstablishmentType.EstablishmentTypeId.ToString(), e => e.EstablishmentType.Name) }
+                { "Type", new FacetDefinition<SearchAggregate>(
+                    e => e.ProviderTypeId!,
+                    e => e.ProviderTypeName!) }
             };
 
-        EstablishmentFacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(factory, selectors);
 
         // act
         IReadOnlyList<FacetResult> results =
@@ -113,10 +91,10 @@ public sealed class EstablishmentFacetProviderUnitTests
         // assert
         Assert.Equal(2, results.Count);
         Assert.Equal("1", results[0].Value);
-        Assert.Equal("Primary", results[0].Label);
+        Assert.Equal("primaryType", results[0].Label);
         Assert.Equal(2, results[0].Count);
         Assert.Equal("2", results[1].Value);
-        Assert.Equal("Secondary", results[1].Label);
+        Assert.Equal("secondaryType", results[1].Label);
         Assert.Equal(1, results[1].Count);
     }
 
@@ -132,42 +110,22 @@ public sealed class EstablishmentFacetProviderUnitTests
         IDbContextFactory<EducationProviderRegistryDbContext> factory =
             TestDbContextFactory.CreateFactory(context);
 
-        EstablishmentType primaryType =
-            EstablishmentTypeTestBuilder.Create(
-                establishmentTypeId: 1,
-                establishmentFamilyId: 10,
-                code: "X",
-                name: "X",
-                isSchool: true,
-                isGroup: false,
-                isEarlyYears: false,
-                isFurtherEducation: false);
+        SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", "X", 1);
+        SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "X", 1);
+        SearchAggregate c = SearchAggregateTestBuilder.Create("C", "C School", "Y", 2);
 
-        EstablishmentType secondaryType =
-            EstablishmentTypeTestBuilder.Create(
-                establishmentTypeId: 2,
-                establishmentFamilyId: 10,
-                code: "Y",
-                name: "Y",
-                isSchool: true,
-                isGroup: false,
-                isEarlyYears: false,
-                isFurtherEducation: false);
-
-        Establishment a = EstablishmentTestBuilder.Create("A", "A School", primaryType);
-        Establishment b = EstablishmentTestBuilder.Create("B", "B School", primaryType);
-        Establishment c = EstablishmentTestBuilder.Create("C", "C School", secondaryType);
-
-        context.Establishment.AddRange(a, b, c);
+        context.SearchAggregate.AddRange(a, b, c);
         context.SaveChanges();
 
-        Dictionary<string, FacetDefinition<Establishment>> selectors =
+        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
             {
-                { "Type", new FacetDefinition<Establishment>(e => e.EstablishmentType.EstablishmentTypeId.ToString(), e => e.EstablishmentType.Name) }
+                { "Type", new FacetDefinition<SearchAggregate>(
+                    e => e.ProviderTypeId!,
+                    e => e.ProviderTypeName!) }
             };
 
-        EstablishmentFacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(factory, selectors);
 
         // act
         IReadOnlyList<FacetResult> results =
@@ -193,50 +151,28 @@ public sealed class EstablishmentFacetProviderUnitTests
         IDbContextFactory<EducationProviderRegistryDbContext> factory =
             TestDbContextFactory.CreateFactory(context);
 
-        EstablishmentType nullType =
-            EstablishmentTypeTestBuilder.Create(
-                establishmentTypeId: 1,
-                establishmentFamilyId: 10,
-                code: "NULL",
-                name: "PLACEHOLDER",
-                isSchool: true,
-                isGroup: false,
-                isEarlyYears: false,
-                isFurtherEducation: false);
+        SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", null!, 1);
+        SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "Primary", 2);
 
-        EstablishmentType primaryType =
-            EstablishmentTypeTestBuilder.Create(
-                establishmentTypeId: 2,
-                establishmentFamilyId: 10,
-                code: "PRI",
-                name: "Primary",
-                isSchool: true,
-                isGroup: false,
-                isEarlyYears: false,
-                isFurtherEducation: false);
-
-        Establishment a = EstablishmentTestBuilder.Create("A", "A School", nullType);
-        Establishment b = EstablishmentTestBuilder.Create("B", "B School", primaryType);
-
-        context.Establishment.AddRange(a, b);
+        context.SearchAggregate.AddRange(a, b);
         context.SaveChanges();
 
-        Dictionary<string, FacetDefinition<Establishment>> selectors =
+        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
             {
                 {
                     "Type",
-                    new FacetDefinition<Establishment>(
-                        establishment => establishment.Urn == "A"
+                    new FacetDefinition<SearchAggregate>(
+                        searchResult => searchResult.ProviderId == "A"
                             ? null!
-                            : establishment.EstablishmentTypeId,
-                        establishment => establishment.Urn == "A"
+                            : searchResult.ProviderTypeId!,
+                        searchResult => searchResult.ProviderId == "A"
                             ? null!
-                            : establishment.EstablishmentType.Name!)
+                            : searchResult.ProviderTypeName!)
                 }
             };
 
-        EstablishmentFacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(factory, selectors);
 
         // act
         IReadOnlyList<FacetResult> results =

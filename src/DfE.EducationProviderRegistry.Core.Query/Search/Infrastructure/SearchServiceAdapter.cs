@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
-internal sealed class SearchServiceAdapter
+public sealed class SearchServiceAdapter
     : ISearchServiceAdapter<SearchProviderResults, SearchFacets>
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
