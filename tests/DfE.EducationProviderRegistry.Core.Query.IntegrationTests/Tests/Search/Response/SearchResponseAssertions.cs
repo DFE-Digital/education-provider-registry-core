@@ -7,7 +7,7 @@ internal static class SearchResponseAssertions
 {
     public static void AssertMapped(
         SearchAggregate expected,
-        SearchProviderResult actual)
+        SearchAggregateResult actual)
     {
         Assert.Equal(
             expected.ProviderId,

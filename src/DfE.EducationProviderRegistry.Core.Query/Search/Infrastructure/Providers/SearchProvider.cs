@@ -28,7 +28,7 @@ public sealed class SearchProvider : ISearchProvider<SearchAggregate>
     /// </summary>
     /// <param name="factory">Factory used to create EF Core database contexts.</param>
     /// <param name="orchestrator">The trigram search orchestrator.</param>
-    /// <param name="projectionBuilder">Builds the base LINQ projection for establishments.</param>
+    /// <param name="projectionBuilder">Builds the base LINQ projection for search results.</param>
     /// <param name="searchFilterExpressionsBuilder">Builds filter expressions from search filters.</param>
     /// <param name="searchColumn">The database column used for trigram similarity search.</param>
     public SearchProvider(

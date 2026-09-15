@@ -13,7 +13,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 public sealed class SearchUseCaseTests
 {
     private readonly SearchCriteria _criteria;
-    private readonly SearchResults<SearchProviderResults, SearchFacets> _results;
+    private readonly SearchResults<SearchAggregateResults, SearchFacets> _results;
     private readonly Mock<ILogger<SearchUseCase>> _logger;
 
     public SearchUseCaseTests()
@@ -26,7 +26,7 @@ public sealed class SearchUseCaseTests
     private static SearchUseCase CreateSut(
         Mock<ILogger<SearchUseCase>> loggerMock,
         SearchCriteria criteria,
-        ISearchServiceAdapter<SearchProviderResults, SearchFacets> adapter) =>
+        ISearchServiceAdapter<SearchAggregateResults, SearchFacets> adapter) =>
             new(loggerMock.Object, criteria, adapter);
 
     [Fact]
@@ -34,7 +34,7 @@ public sealed class SearchUseCaseTests
     {
         // arrange
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.CapturingAndReturning(_results);
 
         SearchRequest request =
@@ -71,7 +71,7 @@ public sealed class SearchUseCaseTests
     {
         // arrange
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.Returning(_results);
 
         SearchRequest request =
@@ -95,8 +95,8 @@ public sealed class SearchUseCaseTests
         Assert.NotNull(response.Model);
         Assert.Equal(SearchResponseStatus.Success, response.Model.Status);
 
-        HashSet<SearchProviderResult> expected = [.. _results.Results!.SearchResultCollection];
-        HashSet<SearchProviderResult> actual = [.. response.Model.SearchProviderResults!.SearchResultCollection];
+        HashSet<SearchAggregateResult> expected = [.. _results.Results!.SearchResultCollection];
+        HashSet<SearchAggregateResult> actual = [.. response.Model.SearchProviderResults!.SearchResultCollection];
 
         Assert.Subset(expected, actual);
 
@@ -111,7 +111,7 @@ public sealed class SearchUseCaseTests
     {
         // arrange
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.Returning(_results);
 
         SearchUseCase sut =
@@ -146,7 +146,7 @@ public sealed class SearchUseCaseTests
     {
         // arrange
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.Throwing(new ApplicationException());
 
         SearchRequest request =
@@ -175,11 +175,11 @@ public sealed class SearchUseCaseTests
     public async Task HandleRequest_NoResults_ReturnsSuccessWithEmptyCollections()
     {
         // arrange
-        SearchResults<SearchProviderResults, SearchFacets> empty =
+        SearchResults<SearchAggregateResults, SearchFacets> empty =
             SearchResultsTestDouble.StubWithNoResults();
 
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.Returning(empty);
 
         SearchRequest request =
@@ -208,7 +208,7 @@ public sealed class SearchUseCaseTests
     {
         // arrange
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.Throwing(new SearchException("boom"));
 
         SearchRequest request =
@@ -238,7 +238,7 @@ public sealed class SearchUseCaseTests
     {
         // arrange
         SearchServiceAdapterTestDouble adapterDouble = new();
-        Mock<ISearchServiceAdapter<SearchProviderResults, SearchFacets>> adapter =
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
             adapterDouble.Throwing(new OperationCanceledException());
 
         SearchRequest request =

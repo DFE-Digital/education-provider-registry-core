@@ -16,7 +16,7 @@ public sealed class SearchFacet
     public IList<FacetResult> Results { get; }
 
     /// <summary>
-    ///  Establishes an immutable <see cref="EstablishmentFacet"/> instance via the constructor arguments specified.
+    ///  Establishes an immutable <see cref="FacetResult"/> instance via the constructor arguments specified.
     /// </summary>
     /// <param name="facetName">
     /// The name of the facet on which to assign the prescribed results.

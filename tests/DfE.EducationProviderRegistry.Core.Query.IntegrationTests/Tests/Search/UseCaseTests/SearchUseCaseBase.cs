@@ -78,7 +78,7 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
         Assert.NotNull(response.Model.SearchProviderResults);
         Assert.Equal(expectednResults.Count, response.Model.SearchProviderResults.SearchResultCollection.Count);
 
-        List<SearchProviderResult> results = [.. response.Model.SearchProviderResults.SearchResultCollection];
+        List<SearchAggregateResult> results = [.. response.Model.SearchProviderResults.SearchResultCollection];
 
         HashSet<string> resultUrns = [.. results.Select(t => t.UniqueIdentifier.Value)];
 
@@ -86,7 +86,7 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 
         for (int index = 0; index < results.Count; index++)
         {
-            SearchProviderResult searchAggregate = results[index];
+            SearchAggregateResult searchAggregate = results[index];
 
             SearchAggregate seededAggregate =
                 searchedAggregates.SearchAggregates.Single(

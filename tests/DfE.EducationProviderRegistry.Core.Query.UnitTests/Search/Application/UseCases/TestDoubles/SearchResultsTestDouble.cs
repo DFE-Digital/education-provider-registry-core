@@ -6,11 +6,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 [ExcludeFromCodeCoverage]
 internal static class SearchResultsTestDouble
 {
-    public static SearchResults<SearchProviderResults, SearchFacets> Stub()
+    public static SearchResults<SearchAggregateResults, SearchFacets> Stub()
     {
-        SearchProviderResults results = SearchAggregationResultsTestDouble.Stub();
+        SearchAggregateResults results = SearchAggregationResultsTestDouble.Stub();
 
-        return new SearchResults<SearchProviderResults, SearchFacets>
+        return new SearchResults<SearchAggregateResults, SearchFacets>
         {
             Results = results,
             FacetResults = SearchFacetsTestDouble.Stub(),
@@ -18,7 +18,7 @@ internal static class SearchResultsTestDouble
         };
     }
 
-    public static SearchResults<SearchProviderResults, SearchFacets> StubWithNoResults() =>
+    public static SearchResults<SearchAggregateResults, SearchFacets> StubWithNoResults() =>
         new()
         {
             Results = SearchAggregationResultsTestDouble.EmptyStub(),   // Unpopulated search aggregation results.

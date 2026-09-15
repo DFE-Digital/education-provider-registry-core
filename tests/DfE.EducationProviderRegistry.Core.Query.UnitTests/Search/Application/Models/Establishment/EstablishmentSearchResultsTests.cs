@@ -9,7 +9,7 @@ public sealed class SearchProviderResultsTests
     public void DefaultConstructor_ShouldCreateEmptyCollection()
     {
         // arrange
-        SearchProviderResults results = new();
+        SearchAggregateResults results = new();
 
         // assert
         Assert.NotNull(results.SearchResultCollection);
@@ -21,13 +21,13 @@ public sealed class SearchProviderResultsTests
     public void Constructor_ShouldPopulateCollection_WhenListProvided()
     {
         // arrange
-        List<SearchProviderResult> list =
+        List<SearchAggregateResult> list =
         [
             SearchResultTestDouble.WithProviderIdentifier("10001"),
             SearchResultTestDouble.WithProviderIdentifier("10002")
         ];
 
-        SearchProviderResults results = new(list);
+        SearchAggregateResults results = new(list);
 
         // assert
         Assert.Equal(2, results.Count);
@@ -38,7 +38,7 @@ public sealed class SearchProviderResultsTests
     public void Constructor_ShouldUseEmptyCollection_WhenNullProvided()
     {
         // arrange
-        SearchProviderResults results = new(null!);
+        SearchAggregateResults results = new(null!);
 
         // assert
         Assert.NotNull(results.SearchResultCollection);
@@ -50,18 +50,18 @@ public sealed class SearchProviderResultsTests
     public void EstablishmentCollection_ShouldBeReadOnly()
     {
         // arrange
-        List<SearchProviderResult> list =
+        List<SearchAggregateResult> list =
         [
             SearchResultTestDouble.WithProviderIdentifier("10001")
         ];
 
-        SearchProviderResults results = new(list);
+        SearchAggregateResults results = new(list);
 
-        IReadOnlyCollection<SearchProviderResult> readOnly = results.SearchResultCollection;
+        IReadOnlyCollection<SearchAggregateResult> readOnly = results.SearchResultCollection;
 
         // assert
         Assert.Throws<NotSupportedException>(() =>
-            ((IList<SearchProviderResult>)readOnly).Add(
+            ((IList<SearchAggregateResult>)readOnly).Add(
                 SearchResultTestDouble.WithProviderIdentifier("10002")));
     }
 
@@ -69,12 +69,12 @@ public sealed class SearchProviderResultsTests
     public void Constructor_ShouldCopyList_NotReferenceIt()
     {
         // arrange
-        List<SearchProviderResult> list =
+        List<SearchAggregateResult> list =
         [
             SearchResultTestDouble.WithProviderIdentifier("10001")
         ];
 
-        SearchProviderResults results = new(list);
+        SearchAggregateResults results = new(list);
 
         list.Add(SearchResultTestDouble.WithProviderIdentifier("10002"));
 
@@ -86,7 +86,7 @@ public sealed class SearchProviderResultsTests
     public void CreateEmpty_ShouldReturnEmptyInstance()
     {
         // arrange
-        SearchProviderResults results = SearchProviderResults.CreateEmpty();
+        SearchAggregateResults results = SearchAggregateResults.CreateEmpty();
 
         // assert
         Assert.NotNull(results.SearchResultCollection);

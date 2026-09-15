@@ -39,7 +39,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search;
 
 /// <summary>
 /// Registers all application‑level and infrastructure‑level dependencies required
-/// for trigram‑based establishment search, including orchestrators, filter
+/// for trigram‑based search, including orchestrators, filter
 /// expression builders, facet providers, pipeline steps, and mappers.
 /// </summary>
 public static class CompositionRoot
@@ -113,7 +113,7 @@ public static class CompositionRoot
                     IReadOnlyList<AggregatedFacetResult> Facets,
                     int TotalCount
                 ),
-                SearchResults<SearchProviderResults, SearchFacets>>,
+                SearchResults<SearchAggregateResults, SearchFacets>>,
             SearchResultsFromQueryResultsMapper>();
 
         return services;
@@ -178,7 +178,7 @@ public static class CompositionRoot
             .ValidateOnStart();
 
         services.AddScoped<
-            ISearchServiceAdapter<SearchProviderResults, SearchFacets>,
+            ISearchServiceAdapter<SearchAggregateResults, SearchFacets>,
             SearchServiceAdapter>();
 
         // ---------------------------------------------------------

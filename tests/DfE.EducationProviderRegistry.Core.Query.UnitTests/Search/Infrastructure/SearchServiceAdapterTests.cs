@@ -21,7 +21,7 @@ public class SearchServiceAdapterTests
 {
     private readonly Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> _filterBuilderMock;
     private readonly Mock<IMapper<(IReadOnlyList<SearchReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
-        SearchResults<SearchProviderResults, SearchFacets>>> _resultsMapperMock;
+        SearchResults<SearchAggregateResults, SearchFacets>>> _resultsMapperMock;
     private readonly Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> _filterMapperMock;
     private readonly SearchServiceAdapter _sut;
     private readonly EducationProviderRegistryDbContext _db;
@@ -128,7 +128,7 @@ public class SearchServiceAdapterTests
             sortOrdering: new SortOrder("Name", "asc", new List<string> { "Name" }));
 
         // act
-        SearchResults<SearchProviderResults, SearchFacets> result = await _sut.SearchAsync(request, CancellationToken.None);
+        SearchResults<SearchAggregateResults, SearchFacets> result = await _sut.SearchAsync(request, CancellationToken.None);
 
         // verify
         _resultsMapperMock.Verify(mapper =>

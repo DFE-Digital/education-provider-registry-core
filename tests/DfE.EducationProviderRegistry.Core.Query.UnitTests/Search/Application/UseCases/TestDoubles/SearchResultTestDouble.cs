@@ -13,18 +13,18 @@ internal static class SearchResultTestDouble
     private static string FakeName(Faker faker) => faker.Company.CompanyName();
     private static int FakeAcademyCount(Faker faker) => faker.Random.Int(1, 100);
 
-    public static SearchProviderResult Fake()
+    public static SearchAggregateResult Fake()
     {
         Faker faker = new();
 
-        return SearchProviderResult.Create(
+        return SearchAggregateResult.Create(
         uniqueIdentifier: new ProviderIdentifier(FakeUrn(faker).ToString()),
         name: new Name(FakeName(faker)),
-        address: new SearchProviderAddress(faker.Address.FullAddress()),
-        type: SearchProviderType.Create("Academy", 1),
+        address: new SearchAddress(faker.Address.FullAddress()),
+        type: SearchType.Create("Academy", 1),
         group: GroupDetail.Create("Mock Trust", "TRUST001"),
-        localAuthority: SearchProviderLocalAuthority.Create("Test LA"),
-        providerCategory: new SearchProviderCategory("Establishment"),
+        localAuthority: SearchLocalAuthority.Create("Test LA"),
+        providerCategory: new SearchCategory("Establishment"),
         academyCount: FakeAcademyCount(faker));
     }
 }

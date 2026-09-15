@@ -12,7 +12,7 @@ public static class ResultsMapperTestDouble
         IReadOnlyList<SearchReadModel>,
         IReadOnlyList<AggregatedFacetResult>,
         int),
-        SearchResults<SearchProviderResults, SearchFacets>>> Mock()
+        SearchResults<SearchAggregateResults, SearchFacets>>> Mock()
     {
         Mock<IMapper<
             (
@@ -20,7 +20,7 @@ public static class ResultsMapperTestDouble
                 IReadOnlyList<AggregatedFacetResult>,
                 int
             ),
-            SearchResults<SearchProviderResults, SearchFacets>>> mock = new(MockBehavior.Strict);
+            SearchResults<SearchAggregateResults, SearchFacets>>> mock = new(MockBehavior.Strict);
 
         mock.Setup(mapper =>
             mapper.Map(
@@ -28,7 +28,7 @@ public static class ResultsMapperTestDouble
                     IReadOnlyList<SearchReadModel>,
                     IReadOnlyList<AggregatedFacetResult>,
                     int)>()))
-            .Returns(new SearchResults<SearchProviderResults, SearchFacets>());
+            .Returns(new SearchResults<SearchAggregateResults, SearchFacets>());
 
         return mock;
     }

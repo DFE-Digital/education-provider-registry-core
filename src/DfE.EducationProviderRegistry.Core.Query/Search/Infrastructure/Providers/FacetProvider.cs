@@ -19,7 +19,7 @@ public sealed class FacetProvider : IFacetProvider
     /// </summary>
     /// <param name="contextFactory">Factory used to create EF Core database contexts.</param>
     /// <param name="facetSelectors">
-    /// A mapping of facet names to expressions selecting the facet value from an <see cref="Establishment"/>.
+    /// A mapping of facet names to expressions selecting the facet value from an <see cref="SearchAggregate"/>.
     /// </param>
     public FacetProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> contextFactory,

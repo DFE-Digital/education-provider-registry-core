@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
 
 /// <summary>
-/// Executes an establishment search operation using the configured
+/// Executes a search operation using the configured
 /// <see cref="ISearchServiceAdapter{TSearchResult, TFacetResult}"/> and returns
 /// the results wrapped in a <see cref="UseCaseResponse{T}"/>.
 /// </summary>
@@ -16,7 +16,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
 {
     private readonly ILogger<SearchUseCase> _logger;
     private readonly SearchCriteria _searchCriteria;
-    private readonly ISearchServiceAdapter<SearchProviderResults, SearchFacets> _searchServiceAdapter;
+    private readonly ISearchServiceAdapter<SearchAggregateResults, SearchFacets> _searchServiceAdapter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SearchUseCase"/> class.
@@ -34,7 +34,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
     public SearchUseCase(
         ILogger<SearchUseCase> logger,
         SearchCriteria searchCriteria,
-        ISearchServiceAdapter<SearchProviderResults, SearchFacets> searchServiceAdapter)
+        ISearchServiceAdapter<SearchAggregateResults, SearchFacets> searchServiceAdapter)
     {
         _logger = logger ??
             throw new ArgumentNullException(nameof(logger));
@@ -45,7 +45,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
     }
 
     /// <summary>
-    /// Handles the establishment search request and returns the results wrapped in a
+    /// Handles the search request and returns the results wrapped in a
     /// <see cref="UseCaseResponse{T}"/>.
     /// </summary>
     /// <param name="request">The validated search request containing query parameters.</param>
@@ -62,7 +62,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
     {
         try
         {
-            SearchResults<SearchProviderResults, SearchFacets>? searchResults =
+            SearchResults<SearchAggregateResults, SearchFacets>? searchResults =
                 await _searchServiceAdapter.SearchAsync(
                     SearchServiceAdapterRequest.Create(
                        request.SearchTerms,

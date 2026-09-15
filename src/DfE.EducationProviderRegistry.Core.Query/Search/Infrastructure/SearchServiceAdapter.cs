@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
 public sealed class SearchServiceAdapter
-    : ISearchServiceAdapter<SearchProviderResults, SearchFacets>
+    : ISearchServiceAdapter<SearchAggregateResults, SearchFacets>
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
     private readonly ISearchQueryProcessor<SearchAggregate> _searchSpecOrchestrator;
@@ -27,7 +27,7 @@ public sealed class SearchServiceAdapter
             IReadOnlyList<AggregatedFacetResult> Facets,
             int TotalCount
         ),
-        SearchResults<SearchProviderResults, SearchFacets>> _resultsMapper;
+        SearchResults<SearchAggregateResults, SearchFacets>> _resultsMapper;
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
         ReadOnlyCollection<SearchFilterRequest>> _filterMapper;
@@ -43,7 +43,7 @@ public sealed class SearchServiceAdapter
                 IReadOnlyList<AggregatedFacetResult> Facets,
                 int TotalCount
             ),
-            SearchResults<SearchProviderResults, SearchFacets>> resultsMapper,
+            SearchResults<SearchAggregateResults, SearchFacets>> resultsMapper,
         IMapper<
             ReadOnlyCollection<FilterRequest>,
             ReadOnlyCollection<SearchFilterRequest>> filterMapper)
@@ -56,13 +56,13 @@ public sealed class SearchServiceAdapter
         _filterMapper = filterMapper;
     }
 
-    public async Task<SearchResults<SearchProviderResults, SearchFacets>> SearchAsync(
+    public async Task<SearchResults<SearchAggregateResults, SearchFacets>> SearchAsync(
         SearchServiceAdapterRequest request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        IQueryable<SearchAggregate> establishmentsQuery =
+        IQueryable<SearchAggregate> searchQuery =
             _dbContext.SearchAggregate.AsNoTracking();
 
         ReadOnlyCollection<SearchFilterRequest> filterRequests =
@@ -71,12 +71,12 @@ public sealed class SearchServiceAdapter
         Expression<Func<SearchAggregate, bool>> filterPredicate =
             _searchFilterExpressionsBuilder.BuildSearchFilterExpression(filterRequests);
 
-        IQueryable<SearchAggregate> filteredEstablishments =
-            establishmentsQuery.Where(filterPredicate);
+        IQueryable<SearchAggregate> filteredResults =
+            searchQuery.Where(filterPredicate);
 
         IQueryable<SearchAggregate> searchResultsQuery =
             _searchSpecOrchestrator.ProcessSearch(
-                filteredEstablishments,
+                filteredResults,
                 request.SearchTerms);
 
         int totalCount =
@@ -127,14 +127,14 @@ public sealed class SearchServiceAdapter
 
 public record SearchReadModel(
     string Id,                  // Urn OR GroupId.
-    string Name,                // Establishment OR Group name.
-    string TypeName,            // Establishment OR Group type.
+    string Name,                // SearchAggregate OR Group name.
+    string TypeName,            // SearchAggregate OR Group type.
     long? TypeId,
     string? Address,
     string? LocalAuthorityName,
     string GroupCode,
     string? GroupName,
-    string ProviderCategory,     // Either "Group" OR "Establishment".
+    string ProviderCategory,     // Either "Group" OR "SearchAggregate".
     int AcademyCount
 );
 

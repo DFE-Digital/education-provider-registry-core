@@ -6,22 +6,22 @@
 /// This value object is used within search results to provide
 /// a consistent, strongly typed representation of search provider type.
 /// </summary>
-public sealed record class SearchProviderType
+public sealed record class SearchType
 {
     /// <summary>
-    /// Gets the underlying establishment type name as returned
+    /// Gets the underlying search type name as returned
     /// by the search index or data source.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Gets the underlying establishment type Id as returned
+    /// Gets the underlying search type Id as returned
     /// by the search index or data source.
     /// </summary>
     public long? Id { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SearchProviderType"/> record.
+    /// Initializes a new instance of the <see cref="SearchType"/> record.
     /// </summary>
     /// <param name="name">
     /// The raw search provider type value. Must not be <c>null</c> or empty.
@@ -35,7 +35,7 @@ public sealed record class SearchProviderType
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="type"/> is empty or whitespace.
     /// </exception>
-    public SearchProviderType(string type, long? id)
+    public SearchType(string type, long? id)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(type);
 
@@ -44,14 +44,14 @@ public sealed record class SearchProviderType
     }
 
     /// <summary>
-    /// Creates a new <see cref="SearchProviderType"/> instance.
+    /// Creates a new <see cref="SearchType"/> instance.
     /// This factory method provides an intention‑revealing alternative
     /// to directly invoking the constructor.
     /// </summary>
     /// <param name="name">The raw search provider type value.</param>
     /// <param name="id">The raw search provider ID value.</param>
     /// <returns>
-    /// A fully validated <see cref="SearchProviderType"/> instance.
+    /// A fully validated <see cref="SearchType"/> instance.
     /// </returns>
-    public static SearchProviderType Create(string name, long id) => new(name, id);
+    public static SearchType Create(string name, long id) => new(name, id);
 }

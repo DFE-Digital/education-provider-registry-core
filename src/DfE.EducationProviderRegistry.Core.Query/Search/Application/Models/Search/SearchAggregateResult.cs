@@ -8,7 +8,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sea
 /// This model contains presentation‑ready fields optimised for lightweight
 /// transport between the search layer and consuming clients.
 /// </summary>
-public sealed record SearchProviderResult
+public sealed record SearchAggregateResult
 {
     /// <summary>
     /// Gets the unique provier identifier assigned to the search provider result.
@@ -23,12 +23,12 @@ public sealed record SearchProviderResult
     /// <summary>
     /// Gets the postal address associated with the search provider result.
     /// </summary>
-    public SearchProviderAddress? Address { get; }
+    public SearchAddress? Address { get; }
 
     /// <summary>
     /// Gets the search result provider type classification (e.g., Academy, Free School).
     /// </summary>
-    public SearchProviderType? Type { get; }
+    public SearchType? Type { get; }
 
     /// <summary>
     /// Gets the group‑level details associated with the search result provider,
@@ -39,21 +39,21 @@ public sealed record SearchProviderResult
     /// <summary>
     /// Gets the local authority responsible for the search result provider.
     /// </summary>
-    public SearchProviderLocalAuthority? LocalAuthority { get; }
+    public SearchLocalAuthority? LocalAuthority { get; }
 
     /// <summary>
     /// Gets the provider category (i.e. 'Group' OR 'Etsablishment') for the search result provider.
     /// </summary>
-    public SearchProviderCategory ProviderCategory { get; }
+    public SearchCategory ProviderCategory { get; }
 
     /// <summary>
     /// Gets the total number of academies associated with the search result provider. O
-    /// Only applicable for group providers. For establishment providers, this value will be zero.
+    /// Only applicable for group providers. For search providers, this value will be zero.
     /// </summary>
     public int AcademyCount { get; init; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SearchProviderResult"/> record
+    /// Initializes a new instance of the <see cref="SearchAggregateResult"/> record
     /// using the specified search result provider attributes.
     /// </summary>
     /// <param name="uniqueIdentifier">The unique numeric identifier assigned to the search result provider.</param>
@@ -66,14 +66,14 @@ public sealed record SearchProviderResult
     /// <exception cref="ArgumentNullException">
     /// Thrown when any required parameter is <c>null</c>.
     /// </exception>
-    public SearchProviderResult(
+    public SearchAggregateResult(
         ProviderIdentifier uniqueIdentifier,
         Name name,
-        SearchProviderAddress? address,
-        SearchProviderType? type,
+        SearchAddress? address,
+        SearchType? type,
         GroupDetail? group,
-        SearchProviderLocalAuthority? localAuthority,
-        SearchProviderCategory providerCategory,
+        SearchLocalAuthority? localAuthority,
+        SearchCategory providerCategory,
         int academyCount)
     {
         UniqueIdentifier = uniqueIdentifier;
@@ -87,7 +87,7 @@ public sealed record SearchProviderResult
     }
 
     /// <summary>
-    /// Creates a new <see cref="SearchProviderResult"/> instance using the
+    /// Creates a new <see cref="SearchAggregateResult"/> instance using the
     /// supplied search result provider attributes. This factory method provides a clear,
     /// intention‑revealing alternative to directly invoking the constructor.
     /// </summary>
@@ -99,16 +99,16 @@ public sealed record SearchProviderResult
     /// <param name="localAuthority">The local authority responsible for the search result provider.</param>
     /// <param name="providerCategory">The provider category for the search result provider.</param>
     /// <returns>
-    /// A fully populated <see cref="SearchProviderResult"/> instance.
+    /// A fully populated <see cref="SearchAggregateResult"/> instance.
     /// </returns>
-    public static SearchProviderResult Create(
+    public static SearchAggregateResult Create(
         ProviderIdentifier uniqueIdentifier,
         Name name,
-        SearchProviderAddress? address,
-        SearchProviderType? type,
+        SearchAddress? address,
+        SearchType? type,
         GroupDetail? group,
-        SearchProviderLocalAuthority? localAuthority,
-        SearchProviderCategory providerCategory,
+        SearchLocalAuthority? localAuthority,
+        SearchCategory providerCategory,
         int academyCount)
             => new(uniqueIdentifier, name, address, type, group, localAuthority, providerCategory, academyCount);
 }

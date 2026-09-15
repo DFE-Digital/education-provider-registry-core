@@ -106,9 +106,9 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchServiceAdapter<SearchProviderResults, SearchFacets> adapter =
+        ISearchServiceAdapter<SearchAggregateResults, SearchFacets> adapter =
             scope.ServiceProvider.GetRequiredService<
-                ISearchServiceAdapter<SearchProviderResults, SearchFacets>>();
+                ISearchServiceAdapter<SearchAggregateResults, SearchFacets>>();
 
         // assert
         Assert.IsType<SearchServiceAdapter>(adapter);

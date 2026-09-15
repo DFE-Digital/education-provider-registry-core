@@ -13,9 +13,9 @@ internal sealed class SearchResultsFromQueryResultsMapper
             IReadOnlyList<AggregatedFacetResult> Facets,
             int TotalCount
         ),
-        SearchResults<SearchProviderResults, SearchFacets>>
+        SearchResults<SearchAggregateResults, SearchFacets>>
 {
-    public SearchResults<SearchProviderResults, SearchFacets> Map(
+    public SearchResults<SearchAggregateResults, SearchFacets> Map(
         (
             IReadOnlyList<SearchReadModel> Results,
             IReadOnlyList<AggregatedFacetResult> Facets,
@@ -36,21 +36,21 @@ internal sealed class SearchResultsFromQueryResultsMapper
                 "Tuple does not contain facet results.");
         }
 
-        SearchProviderResult[] mapped =
+        SearchAggregateResult[] mapped =
         [
             .. context.Results.Select(r =>
-                SearchProviderResult.Create(
+                SearchAggregateResult.Create(
                     new ProviderIdentifier(r.Id),
                     new Name(r.Name ?? string.Empty),
-                    new SearchProviderAddress(
+                    new SearchAddress(
                         FullAddress: r.Address ?? string.Empty),
-                    new SearchProviderType(r.TypeName ?? string.Empty, r.TypeId),
+                    new SearchType(r.TypeName ?? string.Empty, r.TypeId),
                     new GroupDetail(
                         partOfName: r.GroupName ?? string.Empty,
                         partOfCode: r.GroupCode ?? string.Empty),
-                    new SearchProviderLocalAuthority(
+                    new SearchLocalAuthority(
                         localAuthorityName: r.LocalAuthorityName ?? string.Empty),
-                    new SearchProviderCategory(r.ProviderCategory),
+                    new SearchCategory(r.ProviderCategory),
                     r.AcademyCount
                 )
             )
@@ -70,9 +70,9 @@ internal sealed class SearchResultsFromQueryResultsMapper
                     ]))
         ];
 
-        return new SearchResults<SearchProviderResults, SearchFacets>
+        return new SearchResults<SearchAggregateResults, SearchFacets>
         {
-            Results = new SearchProviderResults(mapped),
+            Results = new SearchAggregateResults(mapped),
             FacetResults = new SearchFacets(facets),
             TotalCount = context.TotalCount
         };

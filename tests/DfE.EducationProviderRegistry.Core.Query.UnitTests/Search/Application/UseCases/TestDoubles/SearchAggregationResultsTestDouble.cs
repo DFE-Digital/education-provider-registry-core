@@ -6,9 +6,9 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 [ExcludeFromCodeCoverage]
 internal static class SearchAggregationResultsTestDouble
 {
-    public static SearchProviderResults Stub()
+    public static SearchAggregateResults Stub()
     {
-        List<SearchProviderResult> searchResults = [];
+        List<SearchAggregateResult> searchResults = [];
 
         for (int i = 0; i < new Bogus.Faker().Random.Int(1, 10); i++)
         {
@@ -16,8 +16,8 @@ internal static class SearchAggregationResultsTestDouble
                 SearchResultTestDouble.Fake()); // Generate synthetic establishment search results instance
         }
 
-        return new SearchProviderResults(searchResults);
+        return new SearchAggregateResults(searchResults);
     }
 
-    public static SearchProviderResults EmptyStub() => new(null!);
+    public static SearchAggregateResults EmptyStub() => new(null!);
 }

@@ -16,7 +16,7 @@ public sealed class SearchResultTests
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        SearchProviderResult result = Builder.Build();
+        SearchAggregateResult result = Builder.Build();
 
         // assert
         Assert.Equal("12345", result.UniqueIdentifier.Value);
@@ -31,7 +31,7 @@ public sealed class SearchResultTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        SearchProviderResult viaCtor =
+        SearchAggregateResult viaCtor =
             new(
                 SearchAggregateTestDouble.ValidIdentifier,
                 SearchAggregateTestDouble.ValidName,
@@ -42,7 +42,7 @@ public sealed class SearchResultTests
                 SearchAggregateTestDouble.ProviderCategory,
                 academyCount: 10);
 
-        SearchProviderResult viaFactory = Builder.Build();
+        SearchAggregateResult viaFactory = Builder.Build();
 
         // assert
         Assert.Equal(viaCtor, viaFactory);

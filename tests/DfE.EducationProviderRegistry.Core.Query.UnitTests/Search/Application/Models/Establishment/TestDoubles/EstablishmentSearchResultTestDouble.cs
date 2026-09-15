@@ -11,7 +11,7 @@ public static class SearchResultTestDouble
 {
     private static readonly Faker _faker = new();
 
-    public static SearchProviderResult Create()
+    public static SearchAggregateResult Create()
     {
         ProviderIdentifier providerIdentifier =
             new(_faker.Random.Int(10000, 99999).ToString());
@@ -19,23 +19,23 @@ public static class SearchResultTestDouble
         Name name =
             new(_faker.Company.CompanyName());
 
-        SearchProviderAddress address =
+        SearchAddress address =
             new(_faker.Address.FullAddress());
 
-        SearchProviderType type =
-            SearchProviderType.Create("Academy", 1);
+        SearchType type =
+            SearchType.Create("Academy", 1);
 
         GroupDetail group =
             GroupDetail.Create("Mock Trust", "TRUST001");
 
-        SearchProviderLocalAuthority localAuthority =
-            SearchProviderLocalAuthority.Create("Test LA");
+        SearchLocalAuthority localAuthority =
+            SearchLocalAuthority.Create("Test LA");
 
-        SearchProviderCategory providerCategory = new("Establishment");
+        SearchCategory providerCategory = new("Establishment");
 
         int academyCount = 10;
 
-        return SearchProviderResult.Create(
+        return SearchAggregateResult.Create(
             providerIdentifier,
             name,
             address,
@@ -47,16 +47,16 @@ public static class SearchResultTestDouble
             );
     }
 
-    public static SearchProviderResult WithProviderIdentifier(string urn) =>
-        SearchProviderResult.Create(
+    public static SearchAggregateResult WithProviderIdentifier(string urn) =>
+        SearchAggregateResult.Create(
             new ProviderIdentifier(urn),
             new Name("Test School"),
-            new SearchProviderAddress(
+            new SearchAddress(
                 "123 Street, Town, County, PC1 1AA"
             ),
-            SearchProviderType.Create("Academy", 1),
+            SearchType.Create("Academy", 1),
             GroupDetail.Create("Mock Trust", "TRUST001"),
-            SearchProviderLocalAuthority.Create("Test LA"),
-            new SearchProviderCategory("Establishment"),
+            SearchLocalAuthority.Create("Test LA"),
+            new SearchCategory("Establishment"),
             academyCount: 10);
 }

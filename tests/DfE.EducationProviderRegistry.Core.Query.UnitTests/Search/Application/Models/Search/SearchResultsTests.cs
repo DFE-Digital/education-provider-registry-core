@@ -6,20 +6,20 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 
 public sealed class SearchResultsTests
 {
-    private static SearchProviderResult CreateMockEstablishment(int urn, string name)
+    private static SearchAggregateResult CreateMockEstablishment(int urn, string name)
     {
-        return SearchProviderResult.Create(
+        return SearchAggregateResult.Create(
             uniqueIdentifier: new ProviderIdentifier(urn.ToString("D5")),
             name: new Name(name),
-            address: new SearchProviderAddress(
+            address: new SearchAddress(
                 "123 Example Street, " +
                 "Testville, " +
                 "Testshire, " +
                 "TE5 7ST"),
-            type: SearchProviderType.Create("Academy", 1),
+            type: SearchType.Create("Academy", 1),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
-            localAuthority: SearchProviderLocalAuthority.Create("Test LA"),
-            providerCategory: new SearchProviderCategory("Establishment"),
+            localAuthority: SearchLocalAuthority.Create("Test LA"),
+            providerCategory: new SearchCategory("Establishment"),
             academyCount: 10
         );
     }
@@ -28,9 +28,9 @@ public sealed class SearchResultsTests
     public void Properties_CanBeInitializedViaObjectInitializer()
     {
         // arrange
-        SearchProviderResults establishmentSearchResults =
+        SearchAggregateResults establishmentSearchResults =
             new(
-                new List<SearchProviderResult>
+                new List<SearchAggregateResult>
                 {
                     CreateMockEstablishment(123, "Test School 1"),
                     CreateMockEstablishment(456, "Test School 2"),
@@ -48,7 +48,7 @@ public sealed class SearchResultsTests
                 });
 
         // act
-        SearchResults<SearchProviderResults, SearchFacets> result =
+        SearchResults<SearchAggregateResults, SearchFacets> result =
             new()
             {
                 Results = establishmentSearchResults,
@@ -64,7 +64,7 @@ public sealed class SearchResultsTests
     public void Properties_WhenUninitialized_ShouldBeNull()
     {
         // act
-        SearchResults<SearchProviderResults, SearchFacets> result = new();
+        SearchResults<SearchAggregateResults, SearchFacets> result = new();
 
         // assert
         Assert.Null(result.Results);

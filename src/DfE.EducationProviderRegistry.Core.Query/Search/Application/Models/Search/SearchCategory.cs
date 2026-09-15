@@ -2,11 +2,11 @@
 
 /// <summary>
 /// Represents the classification or category of a search provider
-/// (e.g. 'Group' OR 'Establishment').
+/// (e.g. 'Group' OR 'search result').
 /// This value object is used within search results to provide
 /// a consistent, strongly typed representation of search provider catgeory.
 /// </summary>
-public sealed record class SearchProviderCategory
+public sealed record class SearchCategory
 {
     /// <summary>
     /// Gets the underlying search provider category value as returned
@@ -15,7 +15,7 @@ public sealed record class SearchProviderCategory
     public string Category { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SearchProviderCategory"/> record.
+    /// Initializes a new instance of the <see cref="SearchCategory"/> record.
     /// </summary>
     /// <param name="type">
     /// The raw search provider category value. Must not be <c>null</c> or empty.
@@ -26,7 +26,7 @@ public sealed record class SearchProviderCategory
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="category"/> is empty or whitespace.
     /// </exception>
-    public SearchProviderCategory(string category)
+    public SearchCategory(string category)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(category);
 
@@ -34,13 +34,13 @@ public sealed record class SearchProviderCategory
     }
 
     /// <summary>
-    /// Creates a new <see cref="SearchProviderCategory"/> instance.
+    /// Creates a new <see cref="SearchCategory"/> instance.
     /// This factory method provides an intention‑revealing alternative
     /// to directly invoking the constructor.
     /// </summary>
     /// <param name="category">The raw search provider category value.</param>
     /// <returns>
-    /// A fully validated <see cref="SearchProviderCategory"/> instance.
+    /// A fully validated <see cref="SearchCategory"/> instance.
     /// </returns>
-    public static SearchProviderCategory Create(string category) => new(category);
+    public static SearchCategory Create(string category) => new(category);
 }

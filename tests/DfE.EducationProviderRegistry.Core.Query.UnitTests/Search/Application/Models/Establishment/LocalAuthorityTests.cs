@@ -8,7 +8,7 @@ public sealed class LocalAuthorityTests
     public void Constructor_ShouldAssignPropertiesCorrectly()
     {
         // arrange
-        SearchProviderLocalAuthority authority = new("Test LA");
+        SearchLocalAuthority authority = new("Test LA");
 
         // assert
         Assert.Equal("Test LA", authority.Name);
@@ -18,8 +18,8 @@ public sealed class LocalAuthorityTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        SearchProviderLocalAuthority viaCtor = new("Test LA");
-        SearchProviderLocalAuthority viaFactory = SearchProviderLocalAuthority.Create("Test LA");
+        SearchLocalAuthority viaCtor = new("Test LA");
+        SearchLocalAuthority viaFactory = SearchLocalAuthority.Create("Test LA");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
