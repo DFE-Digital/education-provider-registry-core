@@ -14,18 +14,18 @@ internal static class SearchTermTestDouble
         return new SearchTerm(Key: fieldName, Value: value);
     }
 
-    public static IReadOnlyCollection<SearchTerm?> Empty()
+    public static IReadOnlyCollection<SearchTerm> Empty()
     {
         return [];
     }
 
-    public static IReadOnlyCollection<SearchTerm?> StubSingle()
+    public static IReadOnlyCollection<SearchTerm> StubSingle()
     {
         return
         [SearchTermTestDouble.Stub()];
     }
 
-    public static IReadOnlyCollection<SearchTerm?> StubMultiple()
+    public static IReadOnlyCollection<SearchTerm> StubMultiple()
     {
         return
         [

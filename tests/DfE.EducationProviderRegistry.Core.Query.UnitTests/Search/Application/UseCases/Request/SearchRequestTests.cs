@@ -11,7 +11,7 @@ public sealed class SearchRequestTests
     public void Constructor_WithNullSortOrder_ThrowsArgumentNullException()
     {
         // arrange
-        IReadOnlyCollection<SearchTerm?> searchTerms = [SearchTermTestDouble.Stub()];
+        IReadOnlyCollection<SearchTerm> searchTerms = [SearchTermTestDouble.Stub()];
 
         Func<SearchRequest> construct = () =>
             new SearchRequest(searchTerms, null!);
@@ -24,7 +24,7 @@ public sealed class SearchRequestTests
     public void Constructor_WithNullFilterRequests_ThrowsArgumentNullException()
     {
         // arrange
-        IReadOnlyCollection<SearchTerm?> searchTerms = [SearchTermTestDouble.Stub()];
+        IReadOnlyCollection<SearchTerm> searchTerms = [SearchTermTestDouble.Stub()];
         SortOrder sortOrder = SortOrderTestDouble.Stub();
 
         Func<SearchRequest> construct = () =>
@@ -42,7 +42,7 @@ public sealed class SearchRequestTests
     {
         // arrange
         List<FilterRequest> filterRequests = [FilterRequestTestDouble.Fake()];
-        IReadOnlyCollection<SearchTerm?> searchTerms = [SearchTermTestDouble.Stub()];
+        IReadOnlyCollection<SearchTerm> searchTerms = [SearchTermTestDouble.Stub()];
         SortOrder sortOrder = SortOrderTestDouble.Stub();
 
         // act
@@ -76,7 +76,7 @@ public sealed class SearchRequestTests
     public void Constructor_WithNoFilterParam_HasFilterRequestsNull()
     {
         // arrange
-        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubSingle();
+        IReadOnlyCollection<SearchTerm> searchTerms = SearchTermTestDouble.StubSingle();
         SortOrder sortOrder = SortOrderTestDouble.Stub();
 
         // act
@@ -94,7 +94,7 @@ public sealed class SearchRequestTests
     public void Constructor_WithSetOffsetValue_AssignsCorrectPropertyValue()
     {
         // arrange
-        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubSingle();
+        IReadOnlyCollection<SearchTerm> searchTerms = SearchTermTestDouble.StubSingle();
         SortOrder sortOrder = SortOrderTestDouble.Stub();
         const int offset = 10;
 
@@ -114,7 +114,7 @@ public sealed class SearchRequestTests
     public void Constructor_WithDefaultOffsetValue_AssignsDefaultPropertyValue()
     {
         // arrange
-        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubSingle();
+        IReadOnlyCollection<SearchTerm> searchTerms = SearchTermTestDouble.StubSingle();
         SortOrder sortOrder = SortOrderTestDouble.Stub();
 
         // act
@@ -132,7 +132,7 @@ public sealed class SearchRequestTests
     public void Constructor_AssignsSearchTerms()
     {
         // arrange
-        IReadOnlyCollection<SearchTerm?> searchTerms = SearchTermTestDouble.StubMultiple();
+        IReadOnlyCollection<SearchTerm> searchTerms = SearchTermTestDouble.StubMultiple();
 
         SortOrder sortOrder = SortOrderTestDouble.Stub();
 
