@@ -14,13 +14,14 @@ public sealed class SearchAggregateBuilder
     {
         _searchAggregate = new SearchAggregate
         {
+            SearchAggregateId = long.Parse(Interlocked.Increment(ref _providerIdentifierCounter).ToString()),
             ProviderId = Interlocked.Increment(ref _providerIdentifierCounter).ToString(),
             ProviderName = "Test Establishment",
             ProviderAddress = "1 Test Street, Test Town, Test County, TE1 1ST",
-            Town = "Test Town",
-            County = "Test County",
-            Postcode = "TE1 1ST",
-            LocalAuthorityName = "Test Authority"
+            LocalAuthorityName = "Test Authority",
+            ProviderCategory = "Establishment",
+            ProviderTypeId = 1, // Community school
+            ProviderTypeName = "Multi-Academy Trust"
         };
 
     }
@@ -41,6 +42,24 @@ public sealed class SearchAggregateBuilder
     public SearchAggregateBuilder WithName(string name)
     {
         _searchAggregate.ProviderName = name;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithPostcode(string postcode)
+    {
+        _searchAggregate.ProviderAddress = postcode;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithTown(string town)
+    {
+        _searchAggregate.ProviderAddress = town;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithCounty(string county)
+    {
+        _searchAggregate.County = county;
         return this;
     }
 

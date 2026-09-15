@@ -22,7 +22,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
                 [
                     builder =>
                     builder
-                        .WithFieldName(nameof(Establishment.Name))
+                        .WithFieldName(nameof(SearchAggregate.ProviderName))
                         .AppendContainsMatchBehaviour()
                 ]
             )
@@ -30,8 +30,8 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
 
     protected override IEnumerable<KeyValuePair<string, string?>> CreateFilterExpressionOptions()
     {
-        string filterRequestKey = "EstablishmentTypeId";
-        string concreteFilterInRegistry = "EstablishmentTypeFilter";
+        string filterRequestKey = "searchprovidertypeid";
+        string concreteFilterInRegistry = "SearchProviderTypeFilter";
 
         return [
             new(filterRequestKey, concreteFilterInRegistry)
@@ -64,7 +64,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
             SearchRequestFactory.BuildSearchRequest(
                 searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
                 filters: [
-                    new FilterRequest("EstablishmentTypeId", [1])
+                    new FilterRequest("searchprovidertypeid", [1])
                 ]);
 
         // act // assert
@@ -105,7 +105,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
             SearchRequestFactory.BuildSearchRequest(
                 searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
                 filters: [
-                    new FilterRequest("EstablishmentTypeId", [1, 2])
+                    new FilterRequest("searchprovidertypeid", [1, 2])
                 ]);
 
         // act / assert
@@ -140,7 +140,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
             SearchRequestFactory.BuildSearchRequest(
                 searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
                 filters: [
-                    new FilterRequest("EstablishmentTypeId", [999])
+                    new FilterRequest("searchprovidertypeid", [999])
                     ]);
 
         // act / assert

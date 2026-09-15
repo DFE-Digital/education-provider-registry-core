@@ -15,8 +15,7 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 {
     // ensure fields do not have UK constraints
     protected const string DefaultSearchFieldName = nameof(SearchAggregate.ProviderName);
-    protected const string SecondarySearchFieldName = nameof(SearchAggregate.ProviderId);
-    protected const string CollectionFieldName = "EstablishmentAuthority[].AuthorityName";
+    protected const string SecondarySearchFieldName = nameof(SearchAggregate.Postcode);
 
     protected SearchUseCaseBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
