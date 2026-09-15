@@ -1,9 +1,11 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+﻿using System.Diagnostics.CodeAnalysis;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search;
 
+[ExcludeFromCodeCoverage]
 public static class SearchResponseTestDouble
 {
     public static SearchResponse Stub()

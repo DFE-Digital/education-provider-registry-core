@@ -1,7 +1,9 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using System.Diagnostics.CodeAnalysis;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search;
 
+[ExcludeFromCodeCoverage]
 public static class SearchFacetsTestDouble
 {
     public static SearchFacets Stub()
