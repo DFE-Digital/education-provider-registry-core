@@ -37,16 +37,16 @@ public sealed class SearchUseCaseCollectionFieldTests
         // arrange
         const string searchTerm = "school";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .WithAuthorityName("School Authority")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .WithAuthorityName("College Authority")
                 .Build()
         ];
@@ -69,8 +69,8 @@ public sealed class SearchUseCaseCollectionFieldTests
         // arrange
         const string searchTerm = "school";
 
-        Establishment establishment =
-            SearchEstablishmentBuilder.Create()
+        SearchAggregate establishment =
+            SearchAggregateBuilder.Create()
                 .WithAuthorityName("College Authority")
                 .WithAuthorityName("School Authority")
                 .Build();
@@ -93,11 +93,11 @@ public sealed class SearchUseCaseCollectionFieldTests
         // arrange
         const string searchTerm = "school";
 
-        Establishment[] matchingEstablishments = [];
+        SearchAggregate[] matchingEstablishments = [];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .WithAuthorityName("College Authority")
                 .WithAuthorityName("Academy Authority")
                 .Build()

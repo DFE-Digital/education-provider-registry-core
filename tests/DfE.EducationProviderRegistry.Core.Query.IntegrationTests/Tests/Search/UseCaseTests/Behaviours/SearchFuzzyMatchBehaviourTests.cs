@@ -31,24 +31,24 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseBase
         // arrange
         string searchTerm = "School";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "Schools")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
@@ -71,19 +71,19 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseBase
         // arrange
         string searchTerm = "sChOoL";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School")
                 .Build(),
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "school")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
@@ -106,24 +106,24 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseBase
         // arrange
         string searchTerm = "School";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "Banana")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];

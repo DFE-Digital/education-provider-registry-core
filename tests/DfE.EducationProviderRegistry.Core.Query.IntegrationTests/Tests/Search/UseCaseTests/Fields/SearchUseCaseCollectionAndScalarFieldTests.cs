@@ -45,22 +45,22 @@ public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseBa
         // arrange
         const string searchTerm = "school";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "school")
                 .WithAuthorityName("School Authority")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "school")
                 .WithAuthorityName("College Authority")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "academy")
                 .WithAuthorityName("School Authority")
                 .Build()

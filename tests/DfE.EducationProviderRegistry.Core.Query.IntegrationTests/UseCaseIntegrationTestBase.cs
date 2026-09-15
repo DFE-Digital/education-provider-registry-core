@@ -25,7 +25,7 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
-    internal ISearchEstablishmentSeeder SeedSearchEstablishments { get; private set; }
+    internal ISearchAggregateSeeder SeedSearchAggregates { get; private set; }
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
 
     // Hook called by XUnit to initialise before any tests run
@@ -41,7 +41,7 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
         Database = await _databaseProvider.GetDatabaseAsync(key: PostgresContainerKey, ct);
         _postgresLocalConnectionString = await _databaseProvider.GetConnectionStringAsync(key: PostgresContainerKey, cancellationToken: ct);
 
-        SeedSearchEstablishments = new SearchEstablishmentSeeder(CreateDbContext(_postgresLocalConnectionString))!;
+        SeedSearchAggregates = new SearchAggregateSeeder(CreateDbContext(_postgresLocalConnectionString))!;
         QueryCollector = new PostgresQueryCollector(_postgresLocalConnectionString);
         await Database.StartAsync(ct);
     }

@@ -2,7 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -14,8 +14,8 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 {
     // ensure fields do not have UK constraints
-    protected const string DefaultSearchFieldName = nameof(Establishment.Name);
-    protected const string SecondarySearchFieldName = nameof(Establishment.EstablishmentNumber);
+    protected const string DefaultSearchFieldName = nameof(SearchAggregate.ProviderName);
+    protected const string SecondarySearchFieldName = nameof(SearchAggregate.ProviderId);
     protected const string CollectionFieldName = "EstablishmentAuthority[].AuthorityName";
 
     protected SearchUseCaseBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
@@ -29,7 +29,7 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
         // Clear all establishments and assoc to avoid conflicts with searchTerms
-        await SeedSearchEstablishments.ClearAsync(ct);
+        await SeedSearchAggregates.ClearAsync(ct);
     }
 
     protected sealed override void ConfigureApplicationServices(
@@ -51,14 +51,14 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 
     protected async Task<UseCaseResponse<SearchResponse>> ExecuteAndAssertSearchAsync(
         SearchRequest request,
-        IReadOnlyCollection<Establishment> expectednResults,
-        IReadOnlyCollection<Establishment> notExpectedInResults)
+        IReadOnlyCollection<SearchAggregate> expectednResults,
+        IReadOnlyCollection<SearchAggregate> notExpectedInResults)
     {
         // arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        SearchableEstablishments searchedEstablishments =
-            await SeedSearchEstablishments.SeedAsync(
+        SearchableAggregates searchedAggregates =
+            await SeedSearchAggregates.SeedAsync(
                 [
                     .. expectednResults,
                     .. notExpectedInResults
@@ -76,26 +76,26 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 
         Assert.NotNull(response.Model);
         Assert.Equal(expectednResults.Count, response.Model.TotalNumberOfResults);
-        Assert.NotNull(response.Model.EstablishmentResults);
-        Assert.Equal(expectednResults.Count, response.Model.EstablishmentResults.EstablishmentCollection.Count);
+        Assert.NotNull(response.Model.SearchProviderResults);
+        Assert.Equal(expectednResults.Count, response.Model.SearchProviderResults.SearchResultCollection.Count);
 
-        List<EstablishmentSearchResult> results = [.. response.Model.EstablishmentResults.EstablishmentCollection];
+        List<SearchProviderResult> results = [.. response.Model.SearchProviderResults.SearchResultCollection];
 
-        HashSet<string> resultUrns = [.. results.Select(t => t.Urn.Value)];
+        HashSet<string> resultUrns = [.. results.Select(t => t.UniqueIdentifier.Value)];
 
-        Assert.DoesNotContain(notExpectedInResults, establishment => resultUrns.Contains(establishment.Urn!));
+        Assert.DoesNotContain(notExpectedInResults, searchAggregate => resultUrns.Contains(searchAggregate.ProviderId!));
 
         for (int index = 0; index < results.Count; index++)
         {
-            EstablishmentSearchResult establishmentResponse = results[index];
+            SearchProviderResult searchAggregate = results[index];
 
-            Establishment seededEstablishment =
-                searchedEstablishments.Establishments.Single(
-                    (t) => t.Urn == establishmentResponse.Urn.Value);
+            SearchAggregate seededAggregate =
+                searchedAggregates.SearchAggregates.Single(
+                    (t) => t.ProviderId == searchAggregate.UniqueIdentifier.Value);
 
             SearchResponseAssertions.AssertMapped(
-                expected: seededEstablishment,
-                actual: establishmentResponse);
+                expected: seededAggregate,
+                actual: searchAggregate);
         }
 
         return response;

@@ -44,17 +44,17 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         const string stubEstablishmentMatchesName = "school";
 
         // arrange
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .WithName(stubEstablishmentMatchesName)
                 .WithEstablishmentTypeId(1)
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .WithName(stubEstablishmentMatchesName)
                 .WithEstablishmentTypeId(2)
                 .Build()
@@ -80,22 +80,22 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         const string stubEstablishmentMatchesName = "school";
 
         // arrange
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(1)
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(2)
             .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(3)
             .Build()
@@ -121,16 +121,16 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         const string stubEstablishmentMatchesName = "school";
 
         // arrange
-        Establishment[] matchingEstablishments = [];
+        SearchAggregate[] matchingEstablishments = [];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(1)
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(2)
             .Build()
@@ -156,22 +156,22 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         const string stubEstablishmentMatchesName = "school";
 
         // arrange
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(1)
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .WithName(stubEstablishmentMatchesName)
             .WithEstablishmentTypeId(2)
             .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .WithName("academy")
             .WithEstablishmentTypeId(1)
             .Build()
@@ -189,62 +189,4 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
             notExpectedInResults: nonMatchingEstablishments);
     }
 
-    // TODO as more filters are added
-    // Returns_Intersection_Of_Multiple_Filters()
-    /*
-     * 
-     * [Fact]
-public async Task Returns_Intersection_Of_Multiple_Filters()
-{
-    const string stubEstablishmentMatchesName = "school";
-
-    // arrange
-    Establishment[] matchingEstablishments =
-    [
-        SearchEstablishmentBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(1)
-            .WithEstablishmentStatusId(1)
-            .Build()
-    ];
-
-    Establishment[] nonMatchingEstablishments =
-    [
-        SearchEstablishmentBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(1)
-            .WithEstablishmentStatusId(2)
-            .Build(),
-
-        SearchEstablishmentBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(2)
-            .WithEstablishmentStatusId(1)
-            .Build(),
-
-        SearchEstablishmentBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(2)
-            .WithEstablishmentStatusId(2)
-            .Build()
-    ];
-
-    List<FilterRequest> filters =
-    [
-        new FilterRequest("EstablishmentTypeId", [1]),
-        new FilterRequest("EstablishmentStatusId", [1])
-    ];
-
-    // act / assert
-    await ExecuteAndAssertSearchAsync(
-        searchTerms:
-        [
-            (DefaultedSearchTerm, stubEstablishmentMatchesName)
-        ],
-        matchSearchTerm: matchingEstablishments,
-        nonMatchSearchTerm: nonMatchingEstablishments,
-        filters);
-}
-     * 
-     */
 }

@@ -8,11 +8,11 @@ internal static class SearchCriteriaOptionsStub
     {
             {
                 "SearchCriteria:SearchFields:0",
-                "Name"
+                "TypeName"
             },
             {
                 "SearchCriteria:Facets:0",
-                "establishmenttypeid" // FacetDefinition must be defined
+                "searchprovidertypeid" // FacetDefinition must be defined
             }
     };
 

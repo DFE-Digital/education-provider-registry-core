@@ -46,22 +46,22 @@ public sealed class SearchChainingTermsTests : SearchUseCaseBase
     public async Task Returns_Intersection_Of_Multiple_Search_Terms()
     {
         // arrange
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
             .SetValue(SecondarySearchFieldName, "SW1A")
             .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
             .SetValue(SecondarySearchFieldName, "M1")
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "academy")
             .SetValue(SecondarySearchFieldName, "SW1A")
             .Build()
@@ -85,16 +85,16 @@ public sealed class SearchChainingTermsTests : SearchUseCaseBase
     public async Task Returns_No_Results_When_Any_Search_Term_Does_Not_Match()
     {
         // arrange
-        Establishment[] matchingEstablishments = [];
+        SearchAggregate[] matchingEstablishments = [];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
             .SetValue(SecondarySearchFieldName, "M1")
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "academy")
             .SetValue(SecondarySearchFieldName, "SW1A")
             .Build()
