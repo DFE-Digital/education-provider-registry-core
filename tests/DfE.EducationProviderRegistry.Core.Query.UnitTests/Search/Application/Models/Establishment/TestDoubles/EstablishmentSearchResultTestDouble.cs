@@ -33,6 +33,8 @@ public static class SearchResultTestDouble
 
         SearchProviderCategory providerCategory = new("Establishment");
 
+        int academyCount = 10;
+
         return SearchProviderResult.Create(
             providerIdentifier,
             name,
@@ -40,7 +42,8 @@ public static class SearchResultTestDouble
             type,
             group,
             localAuthority,
-            providerCategory
+            providerCategory,
+            academyCount
             );
     }
 
@@ -54,5 +57,6 @@ public static class SearchResultTestDouble
             SearchProviderType.Create("Academy", 1),
             GroupDetail.Create("Mock Trust", "TRUST001"),
             SearchProviderLocalAuthority.Create("Test LA"),
-            new SearchProviderCategory("Establishment"));
+            new SearchProviderCategory("Establishment"),
+            academyCount: 10);
 }

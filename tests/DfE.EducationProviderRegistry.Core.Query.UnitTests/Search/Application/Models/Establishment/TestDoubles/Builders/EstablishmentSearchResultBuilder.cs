@@ -20,6 +20,8 @@ internal sealed class SearchResultBuilder
     private SearchProviderLocalAuthority _localAuthority = SearchProviderLocalAuthority.Create("Test LA");
     private SearchProviderCategory _providerCategory = new("Establishment");
 
+    private int _academyCount = 10;
+
     public SearchResultBuilder WithUrn(string providerIdentifier)
     {
         _providerIdentifier = new ProviderIdentifier(providerIdentifier);
@@ -62,6 +64,12 @@ internal sealed class SearchResultBuilder
         return this;
     }
 
+    public SearchResultBuilder WithAcademyCount(int academyCount)
+    {
+        _academyCount = academyCount;
+        return this;
+    }
+
     public SearchProviderResult Build() =>
         SearchProviderResult.Create(
             _providerIdentifier,
@@ -70,5 +78,6 @@ internal sealed class SearchResultBuilder
             _type,
             _group,
             _localAuthority,
-            _providerCategory);
+            _providerCategory,
+            _academyCount);
 }

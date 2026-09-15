@@ -12,7 +12,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Provide
 public sealed class FacetProvider : IFacetProvider
 {
     private readonly IDbContextFactory<EducationProviderRegistryDbContext> _contextFactory;
-    private readonly Dictionary<string, FacetDefinition<SearchAggregate>> _facetDefinitions;
+    private readonly Dictionary<object, FacetDefinition<SearchAggregate>> _facetDefinitions;
 
     /// <summary>
     /// Creates a new facet provider using the supplied context factory and facet selector map.
@@ -23,7 +23,7 @@ public sealed class FacetProvider : IFacetProvider
     /// </param>
     public FacetProvider(
         IDbContextFactory<EducationProviderRegistryDbContext> contextFactory,
-        Dictionary<string, FacetDefinition<SearchAggregate>> facetDefinitions)
+        Dictionary<object, FacetDefinition<SearchAggregate>> facetDefinitions)
     {
         _contextFactory = contextFactory;
         _facetDefinitions = facetDefinitions;

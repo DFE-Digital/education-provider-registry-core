@@ -21,11 +21,11 @@ public sealed class CompositionRootTests
             ServiceProviderBuilder.BuildServiceProvider();
 
         // act
-        Dictionary<string, FacetDefinition<Establishment>> definitions =
-            provider.GetRequiredService<Dictionary<string, FacetDefinition<Establishment>>>();
+        Dictionary<object, FacetDefinition<SearchAggregate>> definitions =
+            provider.GetRequiredService<Dictionary<object, FacetDefinition<SearchAggregate>>>();
 
         // assert
-        Assert.True(definitions.ContainsKey("establishmenttypeid"));
+        Assert.True(definitions.ContainsKey("searchprovidertypeid"));
     }
 
     [Fact]
@@ -38,11 +38,11 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchOrchestrator<Establishment> orchestrator =
-            scope.ServiceProvider.GetRequiredService<ISearchOrchestrator<Establishment>>();
+        ISearchOrchestrator<SearchAggregate> orchestrator =
+            scope.ServiceProvider.GetRequiredService<ISearchOrchestrator<SearchAggregate>>();
 
         // assert
-        Assert.IsType<TrigramSearchOrchestrator<Establishment>>(orchestrator);
+        Assert.IsType<TrigramSearchOrchestrator<SearchAggregate>>(orchestrator);
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchProjectionBuilder<Establishment> builder =
-            scope.ServiceProvider.GetRequiredService<ISearchProjectionBuilder<Establishment>>();
+        ISearchProjectionBuilder<SearchAggregate> builder =
+            scope.ServiceProvider.GetRequiredService<ISearchProjectionBuilder<SearchAggregate>>();
 
         // assert
         Assert.IsType<SearchAggregateProjectionBuilder>(builder);
@@ -72,8 +72,8 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchProvider<Establishment> providerInstance =
-            scope.ServiceProvider.GetRequiredService<ISearchProvider<Establishment>>();
+        ISearchProvider<SearchAggregate> providerInstance =
+            scope.ServiceProvider.GetRequiredService<ISearchProvider<SearchAggregate>>();
 
         // assert
         Assert.IsType<SearchProvider>(providerInstance);

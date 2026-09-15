@@ -158,7 +158,7 @@ public static class CompositionRoot
             SearchRequestFiltersToCoreFiltersMapper>();
 
         services.AddSingleton(
-            new Dictionary<string, FacetDefinition<SearchAggregate>>(StringComparer.OrdinalIgnoreCase)
+            new Dictionary<object, FacetDefinition<SearchAggregate>>()
             {
                 ["searchprovidertypeid"] =
                     new FacetDefinition<SearchAggregate>(

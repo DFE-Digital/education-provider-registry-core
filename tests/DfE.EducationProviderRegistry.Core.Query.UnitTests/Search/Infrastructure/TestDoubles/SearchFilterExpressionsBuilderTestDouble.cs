@@ -1,28 +1,40 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 
-[ExcludeFromCodeCoverage]
-internal static class SearchFilterExpressionsBuilderTestDouble
+public static class SearchFilterExpressionsBuilderTestDouble
 {
-    public static Mock<ISearchFilterExpressionsBuilder<TProjection>> Mock<TProjection>()
-        where TProjection : class => new(MockBehavior.Strict);
-
-    public static Mock<ISearchFilterExpressionsBuilder<TProjection>> MockFor<TProjection>(
-        Expression<Func<TProjection, bool>> expression)
-        where TProjection : class
+    public static Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> Mock()
     {
-        Mock<ISearchFilterExpressionsBuilder<TProjection>> builderMock = Mock<TProjection>();
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> mock = new(MockBehavior.Strict);
 
-        builderMock
-            .Setup(searchFilterExpressionBuilder =>
-                searchFilterExpressionBuilder.BuildSearchFilterExpression(
-                    It.IsAny<IEnumerable<SearchFilterRequest>>()))
-            .Returns(expression);
+        Expression<Func<SearchAggregate, bool>> trueExpr = sa => true;
 
-        return builderMock;
+        mock.Setup(builder =>
+            builder.BuildSearchFilterExpression(It.IsAny<IEnumerable<SearchFilterRequest>>()))
+            .Returns(trueExpr);
+
+        mock.Setup(builder =>
+            builder.BuildSearchFilterExpression(It.IsAny<ReadOnlyCollection<SearchFilterRequest>>()))
+            .Returns(trueExpr);
+
+        return mock;
+    }
+
+    public static Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> MockFor(
+        Expression<Func<SearchAggregate, bool>> predicate)
+    {
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> mock = new(MockBehavior.Strict);
+
+        mock.Setup(expressionBuilder =>
+            expressionBuilder.BuildSearchFilterExpression(
+                It.IsAny<IEnumerable<SearchFilterRequest>>()))
+            .Returns(predicate);
+
+        return mock;
     }
 }

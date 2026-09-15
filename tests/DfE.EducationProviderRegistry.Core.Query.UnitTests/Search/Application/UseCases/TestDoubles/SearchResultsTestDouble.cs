@@ -9,14 +9,14 @@ internal static class SearchResultsTestDouble
     public static SearchResults<SearchProviderResults, SearchFacets> Stub() =>
         new()
         {
-            Results = EstablishmentSearchResultsTestDouble.Stub(),  // Populated establishment search results
-            FacetResults = SearchFacetsTestDouble.Stub()            // Populated facet results
+            Results = SearchAggregationResultsTestDouble.Stub(),    // Populated search aggregation results.
+            FacetResults = SearchFacetsTestDouble.Stub()            // Populated facet results.
         };
 
     public static SearchResults<SearchProviderResults, SearchFacets> StubWithNoResults() =>
         new()
         {
-            Results = EstablishmentSearchResultsTestDouble.EmptyStub(), // Unpopulated establishment search results
-            FacetResults = SearchFacetsTestDouble.Stub()                // Populated facet results
+            Results = SearchAggregationResultsTestDouble.EmptyStub(),   // Unpopulated search aggregation results.
+            FacetResults = SearchFacetsTestDouble.Stub()                // Populated facet results.
         };
 }

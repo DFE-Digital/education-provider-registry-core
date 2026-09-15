@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
@@ -6,9 +7,9 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal static class EstablishmentTestDouble
+internal static class SearchAggregateTestDouble
 {
-    public static UniqueReferenceNumber ValidUrn => new("12345");
+    public static ProviderIdentifier ValidIdentifier => new("12345");
 
     public static Name ValidName => new("Test School");
 
@@ -23,5 +24,11 @@ internal static class EstablishmentTestDouble
 
     public static SearchProviderLocalAuthority ValidLocalAuthority =>
         SearchProviderLocalAuthority.Create("Test LA");
+
+    public static SearchProviderCategory ProviderCategory =>
+        SearchProviderCategory.Create("Establishment");
+
+    public static int FakeAcademyCount(Faker faker) =>
+        faker.Random.Int(1, 100);
 }
 

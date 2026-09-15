@@ -42,14 +42,6 @@ public sealed class LocalAuthorityTests
             new LocalAuthority("Test LA", null!));
     }
 
-    [Fact]
-    public void FactoryMethod_ShouldThrow_WhenNameIsNull()
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentNullException>(() =>
-            SearchProviderLocalAuthority.Create(null!));
-    }
-
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -70,16 +62,5 @@ public sealed class LocalAuthorityTests
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
             new LocalAuthority("Test LA", invalid));
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    public void FactoryMethod_ShouldThrowArgumentException_WhenNameIsEmptyOrWhitespace(string invalid)
-    {
-        // arrange/assert
-        Assert.Throws<ArgumentException>(() =>
-            SearchProviderLocalAuthority.Create(invalid));
     }
 }

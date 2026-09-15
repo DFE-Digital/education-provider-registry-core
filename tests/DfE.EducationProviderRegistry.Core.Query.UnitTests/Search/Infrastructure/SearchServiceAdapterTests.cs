@@ -17,7 +17,7 @@ using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure;
 
-public class EstablishmentsSearchServiceAdapterTests
+public class SearchServiceAdapterTests
 {
     private readonly Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> _filterBuilderMock;
     private readonly Mock<IMapper<(IReadOnlyList<SearchReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
@@ -26,7 +26,7 @@ public class EstablishmentsSearchServiceAdapterTests
     private readonly SearchServiceAdapter _sut;
     private readonly EducationProviderRegistryDbContext _db;
 
-    public EstablishmentsSearchServiceAdapterTests()
+    public SearchServiceAdapterTests()
     {
         DbContextOptions<EducationProviderRegistryDbContext> options =
             new DbContextOptionsBuilder<EducationProviderRegistryDbContext>()
@@ -107,48 +107,14 @@ public class EstablishmentsSearchServiceAdapterTests
     public async Task SearchAsync_ProjectsEstablishmentsCorrectly()
     {
         // arrange
-        _db.Establishment.Add(new Establishment
+        _db.SearchAggregate.Add(new SearchAggregate
         {
-            EstablishmentId = 1,
-            Urn = "100",
-            Uid = "UID",
-            Name = "School A",
-            Site =
-            [
-                new() { AddressLine1 = "Addr", Town = "Town", County = "County", Postcode = "PC" }
-            ],
-            EstablishmentType =
-                new Data.DatabaseModels.Models.EstablishmentType
-                {
-                    Name = "Type",
-                    Code = "T"
-                },
-            EstablishmentStatus =
-                new EstablishmentStatus
-                {
-                    Name = "Status",
-                    Code = "ST"
-                },
-            EstablishmentGroupMembership =
-            [
-                new EstablishmentGroupMembership
-                {
-                    Group =
-                        new GroupRecord
-                        {
-                            Name = "Group",
-                            Code = "GC"
-                        }
-                }
-            ],
-            EstablishmentAuthority =
-            [
-                new EstablishmentAuthority
-                {
-                    AuthorityName = "Auth",
-                    AuthorityCode = "AC"
-                }
-            ]
+            SearchAggregateId = 1,
+            ProviderId = "100",
+            ProviderName = "School A",
+            ProviderAddress = "Addr, Town, County, PC",
+            ProviderTypeName = "Type",
+            ProviderTypeId = 12,
         });
 
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -171,11 +137,10 @@ public class EstablishmentsSearchServiceAdapterTests
                     projection.items.Count == 1 &&
                     projection.items[0].Id == "100" &&
                     projection.items[0].Name == "School A" &&
-                    projection.items[0].Address == "Addr" &&
-                    projection.items[0].TypeId.ToString() == "Type" &&
-                    projection.items[0].GroupName == "Group" &&
-                    projection.items[0].GroupCode == "GC" &&
-                    projection.items[0].LocalAuthorityName == "Auth"
+                    projection.items[0].Address == "Addr, Town, County, PC" &&
+                    projection.items[0].TypeName == "Type" &&
+                    projection.items[0].TypeId == 12
                 )), Times.Once);
+
     }
 }
