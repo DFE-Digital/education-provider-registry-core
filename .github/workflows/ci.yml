@@ -109,8 +109,11 @@ jobs:
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
 
-    - name: Pack NuGet Package with SemVer
-      run: dotnet pack src/DfE.EducationProviderRegistry.Core.Query/ tests/DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles/ --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
+    - name: Pack Core.Query NuGet Package with SemVer
+      run: dotnet pack src/DfE.EducationProviderRegistry.Core.Query/ --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
+
+    - name: Pack Core.Contracts.TestDoubles
+      run: dotnet pack tests/DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles/ --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
 
     - name: Upload NuGet Package Artifact
       uses: actions/upload-artifact@v7
