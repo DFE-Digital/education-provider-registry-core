@@ -19,9 +19,9 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     /// <param name="offset">Offset for pagination (defaults to 0).</param>
     /// <param name="pageSize">The number of results to return per page (defaults to 10).</param>
     /// <exception cref="ArgumentException">Thrown if searchKeyword is null or empty.</exception>
-    public SearchRequest(IReadOnlyCollection<SearchTerm?> searchTerms, SortOrder sortOrder, int offset = 0, int pageSize = 10)
+    public SearchRequest(IReadOnlyCollection<SearchTerm> searchTerms, SortOrder sortOrder, int offset = 0, int pageSize = 10)
     {
-        SearchTerms = searchTerms;
+        SearchTerms = searchTerms ?? [];
         SortOrder = sortOrder ?? throw new ArgumentNullException(nameof(sortOrder));
         Offset = offset;
         PageSize = pageSize;
@@ -34,7 +34,7 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     /// <param name="filterRequests">A list of filter criteria.</param>
     /// <param name="offset">Offset for pagination (defaults to 0).</param>
     public SearchRequest(
-        IReadOnlyCollection<SearchTerm?> searchTerms,
+        IReadOnlyCollection<SearchTerm> searchTerms,
         IList<FilterRequest> filterRequests,
         SortOrder sortOrder,
         int offset = 0,
@@ -45,7 +45,7 @@ public sealed class SearchRequest : IUseCaseRequest<UseCaseResponse<SearchRespon
     }
 
 
-    public IReadOnlyCollection<SearchTerm?> SearchTerms { get; }
+    public IReadOnlyCollection<SearchTerm> SearchTerms { get; }
 
     /// <summary>
     /// The offset used for paging through search results.
