@@ -39,7 +39,7 @@ public sealed class SearchUseCaseTests
 
         SearchRequest request =
             new(
-                [new SearchTerm(Key:"searchKey", Value: "searchkeyword")],
+                [new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
                 new[] { FilterRequestTestDouble.Fake() },
                 SortOrderTestDouble.Stub());
 

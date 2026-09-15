@@ -33,7 +33,7 @@ public partial record ProviderIdentifier
     /// Creates a compiled regular expression used to validate provider identifier values.
     /// This method is generated at compile time for optimal performance.
     /// </summary>
-    private static Regex ProviderIdentifierValidation () => ValidateProviderIdentifier();
+    private static Regex ProviderIdentifierValidation() => ValidateProviderIdentifier();
 
     /// <summary>
     /// Source‑generated regular expression for provider identifier validation.
