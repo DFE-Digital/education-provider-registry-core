@@ -3,7 +3,7 @@ using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search;
 
 [ExcludeFromCodeCoverage]
 public static class EstablishmentSearchResultTestDouble
