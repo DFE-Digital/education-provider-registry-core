@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal static class SearchResultsTestDouble
+public static class SearchResultsTestDouble
 {
     public static SearchResults<SearchAggregateResults, SearchFacets> Stub()
     {

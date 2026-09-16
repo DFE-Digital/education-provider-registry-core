@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal static class SearchAggregationResultsTestDouble
+public static class SearchAggregationResultsTestDouble
 {
     public static SearchAggregateResults Stub()
     {
@@ -19,5 +20,5 @@ internal static class SearchAggregationResultsTestDouble
         return new SearchAggregateResults(searchResults);
     }
 
-    public static SearchAggregateResults EmptyStub() => new(null!);
+    public static SearchAggregateResults EmptyStub() => new([]);
 }
