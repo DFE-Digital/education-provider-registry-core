@@ -31,10 +31,4 @@
     <ProjectReference Include="..\DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles\DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="DfE.EducationProviderRegistry.Data.DatabaseModels">
-      <HintPath>..\..\src\DfE.EducationProviderRegistry.Core.Query\TestAssemblies\DfE.EducationProviderRegistry.Data.DatabaseModels.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
