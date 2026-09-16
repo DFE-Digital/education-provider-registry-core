@@ -11,7 +11,7 @@ public static class SearchResultTestDouble
 {
     private static readonly Faker _faker = new();
 
-    public static SearchAggregateResult Create()
+    public static SearchAggregateResult Fake()
     {
         ProviderIdentifier providerIdentifier =
             new(_faker.Random.Int(10000, 99999).ToString());
