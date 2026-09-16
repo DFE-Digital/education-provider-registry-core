@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Represents the classification or category of a search provider
-/// (e.g. 'Group' OR 'search result').
+/// (e.g. 'Group' OR 'Establishment').
 /// This value object is used within search results to provide
 /// a consistent, strongly typed representation of search provider catgeory.
 /// </summary>
