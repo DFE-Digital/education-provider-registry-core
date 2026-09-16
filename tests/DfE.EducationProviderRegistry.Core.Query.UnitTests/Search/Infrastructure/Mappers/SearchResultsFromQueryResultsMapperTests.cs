@@ -1,330 +1,286 @@
-﻿//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
-//using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 
-//namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Mappers;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Mappers;
 
-//public sealed class SearchResultsFromQueryResultsMapperTests
-//{
-//    [Fact]
-//    public void Map_Throws_WhenResultsAreNull()
-//    {
-//        // arrange
-//        IReadOnlyList<EstablishmentReadModel> results = null!;
-//        IReadOnlyList<AggregatedFacetResult> facets = [];
+public sealed class SearchResultsFromQueryResultsMapperTests
+{
+    [Fact]
+    public void Map_Throws_WhenResultsAreNull()
+    {
+        // arrange
+        IReadOnlyList<SearchReadModel> results = null!;
+        IReadOnlyList<AggregatedFacetResult> facets = [];
 
-//        SearchResultsFromQueryResultsMapper mapper = new();
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        // act
-//        ArgumentNullException exception =
-//            Assert.Throws<ArgumentNullException>(
-//                () => mapper.Map((results, facets, 0)));
+        // act
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(
+                () => mapper.Map((results, facets, 0)));
 
-//        // assert
-//        Assert.Equal("context", exception.ParamName);
+        // assert
+        Assert.Equal("context", exception.ParamName);
 
-//        Assert.Contains(
-//            "Tuple does not contain establishment results.",
-//            exception.Message);
-//    }
+        Assert.Contains(
+            "Tuple does not contain search provider results.",
+            exception.Message);
+    }
 
-//    [Fact]
-//    public void Map_Throws_WhenFacetsAreNull()
-//    {
-//        // arrange
-//        IReadOnlyList<EstablishmentReadModel> results = [];
-//        IReadOnlyList<AggregatedFacetResult> facets = null!;
+    [Fact]
+    public void Map_Throws_WhenFacetsAreNull()
+    {
+        // arrange
+        IReadOnlyList<SearchReadModel> results = [];
+        IReadOnlyList<AggregatedFacetResult> facets = null!;
 
-//        SearchResultsFromQueryResultsMapper mapper = new();
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        // act
-//        ArgumentNullException exception =
-//            Assert.Throws<ArgumentNullException>(
-//                () => mapper.Map((results, facets, 0)));
+        // act
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(
+                () => mapper.Map((results, facets, 0)));
 
-//        // assert
-//        Assert.Equal("context", exception.ParamName);
+        // assert
+        Assert.Equal("context", exception.ParamName);
 
-//        Assert.Contains(
-//            "Tuple does not contain facet results.",
-//            exception.Message);
-//    }
+        Assert.Contains(
+            "Tuple does not contain facet results.",
+            exception.Message);
+    }
 
-//    [Fact]
-//    public void Map_ReturnsExpectedResults_WhenContextIsValid()
-//    {
-//        // arrange
-//        EstablishmentReadModel establishment = new(
-//            Id: 1,
-//            Urn: "123456",
-//            Ukprn: "10012345",
-//            Name: "Test Establishment",
-//            AddressLine1: "Test Address Line",
-//            AddressLine2: "Test Addres line 2",
-//            City: "Test City",
-//            County: "Test County",
-//            Postcode: "AA1 1AA",
-//            Type: "Test Type",
-//            Status: "Open",
-//            GroupName: "Test Group",
-//            GroupCode: "GROUP1",
-//            LocalAuthorityName: "Test Local Authority",
-//            LocalAuthorityCode: "LA1");
+    [Fact]
+    public void Map_ReturnsExpectedResults_WhenContextIsValid()
+    {
+        // arrange
+        SearchReadModel searchReadModel = new(
+            Id: "123456",
+            Name: "Test Establishment",
+            TypeName: "Test Type",
+            TypeId: 123,
+            Address: "Test Address Line, Test Addres line 2, Test City, Test County, AA1 1AA",
+            LocalAuthorityName: "Test Local Authority",
+            GroupCode: "GROUP1",
+            GroupName: "Test Group",
+            ProviderCategory: "Establishment",
+            AcademyCount: 2);
 
-//        IReadOnlyList<EstablishmentReadModel> results =
-//        [
-//            establishment
-//        ];
+        IReadOnlyList<SearchReadModel> results =
+        [
+            searchReadModel
+        ];
 
-//        IReadOnlyList<AggregatedFacetResult> facets =
-//        [
-//            new(
-//                "TestFacet",
-//                [
-//                    new FacetResult(
-//                        "facet-value",
-//                        "Facet label",
-//                        10)
-//                ])
-//        ];
+        IReadOnlyList<AggregatedFacetResult> facets =
+        [
+            new(
+                "TestFacet",
+                [
+                    new FacetResult(
+                        "facet-value",
+                        "Facet label",
+                        10)
+                ])
+        ];
 
-//        const int totalCount = 25;
+        const int totalCount = 25;
 
-//        SearchResultsFromQueryResultsMapper mapper = new();
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        // act
-//        SearchResults<EstablishmentSearchResults, SearchFacets> mapped =
-//            mapper.Map((results, facets, totalCount));
+        // act
+        SearchResults<SearchAggregateResults, SearchFacets> mapped =
+            mapper.Map((results, facets, totalCount));
 
-//        // assert
-//        EstablishmentSearchResult mappedEstablishment =
-//            Assert.Single(mapped.Results!.EstablishmentCollection);
+        // assert
+        SearchAggregateResult mappedSearchResult =
+            Assert.Single(mapped.Results!.SearchResultCollection);
 
-//        Assert.Equal("123456", mappedEstablishment.Urn.Value);
-//        Assert.Equal("Test Establishment", mappedEstablishment.Name.Value);
-//        Assert.Equal("Test Address Line", mappedEstablishment.Address?.AddressLine1);
-//        Assert.Equal("Test City", mappedEstablishment.Address?.Town);
-//        Assert.Equal("Test County", mappedEstablishment.Address?.County);
-//        Assert.Equal("AA1 1AA", mappedEstablishment.Address?.Postcode);
-//        Assert.Equal("Test Type", mappedEstablishment.Type?.Value);
+        Assert.Equal("123456", mappedSearchResult.UniqueIdentifier.Value);
+        Assert.Equal("Test Establishment", mappedSearchResult.Name.Value);
+        Assert.Equal("Test Type", mappedSearchResult.Type?.Name);
+        Assert.Equal("Test Address Line, Test Addres line 2, Test City, Test County, AA1 1AA",
+            mappedSearchResult.Address?.FullAddress);
+        Assert.Equal("Test Local Authority", mappedSearchResult.LocalAuthority?.Name);
+        Assert.Equal("Test Group", mappedSearchResult.Group?.PartOfName);
+        Assert.Equal("GROUP1", mappedSearchResult.Group?.PartOfCode);
+        Assert.Equal(2, mappedSearchResult.AcademyCount);
+        Assert.Equal(totalCount, mapped.TotalCount);
 
-//        Assert.Equal(
-//            "Test Group",
-//            mappedEstablishment.Group?.PartOfName);
+        SearchFacet mappedFacet =
+            Assert.Single(mapped.FacetResults!.Facets);
 
-//        Assert.Equal(
-//            "GROUP1",
-//            mappedEstablishment.Group?.PartOfCode);
+        Assert.Equal("TestFacet", mappedFacet.Name);
 
-//        Assert.Equal(
-//            "Test Local Authority",
-//            mappedEstablishment.LocalAuthority?.Name);
+        FacetResult mappedFacetResult =
+            Assert.Single(mappedFacet.Results);
 
-//        Assert.Equal(
-//            "LA1",
-//            mappedEstablishment.LocalAuthority?.Code);
+        Assert.Equal("facet-value", mappedFacetResult.Value);
+        Assert.Equal("Facet label", mappedFacetResult.Label);
+        Assert.Equal(10, mappedFacetResult.Count);
+    }
 
-//        Assert.Equal(totalCount, mapped.TotalCount);
+    [Fact]
+    public void Map_UsesEmptyStrings_WhenAddressIsNull()
+    {
+        // arrange
+        SearchReadModel searchReadModel = new(
+            Id: "123456",
+            Name: "Test Establishment",
+            TypeName: "Test Type",
+            TypeId: 123,
+            Address: null!,
+            LocalAuthorityName: "Test Local Authority",
+            GroupCode: "GROUP1",
+            GroupName: "Test Group",
+            ProviderCategory: "Establishment",
+            AcademyCount: 2);
 
-//        SearchFacet mappedFacet =
-//            Assert.Single(mapped.FacetResults!.Facets);
+        IReadOnlyList<SearchReadModel> results =
+        [
+            searchReadModel
+        ];
 
-//        Assert.Equal("TestFacet", mappedFacet.Name);
+        IReadOnlyList<AggregatedFacetResult> facets = [];
 
-//        FacetResult mappedFacetResult =
-//            Assert.Single(mappedFacet.Results);
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        Assert.Equal("facet-value", mappedFacetResult.Value);
-//        Assert.Equal("Facet label", mappedFacetResult.Label);
-//        Assert.Equal(10, mappedFacetResult.Count);
-//    }
+        // act
+        SearchResults<SearchAggregateResults, SearchFacets> mapped =
+            mapper.Map((results, facets, 1));
 
-//    [Fact]
-//    public void Map_UsesEmptyStrings_WhenCityCountyAndPostcodeAreNull()
-//    {
-//        // arrange
-//        EstablishmentReadModel establishment = new(
-//            Id: 1,
-//            Urn: "123456",
-//            Ukprn: "10012345",
-//            Name: "Test Establishment",
-//            AddressLine1: "Test Address Line",
-//            AddressLine2: "Test Addres line 2",
-//            City: null,
-//            County: null,
-//            Postcode: null,
-//            Type: "Test Type",
-//            Status: "Open",
-//            GroupName: "Test Group",
-//            GroupCode: "GROUP1",
-//            LocalAuthorityName: "Test Local Authority",
-//            LocalAuthorityCode: "LA1");
+        // assert
+        SearchAggregateResult mappedSearchResult =
+            Assert.Single(mapped.Results!.SearchResultCollection);
 
-//        IReadOnlyList<EstablishmentReadModel> results =
-//        [
-//            establishment
-//        ];
+        Assert.Equal(
+            string.Empty,
+            mappedSearchResult.Address?.FullAddress);
+    }
 
-//        IReadOnlyList<AggregatedFacetResult> facets = [];
+    [Fact]
+    public void Map_ReturnsEmptyCollections_WhenContextIsEmpty()
+    {
+        // arrange
+        IReadOnlyList<SearchReadModel> results = [];
+        IReadOnlyList<AggregatedFacetResult> facets = [];
 
-//        SearchResultsFromQueryResultsMapper mapper = new();
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        // act
-//        SearchResults<EstablishmentSearchResults, SearchFacets> mapped =
-//            mapper.Map((results, facets, 1));
+        // act
+        SearchResults<SearchAggregateResults, SearchFacets> mapped =
+            mapper.Map((results, facets, 0));
 
-//        // assert
-//        EstablishmentSearchResult mappedEstablishment =
-//            Assert.Single(mapped.Results!.EstablishmentCollection);
+        // assert
+        Assert.Empty(mapped.Results!.SearchResultCollection);
+        Assert.Equal(0, mapped.TotalCount);
+        Assert.Empty(mapped.FacetResults!.Facets);
+    }
 
-//        Assert.Equal(
-//            string.Empty,
-//            mappedEstablishment.Address?.Town);
+    [Fact]
+    public void Map_MapsAllEstablishments_WhenMultipleResultsAreProvided()
+    {
+        // arrange
+        IReadOnlyList<SearchReadModel> results =
+        [
+            new(
+                Id: "123456",
+                Name: "Test Establishment 1",
+                TypeName: "Test Type 1",
+                TypeId: 123,
+                Address: "Test Address 1",
+                LocalAuthorityName: "Test Local Authority 1",
+                GroupCode: "GROUP1",
+                GroupName: "Test Group 1",
+                ProviderCategory: "Establishment",
+                AcademyCount: 2),
 
-//        Assert.Equal(
-//            string.Empty,
-//            mappedEstablishment.Address?.County);
+            new(
+                Id: "654321",
+                Name: "Test Establishment 2",
+                TypeName: "Test Type 2",
+                TypeId: 1321,
+                Address: "Test Address 2",
+                LocalAuthorityName: "Test Local Authority 2",
+                GroupCode: "GROUP2",
+                GroupName: "Test Group 2",
+                ProviderCategory: "Establishment",
+                AcademyCount: 4)
+        ];
 
-//        Assert.Equal(
-//            string.Empty,
-//            mappedEstablishment.Address?.Postcode);
-//    }
+        IReadOnlyList<AggregatedFacetResult> facets = [];
 
-//    [Fact]
-//    public void Map_ReturnsEmptyCollections_WhenContextIsEmpty()
-//    {
-//        // arrange
-//        IReadOnlyList<EstablishmentReadModel> results = [];
-//        IReadOnlyList<AggregatedFacetResult> facets = [];
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        SearchResultsFromQueryResultsMapper mapper = new();
+        // act
+        SearchResults<SearchAggregateResults, SearchFacets> mapped =
+            mapper.Map((results, facets, 10));
 
-//        // act
-//        SearchResults<EstablishmentSearchResults, SearchFacets> mapped =
-//            mapper.Map((results, facets, 0));
+        // assert
+        Assert.Collection(
+            mapped.Results!.SearchResultCollection,
+            first =>
+            {
+                Assert.Equal("123456", first.UniqueIdentifier.Value);
+                Assert.Equal("Test Establishment 1", first.Name.Value);
+            },
+            second =>
+            {
+                Assert.Equal("654321", second.UniqueIdentifier.Value);
+                Assert.Equal("Test Establishment 2", second.Name.Value);
+            });
 
-//        // assert
-//        Assert.Empty(mapped.Results!.EstablishmentCollection);
-//        Assert.Equal(0, mapped.TotalCount);
-//        Assert.Empty(mapped.FacetResults!.Facets);
-//    }
+        Assert.Equal(10, mapped.TotalCount);
+    }
 
-//    [Fact]
-//    public void Map_MapsAllEstablishments_WhenMultipleResultsAreProvided()
-//    {
-//        // arrange
-//        IReadOnlyList<EstablishmentReadModel> results =
-//        [
-//            new(
-//            Id: 1,
-//            Urn: "123456",
-//            Ukprn: "10012345",
-//            Name: "Test Establishment One",
-//            AddressLine1: "Test Address One",
-//            AddressLine2: "Test Address line 2",
-//            City: "Test City",
-//            County: "Test County",
-//            Postcode: "AA1 1AA",
-//            Type: "Test Type",
-//            Status: "Open",
-//            GroupName: "Test Group",
-//            GroupCode: "GROUP1",
-//            LocalAuthorityName: "Test Local Authority",
-//            LocalAuthorityCode: "LA1"),
+    [Fact]
+    public void Map_MapsAllFacetValues_WhenMultipleFacetValuesAreProvided()
+    {
+        // arrange
+        IReadOnlyList<SearchReadModel> results = [];
 
-//        new(
-//            Id: 2,
-//            Urn: "654321",
-//            Ukprn: "10054321",
-//            Name: "Test Establishment Two",
-//            AddressLine1: "Test Address Two",
-//            AddressLine2: "Test Address line 2",
-//            City: "Test City",
-//            County: "Test County",
-//            Postcode: "BB1 1BB",
-//            Type: "Test Type",
-//            Status: "Open",
-//            GroupName: "Test Group",
-//            GroupCode: "GROUP1",
-//            LocalAuthorityName: "Test Local Authority",
-//            LocalAuthorityCode: "LA1")
-//        ];
+        IReadOnlyList<AggregatedFacetResult> facets =
+        [
+            new(
+            "TestFacet",
+            [
+                new FacetResult(
+                    "value-one",
+                    "Value one",
+                    10),
 
-//        IReadOnlyList<AggregatedFacetResult> facets = [];
+                new FacetResult(
+                    "value-two",
+                    "Value two",
+                    20)
+            ])
+        ];
 
-//        SearchResultsFromQueryResultsMapper mapper = new();
+        SearchResultsFromQueryResultsMapper mapper = new();
 
-//        // act
-//        SearchResults<EstablishmentSearchResults, SearchFacets> mapped =
-//            mapper.Map((results, facets, 10));
+        // act
+        SearchResults<SearchAggregateResults, SearchFacets> mapped =
+            mapper.Map((results, facets, 0));
 
-//        // assert
-//        Assert.Collection(
-//            mapped.Results!.EstablishmentCollection,
-//            first =>
-//            {
-//                Assert.Equal("123456", first.Urn.Value);
-//                Assert.Equal("Test Establishment One", first.Name.Value);
-//            },
-//            second =>
-//            {
-//                Assert.Equal("654321", second.Urn.Value);
-//                Assert.Equal("Test Establishment Two", second.Name.Value);
-//            });
+        // assert
+        SearchFacet mappedFacet =
+            Assert.Single(mapped.FacetResults!.Facets);
 
-//        Assert.Equal(10, mapped.TotalCount);
-//    }
+        Assert.Equal("TestFacet", mappedFacet.Name);
 
-//    [Fact]
-//    public void Map_MapsAllFacetValues_WhenMultipleFacetValuesAreProvided()
-//    {
-//        // arrange
-//        IReadOnlyList<EstablishmentReadModel> results = [];
-
-//        IReadOnlyList<AggregatedFacetResult> facets =
-//        [
-//            new(
-//            "TestFacet",
-//            [
-//                new FacetResult(
-//                    "value-one",
-//                    "Value one",
-//                    10),
-
-//                new FacetResult(
-//                    "value-two",
-//                    "Value two",
-//                    20)
-//            ])
-//        ];
-
-//        SearchResultsFromQueryResultsMapper mapper = new();
-
-//        // act
-//        SearchResults<EstablishmentSearchResults, SearchFacets> mapped =
-//            mapper.Map((results, facets, 0));
-
-//        // assert
-//        SearchFacet mappedFacet =
-//            Assert.Single(mapped.FacetResults!.Facets);
-
-//        Assert.Equal("TestFacet", mappedFacet.Name);
-
-//        Assert.Collection(
-//            mappedFacet.Results,
-//            first =>
-//            {
-//                Assert.Equal("value-one", first.Value);
-//                Assert.Equal("Value one", first.Label);
-//                Assert.Equal(10, first.Count);
-//            },
-//            second =>
-//            {
-//                Assert.Equal("value-two", second.Value);
-//                Assert.Equal("Value two", second.Label);
-//                Assert.Equal(20, second.Count);
-//            });
-//    }
-//}
+        Assert.Collection(
+            mappedFacet.Results,
+            first =>
+            {
+                Assert.Equal("value-one", first.Value);
+                Assert.Equal("Value one", first.Label);
+                Assert.Equal(10, first.Count);
+            },
+            second =>
+            {
+                Assert.Equal("value-two", second.Value);
+                Assert.Equal("Value two", second.Label);
+                Assert.Equal(20, second.Count);
+            });
+    }
+}
