@@ -1,67 +1,83 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles.Builders;
 
 [ExcludeFromCodeCoverage]
-internal sealed class EstablishmentSearchResultBuilder
+internal sealed class SearchResultBuilder
 {
-    private UniqueReferenceNumber _urn = new("12345");
+    private ProviderIdentifier _providerIdentifier = new("12345");
     private Name _name = new("Test School");
-    private SiteAddressModel _address = new(
-        Name: string.Empty,
-        AddressLine1: "123 Example Street",
-        AddressLine2: string.Empty,
-        Town: "Testville",
-        County: "Testshire",
-        Postcode: "TE5 7ST");
-    private EstablishmentType _type = EstablishmentType.Create("Academy");
+    private SearchAddress _address = new(
+        "123 Example Street, " +
+        "Testville, " +
+        "Testshire, " +
+        "TE5 7ST");
+    private SearchType _type = SearchType.Create("Academy", 1);
     private GroupDetail _group = GroupDetail.Create("Mock Trust", "TRUST001");
-    private LocalAuthority _localAuthority = LocalAuthority.Create("Test LA", "LA001");
+    private SearchLocalAuthority _localAuthority = SearchLocalAuthority.Create("Test LA");
+    private SearchCategory _providerCategory = new("Establishment");
 
-    public EstablishmentSearchResultBuilder WithUrn(string urn)
+    private int _academyCount = 10;
+
+    public SearchResultBuilder WithUrn(string providerIdentifier)
     {
-        _urn = new UniqueReferenceNumber(urn);
+        _providerIdentifier = new ProviderIdentifier(providerIdentifier);
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithName(string name)
+    public SearchResultBuilder WithName(string name)
     {
         _name = new Name(name);
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithAddress(SiteAddressModel address)
+    public SearchResultBuilder WithAddress(SearchAddress address)
     {
         _address = address;
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithType(string type)
+    public SearchResultBuilder WithType(string type, long id)
     {
-        _type = EstablishmentType.Create(type);
+        _type = SearchType.Create(type, id);
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithGroup(string name, string code)
+    public SearchResultBuilder WithGroup(string name, string code)
     {
         _group = GroupDetail.Create(name, code);
         return this;
     }
 
-    public EstablishmentSearchResultBuilder WithLocalAuthority(string name, string code)
+    public SearchResultBuilder WithLocalAuthority(string name)
     {
-        _localAuthority = LocalAuthority.Create(name, code);
+        _localAuthority = SearchLocalAuthority.Create(name);
         return this;
     }
 
-    public EstablishmentSearchResult Build() =>
-        EstablishmentSearchResult.Create(
-            _urn,
+    public SearchResultBuilder WithProviderCategory(string category)
+    {
+        _providerCategory = SearchCategory.Create(category);
+        return this;
+    }
+
+    public SearchResultBuilder WithAcademyCount(int academyCount)
+    {
+        _academyCount = academyCount;
+        return this;
+    }
+
+    public SearchAggregateResult Build() =>
+        SearchAggregateResult.Create(
+            _providerIdentifier,
             _name,
             _address,
             _type,
             _group,
-            _localAuthority);
+            _localAuthority,
+            _providerCategory,
+            _academyCount);
 }

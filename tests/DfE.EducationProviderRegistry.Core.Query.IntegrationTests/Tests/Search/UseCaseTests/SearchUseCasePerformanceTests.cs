@@ -3,7 +3,6 @@ using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -49,24 +48,24 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
 
         const string searchTerm = "school";
 
-        Establishment[] establishments =
+        SearchAggregate[] establishments =
         [
             .. Enumerable.Range(1, totalMatches)
                 .Select(_ =>
-                    SearchEstablishmentBuilder.Create()
+                    SearchAggregateBuilder.Create()
                         .SetValue(DefaultSearchFieldName, searchTerm)
                         .Build()),
 
             .. Enumerable.Range(1, totalEstablishments - 1)
                 .Select(counter =>
-                    SearchEstablishmentBuilder.Create()
+                    SearchAggregateBuilder.Create()
                         .SetValue(
                             DefaultSearchFieldName,
                             $"ZZZ-{counter}")
                         .Build())
         ];
 
-        await SeedSearchEstablishments.SeedAsync(establishments, ct);
+        await SeedSearchAggregates.SeedAsync(establishments, ct);
 
         SearchRequest request =
             SearchRequestFactory.BuildSearchRequest(

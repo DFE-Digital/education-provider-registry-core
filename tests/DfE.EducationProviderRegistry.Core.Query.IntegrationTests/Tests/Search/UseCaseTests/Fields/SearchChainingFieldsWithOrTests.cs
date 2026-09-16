@@ -38,17 +38,17 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseBase
         // arrange
         string searchTerm = "school";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
             .SetValue(SecondarySearchFieldName, "College")
             .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "College")
             .Build()
@@ -72,17 +72,17 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseBase
         // arrange
         string searchTerm = "school";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "My school")
             .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "College")
             .Build()
@@ -106,27 +106,27 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseBase
         // arrange
         string searchTerm = "school";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
             .SetValue(SecondarySearchFieldName, "College")
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "My school")
             .Build(),
 
-        SearchEstablishmentBuilder.Create()
+        SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "school")
             .SetValue(SecondarySearchFieldName, "My school")
             .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
             .SetValue(DefaultSearchFieldName, "Academy")
             .SetValue(SecondarySearchFieldName, "College")
             .Build()

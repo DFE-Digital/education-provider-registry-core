@@ -34,20 +34,20 @@ public sealed class SearchChainingBehavioursWithOrTests : SearchUseCaseBase
         // arrange
         string searchTerm = "school";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "school")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "My school")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];

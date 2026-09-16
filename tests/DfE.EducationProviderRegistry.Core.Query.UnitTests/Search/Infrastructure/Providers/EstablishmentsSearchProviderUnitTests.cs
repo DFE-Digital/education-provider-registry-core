@@ -4,8 +4,8 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Context;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Pipeline.Steps.TestDoubles;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +15,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public sealed class EstablishmentsSearchProviderUnitTests
 {
-    private static Expression<Func<Establishment, bool>> TrueExpr =>
+    private static Expression<Func<SearchAggregate, bool>> TrueExpr =>
         value => true;
 
     private static EducationProviderRegistryDbContext Db() =>
@@ -25,27 +25,27 @@ public sealed class EstablishmentsSearchProviderUnitTests
         EducationProviderRegistryDbContext db) =>
             IDbContextFactoryTestDouble.MockFor(db);
 
-    private static IQueryable<Establishment> Query(
-        params Establishment?[] items) =>
+    private static IQueryable<SearchAggregate> Query(
+        params SearchAggregate?[] items) =>
             items.AsQueryable()!;
 
-    private static Mock<ISearchProjectionBuilder<Establishment>> Projection(
+    private static Mock<ISearchProjectionBuilder<SearchAggregate>> Projection(
         EducationProviderRegistryDbContext db,
-        IQueryable<Establishment> baseQuery) =>
+        IQueryable<SearchAggregate> baseQuery) =>
             SearchProjectionBuilderTestDouble.MockFor(db, baseQuery);
 
-    private static Mock<ISearchOrchestrator<Establishment>> Orchestrator() =>
+    private static Mock<ISearchOrchestrator<SearchAggregate>> Orchestrator() =>
         SearchOrchestratorTestDouble.Mock();
 
-    private static Mock<ISearchFilterExpressionsBuilder<Establishment>> FilterBuilder(
-        Expression<Func<Establishment, bool>> expr) =>
+    private static Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> FilterBuilder(
+        Expression<Func<SearchAggregate, bool>> expr) =>
             SearchFilterExpressionsBuilderTestDouble.MockFor(expr);
 
-    private static EstablishmentsSearchProvider Provider(
+    private static SearchProvider Provider(
         Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory,
-        Mock<ISearchOrchestrator<Establishment>> orchestrator,
-        Mock<ISearchProjectionBuilder<Establishment>> projection,
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder,
+        Mock<ISearchOrchestrator<SearchAggregate>> orchestrator,
+        Mock<ISearchProjectionBuilder<SearchAggregate>> projection,
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> filterBuilder,
         string searchColumn) =>
             new(
                 factory.Object,
@@ -61,20 +61,20 @@ public sealed class EstablishmentsSearchProviderUnitTests
         EducationProviderRegistryDbContext dbContext = Db();
         Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory = DbFactory(dbContext);
 
-        IQueryable<Establishment> baseQuery = Query();
+        IQueryable<SearchAggregate> baseQuery = Query();
 
-        Mock<ISearchProjectionBuilder<Establishment>> projectionBuilder =
+        Mock<ISearchProjectionBuilder<SearchAggregate>> projectionBuilder =
             Projection(dbContext, baseQuery);
 
-        Mock<ISearchOrchestrator<Establishment>> orchestrator = Orchestrator();
+        Mock<ISearchOrchestrator<SearchAggregate>> orchestrator = Orchestrator();
 
-        Expression<Func<Establishment, bool>> filterExpression =
-            entity => entity.EstablishmentTypeId == 1;
+        Expression<Func<SearchAggregate, bool>> filterExpression =
+            entity => entity.ProviderTypeId == 1;
 
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder =
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> filterBuilder =
             FilterBuilder(filterExpression);
 
-        EstablishmentsSearchProvider provider =
+        SearchProvider provider =
             Provider(factory, orchestrator, projectionBuilder, filterBuilder, "name");
 
         List<SearchFilterRequest> filters =
@@ -82,9 +82,9 @@ public sealed class EstablishmentsSearchProviderUnitTests
                 new("Type", new List<string> { "Academy" })
             ];
 
-        List<Establishment> expectedResults =
+        List<SearchAggregate> expectedResults =
             [
-                new() { EstablishmentId = 1, Name = "A School" }
+                new() { ProviderId = "1", ProviderName = "A School" }
             ];
 
         orchestrator
@@ -92,12 +92,12 @@ public sealed class EstablishmentsSearchProviderUnitTests
                 searchOrchestrator.ExecuteAsync(
                     dbContext,
                     baseQuery,
-                    It.IsAny<SearchOrchestratorContext<Establishment>>(),
+                    It.IsAny<SearchOrchestratorContext<SearchAggregate>>(),
                     It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResults);
 
         // act
-        IReadOnlyList<Establishment> results =
+        IReadOnlyList<SearchAggregate> results =
             await provider.GetMatchingIdsAsync(
                 "academy",
                 20,
@@ -107,12 +107,12 @@ public sealed class EstablishmentsSearchProviderUnitTests
 
         // assert
         Assert.Single(results);
-        Assert.Equal("A School", results[0].Name);
+        Assert.Equal("A School", results[0].ProviderName);
 
         orchestrator.Verify(o => o.ExecuteAsync(
             dbContext,
             baseQuery,
-            It.Is<SearchOrchestratorContext<Establishment>>(ctx =>
+            It.Is<SearchOrchestratorContext<SearchAggregate>>(ctx =>
                 ctx.SearchColumn == "name" &&
                 ctx.SearchTerm == "academy" &&
                 ctx.PageSize == 20 &&
@@ -129,17 +129,17 @@ public sealed class EstablishmentsSearchProviderUnitTests
         EducationProviderRegistryDbContext dbContext = Db();
         Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory = DbFactory(dbContext);
 
-        IQueryable<Establishment> baseQuery = Query();
+        IQueryable<SearchAggregate> baseQuery = Query();
 
-        Mock<ISearchProjectionBuilder<Establishment>> projectionBuilder =
+        Mock<ISearchProjectionBuilder<SearchAggregate>> projectionBuilder =
             Projection(dbContext, baseQuery);
 
-        Mock<ISearchOrchestrator<Establishment>> orchestrator = Orchestrator();
+        Mock<ISearchOrchestrator<SearchAggregate>> orchestrator = Orchestrator();
 
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder =
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> filterBuilder =
             FilterBuilder(TrueExpr);
 
-        EstablishmentsSearchProvider provider =
+        SearchProvider provider =
             Provider(factory, orchestrator, projectionBuilder, filterBuilder, "urn");
 
         orchestrator
@@ -147,12 +147,12 @@ public sealed class EstablishmentsSearchProviderUnitTests
                 searchOrchestrator.ExecuteAsync(
                     dbContext,
                     baseQuery,
-                    It.IsAny<SearchOrchestratorContext<Establishment>>(),
+                    It.IsAny<SearchOrchestratorContext<SearchAggregate>>(),
                     It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Establishment>());
+            .ReturnsAsync(new List<SearchAggregate>());
 
         // act
-        IReadOnlyList<Establishment> results =
+        IReadOnlyList<SearchAggregate> results =
             await provider.GetMatchingIdsAsync(
                 "10001",
                 10,
@@ -167,7 +167,7 @@ public sealed class EstablishmentsSearchProviderUnitTests
             searchOrchestrator.ExecuteAsync(
                 dbContext,
                 baseQuery,
-                It.Is<SearchOrchestratorContext<Establishment>>(ctx =>
+                It.Is<SearchOrchestratorContext<SearchAggregate>>(ctx =>
                     ctx.SearchColumn == "urn" &&
                     ctx.SearchTerm == "10001" &&
                     ctx.FilterExpression.Body is ConstantExpression &&
@@ -184,26 +184,26 @@ public sealed class EstablishmentsSearchProviderUnitTests
         EducationProviderRegistryDbContext dbContext = Db();
         Mock<IDbContextFactory<EducationProviderRegistryDbContext>> factory = DbFactory(dbContext);
 
-        IQueryable<Establishment> baseQuery = Query();
+        IQueryable<SearchAggregate> baseQuery = Query();
 
-        Mock<ISearchProjectionBuilder<Establishment>> projectionBuilder =
+        Mock<ISearchProjectionBuilder<SearchAggregate>> projectionBuilder =
             Projection(dbContext, baseQuery);
 
-        Mock<ISearchOrchestrator<Establishment>> orchestrator = Orchestrator();
+        Mock<ISearchOrchestrator<SearchAggregate>> orchestrator = Orchestrator();
 
         orchestrator
             .Setup(searchOrchestrator =>
                 searchOrchestrator.ExecuteAsync(
                     dbContext,
-                    It.IsAny<IQueryable<Establishment>>(),
-                    It.IsAny<SearchOrchestratorContext<Establishment>>(),
+                    It.IsAny<IQueryable<SearchAggregate>>(),
+                    It.IsAny<SearchOrchestratorContext<SearchAggregate>>(),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Establishment>());
+                .ReturnsAsync(new List<SearchAggregate>());
 
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> filterBuilder =
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> filterBuilder =
             FilterBuilder(TrueExpr);
 
-        EstablishmentsSearchProvider provider =
+        SearchProvider provider =
             Provider(factory, orchestrator, projectionBuilder, filterBuilder, "name");
 
         // act

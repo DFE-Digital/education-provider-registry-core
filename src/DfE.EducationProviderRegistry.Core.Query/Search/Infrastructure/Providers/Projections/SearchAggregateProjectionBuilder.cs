@@ -1,0 +1,36 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
+
+/// <summary>
+/// Builds the base <see cref="IQueryable{T}"/> used for search
+/// by applying all required includes for related entities.
+/// </summary>
+[ExcludeFromCodeCoverage]
+internal sealed class SearchAggregateProjectionBuilder
+    : ISearchProjectionBuilder<SearchAggregate>
+{
+    /// <summary>
+    /// Produces an <see cref="IQueryable{SearchAggregate}"/> with all navigation
+    /// properties required for search projection eagerly loaded.
+    /// </summary>
+    /// <param name="db">The active EF Core <see cref="DbContext"/>.</param>
+    /// <returns>An <see cref="IQueryable{SearchAggregate}"/> with required includes.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="db"/> is null.
+    /// </exception>
+    public IQueryable<SearchAggregate> Build(DbContext db)
+    {
+        ArgumentNullException.ThrowIfNull(db);
+
+        EducationProviderRegistryDbContext ctx =
+            (EducationProviderRegistryDbContext)db;
+
+        return ctx.SearchAggregate
+            .AsNoTracking()
+            .AsSplitQuery();
+    }
+}

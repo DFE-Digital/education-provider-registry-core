@@ -1,32 +1,34 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.Models.Establishment.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal static class EstablishmentTestDouble
+internal static class SearchAggregateTestDouble
 {
-    public static UniqueReferenceNumber ValidUrn => new("12345");
+    public static ProviderIdentifier ValidIdentifier => new("12345");
 
     public static Name ValidName => new("Test School");
 
-    public static SiteAddressModel ValidAddress =>
-        new(
-            Name: string.Empty,
-            AddressLine1: "123 Example Street",
-            AddressLine2: string.Empty,
-            Town: "Testville",
-            County: "Testshire",
-            Postcode: "TE5 7ST");
+    public static SearchAddress ValidAddress =>
+        new("123 Example Street, Testville, Testshire, TE5 7ST");
 
-    public static EstablishmentType ValidType =>
-        EstablishmentType.Create("Academy");
+    public static SearchType ValidType =>
+        SearchType.Create("Academy", 1);
 
     public static GroupDetail ValidGroup =>
         GroupDetail.Create("Mock Trust", "TRUST001");
 
-    public static LocalAuthority ValidLocalAuthority =>
-        LocalAuthority.Create("Test LA", "LA001");
+    public static SearchLocalAuthority ValidLocalAuthority =>
+        SearchLocalAuthority.Create("Test LA");
+
+    public static SearchCategory ProviderCategory =>
+        SearchCategory.Create("Establishment");
+
+    public static int FakeAcademyCount(Faker faker) =>
+        faker.Random.Int(1, 100);
 }
 

@@ -1,15 +1,10 @@
-﻿using System.Linq.Expressions;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Pipeline.Steps;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.Trigram;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Pipeline;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,11 +21,11 @@ public sealed class CompositionRootTests
             ServiceProviderBuilder.BuildServiceProvider();
 
         // act
-        Dictionary<string, FacetDefinition<Establishment>> definitions =
-            provider.GetRequiredService<Dictionary<string, FacetDefinition<Establishment>>>();
+        Dictionary<object, FacetDefinition<SearchAggregate>> definitions =
+            provider.GetRequiredService<Dictionary<object, FacetDefinition<SearchAggregate>>>();
 
         // assert
-        Assert.True(definitions.ContainsKey("establishmenttypeid"));
+        Assert.True(definitions.ContainsKey("searchprovidertypeid"));
     }
 
     [Fact]
@@ -43,11 +38,11 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchOrchestrator<Establishment> orchestrator =
-            scope.ServiceProvider.GetRequiredService<ISearchOrchestrator<Establishment>>();
+        ISearchOrchestrator<SearchAggregate> orchestrator =
+            scope.ServiceProvider.GetRequiredService<ISearchOrchestrator<SearchAggregate>>();
 
         // assert
-        Assert.IsType<TrigramSearchOrchestrator<Establishment>>(orchestrator);
+        Assert.IsType<TrigramSearchOrchestrator<SearchAggregate>>(orchestrator);
     }
 
     [Fact]
@@ -60,11 +55,11 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchProjectionBuilder<Establishment> builder =
-            scope.ServiceProvider.GetRequiredService<ISearchProjectionBuilder<Establishment>>();
+        ISearchProjectionBuilder<SearchAggregate> builder =
+            scope.ServiceProvider.GetRequiredService<ISearchProjectionBuilder<SearchAggregate>>();
 
         // assert
-        Assert.IsType<EstablishmentSearchProjectionBuilder>(builder);
+        Assert.IsType<SearchAggregateProjectionBuilder>(builder);
     }
 
     [Fact]
@@ -77,11 +72,11 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchProvider<Establishment> providerInstance =
-            scope.ServiceProvider.GetRequiredService<ISearchProvider<Establishment>>();
+        ISearchProvider<SearchAggregate> providerInstance =
+            scope.ServiceProvider.GetRequiredService<ISearchProvider<SearchAggregate>>();
 
         // assert
-        Assert.IsType<EstablishmentsSearchProvider>(providerInstance);
+        Assert.IsType<SearchProvider>(providerInstance);
     }
 
     [Fact]
@@ -98,30 +93,7 @@ public sealed class CompositionRootTests
             scope.ServiceProvider.GetRequiredService<IFacetProvider>();
 
         // assert
-        Assert.IsType<EstablishmentFacetProvider>(facetProvider);
-    }
-
-    [Fact]
-    public void CompositionRoot_Registers_PipelineSteps()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        using IServiceScope scope = provider.CreateScope();
-
-        // act
-        IEnumerable<IEvaluationHandler<SearchPipelineContext>> steps =
-            scope.ServiceProvider.GetServices<IEvaluationHandler<SearchPipelineContext>>();
-
-        // assert
-        Assert.Contains(steps, step => step is SearchOrderMapStep);
-        Assert.Contains(steps, step => step is SearchOrderingStep);
-        Assert.Contains(steps, step => step is ParallelMappingStep);
-        Assert.Contains(steps, step => step is FacetQueryDispatchStep);
-        Assert.Contains(steps, step => step is FacetQueryResolverStep);
-        Assert.Contains(steps, step => step is FacetQueryBuilderStep);
-        Assert.NotNull(scope.ServiceProvider.GetService<Query.Shared.Pipeline.IEvaluator<SearchPipelineContext>>());
+        Assert.IsType<FacetProvider>(facetProvider);
     }
 
     [Fact]
@@ -134,11 +106,11 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets> adapter =
+        ISearchServiceAdapter<SearchAggregateResults, SearchFacets> adapter =
             scope.ServiceProvider.GetRequiredService<
-                ISearchServiceAdapter<EstablishmentSearchResults, SearchFacets>>();
+                ISearchServiceAdapter<SearchAggregateResults, SearchFacets>>();
 
         // assert
-        Assert.IsType<EstablishmentsSearchServiceAdapter>(adapter);
+        Assert.IsType<SearchServiceAdapter>(adapter);
     }
 }

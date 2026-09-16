@@ -22,13 +22,13 @@ public sealed class UniqueReferenceNumberTests
     [InlineData(" ")]
     [InlineData("\n")]
     [InlineData("ABC123")]
-    [InlineData("1234")]      // too short
-    [InlineData("12345678")]  // too long
-    [InlineData("12A456")]    // contains letters
+    [InlineData("123")]         // too short
+    [InlineData("12345678")]    // too long
+    [InlineData("12A456")]      // contains letters
     public void Constructor_ShouldThrow_WhenUrnIsInvalid(string urn)
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new UniqueReferenceNumber(urn));
+        Assert.Throws<ArgumentException>(() => new ProviderIdentifier(urn));
     }
 
     [Fact]

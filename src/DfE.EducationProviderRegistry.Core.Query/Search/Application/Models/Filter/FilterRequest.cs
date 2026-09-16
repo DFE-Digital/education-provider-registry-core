@@ -8,7 +8,7 @@ public class FilterRequest
     private readonly IList<object> _filterValues;
 
     /// <summary>
-    /// The name or key of the filter (e.g. "Urn", "EstablishmentType").
+    /// The name or key of the filter (e.g. "Urn", "SearchType").
     /// </summary>
     public string FilterName { get; }
 

@@ -31,22 +31,22 @@ public sealed class SearchExactMatchBehaviourTests : SearchUseCaseBase
         // arrange
         string searchTerm = "School";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build(),
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "school")
                 .Build(),
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "ScHoOl")
                 .Build()
         ];
@@ -69,24 +69,24 @@ public sealed class SearchExactMatchBehaviourTests : SearchUseCaseBase
         // arrange
         string searchTerm = "School";
 
-        Establishment[] matchingEstablishments =
+        SearchAggregate[] matchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School")
                 .Build()
         ];
 
-        Establishment[] nonMatchingEstablishments =
+        SearchAggregate[] nonMatchingEstablishments =
         [
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "My School Academy")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "School Academy")
                 .Build(),
 
-            SearchEstablishmentBuilder.Create()
+            SearchAggregateBuilder.Create()
                 .SetValue(DefaultSearchFieldName, "Secondary School")
                 .Build()
         ];

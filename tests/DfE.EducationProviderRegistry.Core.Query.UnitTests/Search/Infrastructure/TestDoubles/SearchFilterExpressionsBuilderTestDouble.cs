@@ -8,26 +8,31 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 public static class SearchFilterExpressionsBuilderTestDouble
 {
-    public static Mock<ISearchFilterExpressionsBuilder<Establishment>> Mock()
+    public static Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> Mock()
     {
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> mock = new(MockBehavior.Strict);
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> mock = new(MockBehavior.Strict);
 
-        mock.Setup(expressionBuilder =>
-            expressionBuilder.BuildSearchFilterExpression(
-                It.IsAny<ReadOnlyCollection<SearchFilterRequest>>()))
-            .Returns(establishment => true);
+        Expression<Func<SearchAggregate, bool>> trueExpr = sa => true;
+
+        mock.Setup(builder =>
+            builder.BuildSearchFilterExpression(It.IsAny<IEnumerable<SearchFilterRequest>>()))
+            .Returns(trueExpr);
+
+        mock.Setup(builder =>
+            builder.BuildSearchFilterExpression(It.IsAny<ReadOnlyCollection<SearchFilterRequest>>()))
+            .Returns(trueExpr);
 
         return mock;
     }
 
-    public static Mock<ISearchFilterExpressionsBuilder<Establishment>> MockFor(
-        Expression<Func<Establishment, bool>> predicate)
+    public static Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> MockFor(
+        Expression<Func<SearchAggregate, bool>> predicate)
     {
-        Mock<ISearchFilterExpressionsBuilder<Establishment>> mock = new(MockBehavior.Strict);
+        Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> mock = new(MockBehavior.Strict);
 
         mock.Setup(expressionBuilder =>
             expressionBuilder.BuildSearchFilterExpression(
-                It.IsAny<ReadOnlyCollection<SearchFilterRequest>>()))
+                It.IsAny<IEnumerable<SearchFilterRequest>>()))
             .Returns(predicate);
 
         return mock;

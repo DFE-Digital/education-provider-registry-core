@@ -6,21 +6,21 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 
 public sealed class SearchResultsTests
 {
-    private static EstablishmentSearchResult CreateMockEstablishment(int urn, string name)
+    private static SearchAggregateResult CreateMockEstablishment(int urn, string name)
     {
-        return EstablishmentSearchResult.Create(
-            urn: new UniqueReferenceNumber(urn.ToString("D5")),
+        return SearchAggregateResult.Create(
+            uniqueIdentifier: new ProviderIdentifier(urn.ToString("D5")),
             name: new Name(name),
-            address: new SiteAddressModel(
-                Name: string.Empty,
-                AddressLine1: "123 Example Street",
-                AddressLine2: string.Empty,
-                Town: "Testville",
-                County: "Testshire",
-                Postcode: "TE5 7ST"),
-            type: EstablishmentType.Create("Academy"),
+            address: new SearchAddress(
+                "123 Example Street, " +
+                "Testville, " +
+                "Testshire, " +
+                "TE5 7ST"),
+            type: SearchType.Create("Academy", 1),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
-            localAuthority: LocalAuthority.Create("Test LA", "LA001")
+            localAuthority: SearchLocalAuthority.Create("Test LA"),
+            providerCategory: new SearchCategory("Establishment"),
+            academyCount: 10
         );
     }
 
@@ -28,9 +28,9 @@ public sealed class SearchResultsTests
     public void Properties_CanBeInitializedViaObjectInitializer()
     {
         // arrange
-        EstablishmentSearchResults establishmentSearchResults =
+        SearchAggregateResults establishmentSearchResults =
             new(
-                new List<EstablishmentSearchResult>
+                new List<SearchAggregateResult>
                 {
                     CreateMockEstablishment(123, "Test School 1"),
                     CreateMockEstablishment(456, "Test School 2"),
@@ -48,7 +48,7 @@ public sealed class SearchResultsTests
                 });
 
         // act
-        SearchResults<EstablishmentSearchResults, SearchFacets> result =
+        SearchResults<SearchAggregateResults, SearchFacets> result =
             new()
             {
                 Results = establishmentSearchResults,
@@ -64,7 +64,7 @@ public sealed class SearchResultsTests
     public void Properties_WhenUninitialized_ShouldBeNull()
     {
         // act
-        SearchResults<EstablishmentSearchResults, SearchFacets> result = new();
+        SearchResults<SearchAggregateResults, SearchFacets> result = new();
 
         // assert
         Assert.Null(result.Results);
