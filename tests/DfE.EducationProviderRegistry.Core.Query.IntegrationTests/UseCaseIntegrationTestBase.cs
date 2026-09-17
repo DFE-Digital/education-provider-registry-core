@@ -1,9 +1,10 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Abstractions;
 using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container.Providers;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Observer;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Observer.Postgres;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +26,8 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
 
     protected IDatabase? Database { get; private set; }
 #nullable disable
-    internal ISearchAggregateSeeder SeedSearchAggregates { get; private set; }
     internal IObservationCollector<PostgresQueries> QueryCollector { get; private set; }
+    protected SearchAggregateFixture SearchAggregateFixture { get; private set; }
 
     // Hook called by XUnit to initialise before any tests run
     public async ValueTask InitializeAsync()
@@ -39,10 +40,17 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
         const string PostgresContainerKey = "postgres";
 
         Database = await _databaseProvider.GetDatabaseAsync(key: PostgresContainerKey, ct);
-        _postgresLocalConnectionString = await _databaseProvider.GetConnectionStringAsync(key: PostgresContainerKey, cancellationToken: ct);
 
-        SeedSearchAggregates = new SearchAggregateSeeder(CreateDbContext(_postgresLocalConnectionString))!;
+        _postgresLocalConnectionString =
+            await _databaseProvider.GetConnectionStringAsync(
+                key: PostgresContainerKey, cancellationToken: ct);
+
+        SearchAggregateFixture =
+            new(
+                CreateDbContext(_postgresLocalConnectionString))!;
+
         QueryCollector = new PostgresQueryCollector(_postgresLocalConnectionString);
+
         await Database.StartAsync(ct);
     }
 
@@ -51,10 +59,8 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
         return
             ConfigurationDefault
                 .CreateBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    ["eprweb_eprdat_dotnet_db_connection"] = _postgresLocalConnectionString
-                }).Build();
+                .AddPostgresConnection(_postgresLocalConnectionString)
+                .Build();
     }
 
     protected Task<UseCaseResponse<TModel>> ExecuteUseCase<TRequest, TModel>(TRequest request) where TRequest : IUseCaseRequest<UseCaseResponse<TModel>>
@@ -83,7 +89,11 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
             .UseNpgsql(connectionString)
             .EnableDetailedErrors()
             .EnableSensitiveDataLogging();
+
         EducationProviderRegistryDbContext dbContext = new(contextOptionsBuilder.Options);
+
         return dbContext;
     }
 }
+
+

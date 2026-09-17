@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Search;
 
 public sealed class SearchAggregateBuilder
 {

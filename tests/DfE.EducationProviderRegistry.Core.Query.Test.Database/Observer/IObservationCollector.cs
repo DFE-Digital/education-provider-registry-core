@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Observer;
 
 public interface IObservationCollector<TObservation> : IAsyncDisposable
 {

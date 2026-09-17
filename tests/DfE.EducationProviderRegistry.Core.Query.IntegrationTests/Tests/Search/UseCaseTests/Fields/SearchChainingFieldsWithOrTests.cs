@@ -1,7 +1,7 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Fields;
@@ -41,17 +41,17 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseBase
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "College")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "school")
+                .SetValue(SecondarySearchFieldName, "College")
+                .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "Academy")
-            .SetValue(SecondarySearchFieldName, "College")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "Academy")
+                .SetValue(SecondarySearchFieldName, "College")
+                .Build()
         ];
 
         SearchRequest request =
@@ -75,17 +75,17 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseBase
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "Academy")
-            .SetValue(SecondarySearchFieldName, "My school")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "Academy")
+                .SetValue(SecondarySearchFieldName, "My school")
+                .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "Academy")
-            .SetValue(SecondarySearchFieldName, "College")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "Academy")
+                .SetValue(SecondarySearchFieldName, "College")
+                .Build()
         ];
 
         SearchRequest request =
@@ -109,27 +109,27 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseBase
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "College")
-            .Build(),
+                .SetValue(DefaultSearchFieldName, "school")
+                .SetValue(SecondarySearchFieldName, "College")
+                .Build(),
 
         SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "Academy")
-            .SetValue(SecondarySearchFieldName, "My school")
-            .Build(),
+                .SetValue(DefaultSearchFieldName, "Academy")
+                .SetValue(SecondarySearchFieldName, "My school")
+                .Build(),
 
         SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "My school")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "school")
+                .SetValue(SecondarySearchFieldName, "My school")
+                .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "Academy")
-            .SetValue(SecondarySearchFieldName, "College")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "Academy")
+                .SetValue(SecondarySearchFieldName, "College")
+                .Build()
         ];
 
         SearchRequest request =

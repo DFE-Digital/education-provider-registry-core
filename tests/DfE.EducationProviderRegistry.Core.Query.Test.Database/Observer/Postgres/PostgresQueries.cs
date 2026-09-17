@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Observer.Postgres;
 
 public sealed class PostgresQueries
 {

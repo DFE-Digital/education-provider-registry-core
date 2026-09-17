@@ -4,13 +4,13 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Search;
 
-internal sealed class SearchAggregateSeeder : ISearchAggregateSeeder
+public sealed class SearchAggregateFixture
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
 
-    public SearchAggregateSeeder(EducationProviderRegistryDbContext dbContext)
+    public SearchAggregateFixture(EducationProviderRegistryDbContext dbContext)
     {
         ArgumentNullException.ThrowIfNull(dbContext);
         _dbContext = dbContext;
@@ -19,17 +19,16 @@ internal sealed class SearchAggregateSeeder : ISearchAggregateSeeder
     public async Task ClearAsync(CancellationToken ct = default)
     {
         await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync(ct);
-
         await _dbContext.SearchAggregate.ExecuteDeleteAsync(ct);
         await transaction.CommitAsync(ct);
     }
 
-    public async Task<SearchableAggregates> SeedAsync(IReadOnlyCollection<SearchAggregate> searchAggregates, CancellationToken ct = default)
+    public async Task<SearchableAggregates> PersistAsync(IReadOnlyCollection<SearchAggregate> searchAggregates, CancellationToken ct = default)
     {
         await InsertSearchAggregatesAsync(_dbContext, [.. searchAggregates], ct);
 
         // Requery for updated values as mapping assertions require
-        List<string?> matchIds = searchAggregates.Select(x => x.ProviderId).ToList();
+        List<string?> matchIds = [.. searchAggregates.Select(x => x.ProviderId)];
 
         IReadOnlyCollection<SearchAggregate> rehydratedMatches =
             await _dbContext.SearchAggregate
@@ -50,7 +49,9 @@ internal sealed class SearchAggregateSeeder : ISearchAggregateSeeder
         ArgumentNullException.ThrowIfNull(searchAggregates);
 
         if (searchAggregates.Count == 0)
+        {
             return;
+        }
 
         await dbContext.BulkInsertAsync(
             searchAggregates,

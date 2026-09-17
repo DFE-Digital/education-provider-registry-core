@@ -1,10 +1,10 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +28,7 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
     protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
     {
         // Clear all establishments and assoc to avoid conflicts with searchTerms
-        await SeedSearchAggregates.ClearAsync(ct);
+        await SearchAggregateFixture.ClearAsync(ct);
     }
 
     protected sealed override void ConfigureApplicationServices(
@@ -57,7 +57,7 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         SearchableAggregates searchedAggregates =
-            await SeedSearchAggregates.SeedAsync(
+            await SearchAggregateFixture.PersistAsync(
                 [
                     .. expectednResults,
                     .. notExpectedInResults
