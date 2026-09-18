@@ -1,8 +1,8 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Filters;
@@ -83,22 +83,22 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(1)
-            .Build(),
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(1)
+                .Build(),
 
-        SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(2)
-            .Build()
+            SearchAggregateBuilder.Create()
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(2)
+                .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(3)
-            .Build()
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(3)
+                .Build()
         ];
 
         SearchRequest request =
@@ -126,14 +126,14 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(1)
-            .Build(),
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(1)
+                .Build(),
 
         SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(2)
-            .Build()
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(2)
+                .Build()
         ];
 
         SearchRequest request =
@@ -159,22 +159,22 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(1)
-            .Build(),
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(1)
+                .Build(),
 
         SearchAggregateBuilder.Create()
-            .WithName(stubEstablishmentMatchesName)
-            .WithEstablishmentTypeId(2)
-            .Build()
+                .WithName(stubEstablishmentMatchesName)
+                .WithEstablishmentTypeId(2)
+                .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .WithName("academy")
-            .WithEstablishmentTypeId(1)
-            .Build()
+                .WithName("academy")
+                .WithEstablishmentTypeId(1)
+                .Build()
         ];
 
         SearchRequest request =

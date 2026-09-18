@@ -9,7 +9,7 @@ public static class SearchResultsTestDouble
 {
     public static SearchResults<SearchAggregateResults, SearchFacets> Stub()
     {
-        SearchAggregateResults results = SearchAggregationResultsTestDouble.Stub();
+        SearchAggregateResults results = SearchAggregateResultsTestDouble.Stub();
 
         return new SearchResults<SearchAggregateResults, SearchFacets>
         {
@@ -22,7 +22,7 @@ public static class SearchResultsTestDouble
     public static SearchResults<SearchAggregateResults, SearchFacets> StubWithNoResults() =>
         new()
         {
-            Results = SearchAggregationResultsTestDouble.EmptyStub(),   // Unpopulated search aggregation results.
+            Results = SearchAggregateResultsTestDouble.EmptyStub(),   // Unpopulated search aggregation results.
             FacetResults = SearchFacetsTestDouble.Stub(),               // Populated facet results.
             TotalCount = 0
         };

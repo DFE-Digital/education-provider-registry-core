@@ -1,11 +1,10 @@
 ﻿using Dapper;
 using Npgsql;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Observer.Postgres;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Observer.Postgres;
 
 // Maybe we can use a Clock injected to query between when GetObservationsAsync is called from StartAsync ->?
-internal sealed class PostgresQueryCollector
-    : IObservationCollector<PostgresQueries>
+internal sealed class PostgresQueryCollector : IObservationCollector<PostgresQueries>
 {
     private readonly string _connectionString;
 
@@ -35,8 +34,7 @@ internal sealed class PostgresQueryCollector
         await using NpgsqlConnection conn = new(_connectionString);
 
         List<PostgresQuery> statements =
-            (await conn.QueryAsync<PostgresQuery>(sql))
-                .ToList();
+            [.. (await conn.QueryAsync<PostgresQuery>(sql))];
 
         return new PostgresQueries
         {

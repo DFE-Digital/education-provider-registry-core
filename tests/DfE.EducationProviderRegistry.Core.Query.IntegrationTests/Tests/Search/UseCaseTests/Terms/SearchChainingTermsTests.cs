@@ -1,7 +1,7 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Data.Search;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Terms;
@@ -49,22 +49,22 @@ public sealed class SearchChainingTermsTests : SearchUseCaseBase
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "SW1A")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "school")
+                .SetValue(SecondarySearchFieldName, "SW1A")
+                .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "M1")
-            .Build(),
+                .SetValue(DefaultSearchFieldName, "school")
+                .SetValue(SecondarySearchFieldName, "M1")
+                .Build(),
 
         SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "academy")
-            .SetValue(SecondarySearchFieldName, "SW1A")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "academy")
+                .SetValue(SecondarySearchFieldName, "SW1A")
+                .Build()
         ];
 
         SearchRequest request =
@@ -90,14 +90,14 @@ public sealed class SearchChainingTermsTests : SearchUseCaseBase
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "school")
-            .SetValue(SecondarySearchFieldName, "M1")
-            .Build(),
+                .SetValue(DefaultSearchFieldName, "school")
+                .SetValue(SecondarySearchFieldName, "M1")
+                .Build(),
 
         SearchAggregateBuilder.Create()
-            .SetValue(DefaultSearchFieldName, "academy")
-            .SetValue(SecondarySearchFieldName, "SW1A")
-            .Build()
+                .SetValue(DefaultSearchFieldName, "academy")
+                .SetValue(SecondarySearchFieldName, "SW1A")
+                .Build()
         ];
 
         SearchRequest request =

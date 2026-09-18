@@ -7,7 +7,7 @@ using DfE.EducationProviderRegistry.Core.Query.Shared;
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search;
 
 [ExcludeFromCodeCoverage]
-public static class SearchResultTestDouble
+public static class SearchAggregateResultTestDouble
 {
     private static readonly Faker _faker = new();
 
