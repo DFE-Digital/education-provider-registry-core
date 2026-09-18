@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
@@ -68,9 +68,9 @@ public sealed class SearchUseCasePerformanceTests : SearchMatchesUseCaseBaseTest
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(establishments, ct);
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(SearchTermKey, searchTerm)],
-                filters: []);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(SearchTermKey, searchTerm)
+                .Build();
 
         // act
         await DatabaseFixture.QueryCollector!.StartAsync(ct);

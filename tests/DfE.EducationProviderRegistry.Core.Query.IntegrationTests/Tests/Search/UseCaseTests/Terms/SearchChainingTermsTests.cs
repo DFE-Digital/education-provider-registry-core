@@ -1,5 +1,4 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -68,12 +67,13 @@ public sealed class SearchChainingTermsTests : SearchMatchesUseCaseBaseTest
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [
+            SearchRequestBuilder.Create()
+                .WithSearchTerms([
                     (Term1Key, "school"),
                     (Term2Key, "SW1A")
-                ],
-                filters: []);
+                ])
+                .Build();
+
 
         await ExecuteAndAssertSearchAsync(
             request,
@@ -101,12 +101,12 @@ public sealed class SearchChainingTermsTests : SearchMatchesUseCaseBaseTest
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [
+            SearchRequestBuilder.Create()
+                .WithSearchTerms([
                     (Term1Key, "school"),
                     (Term2Key, "SW1A")
-                ],
-                filters: []);
+                ])
+                .Build();
 
         await ExecuteAndAssertSearchAsync(
             request,

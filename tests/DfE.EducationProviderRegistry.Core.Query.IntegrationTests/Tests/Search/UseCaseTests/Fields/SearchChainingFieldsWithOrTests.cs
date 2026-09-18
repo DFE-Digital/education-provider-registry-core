@@ -1,5 +1,4 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -17,19 +16,19 @@ public sealed class SearchChainingFieldsWithOrTests : SearchMatchesUseCaseBaseTe
     protected override (string, string, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)[] CreateSearchTermsConfiguration() =>
     [
         (
-                SearchTermKey,
-                IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
-                 [
-                    (builder) =>
-                        builder
-                            .WithFieldName(DefaultSearchFieldName)
-                            .AppendExactMatchBehaviour(),
-                    (builder) =>
-                        builder
-                            .WithFieldName(SecondarySearchFieldName)
-                            .AppendContainsMatchBehaviour(),
-                ]
-            )
+            SearchTermKey,
+            IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
+                [
+                (builder) =>
+                    builder
+                        .WithFieldName(DefaultSearchFieldName)
+                        .AppendExactMatchBehaviour(),
+                (builder) =>
+                    builder
+                        .WithFieldName(SecondarySearchFieldName)
+                        .AppendContainsMatchBehaviour(),
+            ]
+        )
     ];
 
     [Fact]
@@ -55,10 +54,9 @@ public sealed class SearchChainingFieldsWithOrTests : SearchMatchesUseCaseBaseTe
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(SearchTermKey, searchTerm)],
-                filters: []);
-
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(SearchTermKey, searchTerm)
+                .Build();
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
@@ -89,9 +87,9 @@ public sealed class SearchChainingFieldsWithOrTests : SearchMatchesUseCaseBaseTe
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(SearchTermKey, searchTerm)],
-                filters: []);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(SearchTermKey, searchTerm)
+                .Build();
 
         // act / assert
         await ExecuteAndAssertSearchAsync(
@@ -133,9 +131,9 @@ public sealed class SearchChainingFieldsWithOrTests : SearchMatchesUseCaseBaseTe
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(SearchTermKey, searchTerm)],
-                filters: []);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(SearchTermKey, searchTerm)
+                .Build();
 
         // act / assert
         await ExecuteAndAssertSearchAsync(
