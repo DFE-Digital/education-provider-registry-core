@@ -35,7 +35,6 @@ public class Startup
 
         services.AddPostgres(context.Configuration);
 
-        services.AddScoped<EducationProviderRegistryDatabaseFixture>();
-        services.AddDatabaseSeedServices();
+        services.AddEducationProviderRegistryDatabaseFixture();
     }
 }

@@ -7,9 +7,12 @@ namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDatabaseSeedServices(this IServiceCollection services)
+    public static IServiceCollection AddEducationProviderRegistryDatabaseFixture(this IServiceCollection services)
     {
         services.AddSingleton<ISeedDataHandler<IEnumerable<SearchAggregate>, SearchableAggregates>, SearchAggregateCollectionSeedHandler>();
+
+        services.AddScoped<EducationProviderRegistryDatabaseFixture>();
+
         return services;
     }
 }

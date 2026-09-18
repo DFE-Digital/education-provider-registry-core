@@ -25,12 +25,6 @@ public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
 
     protected virtual IEnumerable<KeyValuePair<string, string?>> CreateFilterExpressionOptions() => FilterKeyToFilterExpressionMapOptionsStub.StubFilter;
 
-    protected override async Task AfterStartTestDependenciesAsync(CancellationToken ct = default)
-    {
-        // Clear all establishments and assoc to avoid conflicts with searchTerms
-        // await SearchAggregateFixture.ClearAsync(ct);
-    }
-
     protected sealed override void ConfigureApplicationServices(
         IServiceCollection services,
         IConfiguration configuration)
