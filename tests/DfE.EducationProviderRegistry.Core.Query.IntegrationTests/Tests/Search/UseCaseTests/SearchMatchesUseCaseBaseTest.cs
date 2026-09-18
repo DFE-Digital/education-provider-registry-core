@@ -11,13 +11,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
-public abstract class SearchUseCaseBase : UseCaseIntegrationTestBase
+public abstract class SearchMatchesUseCaseBaseTest : UseCaseIntegrationTestBase
 {
     // ensure fields do not have UK constraints
     protected const string DefaultSearchFieldName = nameof(SearchAggregate.ProviderName);
     protected const string SecondarySearchFieldName = nameof(SearchAggregate.Postcode);
 
-    protected SearchUseCaseBase(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    protected SearchMatchesUseCaseBaseTest(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 

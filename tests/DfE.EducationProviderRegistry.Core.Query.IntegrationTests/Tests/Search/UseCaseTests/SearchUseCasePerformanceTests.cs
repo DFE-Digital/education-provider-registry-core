@@ -9,7 +9,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
-public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
+public sealed class SearchUseCasePerformanceTests : SearchMatchesUseCaseBaseTest
 {
     private const string SearchTermKey = "term-1";
 
@@ -23,12 +23,12 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
             SearchTermKey,
             IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
             [
-                builder =>
+                (builder) =>
                     builder
                         .WithFieldName(DefaultSearchFieldName)
                         .AppendExactMatchBehaviour(),
 
-                builder =>
+                (builder) =>
                     builder
                         .WithFieldName(SecondarySearchFieldName)
                         .AppendContainsMatchBehaviour()
@@ -77,7 +77,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
 
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        UseCaseResponse<SearchResponse> response = await ExecuteUseCase<SearchRequest, SearchResponse>(request);
+        UseCaseResponse<SearchResponse> response = await ExecuteUseCase<SearchRequest, SearchResponse>(request, ct);
 
         stopwatch.Stop();
 

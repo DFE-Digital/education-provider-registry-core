@@ -7,7 +7,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Filters;
 
-public sealed class SearchUseCaseFiltersTests : SearchUseCaseBase
+public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
 {
     private const string DefaultedSearchTerm = "term-1";
     public SearchUseCaseFiltersTests(IServiceProvider testServicesProvider) : base(testServicesProvider)

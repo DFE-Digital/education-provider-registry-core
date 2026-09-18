@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests.Fields;
 
-public sealed class SearchChainingFieldsWithAndTests : SearchUseCaseBase
+public sealed class SearchChainingFieldsWithAndTests : SearchMatchesUseCaseBaseTest
 {
     private const string SearchTermKey = "term-1";
 

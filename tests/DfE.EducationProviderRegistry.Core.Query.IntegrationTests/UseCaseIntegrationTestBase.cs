@@ -36,13 +36,13 @@ public abstract class UseCaseIntegrationTestBase : ServiceProviderTestsBase, IAs
                 .Build();
     }
 
-    protected Task<UseCaseResponse<TModel>> ExecuteUseCase<TRequest, TModel>(TRequest request)
+    protected Task<UseCaseResponse<TModel>> ExecuteUseCase<TRequest, TModel>(TRequest request, CancellationToken ct = default)
         where TRequest : IUseCaseRequest<UseCaseResponse<TModel>>
     {
         return RunScopedAsync<
             IUseCase<TRequest, UseCaseResponse<TModel>>,
             UseCaseResponse<TModel>>(
-                (usecase) => usecase.HandleRequestAsync(request, TestContext.Current.CancellationToken));
+                (usecase) => usecase.HandleRequestAsync(request, ct));
     }
 
     protected override async Task BeforeDisposeAsync()

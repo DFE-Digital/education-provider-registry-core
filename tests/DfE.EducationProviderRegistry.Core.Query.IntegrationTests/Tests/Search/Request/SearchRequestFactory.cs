@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
