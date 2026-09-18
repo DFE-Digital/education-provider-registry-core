@@ -27,7 +27,7 @@ public sealed class GetEstablishmentsReturnsResultsTests : UseCaseIntegrationTes
         // act
         UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> results =
             await ExecuteUseCase<
-                GetEstablishmentsRequest, IReadOnlyCollection<EstablishmentDetailsModel>>(request);
+                GetEstablishmentsRequest, IReadOnlyCollection<EstablishmentDetailsModel>>(request, TestContext.Current.CancellationToken);
 
         // assert
         Assert.NotNull(results);
