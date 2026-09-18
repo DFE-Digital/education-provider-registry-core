@@ -2,7 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
 
 internal sealed class SearchRequestBuilder
 {
@@ -42,10 +42,11 @@ internal sealed class SearchRequestBuilder
         return this;
     }
 
-    public SearchRequestBuilder WithFilterRequests(
-        IEnumerable<FilterRequest> filterRequests)
+    public SearchRequestBuilder WithFilterRequest(
+        FilterRequest filterRequests)
     {
-        _filterRequests = [.. filterRequests];
+        _filterRequests ??= [];
+        _filterRequests.Add(filterRequests);
         return this;
     }
 

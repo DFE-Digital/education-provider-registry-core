@@ -1,5 +1,4 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
@@ -61,11 +60,10 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
-                filters: [
-                    new FilterRequest("searchprovidertypeid", [1])
-                ]);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
+                .WithFilterRequest(new FilterRequest("searchprovidertypeid", [1]))
+                .Build();
 
         // act // assert
         await ExecuteAndAssertSearchAsync(
@@ -102,11 +100,10 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
-                filters: [
-                    new FilterRequest("searchprovidertypeid", [1, 2])
-                ]);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
+                .WithFilterRequest(new FilterRequest("searchprovidertypeid", [1, 2]))
+                .Build();
 
         // act / assert
         await ExecuteAndAssertSearchAsync(
@@ -137,11 +134,10 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
-                filters: [
-                    new FilterRequest("searchprovidertypeid", [999])
-                    ]);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
+                .WithFilterRequest(new FilterRequest("searchprovidertypeid", [999]))
+                .Build();
 
         // act / assert
         await ExecuteAndAssertSearchAsync(
@@ -178,9 +174,9 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         ];
 
         SearchRequest request =
-            SearchRequestFactory.BuildSearchRequest(
-                searchTerms: [(DefaultedSearchTerm, stubEstablishmentMatchesName)],
-                filters: []);
+            SearchRequestBuilder.Create()
+                .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
+                .Build();
 
         // act / assert
         await ExecuteAndAssertSearchAsync(
@@ -188,5 +184,4 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
             expectednResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
     }
-
 }
