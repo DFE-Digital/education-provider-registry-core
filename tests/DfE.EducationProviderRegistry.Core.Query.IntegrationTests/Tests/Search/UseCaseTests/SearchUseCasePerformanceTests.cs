@@ -3,8 +3,8 @@ using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Con
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Observer.Postgres;
-using DfE.EducationProviderRegistry.Core.Query.Test.Database.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.UseCaseTests;
@@ -48,7 +48,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
 
         const string searchTerm = "school";
 
-        SearchAggregate[] establishments =
+        IReadOnlyCollection<SearchAggregate> establishments =
         [
             .. Enumerable.Range(1, totalMatches)
                 .Select(_ =>
@@ -65,7 +65,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
                         .Build())
         ];
 
-        await SearchAggregateFixture.PersistAsync(establishments, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(establishments, ct);
 
         SearchRequest request =
             SearchRequestFactory.BuildSearchRequest(
@@ -73,7 +73,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
                 filters: []);
 
         // act
-        await QueryCollector.StartAsync(ct);
+        await DatabaseFixture.QueryCollector!.StartAsync(ct);
 
         Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -81,7 +81,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseBase
 
         stopwatch.Stop();
 
-        PostgresQueries queries = await QueryCollector.GetObservationsAsync(ct);
+        PostgresQueries queries = await DatabaseFixture.QueryCollector.GetObservationsAsync(ct);
 
         // assert
         Assert.NotNull(response);
