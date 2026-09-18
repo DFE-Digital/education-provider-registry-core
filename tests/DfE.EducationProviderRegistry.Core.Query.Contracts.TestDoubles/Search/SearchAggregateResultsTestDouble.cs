@@ -13,10 +13,10 @@ public static class SearchAggregateResultsTestDouble
 
         List<SearchAggregateResult> searchResults = [];
 
-        for (int i = 0; i < new Bogus.Faker().Random.Int(1, count); i++)
+        for (int i = 0; i < count; i++)
         {
             searchResults.Add(
-                SearchAggregateResultTestDouble.Fake()); // Generate synthetic establishment search results instance
+                SearchAggregateResultTestDouble.Fake());
         }
 
         return new SearchAggregateResults(searchResults);
