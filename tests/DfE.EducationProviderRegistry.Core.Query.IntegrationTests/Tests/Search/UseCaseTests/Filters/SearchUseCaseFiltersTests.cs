@@ -46,16 +46,16 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(1)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(1)
                 .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(2)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(2)
                 .Build()
         ];
 
@@ -81,21 +81,21 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(1)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(1)
                 .Build(),
 
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(2)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(2)
                 .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(3)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(3)
                 .Build()
         ];
 
@@ -123,13 +123,13 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(1)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(1)
                 .Build(),
 
         SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(2)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(2)
                 .Build()
         ];
 
@@ -155,21 +155,21 @@ public sealed class SearchUseCaseFiltersTests : SearchMatchesUseCaseBaseTest
         SearchAggregate[] matchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(1)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(1)
                 .Build(),
 
         SearchAggregateBuilder.Create()
-                .WithName(stubEstablishmentMatchesName)
-                .WithEstablishmentTypeId(2)
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithProviderTypeId(2)
                 .Build()
         ];
 
         SearchAggregate[] nonMatchingEstablishments =
         [
             SearchAggregateBuilder.Create()
-                .WithName("academy")
-                .WithEstablishmentTypeId(1)
+                .WithProviderName("academy")
+                .WithProviderTypeId(1)
                 .Build()
         ];
 
