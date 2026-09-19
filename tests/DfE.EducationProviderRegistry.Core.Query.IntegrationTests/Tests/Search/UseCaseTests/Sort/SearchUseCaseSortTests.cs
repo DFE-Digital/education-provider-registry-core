@@ -13,9 +13,9 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
 {
     private static readonly SearchAggregate[] SortableSearchResults =
     [
-        SearchAggregateBuilder.Create().WithName("school-3").Build(),
-        SearchAggregateBuilder.Create().WithName("school-1").Build(),
-        SearchAggregateBuilder.Create().WithName("school-2").Build(),
+        SearchAggregateBuilder.Create().WithProviderName("school-3").Build(),
+        SearchAggregateBuilder.Create().WithProviderName("school-1").Build(),
+        SearchAggregateBuilder.Create().WithProviderName("school-2").Build(),
     ];
 
     public SearchUseCaseSortTests(IServiceProvider testServicesProvider) : base(testServicesProvider)

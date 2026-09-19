@@ -5,8 +5,8 @@ namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 
 public sealed class SearchAggregateBuilder
 {
-    // temp as seed range 10_000->9_010_000 avoids conflicts
-    private static int _providerIdentifierCounter = 9_010_001;
+    private static int _searchAggregateIdCounter = 100_000;
+    private static int _provierIdCounter = 1000;
 
     private readonly SearchAggregate _searchAggregate;
 
@@ -14,8 +14,8 @@ public sealed class SearchAggregateBuilder
     {
         _searchAggregate = new SearchAggregate
         {
-            SearchAggregateId = long.Parse(Interlocked.Increment(ref _providerIdentifierCounter).ToString()),
-            ProviderId = Interlocked.Increment(ref _providerIdentifierCounter).ToString(),
+            SearchAggregateId = long.Parse(Interlocked.Increment(ref _searchAggregateIdCounter).ToString()),
+            ProviderId = Interlocked.Increment(ref _provierIdCounter).ToString(),
             ProviderName = "Test Establishment",
             ProviderAddress = "1 Test Street, Test Town, Test County, TE1 1ST",
             LocalAuthorityName = "Test Authority",
@@ -23,37 +23,24 @@ public sealed class SearchAggregateBuilder
             ProviderTypeId = 1, // Community school
             ProviderTypeName = "Multi-Academy Trust"
         };
-
     }
 
-    public SearchAggregateBuilder WithProviderId(string providerId)
+    public SearchAggregateBuilder WithProviderId(string id)
     {
-        _searchAggregate.ProviderId = providerId;
+        _searchAggregate.ProviderId = id;
         return this;
     }
 
-    public SearchAggregateBuilder WithAuthorityName(string localAuthorityName)
+    public SearchAggregateBuilder WithLocalAuthorityName(string localAuthorityName)
     {
         _searchAggregate.LocalAuthorityName = localAuthorityName;
 
         return this;
     }
 
-    public SearchAggregateBuilder WithName(string name)
+    public SearchAggregateBuilder WithProviderName(string name)
     {
         _searchAggregate.ProviderName = name;
-        return this;
-    }
-
-    public SearchAggregateBuilder WithPostcode(string postcode)
-    {
-        _searchAggregate.ProviderAddress = postcode;
-        return this;
-    }
-
-    public SearchAggregateBuilder WithTown(string town)
-    {
-        _searchAggregate.ProviderAddress = town;
         return this;
     }
 
@@ -63,9 +50,15 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
-    public SearchAggregateBuilder WithEstablishmentTypeId(long typeId)
+    public SearchAggregateBuilder WithProviderTypeId(long typeId)
     {
         _searchAggregate.ProviderTypeId = typeId;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithProviderTypeName(string name)
+    {
+        _searchAggregate.ProviderTypeName = name;
         return this;
     }
 
@@ -93,6 +86,7 @@ public sealed class SearchAggregateBuilder
 
         return this;
     }
+
     public SearchAggregate Build() => _searchAggregate;
 
     public static SearchAggregateBuilder Create() => new();
