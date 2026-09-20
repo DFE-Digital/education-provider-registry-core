@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
