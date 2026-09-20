@@ -12,7 +12,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public abstract class SearchMatchesUseCaseBaseTest : UseCaseIntegrationTestBase
 {
-    // ensure fields do not have UK constraints
+    // ensure fields do not have Unique Key constraints
     protected const string DefaultSearchFieldName = nameof(SearchAggregate.ProviderName);
     protected const string SecondarySearchFieldName = nameof(SearchAggregate.Postcode);
 

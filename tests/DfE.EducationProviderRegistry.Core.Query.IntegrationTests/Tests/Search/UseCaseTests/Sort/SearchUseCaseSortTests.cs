@@ -42,7 +42,8 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
             IndexedFieldConfigurationBuilder.OR_CHAINING_PREDICATE,
             [
                 (builder) =>
-                    builder.WithFieldName(nameof(SearchAggregate.ProviderName))
+                    builder
+                        .WithFieldName(nameof(SearchAggregate.ProviderName))
                         .AppendContainsMatchBehaviour()
             ]
         )]);
