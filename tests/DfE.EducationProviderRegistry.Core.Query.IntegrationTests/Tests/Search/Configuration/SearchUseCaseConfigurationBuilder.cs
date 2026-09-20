@@ -96,7 +96,7 @@ public sealed class SearchUseCaseConfigurationBuilder
 
         return
             //SearchCriteria // TODO configure SearchCriteria required for Facets turn on/off?
-            builtFiltersConfiguration.Concat(SearchCriteriaOptionsStub.Stub) 
+            builtFiltersConfiguration.Concat(SearchCriteriaOptionsStub.Stub)
                 .Concat(builtSearchConfiguration)
                 .ToDictionary();
     }

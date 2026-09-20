@@ -8,9 +8,9 @@ public static class SearchUseCaseConfigurationExtensions
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        SearchUseCaseConfigurationBuilder target = SearchUseCaseConfigurationBuilder.Create();
-        configure.Invoke(target);
-        IReadOnlyDictionary<string, string?> output = target.Build();
+        SearchUseCaseConfigurationBuilder configuration = SearchUseCaseConfigurationBuilder.Create();
+        configure.Invoke(configuration);
+        IReadOnlyDictionary<string, string?> output = configuration.Build();
         builder.AddInMemoryCollection(output);
         return builder;
     }
