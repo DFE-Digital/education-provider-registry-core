@@ -57,6 +57,12 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
+    public SearchAggregateBuilder WithTown(string value)
+    {
+        _searchAggregate.Town = value;
+        return this;
+    }
+
     public SearchAggregateBuilder WithCounty(string county)
     {
         _searchAggregate.County = county;
