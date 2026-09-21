@@ -69,6 +69,12 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
+    public SearchAggregateBuilder WithUkprn(string ukprn)
+    {
+        _searchAggregate.UkProviderReferenceNumber = ukprn;
+        return this;
+    }
+
     public SearchAggregateBuilder SetValue(string property, string value)
     {
         if (string.IsNullOrWhiteSpace(property))
