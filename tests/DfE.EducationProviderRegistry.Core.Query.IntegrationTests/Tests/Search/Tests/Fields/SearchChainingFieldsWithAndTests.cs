@@ -1,7 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.SearchConfiguration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -66,6 +65,9 @@ public sealed class SearchChainingFieldsWithAndTests : SearchUseCaseMatchesResul
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -98,6 +100,9 @@ public sealed class SearchChainingFieldsWithAndTests : SearchUseCaseMatchesResul
                 .SetValue(SecondarySearchFieldName, "Institute")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

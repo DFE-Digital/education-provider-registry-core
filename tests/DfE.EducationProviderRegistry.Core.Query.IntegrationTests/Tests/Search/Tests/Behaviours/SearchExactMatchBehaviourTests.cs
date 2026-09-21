@@ -50,6 +50,9 @@ public sealed class SearchExactMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -89,6 +92,9 @@ public sealed class SearchExactMatchBehaviourTests : SearchUseCaseMatchesResults
                 .SetValue(DefaultSearchFieldName, "Secondary School")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

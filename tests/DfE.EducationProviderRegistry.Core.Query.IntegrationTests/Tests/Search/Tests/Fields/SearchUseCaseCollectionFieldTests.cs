@@ -1,6 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -53,6 +52,9 @@ public sealed class SearchUseCaseCollectionFieldTests
                 .WithSearchTerm(SearchTermKey, searchTerm)
                 .Build();
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
@@ -72,6 +74,9 @@ public sealed class SearchUseCaseCollectionFieldTests
                 .WithLocalAuthorityName("School Authority")
                 .Build();
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [establishment], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -80,7 +85,7 @@ public sealed class SearchUseCaseCollectionFieldTests
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
-            expectednResults: [establishment],
+            expectedInResults: [establishment],
             notExpectedInResults: []);
     }
 
@@ -100,6 +105,9 @@ public sealed class SearchUseCaseCollectionFieldTests
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            nonMatchingEstablishments, TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -108,7 +116,7 @@ public sealed class SearchUseCaseCollectionFieldTests
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
-            expectednResults: matchingEstablishments,
+            expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
     }
 }
