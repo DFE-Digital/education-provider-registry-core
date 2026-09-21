@@ -5,7 +5,6 @@ using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Res
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
-using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,19 +35,10 @@ public abstract class SearchUseCaseMatchesResultsTestBase : UseCaseIntegrationTe
 
     protected async Task<UseCaseResponse<SearchResponse>> ExecuteAndAssertSearchAsync(
         SearchRequest request,
-        IReadOnlyCollection<SearchAggregate> expectednResults,
+        IReadOnlyCollection<SearchAggregate> expectedInResults,
         IReadOnlyCollection<SearchAggregate> notExpectedInResults)
     {
-        // arrange
-        CancellationToken ct = TestContext.Current.CancellationToken;
-
-        IReadOnlyCollection<SearchAggregate> seed = [.. expectednResults, .. notExpectedInResults];
-
-        SearchableAggregates searchedAggregates =
-            await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
-
         // act
-
         UseCaseResponse<SearchResponse> response =
             await ExecuteUseCase<SearchRequest, SearchResponse>(request);
 
@@ -57,9 +47,9 @@ public abstract class SearchUseCaseMatchesResultsTestBase : UseCaseIntegrationTe
         Assert.Null(response.ErrorMessage);
 
         Assert.NotNull(response.Model);
-        Assert.Equal(expectednResults.Count, response.Model.TotalNumberOfResults);
+        Assert.Equal(expectedInResults.Count, response.Model.TotalNumberOfResults);
         Assert.NotNull(response.Model.SearchProviderResults);
-        Assert.Equal(expectednResults.Count, response.Model.SearchProviderResults.SearchResultCollection.Count);
+        Assert.Equal(expectedInResults.Count, response.Model.SearchProviderResults.SearchResultCollection.Count);
 
         List<SearchAggregateResult> results = [.. response.Model.SearchProviderResults.SearchResultCollection];
 
@@ -72,7 +62,7 @@ public abstract class SearchUseCaseMatchesResultsTestBase : UseCaseIntegrationTe
             SearchAggregateResult searchAggregate = results[index];
 
             SearchAggregate seededAggregate =
-                searchedAggregates.SearchAggregates.Single(
+                expectedInResults.Single(
                     (t) => t.ProviderId == searchAggregate.UniqueIdentifier.Value);
 
             SearchResponseAssertions.AssertMapped(

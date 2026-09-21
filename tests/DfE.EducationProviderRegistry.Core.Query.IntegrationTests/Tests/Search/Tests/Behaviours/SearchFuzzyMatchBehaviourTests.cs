@@ -1,6 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -51,6 +50,9 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -85,6 +87,9 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseMatchesResults
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -125,6 +130,9 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseMatchesResults
                 .SetValue(DefaultSearchFieldName, "University")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

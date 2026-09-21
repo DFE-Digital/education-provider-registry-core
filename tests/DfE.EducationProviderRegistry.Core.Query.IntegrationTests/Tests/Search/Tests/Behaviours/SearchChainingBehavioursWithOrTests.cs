@@ -49,6 +49,9 @@ public sealed class SearchChainingBehavioursWithOrTests : SearchUseCaseMatchesRe
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)

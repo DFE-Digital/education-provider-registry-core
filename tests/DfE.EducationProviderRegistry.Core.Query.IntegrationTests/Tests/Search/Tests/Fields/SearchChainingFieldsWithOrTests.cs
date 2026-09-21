@@ -53,10 +53,14 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
                 .Build();
+
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
@@ -85,6 +89,9 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .SetValue(SecondarySearchFieldName, "College")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -129,6 +136,9 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .SetValue(SecondarySearchFieldName, "College")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

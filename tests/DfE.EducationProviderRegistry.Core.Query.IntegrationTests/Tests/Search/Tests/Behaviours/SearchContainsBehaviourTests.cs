@@ -46,6 +46,9 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -77,6 +80,9 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .SetValue(DefaultSearchFieldName, "Academy College")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -110,6 +116,9 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(SearchTermKey, searchTerm)
@@ -141,6 +150,9 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .SetValue(DefaultSearchFieldName, "Academy College")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -181,6 +193,9 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .SetValue(DefaultSearchFieldName, "College")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

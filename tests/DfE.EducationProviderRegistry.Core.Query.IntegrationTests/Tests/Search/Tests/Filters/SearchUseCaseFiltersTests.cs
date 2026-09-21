@@ -47,6 +47,9 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
@@ -56,7 +59,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         // act // assert
         await ExecuteAndAssertSearchAsync(
             request,
-            expectednResults: matchingEstablishments,
+            expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
     }
 
@@ -87,6 +90,9 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
@@ -96,7 +102,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
-            expectednResults: matchingEstablishments,
+            expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
     }
 
@@ -121,6 +127,9 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
@@ -130,7 +139,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
-            expectednResults: matchingEstablishments,
+            expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
     }
 
@@ -161,6 +170,9 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
@@ -169,7 +181,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         // act / assert
         await ExecuteAndAssertSearchAsync(
             request,
-            expectednResults: matchingEstablishments,
+            expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
     }
 }

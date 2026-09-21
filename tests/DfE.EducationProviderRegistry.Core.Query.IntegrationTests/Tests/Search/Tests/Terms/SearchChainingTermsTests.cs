@@ -59,6 +59,9 @@ public sealed class SearchChainingTermsTests : SearchUseCaseMatchesResultsTestBa
                 .Build()
         ];
 
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerms([
@@ -92,6 +95,9 @@ public sealed class SearchChainingTermsTests : SearchUseCaseMatchesResultsTestBa
                 .SetValue(SecondarySearchFieldName, "SW1A")
                 .Build()
         ];
+
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
