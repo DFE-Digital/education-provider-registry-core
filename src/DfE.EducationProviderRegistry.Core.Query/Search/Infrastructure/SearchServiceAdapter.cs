@@ -82,12 +82,10 @@ public sealed class SearchServiceAdapter
         int totalCount =
             await searchResultsQuery.CountAsync(cancellationToken);
 
-        string searchTerm = request.SearchTerms.First().Value;
-        string searchTermUpper = searchTerm.ToUpperInvariant();
-
         // 1. Project directly into EstablishmentReadModel.
         List<SearchReadModel> searchResults =
             await searchResultsQuery
+                .OrderByDirection(t => t.ProviderName, request.SortOrdering.Direction)
                 .Skip(request.Offset)
                 .Take(request.PageSize)
                 .Select(searchProvider =>

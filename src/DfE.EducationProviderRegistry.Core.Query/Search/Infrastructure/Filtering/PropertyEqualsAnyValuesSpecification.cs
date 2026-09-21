@@ -7,7 +7,7 @@ public sealed class PropertyEqualsAnyValuesSpecification<TProjection, TProperty>
     : ISpecification<TProjection>
 {
     private readonly Expression<Func<TProjection, TProperty>> _property;
-    private readonly IReadOnlyCollection<TProperty> _values;
+    private readonly IReadOnlyCollection<TProperty?> _values;
 
     public PropertyEqualsAnyValuesSpecification(
         Expression<Func<TProjection, TProperty>> property,

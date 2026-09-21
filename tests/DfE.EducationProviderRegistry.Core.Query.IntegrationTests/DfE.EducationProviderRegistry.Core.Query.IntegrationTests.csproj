@@ -8,16 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" />
-    <PackageReference Include="Dapper" />
     <PackageReference Include="DfE.Core.Libraries.Testing" />
     <PackageReference Include="DfE.Core.Libraries.IntegrationTests" />
     <PackageReference Include="DfE.Core.Libraries.IntegrationTests.Database.Postgres" />
-    <PackageReference Include="EFCore.BulkExtensions.PostgreSql" />
     <PackageReference Include="MartinCostello.Logging.XUnit.v3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
-    <PackageReference Include="SSH.NET" />
     <PackageReference Include="Xunit.DependencyInjection" />
     <PackageReference Include="Xunit.DependencyInjection.Logging" />
     <PackageReference Include="xunit.v3.mtp-v2" />
@@ -30,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DfE.EducationProviderRegistry.Core.Query\DfE.EducationProviderRegistry.Core.Query.csproj" />
+    <ProjectReference Include="..\DfE.EducationProviderRegistry.Core.Query.Test.Database\DfE.EducationProviderRegistry.Core.Query.Test.Database.csproj" />
   </ItemGroup>
 
 </Project>

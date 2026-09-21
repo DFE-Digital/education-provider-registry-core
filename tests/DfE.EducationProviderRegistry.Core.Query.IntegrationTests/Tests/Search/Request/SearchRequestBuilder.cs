@@ -11,11 +11,22 @@ internal sealed class SearchRequestBuilder
     private int _offset;
     private IList<FilterRequest>? _filterRequests;
     private readonly IList<SearchTerm> _searchTerms = [];
+
     private SortOrder _sortOrder =
         new(
             sortField: DefaultSortField,
             sortDirection: "asc",
             validSortFields: [DefaultSortField]);
+
+    public SearchRequestBuilder WithSearchTerms((string key, string term)[] values)
+    {
+        foreach ((string key, string term) in values)
+        {
+            WithSearchTerm(key, term);
+        }
+
+        return this;
+    }
 
     public SearchRequestBuilder WithSearchTerm((string key, string term) value) => WithSearchTerm(value.key, value.term);
 
@@ -31,16 +42,22 @@ internal sealed class SearchRequestBuilder
         return this;
     }
 
-    public SearchRequestBuilder WithFilterRequests(
-        IEnumerable<FilterRequest> filterRequests)
+    public SearchRequestBuilder WithFilterRequest(
+        FilterRequest filterRequests)
     {
-        _filterRequests = [.. filterRequests];
+        _filterRequests ??= [];
+        _filterRequests.Add(filterRequests);
         return this;
     }
 
-    public SearchRequestBuilder WithSortOrder(SortOrder sortOrder)
+    public SearchRequestBuilder WithSortDirection(string direction)
     {
-        _sortOrder = sortOrder;
+        _sortOrder =
+            new(
+                DefaultSortField,
+                sortDirection: direction,
+                validSortFields: [DefaultSortField]);
+
         return this;
     }
 
