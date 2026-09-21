@@ -15,7 +15,7 @@ public sealed class SearchAggregateBuilder
         _searchAggregate = new SearchAggregate
         {
             SearchAggregateId = long.Parse(Interlocked.Increment(ref _searchAggregateIdCounter).ToString()),
-            ProviderId = Interlocked.Increment(ref _provierIdCounter).ToString(),
+            ProviderId = GenerateUniqueProviderId(),
             ProviderName = "Test Establishment",
             ProviderAddress = "1 Test Street, Test Town, Test County, TE1 1ST",
             LocalAuthorityName = "Test Authority",
@@ -25,9 +25,10 @@ public sealed class SearchAggregateBuilder
         };
     }
 
-    public SearchAggregateBuilder WithProviderId(string id)
+    // provider id must be a unique 4-7 character numeric else it'll fail to insert
+    public SearchAggregateBuilder WithProviderId(int id)
     {
-        _searchAggregate.ProviderId = id;
+        _searchAggregate.ProviderId = id.ToString();
         return this;
     }
 
@@ -96,4 +97,6 @@ public sealed class SearchAggregateBuilder
     public SearchAggregate Build() => _searchAggregate;
 
     public static SearchAggregateBuilder Create() => new();
+
+    private static string GenerateUniqueProviderId() => Interlocked.Increment(ref _provierIdCounter).ToString();
 }
