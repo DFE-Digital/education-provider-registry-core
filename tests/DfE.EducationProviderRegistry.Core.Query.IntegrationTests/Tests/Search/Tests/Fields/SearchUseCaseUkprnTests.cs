@@ -25,7 +25,7 @@ public sealed class SearchUseCaseUkprnTests : SearchUseCaseMatchesResultsTestBas
     }
 
     [Fact]
-    public async Task Search_ByProvderId_Returns_Matches()
+    public async Task Search_ByUkprn_Returns_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
@@ -57,7 +57,7 @@ public sealed class SearchUseCaseUkprnTests : SearchUseCaseMatchesResultsTestBas
     }
 
     [Fact]
-    public async Task Search_ByProviderId_No_Matches()
+    public async Task Search_ByUkprn_No_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
