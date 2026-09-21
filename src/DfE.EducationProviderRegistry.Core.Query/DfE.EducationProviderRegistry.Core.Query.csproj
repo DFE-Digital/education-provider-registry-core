@@ -26,8 +26,4 @@
     <InternalsVisibleTo Include="DfE.EducationProviderRegistry.Core.Query.IntegrationTests" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Download\Infrastructure\" />
-  </ItemGroup>
-
 </Project>
