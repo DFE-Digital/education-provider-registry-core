@@ -6,18 +6,27 @@ namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Infrastructu
 
 public sealed class FakeDatasetDownloadRepository : IDatasetDownloadRepository
 {
+    private readonly IFileCompressor _fileCompressor;
+
+    public FakeDatasetDownloadRepository(IFileCompressor fileCompressor)
+    {
+        _fileCompressor = fileCompressor;
+    }
+
     public async Task<Dataset?> GetDatasetByName(
         string datasetName,
         CancellationToken cancellationToken = default)
     {
         byte[] fileBytes = await FakeFileDownload();
+        byte[] compressedFileBytes =
+            _fileCompressor.CompressFile(("all-establishment-data.csv", fileBytes));
 
         return new Dataset(
             Filename: "all-establishment-data",
             DataType: "All Establishments",
             DataFormat: "CSV",
             FileSize: fileBytes.Length,
-            File: fileBytes);
+            File: compressedFileBytes);
     }
 
     public static Task<byte[]> FakeFileDownload()
