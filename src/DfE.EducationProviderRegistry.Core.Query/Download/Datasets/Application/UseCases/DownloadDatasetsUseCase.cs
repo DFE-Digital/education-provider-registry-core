@@ -1,22 +1,21 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
-using DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.UseCases.Request;
-using DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.UseCases.Response;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
+using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
+using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Response;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.UseCases;
+namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases;
 
 public sealed class DownloadDatasetsUseCase :
     IUseCase<DownloadDatasetsRequest, UseCaseResponse<DownloadDatasetsResponse>>
 {
-    private readonly ILogger<SearchUseCase> _logger;
+    private readonly ILogger<DownloadDatasetsUseCase> _logger;
     private readonly IDatasetDownloadRepository _datasetDownloadRepository;
 
     public DownloadDatasetsUseCase(
         IDatasetDownloadRepository datasetDownloadRepository,
-        ILogger<SearchUseCase> logger)
+        ILogger<DownloadDatasetsUseCase> logger)
     {
         _datasetDownloadRepository = datasetDownloadRepository ??
             throw new ArgumentNullException(nameof(datasetDownloadRepository));
@@ -30,7 +29,7 @@ public sealed class DownloadDatasetsUseCase :
     {
         try
         {
-            Model.Dataset? model =
+            Dataset? model =
                 await _datasetDownloadRepository
                     .GetDatasetByName(request.Filename, cancellationToken);
 
@@ -50,14 +49,14 @@ public sealed class DownloadDatasetsUseCase :
 
             return UseCaseResponse<DownloadDatasetsResponse>.Failure(message);
         }
-        catch (SearchException ex)
+        catch (DownloadException ex)
         {
             const string message = "A domain-specific error occurred during download.";
 
             _logger.LogError(
                 ex,
                 "{UseCase} domain-specific error: {Message}",
-                nameof(SearchUseCase),
+                nameof(DownloadDatasetsUseCase),
                 message);
 
             return UseCaseResponse<DownloadDatasetsResponse>.Failure(message);
@@ -69,7 +68,7 @@ public sealed class DownloadDatasetsUseCase :
             _logger.LogError(
                 ex,
                 "{UseCase} unexpected error: {Message}",
-                nameof(SearchUseCase),
+                nameof(DownloadDatasetsUseCase),
                 message);
 
             return UseCaseResponse<DownloadDatasetsResponse>.Failure(message);

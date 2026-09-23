@@ -1,9 +1,12 @@
-﻿using System.Text;
-using DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.Model;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Infrastructure;
+namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastructure;
 
+[ExcludeFromCodeCoverage]
 public sealed class FakeDatasetDownloadRepository : IDatasetDownloadRepository
 {
     private readonly IFileCompressor _fileCompressor;

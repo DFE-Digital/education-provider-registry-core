@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Infrastructure;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure;
 
 public interface IFileCompressor
 {

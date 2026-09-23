@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.Model;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
 
 public sealed record Dataset(
     string Filename,

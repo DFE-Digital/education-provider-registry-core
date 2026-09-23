@@ -1,6 +1,6 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.Model;
+﻿using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Application.UseCases.Response;
+namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Response;
 
 public sealed class DownloadDatasetsResponse
 {

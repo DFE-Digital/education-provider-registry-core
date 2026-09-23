@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 
-namespace DfE.EducationProviderRegistry.Core.Query.DownloadDatasets.Infrastructure;
+namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure;
 
 public sealed class FileCompressor : IFileCompressor
 {
