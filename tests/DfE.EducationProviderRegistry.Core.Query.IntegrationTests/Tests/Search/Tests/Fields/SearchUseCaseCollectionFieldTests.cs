@@ -1,16 +1,13 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests.Fields;
 
-public sealed class SearchUseCaseCollectionFieldTests
-    : SearchUseCaseMatchesResultsTestBase
+public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResultsTestBase
 {
     private const string SearchTermKey = "term-1";
-    private readonly string CollectionFieldName = string.Empty; // Does not exist in SearchAggregate
+    private readonly string _collectionFieldName = string.Empty; // Does not exist in SearchAggregate
 
     public SearchUseCaseCollectionFieldTests(
         IServiceProvider testServicesProvider)
@@ -23,7 +20,7 @@ public sealed class SearchUseCaseCollectionFieldTests
         builder.WithSearchTerm(
             SearchTermKey,
             (field) =>
-                field.WithFieldName(CollectionFieldName)
+                field.WithFieldName(_collectionFieldName)
                     .AppendContainsMatchBehaviour());
     }
 
