@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.SearchConfiguration;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.SearchConfiguration;
 
 internal sealed class SearchConfigurationBuilder
 {

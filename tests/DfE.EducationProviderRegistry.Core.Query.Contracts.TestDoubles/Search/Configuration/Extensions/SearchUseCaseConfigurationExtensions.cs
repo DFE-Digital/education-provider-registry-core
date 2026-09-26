@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.Extensions;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Extensions;
 
 public static class SearchUseCaseConfigurationExtensions
 {

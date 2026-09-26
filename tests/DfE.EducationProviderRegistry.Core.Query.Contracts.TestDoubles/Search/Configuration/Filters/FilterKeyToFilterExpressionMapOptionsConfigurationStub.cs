@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.Filters;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Filters;
 
 internal static class FilterKeyToFilterExpressionMapOptionsConfigurationStub
 {

@@ -1,5 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.Extensions;
+﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;

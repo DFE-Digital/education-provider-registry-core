@@ -1,16 +1,13 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.SearchConfiguration;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests.Fields;
 
 public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseMatchesResultsTestBase
 {
     private const string SearchTermKey = "term-1";
-    private readonly string CollectionFieldName = string.Empty; // does not exist
+    private readonly string _collectionFieldName = string.Empty; // does not exist
 
     public SearchUseCaseCollectionAndScalarFieldTests(
         IServiceProvider testServicesProvider)
@@ -30,7 +27,7 @@ public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseMa
 
                 (field) =>
                     field
-                        .WithFieldName(CollectionFieldName)
+                        .WithFieldName(_collectionFieldName)
                         .AppendContainsMatchBehaviour()
             ],
             ChainFieldsBehaviour.AND);

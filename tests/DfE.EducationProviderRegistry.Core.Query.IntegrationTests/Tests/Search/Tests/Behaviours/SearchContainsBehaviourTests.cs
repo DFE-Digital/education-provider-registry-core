@@ -1,4 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
