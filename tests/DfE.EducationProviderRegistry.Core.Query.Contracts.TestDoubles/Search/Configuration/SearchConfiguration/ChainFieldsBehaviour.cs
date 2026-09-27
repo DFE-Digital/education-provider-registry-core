@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.SearchConfiguration;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.SearchConfiguration;
 
 public enum ChainFieldsBehaviour
 {

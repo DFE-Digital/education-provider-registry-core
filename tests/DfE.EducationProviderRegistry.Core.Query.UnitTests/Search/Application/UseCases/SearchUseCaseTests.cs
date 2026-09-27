@@ -1,4 +1,5 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;

@@ -1,11 +1,8 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
-using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +10,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search
 
 public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
 {
-    private static readonly SearchAggregate[] SortableSearchResults =
+    private static readonly SearchAggregate[] _sortableSearchResults =
     [
         SearchAggregateBuilder.Create().WithProviderName("school-3").Build(),
         SearchAggregateBuilder.Create().WithProviderName("school-1").Build(),
@@ -50,7 +47,7 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
 
         SearchableAggregates _ =
             await DatabaseFixture.SeedAsync<
-                IEnumerable<SearchAggregate>, SearchableAggregates>(SortableSearchResults, ct);
+                IEnumerable<SearchAggregate>, SearchableAggregates>(_sortableSearchResults, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -69,9 +66,9 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
 
         Assert.Collection(
             response.Model.SearchProviderResults.SearchResultCollection,
-            (current) => SearchResponseAssertions.AssertMapped(SortableSearchResults.Single(t => t.ProviderName == "school-1"), current),
-            (current) => SearchResponseAssertions.AssertMapped(SortableSearchResults.Single(t => t.ProviderName == "school-2"), current),
-            (current) => SearchResponseAssertions.AssertMapped(SortableSearchResults.Single(t => t.ProviderName == "school-3"), current));
+            (current) => SearchResponseAssertions.AssertMapped(_sortableSearchResults.Single(t => t.ProviderName == "school-1"), current),
+            (current) => SearchResponseAssertions.AssertMapped(_sortableSearchResults.Single(t => t.ProviderName == "school-2"), current),
+            (current) => SearchResponseAssertions.AssertMapped(_sortableSearchResults.Single(t => t.ProviderName == "school-3"), current));
     }
 
     [Fact]
@@ -82,7 +79,7 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
 
         SearchableAggregates _ =
             await DatabaseFixture.SeedAsync<
-                IEnumerable<SearchAggregate>, SearchableAggregates>(SortableSearchResults, ct);
+                IEnumerable<SearchAggregate>, SearchableAggregates>(_sortableSearchResults, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -101,8 +98,8 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
 
         Assert.Collection(
             response.Model.SearchProviderResults.SearchResultCollection,
-            (current) => SearchResponseAssertions.AssertMapped(SortableSearchResults.Single(t => t.ProviderName == "school-3"), current),
-            (current) => SearchResponseAssertions.AssertMapped(SortableSearchResults.Single(t => t.ProviderName == "school-2"), current),
-            (current) => SearchResponseAssertions.AssertMapped(SortableSearchResults.Single(t => t.ProviderName == "school-1"), current));
+            (current) => SearchResponseAssertions.AssertMapped(_sortableSearchResults.Single(t => t.ProviderName == "school-3"), current),
+            (current) => SearchResponseAssertions.AssertMapped(_sortableSearchResults.Single(t => t.ProviderName == "school-2"), current),
+            (current) => SearchResponseAssertions.AssertMapped(_sortableSearchResults.Single(t => t.ProviderName == "school-1"), current));
     }
 }

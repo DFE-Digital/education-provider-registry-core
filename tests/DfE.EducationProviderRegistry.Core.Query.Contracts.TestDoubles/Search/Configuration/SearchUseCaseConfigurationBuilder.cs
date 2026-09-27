@@ -1,9 +1,9 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.Criteria;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.Filters;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration.SearchConfiguration;
+﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Criteria;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Filters;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.SearchConfiguration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Configuration;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
 
 public sealed class SearchUseCaseConfigurationBuilder
 {
