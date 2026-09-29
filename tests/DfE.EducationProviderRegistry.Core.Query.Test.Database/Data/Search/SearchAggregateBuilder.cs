@@ -25,10 +25,27 @@ public sealed class SearchAggregateBuilder
         };
     }
 
+    public SearchAggregateBuilder WithUrn(int urn) => WithProviderId(urn);
+    public SearchAggregateBuilder WithGroupId(int id) => WithProviderId(id);
     // provider id must be a unique 4-7 character numeric else it'll fail to insert
     public SearchAggregateBuilder WithProviderId(int id)
     {
         _searchAggregate.ProviderId = id.ToString();
+        return this;
+    }
+
+    public SearchAggregateBuilder WithProviderName(string name)
+    {
+        _searchAggregate.ProviderName = name;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithEstablishment() => WithProviderCategory("Establishment");
+    public SearchAggregateBuilder WithGroup() => WithProviderCategory("Group");
+
+    public SearchAggregateBuilder WithProviderCategory(string category)
+    {
+        _searchAggregate.ProviderCategory = category;
         return this;
     }
 
@@ -45,9 +62,9 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
-    public SearchAggregateBuilder WithProviderName(string name)
+    public SearchAggregateBuilder WithAddress(string address)
     {
-        _searchAggregate.ProviderName = name;
+        _searchAggregate.ProviderAddress = address;
         return this;
     }
 
@@ -90,6 +107,12 @@ public sealed class SearchAggregateBuilder
     public SearchAggregateBuilder WithCompaniesHouseNumber(string value)
     {
         _searchAggregate.CompaniesHouseNumber = value;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithAcademyCount(int count)
+    {
+        _searchAggregate.AcademyCounts = count;
         return this;
     }
 
