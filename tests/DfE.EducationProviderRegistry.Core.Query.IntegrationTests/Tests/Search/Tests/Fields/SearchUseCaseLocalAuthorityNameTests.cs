@@ -17,6 +17,7 @@ public sealed class SearchUseCaseLocalAuthorityNameTests : SearchUseCaseMatchesR
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.LocalAuthorityName))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -28,6 +29,7 @@ public sealed class SearchUseCaseLocalAuthorityNameTests : SearchUseCaseMatchesR
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
+            SearchAggregateBuilder.Create().WithLocalAuthorityName("br").Build(),
             SearchAggregateBuilder.Create().WithLocalAuthorityName("Bristol").Build(),
             SearchAggregateBuilder.Create().WithLocalAuthorityName("bradford").Build(),
             SearchAggregateBuilder.Create().WithLocalAuthorityName("Birmingham").Build(),
@@ -44,8 +46,8 @@ public sealed class SearchUseCaseLocalAuthorityNameTests : SearchUseCaseMatchesR
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[1]],
-                notExpectedInResults: [seed[2]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);

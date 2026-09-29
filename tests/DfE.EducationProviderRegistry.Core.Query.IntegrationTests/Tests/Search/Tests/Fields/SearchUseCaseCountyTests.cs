@@ -17,6 +17,7 @@ public sealed class SearchUseCaseCountyTests : SearchUseCaseMatchesResultsTestBa
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.County))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -29,6 +30,7 @@ public sealed class SearchUseCaseCountyTests : SearchUseCaseMatchesResultsTestBa
 
         IReadOnlyList<SearchAggregate> seed = [
             SearchAggregateBuilder.Create().WithCounty("a").Build(),
+            SearchAggregateBuilder.Create().WithCounty("aBC").Build(),
             SearchAggregateBuilder.Create().WithCounty("bac").Build(),
             SearchAggregateBuilder.Create().WithCounty("d").Build(),
         ];
@@ -44,8 +46,8 @@ public sealed class SearchUseCaseCountyTests : SearchUseCaseMatchesResultsTestBa
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[1]],
-                notExpectedInResults: [seed[2]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);
@@ -61,6 +63,7 @@ public sealed class SearchUseCaseCountyTests : SearchUseCaseMatchesResultsTestBa
 
         IReadOnlyList<SearchAggregate> seed = [
             SearchAggregateBuilder.Create().WithCounty("a").Build(),
+            SearchAggregateBuilder.Create().WithCounty("aBC").Build(),
             SearchAggregateBuilder.Create().WithCounty("bac").Build(),
             SearchAggregateBuilder.Create().WithCounty("c").Build(),
         ];

@@ -17,6 +17,7 @@ public sealed class SearchUseCaseUkprnTests : SearchUseCaseMatchesResultsTestBas
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.UkProviderReferenceNumber))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -29,8 +30,9 @@ public sealed class SearchUseCaseUkprnTests : SearchUseCaseMatchesResultsTestBas
 
         IReadOnlyList<SearchAggregate> seed = [
             SearchAggregateBuilder.Create().WithUkprn("1").Build(),
-            SearchAggregateBuilder.Create().WithUkprn("2").Build(),
             SearchAggregateBuilder.Create().WithUkprn("10").Build(),
+            SearchAggregateBuilder.Create().WithUkprn("515").Build(),
+            SearchAggregateBuilder.Create().WithUkprn("2").Build(),
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
@@ -44,8 +46,8 @@ public sealed class SearchUseCaseUkprnTests : SearchUseCaseMatchesResultsTestBas
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[2]],
-                notExpectedInResults: [seed[1]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);

@@ -17,6 +17,7 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.Postcode))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -29,6 +30,7 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
 
         IReadOnlyList<SearchAggregate> seed = [
             SearchAggregateBuilder.Create().WithPostcode("B1").Build(),
+            SearchAggregateBuilder.Create().WithPostcode("b1 a").Build(),
             SearchAggregateBuilder.Create().WithPostcode("EN1 B1X").Build(),
             SearchAggregateBuilder.Create().WithPostcode("AB2 3ER").Build(),
         ];
@@ -44,8 +46,8 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[1]],
-                notExpectedInResults: [seed[2]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);
