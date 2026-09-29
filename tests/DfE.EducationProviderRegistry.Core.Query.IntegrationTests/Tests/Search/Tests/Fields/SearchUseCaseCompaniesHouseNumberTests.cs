@@ -4,10 +4,10 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Respo
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests.Fields;
 
-public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestBase
+public sealed class SearchUseCaseCompaniesHouseNumberTests : SearchUseCaseMatchesResultsTestBase
 {
     private const string SearchTermKey = "term-1";
-    public SearchUseCaseLaEstabTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public SearchUseCaseCompaniesHouseNumberTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
@@ -16,28 +16,28 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
         builder.WithSearchTerm(
             SearchTermKey,
             (field) =>
-                field.WithFieldName(nameof(SearchAggregate.LaEstab))
+                field.WithFieldName(nameof(SearchAggregate.CompaniesHouseNumber))
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
 
     [Fact]
-    public async Task Search_ByLaEstab_Returns_Matches()
+    public async Task Search_ByCompaniesHouseNumber_Returns_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
-            SearchAggregateBuilder.Create().WithLaEstab("1").Build(),
-            SearchAggregateBuilder.Create().WithLaEstab("10").Build(),
-            SearchAggregateBuilder.Create().WithLaEstab("2").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("value-1").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("value-2").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("number-3").Build(),
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchTerm(SearchTermKey, "1")
+                .WithSearchTerm(SearchTermKey, "val")
                 .Build();
 
         // Act
@@ -54,15 +54,15 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
     }
 
     [Fact]
-    public async Task Search_ByLaEstab_Returns_No_Matches()
+    public async Task Search_ByCompaniesHouseNumber_No_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
-            SearchAggregateBuilder.Create().WithLaEstab("1").Build(),
-            SearchAggregateBuilder.Create().WithLaEstab("2").Build(),
-            SearchAggregateBuilder.Create().WithLaEstab("10").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("STUB-1").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("STUB-2").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("STUB-3").Build(),
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
