@@ -17,6 +17,7 @@ public sealed class SearchUseCaseTownTests : SearchUseCaseMatchesResultsTestBase
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.Town))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -29,6 +30,7 @@ public sealed class SearchUseCaseTownTests : SearchUseCaseMatchesResultsTestBase
 
         IReadOnlyList<SearchAggregate> seed = [
             SearchAggregateBuilder.Create().WithTown("a").Build(),
+            SearchAggregateBuilder.Create().WithTown("aB").Build(),
             SearchAggregateBuilder.Create().WithTown("bac").Build(),
             SearchAggregateBuilder.Create().WithTown("d").Build(),
         ];
@@ -44,8 +46,8 @@ public sealed class SearchUseCaseTownTests : SearchUseCaseMatchesResultsTestBase
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[1]],
-                notExpectedInResults: [seed[2]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);

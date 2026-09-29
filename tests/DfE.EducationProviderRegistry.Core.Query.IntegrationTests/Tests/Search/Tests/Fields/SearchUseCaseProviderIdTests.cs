@@ -17,6 +17,7 @@ public sealed class SearchUseCaseProviderIdTests : SearchUseCaseMatchesResultsTe
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.ProviderId))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -28,8 +29,9 @@ public sealed class SearchUseCaseProviderIdTests : SearchUseCaseMatchesResultsTe
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
-            SearchAggregateBuilder.Create().WithProviderId(9996).Build(),
-            SearchAggregateBuilder.Create().WithProviderId(900009).Build(),
+            SearchAggregateBuilder.Create().WithProviderId(9999).Build(),
+            SearchAggregateBuilder.Create().WithProviderId(99996).Build(),
+            SearchAggregateBuilder.Create().WithProviderId(199990).Build(),
             SearchAggregateBuilder.Create().WithProviderId(10991).Build(),
         ];
 
@@ -37,15 +39,15 @@ public sealed class SearchUseCaseProviderIdTests : SearchUseCaseMatchesResultsTe
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchTerm(SearchTermKey, "99")
+                .WithSearchTerm(SearchTermKey, "9999")
                 .Build();
 
         // Act
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[2]],
-                notExpectedInResults: [seed[1]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);

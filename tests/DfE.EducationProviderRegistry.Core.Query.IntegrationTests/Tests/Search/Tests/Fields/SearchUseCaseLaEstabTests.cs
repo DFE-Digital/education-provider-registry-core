@@ -17,6 +17,7 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
             SearchTermKey,
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.LaEstab))
+                    .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
@@ -28,9 +29,10 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
-            SearchAggregateBuilder.Create().WithLaEstab("1").Build(),
-            SearchAggregateBuilder.Create().WithLaEstab("10").Build(),
-            SearchAggregateBuilder.Create().WithLaEstab("2").Build(),
+            SearchAggregateBuilder.Create().WithLaEstab("1").Build(), // exact
+            SearchAggregateBuilder.Create().WithLaEstab("123").Build(), // contains
+            SearchAggregateBuilder.Create().WithLaEstab("10").Build(), // startsWith
+            SearchAggregateBuilder.Create().WithLaEstab("2").Build(), // noMatch
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
@@ -44,8 +46,8 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
         UseCaseResponse<SearchResponse> response =
             await ExecuteAndAssertSearchAsync(
                 request,
-                expectedInResults: [seed[0], seed[1]],
-                notExpectedInResults: [seed[2]]);
+                expectedInResults: [seed[0], seed[1], seed[2]],
+                notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);
