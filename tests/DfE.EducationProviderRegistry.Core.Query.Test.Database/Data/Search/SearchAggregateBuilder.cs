@@ -87,6 +87,12 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
+    public SearchAggregateBuilder WithCompaniesHouseNumber(string value)
+    {
+        _searchAggregate.CompaniesHouseNumber = value;
+        return this;
+    }
+
     public SearchAggregateBuilder SetValue(string property, string value)
     {
         if (string.IsNullOrWhiteSpace(property))
