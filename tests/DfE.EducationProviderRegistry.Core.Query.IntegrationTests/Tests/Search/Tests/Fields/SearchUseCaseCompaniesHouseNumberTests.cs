@@ -29,7 +29,7 @@ public sealed class SearchUseCaseCompaniesHouseNumberTests : SearchUseCaseMatche
 
         IReadOnlyList<SearchAggregate> seed = [
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("value-1").Build(),
-            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("value-2").Build(),
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("VALUE-2").Build(),
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("number-3").Build(),
         ];
 
