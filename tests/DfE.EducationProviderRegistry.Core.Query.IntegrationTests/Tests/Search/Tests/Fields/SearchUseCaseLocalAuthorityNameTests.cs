@@ -54,7 +54,7 @@ public sealed class SearchUseCaseLocalAuthorityNameTests : SearchUseCaseMatchesR
     }
 
     [Fact]
-    public async Task Search_ByLaEstab_No_Matches()
+    public async Task Search_ByLocalAuthorityName_Returns_No_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
