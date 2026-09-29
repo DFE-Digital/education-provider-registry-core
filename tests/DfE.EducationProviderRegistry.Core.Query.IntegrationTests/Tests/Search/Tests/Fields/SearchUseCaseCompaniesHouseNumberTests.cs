@@ -18,7 +18,8 @@ public sealed class SearchUseCaseCompaniesHouseNumberTests : SearchUseCaseMatche
             (field) =>
                 field.WithFieldName(nameof(SearchAggregate.CompaniesHouseNumber))
                     .AppendContainsMatchBehaviour()
-                    .AppendStartsWithMatchBehaviour());
+                    .AppendStartsWithMatchBehaviour()
+                    .AppendExactMatchBehaviour());
     }
 
     [Fact]
@@ -28,6 +29,7 @@ public sealed class SearchUseCaseCompaniesHouseNumberTests : SearchUseCaseMatche
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
+            SearchAggregateBuilder.Create().WithCompaniesHouseNumber("val").Build(),
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("value-1").Build(),
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("VALUE-2").Build(),
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("number-3").Build(),
