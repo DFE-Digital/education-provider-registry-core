@@ -18,7 +18,9 @@ public sealed class DownloadDatasetsUseCaseTests
     {
         // arrange
         const string filename = "dataset.csv";
-        Dataset expected = new(filename, "text/csv", "csv", 3, [1, 2, 3]);
+
+        using MemoryStream expectedStream = new([1, 2, 3]);
+        Dataset expected = new(filename, "text/csv", "csv", 3, expectedStream);
 
         DatasetDownloadRepositoryTestDouble.Capture capture = new();
 
@@ -48,7 +50,15 @@ public sealed class DownloadDatasetsUseCaseTests
 
         // assert
         Assert.NotNull(response.Model);
-        Assert.Equal(expected, response.Model.DownloadedDataset);
+        Assert.NotNull(response.Model.DownloadedDataset);
+
+        // Assert properties individually to avoid Stream reference-equality issues
+        Assert.Equal(expected.Filename, response.Model.DownloadedDataset.Filename);
+        Assert.Equal(expected.DataType, response.Model.DownloadedDataset.DataType);
+        Assert.Equal(expected.DataFormat, response.Model.DownloadedDataset.DataFormat);
+        Assert.Equal(expected.FileSize, response.Model.DownloadedDataset.FileSize);
+        Assert.NotNull(response.Model.DownloadedDataset.FileStream);
+
         Assert.True(response.SuccessfulRequest);
     }
 

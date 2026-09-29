@@ -4,5 +4,5 @@ public sealed record Dataset(
     string Filename,
     string DataType,
     string DataFormat,
-    int FileSize,
-    byte[] File);
+    long FileSize,
+    Stream FileStream);

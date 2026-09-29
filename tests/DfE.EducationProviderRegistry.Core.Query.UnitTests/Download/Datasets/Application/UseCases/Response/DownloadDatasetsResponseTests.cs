@@ -9,13 +9,15 @@ public sealed class DownloadDatasetsResponseTests
     public void Constructor_WithDataset_SetsDownloadedDatasetProperty()
     {
         // arrange
+        using MemoryStream fileStream = new([1, 2, 3]);
+
         Dataset dataset =
             new(
                 "file.csv",
                 "text/csv",
                 "csv",
                 3,
-                [1, 2, 3]
+                fileStream
             );
 
         // act
@@ -42,13 +44,15 @@ public sealed class DownloadDatasetsResponseTests
     public void DownloadedDatasetProperty_IsReadOnly()
     {
         // arrange
+        using MemoryStream fileStream = new([1, 2, 3]);
+
         Dataset dataset =
             new(
                 "file.csv",
                 "text/csv",
                 "csv",
                 3,
-                [1, 2, 3]
+                fileStream
             );
 
         DownloadDatasetsResponse response = new(dataset);

@@ -24,12 +24,14 @@ public sealed class FakeDatasetDownloadRepository : IDatasetDownloadRepository
         byte[] compressedFileBytes =
             _fileCompressor.CompressFile(("all-establishment-data.csv", fileBytes));
 
+        Stream stream = new MemoryStream(compressedFileBytes);
+
         return new Dataset(
             Filename: "all-establishment-data",
             DataType: "All Establishments",
             DataFormat: "CSV",
-            FileSize: fileBytes.Length,
-            File: compressedFileBytes);
+            FileSize: compressedFileBytes.Length,
+            FileStream: stream);
     }
 
     public static Task<byte[]> FakeFileDownload()
