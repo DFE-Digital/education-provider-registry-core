@@ -6,11 +6,19 @@ namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Establi
 public sealed class EstablishmentDetailsBuilder
 {
     private static int _urnCounter = 100_500;
+
+    private string _website = string.Empty;
     private int? _urn;
 
     public EstablishmentDetailsBuilder WithUrn(int urn)
     {
         _urn = urn;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithWebsite(string website)
+    {
+        _website = website ?? string.Empty;
         return this;
     }
 
@@ -23,7 +31,11 @@ public sealed class EstablishmentDetailsBuilder
         return new()
         {
             Urn = new EstablishmentUrnModel(
-                new UniqueReferenceNumber(urn))
+                new UniqueReferenceNumber(urn)),
+            ContactDetails = new EstablishmentContactDetails(
+                Website: _website,
+                TelephoneNumber: string.Empty)
+
         };
     }
 
