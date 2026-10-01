@@ -17,7 +17,7 @@ public sealed class SearchResponse
     /// The total number of matching learner records found. Defaults to zero if null or negative.
     /// </param>
     public SearchResponse(
-        SearchAggregateResults searchProviderResults,
+        SearchAggregateResults? searchProviderResults,
         SearchFacets? facetedResults,
         int totalNumberOfResults)
     {

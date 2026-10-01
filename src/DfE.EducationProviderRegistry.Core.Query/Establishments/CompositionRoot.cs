@@ -25,7 +25,7 @@ public static class CompositionRoot
                 GetEstablishmentsUseCase>()
 
             .AddScoped<
-                IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>>,
+                IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsReadModel>>,
                 GetEstablishmentByIdUseCase>();
     }
 

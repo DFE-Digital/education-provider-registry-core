@@ -5,8 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
 
-public class GetEstablishmentByIdUseCase :
-    IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>>
+public sealed class GetEstablishmentByIdUseCase : IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsReadModel>>
 {
     private readonly ILogger<GetEstablishmentByIdUseCase> _logger;
     private readonly IEstablishmentsRepository _establishmentRepository;
@@ -22,17 +21,22 @@ public class GetEstablishmentByIdUseCase :
         _establishmentRepository = establishmentRepository;
     }
 
-    public async Task<UseCaseResponse<EstablishmentDetailsModel?>> HandleRequestAsync(
+    public async Task<UseCaseResponse<EstablishmentDetailsReadModel>> HandleRequestAsync(
         GetEstablishmentByIdRequest request,
         CancellationToken cancellationToken = default)
     {
         try
         {
             EstablishmentUrnModel establishmentId = EstablishmentUrnModel.Create(request.Urn);
-            EstablishmentDetailsModel? establishment = await _establishmentRepository
-                .GetEstablishmentById(establishmentId, cancellationToken);
 
-            return UseCaseResponse<EstablishmentDetailsModel?>.Success(establishment);
+            EstablishmentDetailsModel? establishment = await _establishmentRepository.GetEstablishmentById(establishmentId, cancellationToken);
+
+            EstablishmentDetailsReadModel readModel = new()
+            {
+                Establishment = establishment
+            };
+
+            return UseCaseResponse<EstablishmentDetailsReadModel>.Success(readModel);
         }
         catch (OperationCanceledException ex)
         {
@@ -46,7 +50,7 @@ public class GetEstablishmentByIdUseCase :
                 message
                 );
 
-            return UseCaseResponse<EstablishmentDetailsModel?>.Failure(message);
+            return UseCaseResponse<EstablishmentDetailsReadModel>.Failure(model: FailureResponseModel, error: message);
         }
         catch (Exception ex)
         {
@@ -59,7 +63,12 @@ public class GetEstablishmentByIdUseCase :
                 nameof(GetEstablishmentByIdUseCase),
                 message);
 
-            return UseCaseResponse<EstablishmentDetailsModel?>.Failure(message);
+            return UseCaseResponse<EstablishmentDetailsReadModel>.Failure(model: FailureResponseModel, error: message);
         }
     }
+
+    private static EstablishmentDetailsReadModel FailureResponseModel => new()
+    {
+        Establishment = null
+    };
 }

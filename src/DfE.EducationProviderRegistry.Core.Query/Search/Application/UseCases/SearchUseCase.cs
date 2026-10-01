@@ -88,7 +88,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                 nameof(SearchUseCase),
                 message);
 
-            return UseCaseResponse<SearchResponse>.Failure(message);
+            return UseCaseResponse<SearchResponse>.Failure(NoResultsSearchResponse, error: message);
         }
         catch (SearchException ex)
         {
@@ -100,7 +100,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                 nameof(SearchUseCase),
                 message);
 
-            return UseCaseResponse<SearchResponse>.Failure(message);
+            return UseCaseResponse<SearchResponse>.Failure(NoResultsSearchResponse, error: message);
         }
         catch (Exception ex)
         {
@@ -112,7 +112,13 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                 nameof(SearchUseCase),
                 message);
 
-            return UseCaseResponse<SearchResponse>.Failure(message);
+            return UseCaseResponse<SearchResponse>.Failure(NoResultsSearchResponse, error: message);
         }
     }
+
+    private static SearchResponse NoResultsSearchResponse =>
+        new(
+            searchProviderResults: null,
+            facetedResults: null,
+            totalNumberOfResults: 0);
 }

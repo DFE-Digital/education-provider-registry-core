@@ -69,12 +69,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
             IMapperTestDouble.Default<Group, GroupReadModel>());
 
         // Act
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(null!, _ct);
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Group);
         Assert.Equal("The request cannot be null.", result.ErrorMessage);
     }
 
@@ -90,12 +90,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         // Act
         GetGroupByGroupUniqueIdentifierRequest request = new("INVALID_IDENTIFIER_THAT_FAILS_TRYCREATE");
 
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Group);
         Assert.Equal($"Could not parse the GroupUniqueIdentifier {request.GroupUid}", result.ErrorMessage);
     }
 
@@ -119,12 +119,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         // Act
         GetGroupByGroupUniqueIdentifierRequest request = StubRequest();
 
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Group);
         Assert.Equal($"Group with GroupId {request.GroupUid} not found.", result.ErrorMessage);
     }
 
@@ -154,13 +154,13 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupUniqueIdentifierRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
         Assert.True(result.SuccessfulRequest);
         Assert.Null(result.ErrorMessage);
-        Assert.Same(dto, result.Model);
+        Assert.Same(dto, result.Model.Group);
 
         // Assert - control flow
         repository.Verify(
@@ -190,12 +190,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupUniqueIdentifierRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Group);
         Assert.Equal("The operation was cancelled.", result.ErrorMessage);
     }
 
@@ -221,12 +221,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupUniqueIdentifierRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Group);
         Assert.Equal("Invalid group identifier.", result.ErrorMessage);
     }
 
@@ -249,12 +249,12 @@ public sealed class GetGroupByGroupIdUseCaseTests
         GetGroupByGroupUniqueIdentifierRequest request = StubRequest();
 
         // Act
-        UseCaseResponse<GroupReadModel> result =
+        UseCaseResponse<GroupReadModelResponse> result =
             await sut.HandleRequestAsync(request, _ct);
 
         // Assert
         Assert.False(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Group);
         Assert.Equal("An unexpected error occurred.", result.ErrorMessage);
     }
 

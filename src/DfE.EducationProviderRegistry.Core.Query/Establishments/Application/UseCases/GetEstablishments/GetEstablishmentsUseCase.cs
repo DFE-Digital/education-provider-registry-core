@@ -78,7 +78,7 @@ public sealed class GetEstablishmentsUseCase :
                 message
                 );
 
-            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(message);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(model: [], error: message);
         }
         catch (EstablishmentException ex)
         {
@@ -91,7 +91,7 @@ public sealed class GetEstablishmentsUseCase :
                 nameof(GetEstablishmentsUseCase),
                 message);
 
-            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(message);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(model: [], error: message);
         }
         catch (Exception ex)
         {
@@ -104,7 +104,7 @@ public sealed class GetEstablishmentsUseCase :
                 nameof(GetEstablishmentsUseCase),
                 message);
 
-            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(message);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Failure(model: [], error: message);
         }
     }
 }

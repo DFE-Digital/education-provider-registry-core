@@ -89,7 +89,7 @@ public sealed class DownloadDatasetsUseCaseTests
         logger.VerifyErrorContains("An unexpected error occurred while processing the download request.");
 
         // assert
-        Assert.Null(response.Model);
+        Assert.Null(response.Model.DownloadedDataset);
         Assert.False(response.SuccessfulRequest);
         Assert.Equal(
             "An unexpected error occurred while processing the download request.",
@@ -120,7 +120,7 @@ public sealed class DownloadDatasetsUseCaseTests
         logger.VerifyWarningContains("The download request was cancelled by the caller.");
 
         // assert
-        Assert.Null(response.Model);
+        Assert.Null(response.Model.DownloadedDataset);
         Assert.False(response.SuccessfulRequest);
         Assert.Equal("The download request was cancelled by the caller.", response.ErrorMessage);
     }
@@ -149,7 +149,7 @@ public sealed class DownloadDatasetsUseCaseTests
         logger.VerifyErrorContains("An unexpected error occurred while processing the download request.");
 
         // assert
-        Assert.Null(response.Model);
+        Assert.Null(response.Model.DownloadedDataset);
         Assert.False(response.SuccessfulRequest);
         Assert.Equal(
             "An unexpected error occurred while processing the download request.",
@@ -180,7 +180,7 @@ public sealed class DownloadDatasetsUseCaseTests
         logger.VerifyErrorContains("An unexpected error occurred while processing the download request.");
 
         // assert
-        Assert.Null(response.Model);
+        Assert.Null(response.Model.DownloadedDataset);
         Assert.False(response.SuccessfulRequest);
         Assert.Equal(
             "An unexpected error occurred while processing the download request.",
@@ -210,7 +210,6 @@ public sealed class DownloadDatasetsUseCaseTests
         logger.VerifyNoErrors();
 
         // assert
-        Assert.NotNull(response.Model);
         Assert.Null(response.Model.DownloadedDataset);
         Assert.True(response.SuccessfulRequest);
     }
