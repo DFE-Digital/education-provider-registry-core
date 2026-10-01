@@ -108,12 +108,11 @@ public sealed class GetEstablishmentsUseCaseTests
         GetEstablishmentsRequest request = new();
 
         // Act
-        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result =
-            await sut.HandleRequestAsync(request, _token);
+        UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>> result = await sut.HandleRequestAsync(request, _token);
 
         // Assert
         Assert.True(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Empty(result.Model);
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
         _loggerMock.VerifyNoErrors();
