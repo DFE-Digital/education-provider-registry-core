@@ -1,4 +1,5 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.EstablishmentDetails;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
@@ -17,7 +18,7 @@ public sealed class FakeDataEstablishmentsRepositoryTests
     public FakeDataEstablishmentsRepositoryTests()
     {
         _mappedResponseDtos =
-            new EstablishmentCollectionBuilder()
+            new EstablishmentDetailsModelCollectionBuilder()
                 .WithCount(100)
                 .Build();
 

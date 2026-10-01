@@ -38,8 +38,8 @@ internal sealed class EstablishmentBuilder
                 StatutoryHighAge = 11
             },
 
-            EstablishmentLifecycleEvent = new List<EstablishmentLifecycleEvent>
-            {
+            EstablishmentLifecycleEvent =
+            [
                 new() {
                     EventType = "Opened",
                     EventDate = new DateOnly(2000, 1, 1),
@@ -56,7 +56,7 @@ internal sealed class EstablishmentBuilder
                         Name = "Merged"
                     }
                 }
-            },
+            ],
 
             Site =
             [

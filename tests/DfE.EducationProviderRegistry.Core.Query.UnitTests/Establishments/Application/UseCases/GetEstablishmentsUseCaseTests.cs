@@ -1,4 +1,5 @@
 using DfE.Core.Libraries.CleanArchitecture.Application;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.EstablishmentDetails;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
@@ -64,7 +65,7 @@ public sealed class GetEstablishmentsUseCaseTests
     {
         // Arrange
         IReadOnlyCollection<EstablishmentDetailsModel> establishmentResults =
-            new EstablishmentCollectionBuilder()
+            new EstablishmentDetailsModelCollectionBuilder()
                 .WithCount(2)
                 .Build();
 
