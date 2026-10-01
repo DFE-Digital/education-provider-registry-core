@@ -53,7 +53,7 @@ public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResu
             [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -80,7 +80,7 @@ public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResu
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             expectedInResults: [establishment],
             notExpectedInResults: []);
@@ -111,7 +111,7 @@ public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResu
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);

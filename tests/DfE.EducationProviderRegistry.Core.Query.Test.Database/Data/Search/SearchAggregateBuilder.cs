@@ -54,6 +54,11 @@ public sealed class SearchAggregateBuilder
         _searchAggregate.LaEstab = value;
         return this;
     }
+    public SearchAggregateBuilder WithDfeNumber(string value)
+    {
+        _searchAggregate.DfeNumber = value;
+        return this;
+    }
 
     public SearchAggregateBuilder WithLocalAuthorityName(string localAuthorityName)
     {

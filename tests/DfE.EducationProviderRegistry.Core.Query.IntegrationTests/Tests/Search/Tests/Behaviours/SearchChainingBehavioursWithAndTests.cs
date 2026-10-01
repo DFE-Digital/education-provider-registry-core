@@ -54,7 +54,7 @@ public sealed class SearchChainingBehavioursWithAndTests : SearchUseCaseMatchesR
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

@@ -4,10 +4,11 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Respo
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests.Fields;
 
-public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTestBase
+public sealed class SearchUseCaseDfeNumberTests : SearchUseCaseMatchesResultsTestBase
 {
     private const string SearchTermKey = "term-1";
-    public SearchUseCasePostcodeTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+
+    public SearchUseCaseDfeNumberTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
@@ -16,30 +17,30 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
         builder.WithSearchTerm(
             SearchTermKey,
             (field) =>
-                field.WithFieldName(nameof(SearchAggregate.Postcode))
+                field.WithFieldName(nameof(SearchAggregate.DfeNumber))
                     .AppendExactMatchBehaviour()
                     .AppendContainsMatchBehaviour()
                     .AppendStartsWithMatchBehaviour());
     }
 
     [Fact]
-    public async Task Search_ByPostcode_Returns_Matches()
+    public async Task Search_ByDfeNumber_Returns_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
-            SearchAggregateBuilder.Create().WithPostcode("B1").Build(),
-            SearchAggregateBuilder.Create().WithPostcode("b1 a").Build(),
-            SearchAggregateBuilder.Create().WithPostcode("EN1 B1X").Build(),
-            SearchAggregateBuilder.Create().WithPostcode("AB2 3ER").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("Test").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("test").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("contains-test-value").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("2").Build(),
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchTerm(SearchTermKey, "B1")
+                .WithSearchTerm(SearchTermKey, "Test")
                 .Build();
 
         // Act Assert
@@ -54,22 +55,22 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
     }
 
     [Fact]
-    public async Task Search_ByPostcode_No_Matches()
+    public async Task Search_ByDfeNumber_No_Matches()
     {
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
         IReadOnlyList<SearchAggregate> seed = [
-            SearchAggregateBuilder.Create().WithPostcode("A1").Build(),
-            SearchAggregateBuilder.Create().WithPostcode("SW15 1EX").Build(),
-            SearchAggregateBuilder.Create().WithPostcode("BB BBB").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("1").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("10").Build(),
+            SearchAggregateBuilder.Create().WithDfeNumber("2").Build(),
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
-                .WithSearchTerm(SearchTermKey, "b1")
+                .WithSearchTerm(SearchTermKey, "NOTHING")
                 .Build();
 
         // Act Assert

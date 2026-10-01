@@ -57,7 +57,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -95,7 +95,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -138,7 +138,7 @@ public sealed class SearchFuzzyMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

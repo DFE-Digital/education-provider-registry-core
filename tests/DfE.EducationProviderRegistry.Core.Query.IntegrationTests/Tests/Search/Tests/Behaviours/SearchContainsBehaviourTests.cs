@@ -55,7 +55,7 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -90,7 +90,7 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -125,7 +125,7 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -160,7 +160,7 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -203,7 +203,7 @@ public sealed class SearchContainsBehaviourTests : SearchUseCaseMatchesResultsTe
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

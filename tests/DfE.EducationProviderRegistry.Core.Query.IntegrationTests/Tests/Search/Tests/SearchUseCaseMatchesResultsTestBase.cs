@@ -33,7 +33,7 @@ public abstract class SearchUseCaseMatchesResultsTestBase : UseCaseIntegrationTe
         builder.AddSearchUseCaseConfiguration(ConfigureSearchUseCase);
     }
 
-    protected async Task<UseCaseResponse<SearchResponse>> ExecuteAndAssertSearchAsync(
+    protected async Task<UseCaseResponse<SearchResponse>> ExecuteSuccessfulSearchAndAssertSearchAsync(
         SearchRequest request,
         IReadOnlyCollection<SearchAggregate> expectedInResults,
         IReadOnlyCollection<SearchAggregate> notExpectedInResults)
@@ -49,6 +49,7 @@ public abstract class SearchUseCaseMatchesResultsTestBase : UseCaseIntegrationTe
         Assert.NotNull(response.Model);
         Assert.Equal(expectedInResults.Count, response.Model.TotalNumberOfResults);
         Assert.NotNull(response.Model.SearchProviderResults);
+        Assert.NotNull(response.Model.SearchProviderResults.SearchResultCollection);
         Assert.Equal(expectedInResults.Count, response.Model.SearchProviderResults.SearchResultCollection.Count);
 
         List<SearchAggregateResult> results = [.. response.Model.SearchProviderResults.SearchResultCollection];

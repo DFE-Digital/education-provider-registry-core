@@ -55,7 +55,7 @@ public sealed class SearchChainingBehavioursWithOrTests : SearchUseCaseMatchesRe
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

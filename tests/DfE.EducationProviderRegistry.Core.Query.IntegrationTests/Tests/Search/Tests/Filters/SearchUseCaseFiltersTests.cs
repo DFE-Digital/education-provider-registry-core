@@ -54,7 +54,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build();
 
         // act // assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
@@ -97,7 +97,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
@@ -134,7 +134,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);
@@ -176,7 +176,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             expectedInResults: matchingEstablishments,
             notExpectedInResults: nonMatchingEstablishments);

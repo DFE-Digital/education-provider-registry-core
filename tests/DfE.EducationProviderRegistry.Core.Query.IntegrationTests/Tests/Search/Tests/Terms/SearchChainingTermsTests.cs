@@ -68,7 +68,7 @@ public sealed class SearchChainingTermsTests : SearchUseCaseMatchesResultsTestBa
                 .Build();
 
 
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -104,7 +104,7 @@ public sealed class SearchChainingTermsTests : SearchUseCaseMatchesResultsTestBa
                 ])
                 .Build();
 
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

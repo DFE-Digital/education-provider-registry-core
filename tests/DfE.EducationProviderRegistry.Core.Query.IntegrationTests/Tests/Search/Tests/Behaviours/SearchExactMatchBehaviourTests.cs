@@ -56,7 +56,7 @@ public sealed class SearchExactMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -99,7 +99,7 @@ public sealed class SearchExactMatchBehaviourTests : SearchUseCaseMatchesResults
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
