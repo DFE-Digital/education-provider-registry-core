@@ -58,7 +58,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -95,7 +95,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);
@@ -142,7 +142,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

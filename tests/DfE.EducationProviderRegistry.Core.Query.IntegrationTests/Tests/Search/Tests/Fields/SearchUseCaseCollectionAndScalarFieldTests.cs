@@ -69,7 +69,7 @@ public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseMa
                 .Build();
 
         // act / assert
-        await ExecuteAndAssertSearchAsync(
+        await ExecuteSuccessfulSearchAndAssertSearchAsync(
             request,
             matchingEstablishments,
             nonMatchingEstablishments);

@@ -44,14 +44,13 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
 
         // Act
         UseCaseResponse<SearchResponse> response =
-            await ExecuteAndAssertSearchAsync(
+            await ExecuteSuccessfulSearchAndAssertSearchAsync(
                 request,
                 expectedInResults: [seed[0], seed[1], seed[2]],
                 notExpectedInResults: [seed[3]]);
 
         // Assert
         Assert.NotNull(response);
-        Assert.NotNull(response.Model);
         Assert.True(response.SuccessfulRequest);
     }
 
@@ -76,14 +75,13 @@ public sealed class SearchUseCaseLaEstabTests : SearchUseCaseMatchesResultsTestB
 
         // Act
         UseCaseResponse<SearchResponse> response =
-            await ExecuteAndAssertSearchAsync(
+            await ExecuteSuccessfulSearchAndAssertSearchAsync(
                 request,
                 expectedInResults: [],
                 notExpectedInResults: seed);
 
         // Assert
         Assert.NotNull(response);
-        Assert.NotNull(response.Model);
         Assert.True(response.SuccessfulRequest);
         Assert.Empty(response.Model.SearchProviderResults!.SearchResultCollection);
     }
