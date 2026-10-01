@@ -64,7 +64,7 @@ public sealed class GetEstablishmentsUseCase :
             IReadOnlyCollection<EstablishmentDetailsModel> results =
                 await _establishmentsRepository.GetEstablishments(cancellationToken);
 
-            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Success(results);
+            return UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>.Success(results ?? []);
         }
         catch (OperationCanceledException ex)
         {
