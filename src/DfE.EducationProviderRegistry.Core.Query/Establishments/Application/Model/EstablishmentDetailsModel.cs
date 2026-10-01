@@ -42,3 +42,8 @@ public sealed record EstablishmentDetailsModel
 
     public EstablishmentContactDetails? ContactDetails { get; set; }
 }
+
+public sealed record class EstablishmentDetailsReadModel
+{
+    public required EstablishmentDetailsModel? Establishment { get; init; }
+}

@@ -17,3 +17,8 @@ public sealed record GroupReadModel
     public required IReadOnlyCollection<MemberReadModel> Members { get; init; }
     public required IReadOnlyCollection<TrusteeReadModel> Trustees { get; init; }
 }
+
+public sealed record GroupReadModelResponse
+{
+    public required GroupReadModel? Group { get; init; }
+}

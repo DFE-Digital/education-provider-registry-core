@@ -40,12 +40,18 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
         using IServiceScope scope = provider.CreateScope();
 
         // Act Assert
-#pragma warning disable CS8600
-        IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>> getEstablishmentsUseCase =
-            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>>();
-        IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>> getEstablishmentByIdUseCase =
-            scope.ServiceProvider.GetService<IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsModel?>>>();
-#pragma warning restore CS8600
+
+        IUseCase<GetEstablishmentsRequest, UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>? getEstablishmentsUseCase =
+            scope.ServiceProvider.GetService<
+                IUseCase<
+                    GetEstablishmentsRequest,
+                    UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>>();
+
+        IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsReadModel>>? getEstablishmentByIdUseCase =
+            scope.ServiceProvider.GetService<
+                IUseCase<
+                    GetEstablishmentByIdRequest,
+                    UseCaseResponse<EstablishmentDetailsReadModel>>>();
 
         // Assert
         Assert.NotNull(getEstablishmentsUseCase);

@@ -21,7 +21,7 @@ public static class CompositionRoot
         services.AddScoped<
             IUseCase<
                 GetGroupByGroupUniqueIdentifierRequest,
-                UseCaseResponse<GroupReadModel>>,
+                UseCaseResponse<GroupReadModelResponse>>,
             GetGroupByGroupIdUseCase>();
 
         services.TryAddSingleton<

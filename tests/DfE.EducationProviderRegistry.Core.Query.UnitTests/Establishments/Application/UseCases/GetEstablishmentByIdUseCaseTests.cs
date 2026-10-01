@@ -3,7 +3,6 @@ using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Establishme
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -16,8 +15,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
 
     private static GetEstablishmentByIdUseCase CreateSut(
         Mock<ILogger<GetEstablishmentByIdUseCase>> loggerMock,
-        Mock<IEstablishmentsRepository> repoMock) =>
-        new(loggerMock.Object, repoMock.Object);
+        Mock<IEstablishmentsRepository> repoMock) => new(loggerMock.Object, repoMock.Object);
 
     public GetEstablishmentByIdUseCaseTests()
     {
@@ -44,13 +42,14 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new(establishment.Urn.Value);
 
         // Act
-        UseCaseResponse<EstablishmentDetailsModel?> result =
+        UseCaseResponse<EstablishmentDetailsReadModel> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
         Assert.True(result.SuccessfulRequest);
         Assert.NotNull(result.Model);
-        Assert.Equal(establishment.Urn.Value, result.Model!.Urn.Value);
+        Assert.NotNull(result.Model.Establishment);
+        Assert.Equal(establishment.Urn.Value, result.Model.Establishment.Urn.Value);
 
         repoMock.Verify(
             r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
@@ -73,12 +72,12 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new("12345");
 
         // Act
-        UseCaseResponse<EstablishmentDetailsModel?> result =
+        UseCaseResponse<EstablishmentDetailsReadModel> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
         Assert.True(result.SuccessfulRequest);
-        Assert.Null(result.Model);
+        Assert.Null(result.Model.Establishment);
 
         repoMock.Verify(
             r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
@@ -95,7 +94,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new("INVALID_URN");
 
         // Act
-        UseCaseResponse<EstablishmentDetailsModel?> result =
+        UseCaseResponse<EstablishmentDetailsReadModel> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -121,7 +120,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new("12345");
 
         // Act
-        UseCaseResponse<EstablishmentDetailsModel?> result =
+        UseCaseResponse<EstablishmentDetailsReadModel> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert
@@ -151,7 +150,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         GetEstablishmentByIdRequest request = new("12345");
 
         // Act
-        UseCaseResponse<EstablishmentDetailsModel?> result =
+        UseCaseResponse<EstablishmentDetailsReadModel> result =
             await sut.HandleRequestAsync(request, _token);
 
         // Assert

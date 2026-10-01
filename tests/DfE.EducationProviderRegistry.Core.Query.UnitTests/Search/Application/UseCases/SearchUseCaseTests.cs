@@ -135,11 +135,7 @@ public sealed class SearchUseCaseTests
         _logger.VerifyErrorContains("An unexpected error occurred while processing the search request.");
 
         // assert
-        Assert.Null(response.Model);
-        Assert.False(response.SuccessfulRequest);
-        Assert.Equal(
-            "An unexpected error occurred while processing the search request.",
-            response.ErrorMessage);
+        AssertFailureResponse(response, "An unexpected error occurred while processing the search request.");
     }
 
     [Fact]
@@ -167,9 +163,7 @@ public sealed class SearchUseCaseTests
         _logger.VerifyErrorContains("An unexpected error occurred while processing the search request.");
 
         // assert
-        Assert.Null(response.Model);
-        Assert.False(response.SuccessfulRequest);
-        Assert.Equal("An unexpected error occurred while processing the search request.", response.ErrorMessage);
+        AssertFailureResponse(response, "An unexpected error occurred while processing the search request.");
     }
 
     [Fact]
@@ -199,7 +193,8 @@ public sealed class SearchUseCaseTests
         _logger.VerifyNoErrors();
 
         // assert
-        Assert.NotNull(response.Model);
+        Assert.NotNull(response.Model.SearchProviderResults);
+        Assert.Equal(0, response.Model.TotalNumberOfResults);
         Assert.Equal(SearchResponseStatus.NoResultsFound, response.Model.Status);
         Assert.Empty(response.Model.SearchProviderResults!.SearchResultCollection);
     }
@@ -229,9 +224,7 @@ public sealed class SearchUseCaseTests
         _logger.VerifyErrorContains("A domain-specific error occurred during search.");
 
         // assert
-        Assert.Null(response.Model);
-        Assert.False(response.SuccessfulRequest);
-        Assert.Equal("A domain-specific error occurred during search.", response.ErrorMessage);
+        AssertFailureResponse(response, expectedErrorMessage: "A domain-specific error occurred during search.");
     }
 
     [Fact]
@@ -259,8 +252,20 @@ public sealed class SearchUseCaseTests
         _logger.VerifyWarningContains("The search request was cancelled by the caller.");
 
         // assert
-        Assert.Null(response.Model);
+        AssertFailureResponse(response, "The search request was cancelled by the caller.");
+    }
+
+    private static void AssertFailureResponse(
+        UseCaseResponse<SearchResponse> response,
+        string expectedErrorMessage)
+    {
         Assert.False(response.SuccessfulRequest);
-        Assert.Equal("The search request was cancelled by the caller.", response.ErrorMessage);
+
+        Assert.Null(response.Model.FacetedResults);
+        Assert.Null(response.Model.SearchProviderResults);
+        Assert.Equal(0, response.Model.TotalNumberOfResults);
+        Assert.Equal(SearchResponseStatus.NoResultsFound, response.Model.Status);
+
+        Assert.Equal(expectedErrorMessage, response.ErrorMessage);
     }
 }

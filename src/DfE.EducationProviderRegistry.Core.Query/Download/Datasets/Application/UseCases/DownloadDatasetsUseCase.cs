@@ -17,15 +17,16 @@ public sealed class DownloadDatasetsUseCase :
         IDatasetDownloadRepository datasetDownloadRepository,
         ILogger<DownloadDatasetsUseCase> logger)
     {
-        _datasetDownloadRepository = datasetDownloadRepository ??
-            throw new ArgumentNullException(nameof(datasetDownloadRepository));
-        _logger = logger ??
-            throw new ArgumentNullException(nameof(logger));
+        ArgumentNullException.ThrowIfNull(datasetDownloadRepository);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _datasetDownloadRepository = datasetDownloadRepository;
+        _logger = logger;
     }
 
     public async Task<UseCaseResponse<DownloadDatasetsResponse>> HandleRequestAsync(
         DownloadDatasetsRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -47,7 +48,7 @@ public sealed class DownloadDatasetsUseCase :
                 nameof(DownloadDatasetsUseCase),
                 message);
 
-            return UseCaseResponse<DownloadDatasetsResponse>.Failure(message);
+            return UseCaseResponse<DownloadDatasetsResponse>.Failure(model: FailureResponseModel, error: message);
         }
         catch (DownloadException ex)
         {
@@ -59,7 +60,7 @@ public sealed class DownloadDatasetsUseCase :
                 nameof(DownloadDatasetsUseCase),
                 message);
 
-            return UseCaseResponse<DownloadDatasetsResponse>.Failure(message);
+            return UseCaseResponse<DownloadDatasetsResponse>.Failure(model: FailureResponseModel, error: message);
         }
         catch (Exception ex)
         {
@@ -71,7 +72,9 @@ public sealed class DownloadDatasetsUseCase :
                 nameof(DownloadDatasetsUseCase),
                 message);
 
-            return UseCaseResponse<DownloadDatasetsResponse>.Failure(message);
+            return UseCaseResponse<DownloadDatasetsResponse>.Failure(model: FailureResponseModel, error: message);
         }
     }
+
+    private static DownloadDatasetsResponse FailureResponseModel => new(downloadedDataset: null);
 }
