@@ -6,7 +6,7 @@ using GroupType = DfE.EducationProviderRegistry.Core.Query.Groups.Application.Mo
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 
-internal sealed class GroupRecordToGroupMapper : IMapper<GroupAggregate, Group>
+internal sealed class GroupAggregateToGroupMapper : IMapper<GroupAggregate, Group>
 {
     public Group Map(GroupAggregate input)
     {
