@@ -82,7 +82,7 @@ public sealed class SearchServiceAdapter
         int totalCount =
             await searchResultsQuery.CountAsync(cancellationToken);
 
-        // 1. Project directly into EstablishmentReadModel.
+        // 1. Project directly into SearchReadModel.
         List<SearchReadModel> searchResults =
             await searchResultsQuery
                 .OrderByDirection(t => t.ProviderName, request.SortOrdering.Direction)

@@ -12,12 +12,12 @@ internal sealed class GroupsRepository : IGroupsRepository
 {
     private readonly ILogger<GroupsRepository> _logger;
     private readonly EducationProviderRegistryDbContext _dbContext;
-    private readonly IMapper<GroupRecord, Group> _mapper;
+    private readonly IMapper<GroupAggregate, Group> _mapper;
 
     public GroupsRepository(
         ILogger<GroupsRepository> logger,
         EducationProviderRegistryDbContext dbContext,
-        IMapper<GroupRecord, Group> mapper)
+        IMapper<GroupAggregate, Group> mapper)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(dbContext);
@@ -28,14 +28,16 @@ internal sealed class GroupsRepository : IGroupsRepository
         _logger = logger;
     }
 
-    public async Task<Group?> GetGroupByGroupUidAsync(GroupUID groupUid, CancellationToken cancellationToken = default)
+    public async Task<Group?> GetGroupByGroupUidAsync(
+        GroupUID groupUid,
+        CancellationToken cancellationToken = default)
     {
-        GroupRecord? entity =
-            await _dbContext.GroupRecord
+        GroupAggregate? entity =
+            await _dbContext.GroupAggregate
                 .AsNoTracking()
-                .Include((g) => g.GroupType)
-                .SingleOrDefaultAsync((g) =>
-                    g.GroupId == groupUid.Value, cancellationToken);
+                .SingleOrDefaultAsync(
+                    g => g.GroupUid == groupUid.Value,
+                    cancellationToken);
 
         if (entity is null)
         {

@@ -38,12 +38,11 @@ public static class CompositionRoot
             .AddScoped<IEstablishmentsRepository, EfPostgresEstablishmentRepository>()
 
             .AddSingleton<IMapper<
-                IEnumerable<Establishment>,
-                IReadOnlyCollection<EstablishmentDetailsModel>>,
-                    EstablishmentsToDetailsModelMapper>()
+                IEnumerable<EstablishmentReadModel>, IReadOnlyCollection<EstablishmentDetailsModel>>,
+                EstablishmentsToDetailsModelMapper>()
 
             .AddSingleton<IMapper<
-                Establishment, EstablishmentDetailsModel>,
-                    EstablishmentToDetailsModelMapper>();
+                EstablishmentReadModel, EstablishmentDetailsModel>,
+                EstablishmentReadModelToEstablishmentDetailsModelMapper>();
     }
 }

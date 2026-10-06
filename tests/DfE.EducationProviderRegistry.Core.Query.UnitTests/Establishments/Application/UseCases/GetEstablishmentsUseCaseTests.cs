@@ -4,7 +4,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Microsoft.Extensions.Logging;
 using Moq;
 

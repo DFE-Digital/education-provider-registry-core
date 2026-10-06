@@ -45,7 +45,7 @@ public static class CompositionRoot
             .TryAddScoped<IGroupsRepository, GroupsRepository>();
 
         services.TryAddSingleton<
-            IMapper<GroupRecord, Group>, GroupRecordToGroupMapper>();
+            IMapper<GroupAggregate, Group>, GroupRecordToGroupMapper>();
 
         return services;
     }

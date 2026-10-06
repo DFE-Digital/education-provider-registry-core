@@ -1,7 +1,13 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+
+public sealed record class EstablishmentDetailsReadModel
+{
+    public required EstablishmentDetailsModel? Establishment { get; init; }
+    public IReadOnlyCollection<GovernorModel> Governors { get; init; } = [];
+}
+
 
 public sealed record EstablishmentDetailsModel
 {
@@ -16,8 +22,6 @@ public sealed record EstablishmentDetailsModel
 
     public EstablishmentLifecycleEventModel? LifecycleEventOpened { get; init; }
     public EstablishmentLifecycleEventModel? LifecycleEventClosed { get; init; }
-
-    public string? Uid { get; init; }
     public EstablishmentGroupModel? Group { get; init; }
     public string? GroupType { get; init; }
     public DateOnly? GroupOpenDate { get; init; }
@@ -43,7 +47,4 @@ public sealed record EstablishmentDetailsModel
     public EstablishmentContactDetails? ContactDetails { get; set; }
 }
 
-public sealed record class EstablishmentDetailsReadModel
-{
-    public required EstablishmentDetailsModel? Establishment { get; init; }
-}
+public sealed record EstablishmentInspection(DateOnly? InspectionDate, string? ReportUrl);

@@ -6,15 +6,15 @@ using GroupType = DfE.EducationProviderRegistry.Core.Query.Groups.Application.Mo
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 
-internal sealed class GroupRecordToGroupMapper : IMapper<GroupRecord, Group>
+internal sealed class GroupRecordToGroupMapper : IMapper<GroupAggregate, Group>
 {
-    public Group Map(GroupRecord input)
+    public Group Map(GroupAggregate input)
     {
         ArgumentNullException.ThrowIfNull(input);
 
         GroupIdentity identity = new(
             id: new GroupId("STUB-GROUPID"),
-            uid: new(input.GroupId));
+            uid: new(input.GroupUid));
 
         GroupExternalIdentifiers externalIds = new(
           ukprn: new Ukprn("STUB-UKPRN"),
@@ -29,7 +29,7 @@ internal sealed class GroupRecordToGroupMapper : IMapper<GroupRecord, Group>
         GroupCharacteristics characteristics = new(
             name: new Name(input.Name),
             address: new SiteAddressModel("TestName", "123 Test Street", "Test Street 2", "Testville", "Testshire", "TE5 5ST"), // STUB
-            type: new GroupType(input.GroupType.Name),
+            type: new GroupType(input.GroupTypeName),
             status: new GroupStatus(GroupOpenState.Open, new(2026, 01, 01)) // STUB
         );
 
