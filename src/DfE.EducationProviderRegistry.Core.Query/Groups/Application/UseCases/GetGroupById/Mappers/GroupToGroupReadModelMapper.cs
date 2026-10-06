@@ -41,6 +41,8 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
 
     private static string DisplayAddress(SiteAddressModel address) => $"{address.AddressLine1}, {address.AddressLine2}, {address.Town}, {address.County}, {address.Postcode}";
 
-    private static string DisplayStatus(GroupStatus status)
-        => $"{status.Label} on {status.EffectiveDate.ToString("d MMMM yyyy")}";
+    private static string DisplayStatus(GroupStatus? status) =>
+        status is null ?
+            string.Empty :
+                $"{status.Label} on {status.EffectiveDate.ToString("d MMMM yyyy")}";
 }
