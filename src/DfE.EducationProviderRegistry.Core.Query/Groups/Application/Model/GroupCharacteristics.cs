@@ -2,14 +2,13 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-public sealed record GroupCharacteristics
+public sealed record class GroupCharacteristics
 {
-    public GroupCharacteristics(Name name, SiteAddressModel address, GroupType type, GroupStatus status)
+    public GroupCharacteristics(Name name, SiteAddressModel address, GroupType type, GroupStatus? status)
     {
         ArgumentNullException.ThrowIfNull(name);
         ArgumentNullException.ThrowIfNull(address);
         ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(status);
         Name = name;
         Address = address;
         Type = type;
@@ -18,6 +17,6 @@ public sealed record GroupCharacteristics
 
     public Name Name { get; }
     public SiteAddressModel Address { get; }
-    public GroupStatus Status { get; }
+    public GroupStatus? Status { get; }
     public GroupType Type { get; }
 }

@@ -13,12 +13,12 @@ internal sealed class GroupAggregateToGroupMapper : IMapper<GroupAggregate, Grou
         ArgumentNullException.ThrowIfNull(input);
 
         GroupIdentity identity = new(
-            id: new GroupId("STUB-GROUPID"),
+            id: new(input.GroupId),
             uid: new(input.GroupUid));
 
         GroupExternalIdentifiers externalIds = new(
-          ukprn: new Ukprn("STUB-UKPRN"),
-          companiesHouseId: new CompaniesHouseId("STUB-COMPANIESHOUSE-NUMBER"));
+          ukprn: new Ukprn(input.Ukprn),
+          companiesHouseId: input.CompaniesHouseNumber is null ? null : new CompaniesHouseId(input.CompaniesHouseNumber));
 
         GroupComposition composition = new(
             academies: [],
@@ -28,9 +28,20 @@ internal sealed class GroupAggregateToGroupMapper : IMapper<GroupAggregate, Grou
 
         GroupCharacteristics characteristics = new(
             name: new Name(input.Name),
-            address: new SiteAddressModel("TestName", "123 Test Street", "Test Street 2", "Testville", "Testshire", "TE5 5ST"), // STUB
+            address: new SiteAddressModel(
+                Name: input.SiteName ?? string.Empty,
+                AddressLine1: input.AddressLine1 ?? string.Empty,
+                AddressLine2: input.AddressLine2 ?? string.Empty,
+                Town: input.Town ?? string.Empty,
+                County: input.County ?? string.Empty,
+                Postcode: input.Postcode ?? string.Empty),
             type: new GroupType(input.GroupTypeName),
-            status: new GroupStatus(GroupOpenState.Open, new(2026, 01, 01)) // STUB
+            status:
+                input.GroupStatusEffectiveDate is null ?
+                    null :
+                        new GroupStatus(
+                            label: input.GroupStatusLabel ?? string.Empty,
+                            effectiveDate: input.GroupStatusEffectiveDate.Value)
         );
 
         return new Group(identity, externalIds, composition, characteristics);
