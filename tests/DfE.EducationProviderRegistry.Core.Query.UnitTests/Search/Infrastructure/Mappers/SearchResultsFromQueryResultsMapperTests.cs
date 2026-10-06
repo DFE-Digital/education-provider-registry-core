@@ -75,8 +75,8 @@ public sealed class SearchResultsFromQueryResultsMapperTests
         IReadOnlyList<AggregatedFacetResult> facets =
         [
             AggregatedFacetResultBuilder.Create()
-                .WithFacetResult("value-one", "Value one", 10)
-                .WithFacetResult("value-two", "Value two", 20)
+                .WithName("TestFacet")
+                .WithFacetResult("value-one", "Facet label", 10)
                 .Build()
         ];
 
@@ -111,7 +111,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
         FacetResult mappedFacetResult =
             Assert.Single(mappedFacet.Results);
 
-        Assert.Equal("facet-value", mappedFacetResult.Value);
+        Assert.Equal("value-one", mappedFacetResult.Value);
         Assert.Equal("Facet label", mappedFacetResult.Label);
         Assert.Equal(10, mappedFacetResult.Count);
     }
@@ -231,6 +231,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
         IReadOnlyList<AggregatedFacetResult> facets =
         [
             AggregatedFacetResultBuilder.Create()
+                .WithName("TestFacet")
                 .WithFacetResult("value-one", "Value one", 10)
                 .WithFacetResult("value-two", "Value two", 20)
                 .Build()
