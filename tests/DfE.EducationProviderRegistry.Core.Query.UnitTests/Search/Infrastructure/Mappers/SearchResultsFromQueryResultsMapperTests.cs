@@ -2,6 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Mappers;
 
@@ -55,33 +56,28 @@ public sealed class SearchResultsFromQueryResultsMapperTests
     public void Map_ReturnsExpectedResults_WhenContextIsValid()
     {
         // arrange
-        SearchReadModel searchReadModel = new(
-            Id: "123456",
-            Name: "Test Establishment",
-            TypeName: "Test Type",
-            TypeId: 123,
-            Address: "Test Address Line, Test Addres line 2, Test City, Test County, AA1 1AA",
-            LocalAuthorityName: "Test Local Authority",
-            GroupCode: "GROUP1",
-            GroupName: "Test Group",
-            ProviderCategory: "Establishment",
-            AcademyCount: 2);
 
-        IReadOnlyList<SearchReadModel> results =
-        [
-            searchReadModel
-        ];
+        SearchReadModel searchReadModel =
+            SearchReadModelBuilder.Create()
+                .WithId("123456")
+                .WithName("Test Establishment")
+                .WithTypeName("Test Type")
+                .WithTypeId(123)
+                .WithAddress("Test Address Line, Test Addres line 2, Test City, Test County, AA1 1AA")
+                .WithLocalAuthorityName("Test Local Authority")
+                .WithGroup("GROUP1", "Test Group")
+                .WithProviderCategory("Establishment")
+                .WithAcademyCount(2)
+                .Build();
+
+        IReadOnlyList<SearchReadModel> results = [searchReadModel];
 
         IReadOnlyList<AggregatedFacetResult> facets =
         [
-            new(
-                "TestFacet",
-                [
-                    new FacetResult(
-                        "facet-value",
-                        "Facet label",
-                        10)
-                ])
+            AggregatedFacetResultBuilder.Create()
+                .WithName("TestFacet")
+                .WithFacetResult("value-one", "Facet label", 10)
+                .Build()
         ];
 
         const int totalCount = 25;
@@ -115,7 +111,7 @@ public sealed class SearchResultsFromQueryResultsMapperTests
         FacetResult mappedFacetResult =
             Assert.Single(mappedFacet.Results);
 
-        Assert.Equal("facet-value", mappedFacetResult.Value);
+        Assert.Equal("value-one", mappedFacetResult.Value);
         Assert.Equal("Facet label", mappedFacetResult.Label);
         Assert.Equal(10, mappedFacetResult.Count);
     }
@@ -124,22 +120,20 @@ public sealed class SearchResultsFromQueryResultsMapperTests
     public void Map_UsesEmptyStrings_WhenAddressIsNull()
     {
         // arrange
-        SearchReadModel searchReadModel = new(
-            Id: "123456",
-            Name: "Test Establishment",
-            TypeName: "Test Type",
-            TypeId: 123,
-            Address: null!,
-            LocalAuthorityName: "Test Local Authority",
-            GroupCode: "GROUP1",
-            GroupName: "Test Group",
-            ProviderCategory: "Establishment",
-            AcademyCount: 2);
+        SearchReadModel searchReadModel =
+            SearchReadModelBuilder.Create()
+                .WithId("123456")
+                .WithName("Test Establishment")
+                .WithTypeName("Test Type")
+                .WithTypeId(123)
+                .WithAddress(null)
+                .WithLocalAuthorityName("Test Local Authority")
+                .WithGroup("GROUP1", "Test Group")
+                .WithProviderCategory("Establishment")
+                .WithAcademyCount(2)
+                .Build();
 
-        IReadOnlyList<SearchReadModel> results =
-        [
-            searchReadModel
-        ];
+        IReadOnlyList<SearchReadModel> results = [searchReadModel];
 
         IReadOnlyList<AggregatedFacetResult> facets = [];
 
@@ -183,29 +177,24 @@ public sealed class SearchResultsFromQueryResultsMapperTests
         // arrange
         IReadOnlyList<SearchReadModel> results =
         [
-            new(
-                Id: "123456",
-                Name: "Test Establishment 1",
-                TypeName: "Test Type 1",
-                TypeId: 123,
-                Address: "Test Address 1",
-                LocalAuthorityName: "Test Local Authority 1",
-                GroupCode: "GROUP1",
-                GroupName: "Test Group 1",
-                ProviderCategory: "Establishment",
-                AcademyCount: 2),
+            SearchReadModelBuilder.Create()
+                .WithName("Test Establishment 1")
+                .WithTypeName("Test Type 1")
+                .WithAddress("Test Address 1")
+                .WithLocalAuthorityName("Test Local Authority 1")
+                .WithGroup("GROUP1", "Test Group 1")
+                .Build(),
 
-            new(
-                Id: "654321",
-                Name: "Test Establishment 2",
-                TypeName: "Test Type 2",
-                TypeId: 1321,
-                Address: "Test Address 2",
-                LocalAuthorityName: "Test Local Authority 2",
-                GroupCode: "GROUP2",
-                GroupName: "Test Group 2",
-                ProviderCategory: "Establishment",
-                AcademyCount: 4)
+            SearchReadModelBuilder.Create()
+                .WithId("654321")
+                .WithName("Test Establishment 2")
+                .WithTypeName("Test Type 2")
+                .WithTypeId(1321)
+                .WithAddress("Test Address 2")
+                .WithLocalAuthorityName("Test Local Authority 2")
+                .WithGroup("GROUP2", "Test Group 2")
+                .WithAcademyCount(4)
+                .Build()
         ];
 
         IReadOnlyList<AggregatedFacetResult> facets = [];
@@ -241,19 +230,11 @@ public sealed class SearchResultsFromQueryResultsMapperTests
 
         IReadOnlyList<AggregatedFacetResult> facets =
         [
-            new(
-            "TestFacet",
-            [
-                new FacetResult(
-                    "value-one",
-                    "Value one",
-                    10),
-
-                new FacetResult(
-                    "value-two",
-                    "Value two",
-                    20)
-            ])
+            AggregatedFacetResultBuilder.Create()
+                .WithName("TestFacet")
+                .WithFacetResult("value-one", "Value one", 10)
+                .WithFacetResult("value-two", "Value two", 20)
+                .Build()
         ];
 
         SearchResultsFromQueryResultsMapper mapper = new();
