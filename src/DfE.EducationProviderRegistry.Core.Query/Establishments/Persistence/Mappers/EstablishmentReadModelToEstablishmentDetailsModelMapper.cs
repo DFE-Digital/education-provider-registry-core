@@ -65,24 +65,27 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
 
         List<GovernorModel> governors =
         [
-            .. input.Governors.Select(g => new GovernorModel(
-            Identifier: new GovernanceIdentifier(g.GovernorId),
-            Name: new Name(g.GovernorName)))
+            .. input.Governors.Select((g) =>
+                new GovernorModel(
+                    Identifier: new GovernanceIdentifier(g.GovernorId),
+                    Name: new Name(g.GovernorName)))
         ];
 
         EstablishmentContactDetails? contactDetails =
             establishment.Website is not null ||
             establishment.TelephoneNumber is not null
                 ? new EstablishmentContactDetails(
-                    establishment.Website ?? string.Empty,
-                    establishment.TelephoneNumber ?? string.Empty)
+                    Website: establishment.Website ?? string.Empty,
+                    TelephoneNumber: establishment.TelephoneNumber ?? string.Empty)
                 : null;
 
         EstablishmentInspection? ofsted =
             establishment.OfstedInspectionDate is null
             && establishment.OfstedReportUrl is null
                 ? null
-                : new EstablishmentInspection(establishment.OfstedInspectionDate, establishment.OfstedReportUrl);
+                : new EstablishmentInspection(
+                    InspectionDate: establishment.OfstedInspectionDate,
+                    ReportUrl: establishment.OfstedReportUrl);
 
         return new EstablishmentDetailsModel
         {
