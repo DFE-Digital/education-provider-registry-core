@@ -138,7 +138,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
                     County = "Test County",
                     Postcode = "TE1 1ST",
 
-                    LocalAuthorityCode = "TEST",
+                    LocalAuthorityCode = 123,
                     LocalAuthorityName = "Test Authority",
 
                     StatutoryLowAge = 5,

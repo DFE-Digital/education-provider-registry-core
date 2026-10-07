@@ -38,7 +38,7 @@ internal sealed class EstablishmentAggregateBuilder
             County = "Test County",
             Postcode = "TE1 1ST",
 
-            LocalAuthorityCode = "123",
+            LocalAuthorityCode = 123,
             LocalAuthorityName = "Test Authority",
 
             StatutoryLowAge = 5,

@@ -16,9 +16,9 @@ public sealed record class LocalAuthority
     /// <summary>
     /// Gets the identifying code of the local authority.
     /// </summary>
-    public string Code
+    public int Code
     {
-        get => _code.Value.ToString();
+        get => _code.Value;
     }
 
     /// <summary>
@@ -32,12 +32,12 @@ public sealed record class LocalAuthority
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="localAuthorityName"/> or <paramref name="localAuthorityCode"/> is empty or whitespace.
     /// </exception>
-    public LocalAuthority(string localAuthorityName, string localAuthorityCode)
+    public LocalAuthority(string localAuthorityName, LocalAuthorityCode code)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(localAuthorityName);
 
         Name = localAuthorityName;
-        _code = LocalAuthorityCode.Parse(localAuthorityCode);
+        _code = code;
     }
 
     /// <summary>
@@ -50,6 +50,6 @@ public sealed record class LocalAuthority
     /// <returns>A fully validated <see cref="LocalAuthority"/> instance.</returns>
     public static LocalAuthority Create(
         string localAuthorityName,
-        string localAuthorityCode) =>
+        LocalAuthorityCode localAuthorityCode) =>
             new(localAuthorityName, localAuthorityCode);
 }

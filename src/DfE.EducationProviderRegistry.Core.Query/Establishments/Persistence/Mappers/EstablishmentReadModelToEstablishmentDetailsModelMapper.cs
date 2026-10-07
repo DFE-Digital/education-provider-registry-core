@@ -35,11 +35,11 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
                     Postcode: establishment.Postcode ?? string.Empty);
 
         LocalAuthority? localAuthority =
-            establishment.LocalAuthorityName is null
+            establishment.LocalAuthorityCode is null || establishment.LocalAuthorityName is null
                 ? null
                 : new LocalAuthority(
                     establishment.LocalAuthorityName,
-                    establishment.LocalAuthorityCode ?? string.Empty);
+                    new LocalAuthorityCode(establishment.LocalAuthorityCode.Value));
 
         string? ageRange =
             establishment.StatutoryLowAge is not null &&
@@ -79,11 +79,11 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
                     urn: new EstablishmentUrnModel(
                         new UniqueReferenceNumber(establishment.Urn)),
 
-                    dfeNumber: establishment.EstablishmentNumber is null
+                    dfeNumber: establishment.EstablishmentNumber is null || establishment.LocalAuthorityCode is null
                         ? null
                         : DfeNumber.Create(
-                            LocalAuthorityCode.Parse(establishment.LocalAuthorityCode!),
-                            EstablishmentNumber.Parse(establishment.EstablishmentNumber))),
+                            laCode: new LocalAuthorityCode(establishment.LocalAuthorityCode.Value),
+                            estabNumber: EstablishmentNumber.Parse(establishment.EstablishmentNumber))),
 
             Status = establishment.StatusCode is null
                 ? null

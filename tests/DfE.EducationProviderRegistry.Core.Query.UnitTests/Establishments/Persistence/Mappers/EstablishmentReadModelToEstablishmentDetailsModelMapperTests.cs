@@ -102,7 +102,7 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
             result.LocalAuthority.Name);
 
         Assert.Equal(
-            establishment.LocalAuthorityCode,
+            establishment.LocalAuthorityCode!.Value,
             result.LocalAuthority.Code);
     }
 
