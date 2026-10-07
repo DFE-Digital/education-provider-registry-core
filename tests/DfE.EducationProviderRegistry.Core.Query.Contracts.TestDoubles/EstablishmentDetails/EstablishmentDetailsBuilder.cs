@@ -47,6 +47,7 @@ public sealed class EstablishmentDetailsBuilder
             Identifiers = new EstablishmentIdentifiersModel(
                 urn: new EstablishmentUrnModel(
                     new UniqueReferenceNumber(urn)),
+                ukprn: new Ukprn("12345678"),
                 dfeNumber: null),
             ContactDetails = new EstablishmentContactDetails(
                 Website: _website,

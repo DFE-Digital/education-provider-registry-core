@@ -19,6 +19,7 @@ public sealed class EstablishmentTests
             Name = new EstablishmentNameModel("Test School"),
             Identifiers = new EstablishmentIdentifiersModel(
                 urn: new EstablishmentUrnModel(new UniqueReferenceNumber("123456")),
+                ukprn: new Ukprn("12345678"),
                 dfeNumber: new DfeNumber("123/1234")),
             Status = new EstablishmentStatusModel(EstablishmentStatus.Open, new(2026, 3, 1)),
             Type = new EstablishmentTypeModel("Academy"),

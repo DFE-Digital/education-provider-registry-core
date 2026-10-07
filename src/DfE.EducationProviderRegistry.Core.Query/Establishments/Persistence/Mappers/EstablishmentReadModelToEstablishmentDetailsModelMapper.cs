@@ -75,15 +75,19 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
         {
             Name = new EstablishmentNameModel(establishment.Name),
 
-            Identifiers = new EstablishmentIdentifiersModel(
+            Identifiers =
+                new EstablishmentIdentifiersModel(
                     urn: new EstablishmentUrnModel(
                         new UniqueReferenceNumber(establishment.Urn)),
-
-                    dfeNumber: establishment.EstablishmentNumber is null || establishment.LocalAuthorityCode is null
+                    ukprn: establishment.Ukprn is null
                         ? null
-                        : DfeNumber.Create(
-                            laCode: new LocalAuthorityCode(establishment.LocalAuthorityCode.Value),
-                            estabNumber: EstablishmentNumber.Parse(establishment.EstablishmentNumber))),
+                            : new Ukprn(establishment.Ukprn),
+                    dfeNumber:
+                        establishment.EstablishmentNumber is null || establishment.LocalAuthorityCode is null
+                            ? null
+                                : DfeNumber.Create(
+                                    laCode: new LocalAuthorityCode(establishment.LocalAuthorityCode.Value),
+                                    estabNumber: EstablishmentNumber.Parse(establishment.EstablishmentNumber))),
 
             Status = establishment.StatusCode is null
                 ? null
