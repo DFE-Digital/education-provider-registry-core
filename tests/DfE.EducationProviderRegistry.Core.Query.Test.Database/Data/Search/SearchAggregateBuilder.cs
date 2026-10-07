@@ -132,7 +132,7 @@ public sealed class SearchAggregateBuilder
 
         PropertyInfo? propertyInfo =
             _searchAggregate.GetType().GetProperty(property) ??
-                throw new ArgumentException($"Property '{property}' does not exist on {nameof(Establishment)}.", nameof(property));
+                throw new ArgumentException($"Property '{property}' does not exist on {nameof(SearchAggregate)}.", nameof(property));
 
         if (!propertyInfo.CanWrite)
         {

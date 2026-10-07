@@ -21,14 +21,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Ma
 /// into a domain <see cref="EstablishmentDetailsModel"/>.
 /// </param>
 internal sealed class EstablishmentsToDetailsModelMapper :
-    IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>>
+    IMapper<IEnumerable<EstablishmentReadModel>, IReadOnlyCollection<EstablishmentDetailsModel>>
 {
     /// <summary>
     /// The mapper responsible for converting individual DTOs into domain models.
     /// </summary>
-    private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentMapper;
+    private readonly IMapper<EstablishmentReadModel, EstablishmentDetailsModel> _establishmentMapper;
 
-    public EstablishmentsToDetailsModelMapper(IMapper<Establishment, EstablishmentDetailsModel> establishmentMapper)
+    public EstablishmentsToDetailsModelMapper(IMapper<EstablishmentReadModel, EstablishmentDetailsModel> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(establishmentMapper);
         _establishmentMapper = establishmentMapper;
@@ -46,7 +46,7 @@ internal sealed class EstablishmentsToDetailsModelMapper :
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="input"/> is <c>null</c>.
     /// </exception>
-    public IReadOnlyCollection<EstablishmentDetailsModel> Map(IEnumerable<Establishment> input)
+    public IReadOnlyCollection<EstablishmentDetailsModel> Map(IEnumerable<EstablishmentReadModel> input)
     {
         ArgumentNullException.ThrowIfNull(input);
 

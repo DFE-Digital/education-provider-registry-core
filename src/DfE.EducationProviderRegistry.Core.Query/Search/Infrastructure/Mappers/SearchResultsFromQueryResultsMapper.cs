@@ -1,4 +1,5 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
@@ -51,6 +52,7 @@ internal sealed class SearchResultsFromQueryResultsMapper
                     new SearchLocalAuthority(
                         localAuthorityName: r.LocalAuthorityName ?? string.Empty),
                     new SearchCategory(r.ProviderCategory),
+                    r.StatusCode is null ? null : (SearchProviderStatus)r.StatusCode,
                     r.AcademyCount
                 )
             )

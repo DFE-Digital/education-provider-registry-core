@@ -77,7 +77,7 @@ public sealed class GroupToGroupReadModelMapperTests
             .WithCompaniesHouseId("Corpo")
             .WithUkprn("test-ukprn")
             .WithAddress(stubAddress.AddressLine1, stubAddress.AddressLine2, stubAddress.Town, stubAddress.County, stubAddress.Postcode)
-            .WithGroupStatus(GroupOpenState.Closed, new(2020, 10, 10))
+            .WithGroupStatus("Closed", new(2020, 10, 10))
             .WithType("mat")
             .WithAcademies(AcademyTestDouble.Create(3))
             .WithMembers(MemberTestDoubles.Create(5))

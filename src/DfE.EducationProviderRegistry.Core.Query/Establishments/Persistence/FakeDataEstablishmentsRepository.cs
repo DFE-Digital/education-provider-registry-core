@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
@@ -21,12 +22,12 @@ namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 /// </param>
 internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsRepository
 {
-    private readonly IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>> _establishmentsMapper;
-    private readonly IMapper<Establishment, EstablishmentDetailsModel> _establishmentMapper;
+    private readonly IMapper<IEnumerable<EstablishmentReadModel>, IReadOnlyCollection<EstablishmentDetailsModel>> _establishmentsMapper;
+    private readonly IMapper<EstablishmentReadModel, EstablishmentDetailsModel> _establishmentMapper;
 
     public FakeDataEstablishmentsRepository(
-        IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>> establishmentsMapper,
-        IMapper<Establishment, EstablishmentDetailsModel> establishmentMapper)
+        IMapper<IEnumerable<EstablishmentReadModel>, IReadOnlyCollection<EstablishmentDetailsModel>> establishmentsMapper,
+        IMapper<EstablishmentReadModel, EstablishmentDetailsModel> establishmentMapper)
     {
         ArgumentNullException.ThrowIfNull(establishmentsMapper);
         ArgumentNullException.ThrowIfNull(establishmentMapper);
@@ -47,17 +48,18 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         EstablishmentUrnModel identifier,
         CancellationToken cancellationToken = default)
     {
-        Establishment? dto =
+        EstablishmentReadModel? dto =
             FakeEstablishmentDataGenerator
-            .Generate(1)
-            .FirstOrDefault();
+                .Generate(1)
+                .FirstOrDefault();
 
         if (dto is null)
+        {
             return null;
+        }
 
         return _establishmentMapper.Map(dto);
     }
-
     /// <summary>
     /// Retrieves all establishments from the persistence layer.
     /// </summary>
@@ -75,7 +77,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         CancellationToken cancellationToken = default)
     {
         // TEMPORARY: Fake data until SQL is wired up
-        IEnumerable<Establishment> dtos =
+        IEnumerable<EstablishmentReadModel> dtos =
             FakeEstablishmentDataGenerator.Generate(100);
 
         return _establishmentsMapper.Map(dtos);
@@ -98,75 +100,93 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
         /// <returns>
         /// A read‑only collection of generated DTOs.
         /// </returns>
-        public static IReadOnlyCollection<Establishment> Generate(int count)
+        public static IReadOnlyCollection<EstablishmentReadModel> Generate(int count)
         {
             HashSet<string> urns = GenerateUniqueUrns(count);
-            List<Establishment> dtos = [];
+
+            List<EstablishmentReadModel> results = [];
 
             foreach (string urn in urns)
             {
-                Establishment dto = new()
+                EstablishmentAggregate establishment = new()
                 {
                     Urn = urn,
+
                     Name = "Test School",
                     EstablishmentNumber = "123",
-                    EstablishmentStatus = new EstablishmentStatus
-                    {
-                        Name = "Open"
-                    },
-                    EstablishmentType = new EstablishmentType
-                    {
-                        Name = "Academy"
-                    },
-                    EstablishmentProvision = new EstablishmentProvision
-                    {
-                        EducationPhase = new EducationPhase
-                        {
-                            Name = "Primary"
-                        }
-                    },
-                    EstablishmentAdmissions = new EstablishmentAdmissions
-                    {
-                        StatutoryLowAge = 5,
-                        StatutoryHighAge = 11
-                    },
-                    EstablishmentLifecycleEvent = new List<EstablishmentLifecycleEvent>
-                    {
-                        new() {
-                            EventType = "Opened",
-                            EventDate = new DateOnly(2000, 1, 1),
-                            OpenedReason = new ReasonEstablishmentOpened
-                            {
-                                Name = "New School"
-                            }
-                        },
-                        new() {
-                            EventType = "Closed",
-                            EventDate = new DateOnly(2020, 1, 1),
-                            ClosedReason = new ReasonEstablishmentClosed
-                            {
-                                Name = "Merged"
-                            }
-                        }
-                    },
-                    Site = new List<Site>
-                    {
-                        new() {
-                            Name = "Main Site",
-                            AddressLine1 = "1 Test Street",
-                            AddressLine2 = "Test Area",
-                            Town = "Test Town",
-                            County = "Test County",
-                            Postcode = "TE1 1ST"
-                        }
-                    }
+
+                    StatusCode = (int)EstablishmentStatus.Open,
+
+                    EstablishmentTypeName = "Academy",
+
+                    EducationPhaseName = "Primary",
+
+                    OpenedDate = new DateOnly(2000, 1, 1),
+
+                    ClosedDate = new DateOnly(2020, 1, 1),
+
+                    GroupUid = count,
+                    GroupCode = "TP/SP000232",
+                    GroupName = "Test Group",
+                    GroupTypeName = "Multi-academy trust",
+                    GroupOpenDate = new DateOnly(2010, 1, 1),
+
+                    SiteName = "Main Site",
+                    AddressLine1 = "1 Test Street",
+                    AddressLine2 = "Test Area",
+                    Town = "Test Town",
+                    County = "Test County",
+                    Postcode = "TE1 1ST",
+
+                    LocalAuthorityCode = 123,
+                    LocalAuthorityName = "Test Authority",
+
+                    StatutoryLowAge = 5,
+                    StatutoryHighAge = 11,
+
+                    Gender = "Mixed",
+
+                    ReligiousCharacter = "Church of England",
+
+                    OfstedInspectionDate = new DateOnly(2024, 1, 1),
+                    OfstedReportUrl = "https://reports.ofsted.example/test",
+
+                    HeadteacherIdentifier = "P123",
+                    HeadteacherName = "John Smith",
+
+                    SenProvision = "SEN Unit",
+
+                    Website = "https://www.testschool.com",
+                    TelephoneNumber = "0123456789"
                 };
 
-                dtos.Add(dto);
+                EstablishmentGovernorAggregate[] governors =
+                [
+                    new()
+            {
+                EstablishmentUrn = urn,
+                GovernorId = "GOV001",
+                GovernorName = "Joe Bloggs",
+                StartDate = new DateOnly(2023, 1, 1)
+            },
+            new()
+            {
+                EstablishmentUrn = urn,
+                GovernorId = "GOV002",
+                GovernorName = "Jane Smith",
+                StartDate = new DateOnly(2024, 1, 1)
+            }
+                ];
+
+                results.Add(
+                    new EstablishmentReadModel(
+                        establishment,
+                        governors));
             }
 
-            return dtos.AsReadOnly();
+            return results.AsReadOnly();
         }
+
 
         /// <summary>
         /// Generates a set of unique 6‑digit numeric URNs.

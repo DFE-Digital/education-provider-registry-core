@@ -13,7 +13,7 @@ internal sealed class GroupBuilder
     private string _companiesHouseId = "CH1";
     private GroupType _type = GroupTypeTestDoubles.Create();
     private SiteAddressModel _address = AddressTestDoubles.Generate();
-    private GroupStatus _status = new(GroupOpenState.Open, new(2025, 01, 02));
+    private GroupStatus _status = new("Open", new(2025, 01, 02));
 
     private IEnumerable<Academy> _academies = [];
     private IEnumerable<Member>? _members = [];
@@ -49,9 +49,9 @@ internal sealed class GroupBuilder
         return this;
     }
 
-    public GroupBuilder WithGroupStatus(GroupOpenState state, DateTime effectiveFrom)
+    public GroupBuilder WithGroupStatus(string statusLabel, DateOnly? effectiveDate = null)
     {
-        _status = new(state, effectiveFrom);
+        _status = new(statusLabel, effectiveDate ?? new DateOnly(2025, 01, 01));
         return this;
     }
 

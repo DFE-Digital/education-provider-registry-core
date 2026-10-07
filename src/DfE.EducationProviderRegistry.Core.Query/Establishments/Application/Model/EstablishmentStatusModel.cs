@@ -1,3 +1,13 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public sealed record EstablishmentStatusModel(string Value);
+public sealed record EstablishmentStatusModel
+{
+    public EstablishmentStatusModel(EstablishmentStatus status, DateOnly? effectiveDate)
+    {
+        Status = status;
+        EffectiveDate = effectiveDate;
+    }
+
+    public EstablishmentStatus Status { get; }
+    public DateOnly? EffectiveDate { get; }
+}

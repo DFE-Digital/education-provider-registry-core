@@ -4,7 +4,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -86,8 +85,8 @@ public sealed class GetEstablishmentsUseCaseTests
 
         Assert.Collection(
             result.Model!,
-            establishment => Assert.Equal(establishmentResults.ElementAt(0).Urn.Value, establishment.Urn.Value),
-            establishment => Assert.Equal(establishmentResults.ElementAt(1).Urn.Value, establishment.Urn.Value));
+            establishment => Assert.Equal(establishmentResults.ElementAt(0).Identifiers.Urn, establishment.Identifiers.Urn),
+            establishment => Assert.Equal(establishmentResults.ElementAt(1).Identifiers.Urn, establishment.Identifiers.Urn));
 
         repoMock.Verify(repository => repository.GetEstablishments(_token), Times.Once);
         _loggerMock.VerifyNoErrors();

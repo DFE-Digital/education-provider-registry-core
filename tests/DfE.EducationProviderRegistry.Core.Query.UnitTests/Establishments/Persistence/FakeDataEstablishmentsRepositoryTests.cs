@@ -2,16 +2,15 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.EstablishmentDetails;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles.StubBuilders;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence;
 
 public sealed class FakeDataEstablishmentsRepositoryTests
 {
-    private readonly Mock<IMapper<Establishment, EstablishmentDetailsModel>> _singleMapper;
-    private readonly Mock<IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>>> _collectionMapper;
+    private readonly Mock<IMapper<EstablishmentReadModel, EstablishmentDetailsModel>> _singleMapper;
+    private readonly Mock<IMapper<IEnumerable<EstablishmentReadModel>, IReadOnlyCollection<EstablishmentDetailsModel>>> _collectionMapper;
     private readonly IReadOnlyCollection<EstablishmentDetailsModel> _mappedResponseDtos;
     private readonly FakeDataEstablishmentsRepository _sut;
 
@@ -23,12 +22,12 @@ public sealed class FakeDataEstablishmentsRepositoryTests
                 .Build();
 
         _singleMapper =
-            IMapperTestDouble.Map<Establishment, EstablishmentDetailsModel>(
+            IMapperTestDouble.Map<EstablishmentReadModel, EstablishmentDetailsModel>(
                 output: _mappedResponseDtos.First());
 
         _collectionMapper =
             IMapperTestDouble.Map<
-                IEnumerable<Establishment>,
+                IEnumerable<EstablishmentReadModel>,
                 IReadOnlyCollection<EstablishmentDetailsModel>>(
                     output: _mappedResponseDtos);
 
@@ -46,7 +45,7 @@ public sealed class FakeDataEstablishmentsRepositoryTests
 
         // Assert
         _collectionMapper.Verify(
-            (mapper) => mapper.Map(It.IsAny<IEnumerable<Establishment>>()),
+            (mapper) => mapper.Map(It.IsAny<IEnumerable<EstablishmentReadModel>>()),
                 Times.Once);
 
         Assert.NotNull(result);
