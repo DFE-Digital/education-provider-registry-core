@@ -149,7 +149,7 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
                     ReligiousCharacter = "Church of England",
 
                     OfstedInspectionDate = new DateOnly(2024, 1, 1),
-                    OfstedReportUrl = "https://reports.ofsted.gov.uk/test",
+                    OfstedReportUrl = "https://reports.ofsted.example/test",
 
                     HeadteacherIdentifier = "P123",
                     HeadteacherName = "John Smith",
