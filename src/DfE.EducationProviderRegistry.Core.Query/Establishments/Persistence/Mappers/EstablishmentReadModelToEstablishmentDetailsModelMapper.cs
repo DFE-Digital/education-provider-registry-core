@@ -13,22 +13,6 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
 
         EstablishmentAggregate establishment = input.Establishment;
 
-        EstablishmentLifecycleEventModel? openedEvent =
-            establishment.OpenedDate is null
-                ? null
-                : new EstablishmentLifecycleEventModel(
-                    EstablishmentLifecycleEventType.Opened,
-                    establishment.OpenedDate.Value,
-                    new EstablishmentLifeCycleReason(establishment.OpenedReason));
-
-        EstablishmentLifecycleEventModel? closedEvent =
-            establishment.ClosedDate is null
-                ? null
-                : new EstablishmentLifecycleEventModel(
-                    EstablishmentLifecycleEventType.Closed,
-                    establishment.ClosedDate.Value,
-                    new EstablishmentLifeCycleReason(establishment.ClosedReason));
-
         EstablishmentGroupModel? group =
             establishment.GroupName is null
                 ? null
@@ -89,17 +73,23 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
 
         return new EstablishmentDetailsModel
         {
-            Urn = EstablishmentUrnModel.Create(establishment.Urn),
-
             Name = new EstablishmentNameModel(establishment.Name),
 
-            Number = establishment.EstablishmentNumber is null
-                ? null
-                : new EstablishmentNumberModel(establishment.EstablishmentNumber),
+            Identifiers = new EstablishmentIdentifiersModel(
+                    urn: new EstablishmentUrnModel(
+                        new UniqueReferenceNumber(establishment.Urn)),
 
-            Status = establishment.StatusName is null
+                    dfeNumber: establishment.EstablishmentNumber is null
+                        ? null
+                        : DfeNumber.Create(
+                            LocalAuthorityCode.Parse(establishment.LocalAuthorityCode!),
+                            EstablishmentNumber.Parse(establishment.EstablishmentNumber))),
+
+            Status = establishment.StatusCode is null
                 ? null
-                : new EstablishmentStatusModel(establishment.StatusName),
+                : new EstablishmentStatusModel(
+                    status: (EstablishmentStatus)establishment.StatusCode,
+                    effectiveDate: establishment.StatusDate),
 
             Type = establishment.EstablishmentTypeName is null
                 ? null
@@ -108,9 +98,6 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
             Phase = establishment.EducationPhaseName is null
                 ? null
                 : new PhaseOfEducationModel(establishment.EducationPhaseName),
-
-            LifecycleEventOpened = openedEvent,
-            LifecycleEventClosed = closedEvent,
 
             Group = group,
             GroupType = establishment.GroupTypeName,

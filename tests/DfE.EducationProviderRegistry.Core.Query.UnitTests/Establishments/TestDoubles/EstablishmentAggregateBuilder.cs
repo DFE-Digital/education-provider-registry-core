@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles;
 
@@ -14,17 +15,15 @@ internal sealed class EstablishmentAggregateBuilder
             Name = "Test School",
             EstablishmentNumber = "123",
 
-            StatusName = "Open",
+            StatusCode = (int)EstablishmentStatus.Open,
 
             EstablishmentTypeName = "Academy",
 
             EducationPhaseName = "Primary",
 
             OpenedDate = new DateOnly(2000, 1, 1),
-            OpenedReason = "New School",
 
             ClosedDate = new DateOnly(2020, 1, 1),
-            ClosedReason = "Merged",
 
             GroupUid = 999,
             GroupCode = "GRP001",
@@ -39,7 +38,7 @@ internal sealed class EstablishmentAggregateBuilder
             County = "Test County",
             Postcode = "TE1 1ST",
 
-            LocalAuthorityCode = "TEST",
+            LocalAuthorityCode = "123",
             LocalAuthorityName = "Test Authority",
 
             StatutoryLowAge = 5,

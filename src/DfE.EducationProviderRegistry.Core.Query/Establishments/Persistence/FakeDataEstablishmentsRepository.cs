@@ -115,17 +115,15 @@ internal sealed class FakeDataEstablishmentsRepository : IEstablishmentsReposito
                     Name = "Test School",
                     EstablishmentNumber = "123",
 
-                    StatusName = "Open",
+                    StatusCode = (int)EstablishmentStatus.Open,
 
                     EstablishmentTypeName = "Academy",
 
                     EducationPhaseName = "Primary",
 
                     OpenedDate = new DateOnly(2000, 1, 1),
-                    OpenedReason = "New School",
 
                     ClosedDate = new DateOnly(2020, 1, 1),
-                    ClosedReason = "Merged",
 
                     GroupUid = count,
                     GroupCode = "TP/SP000232",

@@ -7,6 +7,7 @@
 /// </summary>
 public sealed record class LocalAuthority
 {
+    private readonly LocalAuthorityCode _code;
     /// <summary>
     /// Gets the display name of the local authority.
     /// </summary>
@@ -15,7 +16,10 @@ public sealed record class LocalAuthority
     /// <summary>
     /// Gets the identifying code of the local authority.
     /// </summary>
-    public string Code { get; }
+    public string Code
+    {
+        get => _code.Value.ToString();
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalAuthority"/> record.
@@ -30,11 +34,10 @@ public sealed record class LocalAuthority
     /// </exception>
     public LocalAuthority(string localAuthorityName, string localAuthorityCode)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityCode);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(localAuthorityName);
 
         Name = localAuthorityName;
-        Code = localAuthorityCode;
+        _code = LocalAuthorityCode.Parse(localAuthorityCode);
     }
 
     /// <summary>

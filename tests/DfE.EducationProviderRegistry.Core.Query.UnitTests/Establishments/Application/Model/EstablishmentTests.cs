@@ -12,31 +12,23 @@ public sealed class EstablishmentTests
     }
 
     [Fact]
-    public void ShouldSetUrn_WhenInitialized()
-    {
-        EstablishmentUrnModel urn = new(new UniqueReferenceNumber("123456"));
-
-        EstablishmentDetailsModel establishment = new()
-        {
-            Urn = urn
-        };
-
-        Assert.Equal(urn, establishment.Urn);
-    }
-
-    [Fact]
     public void ShouldPopulateAllFields()
     {
         EstablishmentDetailsModel establishment = new()
         {
-            Urn = new EstablishmentUrnModel(new UniqueReferenceNumber("123456")),
             Name = new EstablishmentNameModel("Test School"),
-            Number = new EstablishmentNumberModel("123"),
-            Status = new EstablishmentStatusModel("Open"),
+            Identifiers = new EstablishmentIdentifiersModel(
+                urn: new EstablishmentUrnModel(new UniqueReferenceNumber("123456")),
+                dfeNumber: new DfeNumber("123/1234")),
+            Status = new EstablishmentStatusModel(EstablishmentStatus.Open, new(2026, 3, 1)),
             Type = new EstablishmentTypeModel("Academy"),
             Phase = new PhaseOfEducationModel("Primary"),
         };
 
         Assert.Equal("Test School", establishment.Name.Value);
+        Assert.Equal("123456", establishment.Identifiers.Urn);
+        Assert.Equal("123/1234", establishment.Identifiers.DfENumber);
+        Assert.Equal(EstablishmentStatus.Open, establishment.Status.Status);
+        Assert.Equal(new DateOnly(2026, 3, 1), establishment.Status.EffectiveDate);
     }
 }

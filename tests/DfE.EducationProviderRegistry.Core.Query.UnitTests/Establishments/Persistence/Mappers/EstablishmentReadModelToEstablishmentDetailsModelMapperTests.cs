@@ -42,10 +42,11 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
         EstablishmentDetailsModel result = _mapper.Map(input);
 
         // Assert
-        Assert.Equal(establishment.Urn, result.Urn.Value);
+        Assert.Equal(establishment.Urn, result.Identifiers.Urn);
         Assert.Equal(establishment.Name, result.Name?.Value);
-        Assert.Equal(establishment.EstablishmentNumber, result.Number?.Value);
-        Assert.Equal(establishment.StatusName, result.Status?.Value);
+        Assert.Equal(establishment.LocalAuthorityCode + "/" + establishment.EstablishmentNumber, result.Identifiers?.DfENumber);
+        Assert.Equal(establishment.LocalAuthorityCode + establishment.EstablishmentNumber, result.Identifiers?.LaEstab);
+        Assert.Equal(establishment.StatusCode!.Value, (int)result.Status!.Status);
         Assert.Equal(establishment.EstablishmentTypeName, result.Type?.Value);
         Assert.Equal(establishment.EducationPhaseName, result.Phase?.Value);
 
