@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="DfE.EducationProviderRegistry.Data.DatabaseModels" Version="1.0.54" />
-    <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.42" />
+    <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.43" />
     <PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.42" />
     <PackageReference Include="DfE.Core.Libraries.DesignPatterns" Version="1.0.42" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
