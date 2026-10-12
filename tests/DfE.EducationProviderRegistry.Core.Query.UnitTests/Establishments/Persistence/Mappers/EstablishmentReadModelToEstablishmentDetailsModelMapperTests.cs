@@ -50,7 +50,8 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
         Assert.Equal(establishment.EstablishmentTypeName, result.Type?.Value);
         Assert.Equal(establishment.EducationPhaseName, result.Phase?.Value);
 
-        Assert.Equal(establishment.GroupName, result.Group!.name);
+        Assert.NotNull(result.Group);
+        Assert.Equal(establishment.GroupName, result.Group.name);
         Assert.Equal(establishment.GroupCode, result.Group.code);
         Assert.Equal(establishment.GroupTypeName, result.GroupType);
         Assert.Equal(establishment.GroupOpenDate, result.GroupOpenDate);
