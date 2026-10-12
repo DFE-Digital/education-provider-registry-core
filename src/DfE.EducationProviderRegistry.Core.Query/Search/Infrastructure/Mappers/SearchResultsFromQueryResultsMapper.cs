@@ -49,8 +49,7 @@ internal sealed class SearchResultsFromQueryResultsMapper
                     new GroupDetail(
                         partOfName: r.GroupName ?? string.Empty,
                         partOfCode: r.GroupCode ?? string.Empty),
-                    new SearchLocalAuthority(
-                        localAuthorityName: r.LocalAuthorityName ?? string.Empty),
+                    r.LocalAuthorityName is null ? null : new SearchLocalAuthority(r.LocalAuthorityName),
                     new SearchCategory(r.ProviderCategory),
                     r.StatusCode is null ? null : (SearchProviderStatus)r.StatusCode,
                     r.AcademyCount

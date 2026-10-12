@@ -19,5 +19,5 @@ public sealed record EstablishmentIdentifiersModel
     public string Urn => _urn.Value;
     public string? Ukprn => _ukprn?.Value;
     public string? DfENumber => _dfeNumber?.Value;
-    public string? LaEstab => _dfeNumber?.Value.Remove('/');
+    public string? LaEstab => _dfeNumber?.Value.Replace("/", string.Empty);
 }
