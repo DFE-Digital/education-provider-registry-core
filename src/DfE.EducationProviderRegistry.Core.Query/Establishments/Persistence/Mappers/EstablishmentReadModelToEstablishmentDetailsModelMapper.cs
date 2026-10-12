@@ -14,16 +14,16 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
         EstablishmentAggregate establishment = input.Establishment;
 
         EstablishmentGroupModel? group =
-            establishment.GroupName is null
-                ? null
-                : new EstablishmentGroupModel(
-                    establishment.GroupName,
-                    establishment.GroupCode);
+            (establishment.GroupName is null ||
+                establishment.GroupCode is null) ?
+                    null :
+                        new EstablishmentGroupModel(name: establishment.GroupName, code: establishment.GroupCode);
 
         SiteAddressModel? address =
             establishment.SiteName is null &&
             establishment.AddressLine1 is null &&
             establishment.Town is null &&
+            establishment.County is null &&
             establishment.Postcode is null
                 ? null
                 : new SiteAddressModel(
