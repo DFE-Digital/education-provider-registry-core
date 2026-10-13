@@ -99,7 +99,8 @@ public sealed class SearchServiceAdapter
                         GroupCode: searchProvider.GroupUid,
                         GroupName: searchProvider.GroupName,
                         ProviderCategory: searchProvider.ProviderCategory ?? string.Empty,
-                        StatusCode: searchProvider.StatusCode,
+                        EstablishmentStatusCode: searchProvider.EstablishmentStatus,
+                        GroupStatusCode: searchProvider.GroupStatus,
                         AcademyCount: searchProvider.AcademyCounts ?? 0
                     )
                 )
@@ -134,7 +135,8 @@ public record SearchReadModel(
     string? GroupCode,
     string? GroupName,
     string ProviderCategory,     // Either "Group" OR "SearchAggregate".
-    int? StatusCode,
+    int? EstablishmentStatusCode,
+    int? GroupStatusCode,
     int AcademyCount
 );
 

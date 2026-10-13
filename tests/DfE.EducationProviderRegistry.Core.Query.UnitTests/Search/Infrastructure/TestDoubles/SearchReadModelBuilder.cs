@@ -16,7 +16,8 @@ internal sealed class SearchReadModelBuilder
     private string _groupName = "Test Group";
     private string _providerCategory = "Establishment";
     private int _academyCount = 2;
-    private int? _statusCode = null;
+    private int? _groupStatusCode = null;
+    private int? _establishmentStatusCode = null;
 
     public static SearchReadModelBuilder Create() => new();
 
@@ -69,9 +70,15 @@ internal sealed class SearchReadModelBuilder
         return this;
     }
 
-    public SearchReadModelBuilder WithStatusCode(int statusCode)
+    public SearchReadModelBuilder WithGroupStatusCode(int statusCode)
     {
-        _statusCode = statusCode;
+        _groupStatusCode = statusCode;
+        return this;
+    }
+
+    public SearchReadModelBuilder WithEstablishmentStatusCode(int statusCode)
+    {
+        _groupStatusCode = statusCode;
         return this;
     }
 
@@ -93,7 +100,8 @@ internal sealed class SearchReadModelBuilder
             GroupCode: _groupCode,
             GroupName: _groupName,
             ProviderCategory: _providerCategory,
-            StatusCode: _statusCode,
+            GroupStatusCode: _groupStatusCode,
+            EstablishmentStatusCode: _establishmentStatusCode,
             AcademyCount: _academyCount);
     }
 }
