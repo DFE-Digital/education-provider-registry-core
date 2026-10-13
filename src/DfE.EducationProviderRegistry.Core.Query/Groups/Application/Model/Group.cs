@@ -41,7 +41,7 @@ public sealed record Group
     public Name Name { get; }
     public SiteAddressModel Address { get; }
     public GroupType GroupType { get; }
-    public GroupStatus Status { get; }
+    public GroupStatus? Status { get; }
     public IReadOnlyCollection<Academy> Academies => _composition.Academies;
     public IReadOnlyCollection<Member> Members => _composition.Members;
     public IReadOnlyCollection<Trustee> Trustees => _composition.Trustees;

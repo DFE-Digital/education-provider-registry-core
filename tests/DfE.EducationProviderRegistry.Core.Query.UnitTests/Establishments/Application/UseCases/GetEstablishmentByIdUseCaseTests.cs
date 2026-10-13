@@ -39,7 +39,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
 
         GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
 
-        GetEstablishmentByIdRequest request = new(establishment.Urn.Value);
+        GetEstablishmentByIdRequest request = new(establishment.Identifiers.Urn);
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =
@@ -49,7 +49,7 @@ public sealed class GetEstablishmentByIdUseCaseTests
         Assert.True(result.SuccessfulRequest);
         Assert.NotNull(result.Model);
         Assert.NotNull(result.Model.Establishment);
-        Assert.Equal(establishment.Urn.Value, result.Model.Establishment.Urn.Value);
+        Assert.Equal(establishment.Identifiers.Urn, result.Model.Establishment.Identifiers.Urn);
 
         repoMock.Verify(
             r => r.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),

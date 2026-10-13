@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
@@ -27,6 +28,19 @@ public sealed class SearchAggregateBuilder
 
     public SearchAggregateBuilder WithUrn(int urn) => WithProviderId(urn);
     public SearchAggregateBuilder WithGroupId(int id) => WithProviderId(id);
+
+    public SearchAggregateBuilder WithGroupName(string name)
+    {
+        _searchAggregate.GroupName = name;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithGroupUid(string uid)
+    {
+        _searchAggregate.GroupUid = uid;
+        return this;
+    }
+
     // provider id must be a unique 4-7 character numeric else it'll fail to insert
     public SearchAggregateBuilder WithProviderId(int id)
     {
@@ -132,7 +146,7 @@ public sealed class SearchAggregateBuilder
 
         PropertyInfo? propertyInfo =
             _searchAggregate.GetType().GetProperty(property) ??
-                throw new ArgumentException($"Property '{property}' does not exist on {nameof(Establishment)}.", nameof(property));
+                throw new ArgumentException($"Property '{property}' does not exist on {nameof(SearchAggregate)}.", nameof(property));
 
         if (!propertyInfo.CanWrite)
         {

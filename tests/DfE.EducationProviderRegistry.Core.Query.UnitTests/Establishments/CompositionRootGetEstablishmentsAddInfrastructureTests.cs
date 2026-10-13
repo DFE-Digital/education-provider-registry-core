@@ -29,6 +29,5 @@ public sealed class CompositionRootGetEstablishmentsAddInfrastructureTests
 
         // Assert lifetimes
         updated.ShouldContain<IEstablishmentsRepository, EfPostgresEstablishmentRepository>(ServiceLifetime.Scoped);
-        updated.ShouldContain<IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentDetailsModel>>, EstablishmentsToDetailsModelMapper>(ServiceLifetime.Singleton);
     }
 }

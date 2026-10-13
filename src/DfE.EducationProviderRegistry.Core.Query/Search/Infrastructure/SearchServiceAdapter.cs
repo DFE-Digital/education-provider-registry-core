@@ -82,7 +82,7 @@ public sealed class SearchServiceAdapter
         int totalCount =
             await searchResultsQuery.CountAsync(cancellationToken);
 
-        // 1. Project directly into EstablishmentReadModel.
+        // 1. Project directly into SearchReadModel.
         List<SearchReadModel> searchResults =
             await searchResultsQuery
                 .OrderByDirection(t => t.ProviderName, request.SortOrdering.Direction)
@@ -96,9 +96,11 @@ public sealed class SearchServiceAdapter
                         TypeId: searchProvider.ProviderTypeId,
                         Address: searchProvider.ProviderAddress ?? string.Empty,
                         LocalAuthorityName: searchProvider.LocalAuthorityName ?? string.Empty,
-                        GroupCode: searchProvider.GroupId ?? string.Empty,
-                        GroupName: searchProvider.ProviderName ?? string.Empty,
+                        GroupCode: searchProvider.GroupUid,
+                        GroupName: searchProvider.GroupName,
                         ProviderCategory: searchProvider.ProviderCategory ?? string.Empty,
+                        EstablishmentStatusCode: searchProvider.EstablishmentStatus,
+                        GroupStatusCode: searchProvider.GroupStatus,
                         AcademyCount: searchProvider.AcademyCounts ?? 0
                     )
                 )
@@ -130,9 +132,11 @@ public record SearchReadModel(
     long? TypeId,
     string? Address,
     string? LocalAuthorityName,
-    string GroupCode,
+    string? GroupCode,
     string? GroupName,
     string ProviderCategory,     // Either "Group" OR "SearchAggregate".
+    int? EstablishmentStatusCode,
+    int? GroupStatusCode,
     int AcademyCount
 );
 

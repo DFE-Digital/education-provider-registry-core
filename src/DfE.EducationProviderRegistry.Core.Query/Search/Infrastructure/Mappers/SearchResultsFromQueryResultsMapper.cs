@@ -1,4 +1,5 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Establishment;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
@@ -41,16 +42,39 @@ internal sealed class SearchResultsFromQueryResultsMapper
             .. context.Results.Select(r =>
                 SearchAggregateResult.Create(
                     new ProviderIdentifier(r.Id),
+
                     new Name(r.Name ?? string.Empty),
+
                     new SearchAddress(
                         FullAddress: r.Address ?? string.Empty),
+
                     new SearchType(r.TypeName ?? string.Empty, r.TypeId),
-                    new GroupDetail(
-                        partOfName: r.GroupName ?? string.Empty,
-                        partOfCode: r.GroupCode ?? string.Empty),
-                    new SearchLocalAuthority(
-                        localAuthorityName: r.LocalAuthorityName ?? string.Empty),
+
+                    (r.GroupName is null || r.GroupCode is null) ?
+                        null :
+                        new GroupDetail(partOfName: r.GroupName, partOfCode: r.GroupCode),
+
+                    r.LocalAuthorityName is null ?
+                        null :
+                        new SearchLocalAuthority(r.LocalAuthorityName),
                     new SearchCategory(r.ProviderCategory),
+
+                    r.EstablishmentStatusCode is not null ?
+                            r.EstablishmentStatusCode switch
+                            {
+                                1 => SearchProviderStatus.Open,
+                                2 => SearchProviderStatus.Closed,
+                                3 => SearchProviderStatus.ProposedToOpen,
+                                4 => SearchProviderStatus.OpenButProposedToClose,
+                                _ => null
+                            } :
+                            r.GroupStatusCode is not null ?
+                            r.GroupStatusCode switch
+                            {
+                                1 => SearchProviderStatus.Open,
+                                2 => SearchProviderStatus.Closed,
+                                _ => null
+                            } : null,
                     r.AcademyCount
                 )
             )

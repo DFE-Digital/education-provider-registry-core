@@ -56,22 +56,6 @@ public sealed class GroupCharacteristicsTests
     }
 
     [Fact]
-    public void Constructor_WhenStatusIsNull_ThrowsArgumentNullException()
-    {
-        // Arrange
-        Func<GroupCharacteristics> construct =
-            () => new(
-                    NameTestDoubles.Create(),
-                    AddressTestDoubles.Generate(),
-                    GroupTypeTestDoubles.Create(),
-                    null!);
-
-        // Act
-        // Assert
-        Assert.Throws<ArgumentNullException>(construct);
-    }
-
-    [Fact]
     public void Constructor_WhenAllArgumentsProvided_AssignsProperties()
     {
         // Arrange
@@ -99,13 +83,13 @@ public sealed class GroupCharacteristicsTests
             NameTestDoubles.Create("my-name"),
             AddressTestDoubles.Stub(),
             GroupTypeTestDoubles.Create("MAT"),
-            GroupStatusTestDoubles.Create(GroupOpenState.Open));
+            GroupStatusTestDoubles.Create("Opened"));
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create("my-name"),
             AddressTestDoubles.Stub(),
             GroupTypeTestDoubles.Create("MAT"),
-            GroupStatusTestDoubles.Create(GroupOpenState.Open));
+            GroupStatusTestDoubles.Create("Opened"));
 
         // Act
         bool result = left.Equals(right);
@@ -191,13 +175,13 @@ public sealed class GroupCharacteristicsTests
             NameTestDoubles.Create(),
             AddressTestDoubles.Generate(),
             GroupTypeTestDoubles.Create(),
-            GroupStatusTestDoubles.Create(GroupOpenState.Open));
+            GroupStatusTestDoubles.Create("Opened"));
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Generate(),
             GroupTypeTestDoubles.Create(),
-            GroupStatusTestDoubles.Create(GroupOpenState.Closed));
+            GroupStatusTestDoubles.Create("Closed"));
 
         // Act
         bool result = left.Equals(right);

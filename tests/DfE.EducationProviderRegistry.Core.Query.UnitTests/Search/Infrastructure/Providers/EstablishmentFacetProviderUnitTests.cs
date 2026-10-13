@@ -50,17 +50,10 @@ public sealed class EstablishmentFacetProviderUnitTests
         Assert.Empty(results);
     }
 
-    private static void ResetBuilders()
-    {
-        EstablishmentTypeTestBuilder.Reset();
-    }
-
     [Fact]
     public async Task GetFacetsAsync_GroupsAndCountsCorrectly()
     {
         // arrange
-        ResetBuilders();
-
         EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
@@ -72,7 +65,7 @@ public sealed class EstablishmentFacetProviderUnitTests
         SearchAggregate c = SearchAggregateTestBuilder.Create("C", "C School", "secondaryType", 2);
 
         context.SearchAggregate.AddRange(a, b, c);
-        context.SaveChanges();
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
@@ -102,8 +95,6 @@ public sealed class EstablishmentFacetProviderUnitTests
     public async Task GetFacetsAsync_OrdersDescendingByCount()
     {
         // arrange
-        ResetBuilders();
-
         EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
@@ -115,7 +106,7 @@ public sealed class EstablishmentFacetProviderUnitTests
         SearchAggregate c = SearchAggregateTestBuilder.Create("C", "C School", "Y", 2);
 
         context.SearchAggregate.AddRange(a, b, c);
-        context.SaveChanges();
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
@@ -143,8 +134,6 @@ public sealed class EstablishmentFacetProviderUnitTests
     public async Task GetFacetsAsync_HandlesNullFacetValues()
     {
         // arrange
-        ResetBuilders();
-
         EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
@@ -155,7 +144,7 @@ public sealed class EstablishmentFacetProviderUnitTests
         SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "Primary", 2);
 
         context.SearchAggregate.AddRange(a, b);
-        context.SaveChanges();
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()

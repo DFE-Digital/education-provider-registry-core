@@ -14,8 +14,8 @@ public sealed class SearchFilterSpecificationFactoryTests
     public void Constructor_GivenNullFilterRegistry_ThrowsArgumentNullException()
     {
         // Arrange
-        Func<SearchFilterSpecificationFactory<Establishment>> construct =
-            () => new SearchFilterSpecificationFactory<Establishment>(null!);
+        Func<SearchFilterSpecificationFactory<EstablishmentAggregate>> construct =
+            () => new SearchFilterSpecificationFactory<EstablishmentAggregate>(null!);
 
         // Act / Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -25,9 +25,9 @@ public sealed class SearchFilterSpecificationFactoryTests
     public void Create_GivenUnknownFilter_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        Dictionary<string, Func<ISearchFilter<Establishment>>> filterRegistry = [];
+        Dictionary<string, Func<ISearchFilter<EstablishmentAggregate>>> filterRegistry = [];
 
-        SearchFilterSpecificationFactory<Establishment> sut =
+        SearchFilterSpecificationFactory<EstablishmentAggregate> sut =
             new(filterRegistry);
 
         SearchFilterRequest request = SearchFilterRequestStub.Default();
@@ -45,9 +45,9 @@ public sealed class SearchFilterSpecificationFactoryTests
         // Arrange
         SearchFilterRequest request = SearchFilterRequestStub.Default();
 
-        ISpecification<Establishment> stubSpecification = SpecificationTestDoubles.Create<Establishment>();
+        ISpecification<EstablishmentAggregate> stubSpecification = SpecificationTestDoubles.Create<EstablishmentAggregate>();
 
-        Mock<ISearchFilter<Establishment>> filterMock = new();
+        Mock<ISearchFilter<EstablishmentAggregate>> filterMock = new();
 
         filterMock
             .Setup((filter) => filter.CreateSpecification(request))
@@ -55,7 +55,7 @@ public sealed class SearchFilterSpecificationFactoryTests
 
         int registryInvokeCount = 0;
 
-        Dictionary<string, Func<ISearchFilter<Establishment>>> filterRegistry =
+        Dictionary<string, Func<ISearchFilter<EstablishmentAggregate>>> filterRegistry =
             new()
             {
                 ["EstablishmentType"] = () =>
@@ -65,10 +65,10 @@ public sealed class SearchFilterSpecificationFactoryTests
                 }
             };
 
-        SearchFilterSpecificationFactory<Establishment> sut = new(filterRegistry);
+        SearchFilterSpecificationFactory<EstablishmentAggregate> sut = new(filterRegistry);
 
         // Act
-        ISpecification<Establishment> result =
+        ISpecification<EstablishmentAggregate> result =
             sut.Create(
                 filterName: "EstablishmentType", request);
 

@@ -20,6 +20,7 @@ public sealed class SearchResultsTests
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
             localAuthority: SearchLocalAuthority.Create("Test LA"),
             providerCategory: new SearchCategory("Establishment"),
+            status: SearchProviderStatus.Open,
             academyCount: 10
         );
     }

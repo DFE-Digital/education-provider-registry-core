@@ -1,5 +1,4 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 

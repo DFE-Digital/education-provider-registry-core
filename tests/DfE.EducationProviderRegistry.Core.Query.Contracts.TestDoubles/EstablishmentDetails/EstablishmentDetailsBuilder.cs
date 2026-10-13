@@ -6,9 +6,10 @@ namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Establi
 public sealed class EstablishmentDetailsBuilder
 {
     private static int _urnCounter = 100_500;
-
     private string _website = string.Empty;
     private int? _urn;
+    private EstablishmentStatus _status = EstablishmentStatus.Open;
+    private DateOnly? _statusEffectiveDate = new(2026, 03, 01);
 
     public EstablishmentDetailsBuilder WithUrn(int urn)
     {
@@ -22,6 +23,18 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
+    public EstablishmentDetailsBuilder WithStatus(EstablishmentStatus status)
+    {
+        _status = status;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithDate(DateOnly? date)
+    {
+        _statusEffectiveDate = date;
+        return this;
+    }
+
     public EstablishmentDetailsModel Build()
     {
         string urn =
@@ -30,12 +43,16 @@ public sealed class EstablishmentDetailsBuilder
 
         return new()
         {
-            Urn = new EstablishmentUrnModel(
-                new UniqueReferenceNumber(urn)),
+            Name = new EstablishmentNameModel("Test Establishment"),
+            Identifiers = new EstablishmentIdentifiersModel(
+                urn: new EstablishmentUrnModel(
+                    new UniqueReferenceNumber(urn)),
+                ukprn: new Ukprn("12345678"),
+                dfeNumber: null),
             ContactDetails = new EstablishmentContactDetails(
                 Website: _website,
-                TelephoneNumber: string.Empty)
-
+                TelephoneNumber: string.Empty),
+            Status = new(_status, _statusEffectiveDate)
         };
     }
 

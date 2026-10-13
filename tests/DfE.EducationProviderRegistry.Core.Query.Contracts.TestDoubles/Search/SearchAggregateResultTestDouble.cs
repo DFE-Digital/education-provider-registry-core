@@ -43,20 +43,7 @@ public static class SearchAggregateResultTestDouble
             group,
             localAuthority,
             providerCategory,
-            academyCount
-            );
+            _faker.PickRandom(SearchProviderStatus.Open, SearchProviderStatus.Closed),
+            academyCount);
     }
-
-    public static SearchAggregateResult WithProviderIdentifier(string urn) =>
-        SearchAggregateResult.Create(
-            new ProviderIdentifier(urn),
-            new Name("Test School"),
-            new SearchAddress(
-                "123 Street, Town, County, PC1 1AA"
-            ),
-            SearchType.Create("Academy", 1),
-            GroupDetail.Create("Mock Trust", "TRUST001"),
-            SearchLocalAuthority.Create("Test LA"),
-            new SearchCategory("Establishment"),
-            academyCount: 10);
 }

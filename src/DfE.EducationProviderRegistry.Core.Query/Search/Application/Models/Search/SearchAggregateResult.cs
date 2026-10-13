@@ -42,6 +42,11 @@ public sealed record SearchAggregateResult
     public SearchLocalAuthority? LocalAuthority { get; }
 
     /// <summary>
+    /// Gets the status of the search result provider.
+    /// </summary>
+    public SearchProviderStatus? Status { get; }
+
+    /// <summary>
     /// Gets the provider category (i.e. 'Group' OR 'Etsablishment') for the search result provider.
     /// </summary>
     public SearchCategory ProviderCategory { get; }
@@ -74,6 +79,7 @@ public sealed record SearchAggregateResult
         GroupDetail? group,
         SearchLocalAuthority? localAuthority,
         SearchCategory providerCategory,
+        SearchProviderStatus? status,
         int academyCount)
     {
         UniqueIdentifier = uniqueIdentifier;
@@ -83,6 +89,7 @@ public sealed record SearchAggregateResult
         Group = group;
         LocalAuthority = localAuthority;
         ProviderCategory = providerCategory;
+        Status = status;
         AcademyCount = academyCount;
     }
 
@@ -109,6 +116,7 @@ public sealed record SearchAggregateResult
         GroupDetail? group,
         SearchLocalAuthority? localAuthority,
         SearchCategory providerCategory,
+        SearchProviderStatus? status,
         int academyCount)
-            => new(uniqueIdentifier, name, address, type, group, localAuthority, providerCategory, academyCount);
+            => new(uniqueIdentifier, name, address, type, group, localAuthority, providerCategory, status, academyCount);
 }

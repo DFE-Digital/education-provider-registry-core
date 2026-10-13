@@ -7,6 +7,7 @@
 /// </summary>
 public sealed record class LocalAuthority
 {
+    private readonly LocalAuthorityCode _code;
     /// <summary>
     /// Gets the display name of the local authority.
     /// </summary>
@@ -15,7 +16,10 @@ public sealed record class LocalAuthority
     /// <summary>
     /// Gets the identifying code of the local authority.
     /// </summary>
-    public string Code { get; }
+    public int Code
+    {
+        get => _code.Value;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalAuthority"/> record.
@@ -28,13 +32,12 @@ public sealed record class LocalAuthority
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="localAuthorityName"/> or <paramref name="localAuthorityCode"/> is empty or whitespace.
     /// </exception>
-    public LocalAuthority(string localAuthorityName, string localAuthorityCode)
+    public LocalAuthority(string localAuthorityName, LocalAuthorityCode code)
     {
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityCode);
-        ArgumentNullException.ThrowIfNullOrWhiteSpace(localAuthorityName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(localAuthorityName);
 
         Name = localAuthorityName;
-        Code = localAuthorityCode;
+        _code = code;
     }
 
     /// <summary>
@@ -47,6 +50,6 @@ public sealed record class LocalAuthority
     /// <returns>A fully validated <see cref="LocalAuthority"/> instance.</returns>
     public static LocalAuthority Create(
         string localAuthorityName,
-        string localAuthorityCode) =>
+        LocalAuthorityCode localAuthorityCode) =>
             new(localAuthorityName, localAuthorityCode);
 }

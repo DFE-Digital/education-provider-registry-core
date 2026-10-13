@@ -2,12 +2,12 @@
 
 public sealed record GroupStatus
 {
-    public GroupStatus(GroupOpenState state, DateTime effectiveDate)
+    public GroupStatus(string label, DateOnly effectiveDate)
     {
-        State = state;
+        Label = label;
         EffectiveDate = effectiveDate;
     }
 
-    public GroupOpenState State { get; }
-    public DateTime EffectiveDate { get; }
+    public string Label { get; }
+    public DateOnly EffectiveDate { get; }
 }

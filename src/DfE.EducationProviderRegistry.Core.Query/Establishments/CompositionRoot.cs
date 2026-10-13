@@ -7,7 +7,6 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCas
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments;
@@ -38,12 +37,7 @@ public static class CompositionRoot
             .AddScoped<IEstablishmentsRepository, EfPostgresEstablishmentRepository>()
 
             .AddSingleton<IMapper<
-                IEnumerable<Establishment>,
-                IReadOnlyCollection<EstablishmentDetailsModel>>,
-                    EstablishmentsToDetailsModelMapper>()
-
-            .AddSingleton<IMapper<
-                Establishment, EstablishmentDetailsModel>,
-                    EstablishmentToDetailsModelMapper>();
+                EstablishmentReadModel, EstablishmentDetailsModel>,
+                EstablishmentReadModelToEstablishmentDetailsModelMapper>();
     }
 }
