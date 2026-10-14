@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
@@ -14,8 +15,8 @@ public static class SearchQueryProcessorTestDouble
         mock.Setup(searchQueryProcessor =>
             searchQueryProcessor.ProcessSearch(
                 It.IsAny<IQueryable<SearchAggregate>>(),
-                It.IsAny<IEnumerable<SearchTerm?>?>()))
-            .Returns((IQueryable<SearchAggregate> queryable, IEnumerable<SearchTerm?>? _) => queryable);
+                It.IsAny<IEnumerable<SearchTerm>>()))
+            .Returns((IQueryable<SearchAggregate> queryable, IEnumerable<SearchTermRequest?>? _) => queryable);
 
         return mock;
     }

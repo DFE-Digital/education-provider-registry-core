@@ -1,5 +1,5 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration.SpecificationChaining;
@@ -23,22 +23,17 @@ public sealed class SearchQueryProcessor<TEntity> : ISearchQueryProcessor<TEntit
 
     public IQueryable<TEntity> ProcessSearch(
         IQueryable<TEntity> query,
-        IEnumerable<SearchTerm?>? searchTerms)
+        IEnumerable<SearchTerm> searchTerms)
     {
-        List<SearchTerm> validTerms =
-            searchTerms?
-                .Where(searchTerm =>
-                    searchTerm is not null &&
-                    !string.IsNullOrWhiteSpace(searchTerm.Key) &&
-                    !string.IsNullOrWhiteSpace(searchTerm.Value))
-                .Select(searchTerm => searchTerm!)
-                .ToList()
-            ?? [];
-
         ISpecification<TEntity>? combined = null;
 
-        foreach (SearchTerm term in validTerms)
+        foreach (SearchTerm term in searchTerms ?? [])
         {
+            if (term is null)
+            {
+                continue;
+            }
+
             ISpecification<TEntity> spec =
                 _specificationOrchestrator.Orchestrate(term.Key, term.Value);
 

@@ -4,28 +4,28 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.
 
 internal static class SearchTermTestDouble
 {
-    public static SearchTerm Stub()
+    public static SearchTermRequest Stub()
     {
-        return new SearchTerm(Key: "name", Value: "test-value");
+        return new SearchTermRequest(Key: "name", Value: "test-value");
     }
 
-    public static SearchTerm Stub(string fieldName, string value)
+    public static SearchTermRequest Stub(string fieldName, string value)
     {
-        return new SearchTerm(Key: fieldName, Value: value);
+        return new SearchTermRequest(Key: fieldName, Value: value);
     }
 
-    public static IReadOnlyCollection<SearchTerm> Empty()
+    public static IReadOnlyCollection<SearchTermRequest> Empty()
     {
         return [];
     }
 
-    public static IReadOnlyCollection<SearchTerm> StubSingle()
+    public static IReadOnlyCollection<SearchTermRequest> StubSingle()
     {
         return
         [SearchTermTestDouble.Stub()];
     }
 
-    public static IReadOnlyCollection<SearchTerm> StubMultiple()
+    public static IReadOnlyCollection<SearchTermRequest> StubMultiple()
     {
         return
         [

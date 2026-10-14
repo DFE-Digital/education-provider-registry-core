@@ -23,6 +23,8 @@ public class SearchServiceAdapterTests
     private readonly Mock<IMapper<(IReadOnlyList<SearchReadModel>, IReadOnlyList<AggregatedFacetResult>, int),
         SearchResults<SearchAggregateResults, SearchFacets>>> _resultsMapperMock;
     private readonly Mock<IMapper<ReadOnlyCollection<FilterRequest>, ReadOnlyCollection<SearchFilterRequest>>> _filterMapperMock;
+
+    private readonly Mock<IMapper<IReadOnlyCollection<SearchTermRequest>, IReadOnlyCollection<SearchTerm>>> _termMapper;
     private readonly SearchServiceAdapter _sut;
     private readonly EducationProviderRegistryDbContext _db;
 
@@ -42,13 +44,16 @@ public class SearchServiceAdapterTests
         _resultsMapperMock = ResultsMapperTestDouble.Mock();
         _filterMapperMock = FilterMapperTestDouble.Mock();
 
+        _termMapper = new();
+
         _sut = new SearchServiceAdapter(
             _db,
             searchProcessorMock.Object,
             _filterBuilderMock.Object,
             facetAggregatorMock.Object,
             _resultsMapperMock.Object,
-            _filterMapperMock.Object);
+            _filterMapperMock.Object,
+            _termMapper.Object);
     }
 
     [Fact]
@@ -63,7 +68,7 @@ public class SearchServiceAdapterTests
     {
         // arrange
         SearchServiceAdapterRequest request = new(
-            searchTerms: new List<SearchTerm>
+            searchTerms: new List<SearchTermRequest>
             {
                 new("key", "value")
             },
@@ -86,7 +91,7 @@ public class SearchServiceAdapterTests
     {
         // arrange
         SearchServiceAdapterRequest request = new(
-            searchTerms: new List<SearchTerm>
+            searchTerms: new List<SearchTermRequest>
             {
                 new("key", "value")
             },
@@ -120,7 +125,7 @@ public class SearchServiceAdapterTests
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         SearchServiceAdapterRequest request = new(
-            searchTerms: new List<SearchTerm>
+            searchTerms: new List<SearchTermRequest>
             {
                 new("key", "value")
             },

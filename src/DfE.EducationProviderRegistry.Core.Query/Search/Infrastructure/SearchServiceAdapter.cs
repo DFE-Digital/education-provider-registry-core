@@ -5,6 +5,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Sort;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
@@ -28,9 +29,14 @@ public sealed class SearchServiceAdapter
             int TotalCount
         ),
         SearchResults<SearchAggregateResults, SearchFacets>> _resultsMapper;
+
     private readonly IMapper<
         ReadOnlyCollection<FilterRequest>,
         ReadOnlyCollection<SearchFilterRequest>> _filterMapper;
+
+    private readonly IMapper<
+        IReadOnlyCollection<SearchTermRequest>,
+        IReadOnlyCollection<SearchTerm>> _termMapper;
 
     public SearchServiceAdapter(
         EducationProviderRegistryDbContext dbContext,
@@ -46,7 +52,10 @@ public sealed class SearchServiceAdapter
             SearchResults<SearchAggregateResults, SearchFacets>> resultsMapper,
         IMapper<
             ReadOnlyCollection<FilterRequest>,
-            ReadOnlyCollection<SearchFilterRequest>> filterMapper)
+            ReadOnlyCollection<SearchFilterRequest>> filterMapper,
+        IMapper<
+            IReadOnlyCollection<SearchTermRequest>,
+            IReadOnlyCollection<SearchTerm>> termMapper)
     {
         _dbContext = dbContext;
         _searchSpecOrchestrator = searchSpecOrchestrator;
@@ -54,6 +63,7 @@ public sealed class SearchServiceAdapter
         _facetAggregator = facetAggregator;
         _resultsMapper = resultsMapper;
         _filterMapper = filterMapper;
+        _termMapper = termMapper;
     }
 
     public async Task<SearchResults<SearchAggregateResults, SearchFacets>> SearchAsync(
@@ -77,7 +87,7 @@ public sealed class SearchServiceAdapter
         IQueryable<SearchAggregate> searchResultsQuery =
             _searchSpecOrchestrator.ProcessSearch(
                 filteredResults,
-                request.SearchTerms);
+                _termMapper.Map(request.SearchTerms));
 
         int totalCount =
             await searchResultsQuery.CountAsync(cancellationToken);

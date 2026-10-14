@@ -40,7 +40,7 @@ public sealed class SearchUseCaseTests
 
         SearchRequest request =
             new(
-                [new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
                 new[] { FilterRequestTestDouble.Fake() },
                 SortOrderTestDouble.Stub());
 
@@ -76,7 +76,7 @@ public sealed class SearchUseCaseTests
             adapterDouble.Returning(_results);
 
         SearchRequest request =
-            new([new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
+            new([new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
             SortOrderTestDouble.Stub());
 
         SearchUseCase sut =
@@ -148,7 +148,7 @@ public sealed class SearchUseCaseTests
 
         SearchRequest request =
             new(
-                [new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
                 SortOrderTestDouble.Stub());
 
         SearchUseCase sut =
@@ -179,7 +179,7 @@ public sealed class SearchUseCaseTests
 
         SearchRequest request =
             new(
-                [new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
                 SortOrderTestDouble.Stub());
 
         SearchUseCase sut =
@@ -209,7 +209,7 @@ public sealed class SearchUseCaseTests
 
         SearchRequest request =
             new(
-                [new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
                 SortOrderTestDouble.Stub());
 
         SearchUseCase sut =
@@ -237,7 +237,7 @@ public sealed class SearchUseCaseTests
 
         SearchRequest request =
             new(
-                [new SearchTerm(Key: "searchKey", Value: "searchkeyword")],
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
                 SortOrderTestDouble.Stub());
 
         SearchUseCase sut =
