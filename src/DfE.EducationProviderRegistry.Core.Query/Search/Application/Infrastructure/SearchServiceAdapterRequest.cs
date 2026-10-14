@@ -6,7 +6,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastruc
 
 public sealed class SearchServiceAdapterRequest
 {
-    public IReadOnlyCollection<SearchTerm?> SearchTerms { get; }
+    public IReadOnlyCollection<SearchTermRequest> SearchTerms { get; }
     public int Offset { get; }
     public int PageSize { get; }
     public IList<string> SearchFields { get; }
@@ -15,7 +15,7 @@ public sealed class SearchServiceAdapterRequest
     public SortOrder SortOrdering { get; }
 
     public SearchServiceAdapterRequest(
-        IReadOnlyCollection<SearchTerm?> searchTerms,
+        IReadOnlyCollection<SearchTermRequest> searchTerms,
         IList<string> searchFields,
         SortOrder sortOrdering,
         IList<string>? facets = null,
@@ -37,7 +37,7 @@ public sealed class SearchServiceAdapterRequest
     }
 
     public static SearchServiceAdapterRequest Create(
-        IReadOnlyCollection<SearchTerm?> searchTerms,
+        IReadOnlyCollection<SearchTermRequest> searchTerms,
         IList<string> searchFields,
         IList<string> facets,
         SortOrder sortOrdering,

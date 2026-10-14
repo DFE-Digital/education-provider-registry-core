@@ -1,4 +1,5 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Orchestration;
@@ -33,7 +34,7 @@ public sealed class SearchQueryProcessorTests
             .AsQueryable();
 
         // act
-        IQueryable<TestEntity> result = processor.ProcessSearch(query, null);
+        IQueryable<TestEntity> result = processor.ProcessSearch(query, null!);
 
         // assert/verify
         Assert.Same(query, result);
@@ -63,11 +64,10 @@ public sealed class SearchQueryProcessorTests
         SearchQueryProcessor<TestEntity> processor =
             new(orchestratorMock.Object, registryMock.Object);
 
-        SearchTerm?[] terms =
+        SearchTerm[] terms =
         [
             new SearchTerm("Name","Bob"),
-            new SearchTerm("", "Invalid"),
-            null
+            null!
         ];
 
         IQueryable<TestEntity> query =
@@ -165,8 +165,8 @@ public sealed class SearchQueryProcessorTests
 
         SearchTerm[] terms =
         [
-            new SearchTerm("Name","Bob"),
-            new SearchTerm("Age","30")
+            new SearchTerm("Name", "Bob"),
+            new SearchTerm("Age", "30")
         ];
 
         IQueryable<TestEntity> query =

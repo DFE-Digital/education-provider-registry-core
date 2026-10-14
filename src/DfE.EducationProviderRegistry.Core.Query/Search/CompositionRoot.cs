@@ -4,6 +4,7 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
@@ -64,6 +65,12 @@ public static class CompositionRoot
         services.AddScoped<
             IUseCase<SearchRequest, UseCaseResponse<SearchResponse>>,
             SearchUseCase>();
+
+        services.AddSingleton<
+            IMapper<
+                IReadOnlyCollection<SearchTermRequest>,
+                IReadOnlyCollection<SearchTerm>>,
+            SearchRequestTermToSearchRequestMapper>();
 
         return services;
     }

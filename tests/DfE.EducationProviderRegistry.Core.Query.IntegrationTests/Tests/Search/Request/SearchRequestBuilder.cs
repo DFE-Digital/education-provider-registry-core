@@ -10,7 +10,7 @@ internal sealed class SearchRequestBuilder
 
     private int _offset;
     private IList<FilterRequest>? _filterRequests;
-    private readonly IList<SearchTerm> _searchTerms = [];
+    private readonly IList<SearchTermRequest> _searchTerms = [];
 
     private SortOrder _sortOrder =
         new(
