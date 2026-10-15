@@ -51,7 +51,6 @@ internal sealed class EstablishmentAggregateBuilder
             OfstedInspectionDate = new DateOnly(2024, 1, 1),
             OfstedReportUrl = "https://reports.ofsted.gov.uk/test",
 
-            HeadteacherIdentifier = "P123",
             HeadteacherName = "John Smith",
 
             SenProvision = "SEN Unit",
