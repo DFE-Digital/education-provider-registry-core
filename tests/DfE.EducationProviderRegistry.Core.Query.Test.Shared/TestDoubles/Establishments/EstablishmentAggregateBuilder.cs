@@ -1,7 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
 
 public sealed class EstablishmentAggregateBuilder
 {

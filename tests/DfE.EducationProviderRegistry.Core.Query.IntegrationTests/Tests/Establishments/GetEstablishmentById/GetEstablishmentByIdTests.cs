@@ -2,6 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Establishments.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
