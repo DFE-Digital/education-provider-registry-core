@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 
-internal sealed class EstablishmentAggregateSeedDataHandler : ISeedDataHandler<IEnumerable<EstablishmentAggregate>, EstablishmentAggregates>
+internal sealed class EstablishmentAggregateSeeder : ISeedDataHandler<IEnumerable<EstablishmentAggregate>, EstablishmentAggregates>
 {
     public async Task<EstablishmentAggregates> PersistAsync(IEnumerable<EstablishmentAggregate> input, EducationProviderRegistryDbContext dbContext, CancellationToken ct = default)
     {

@@ -11,16 +11,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.
 
 public sealed class GroupToGroupReadModelMapperTests
 {
-    private static Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>> CreateTrusteeMapperMock(TrusteeReadModel[]? mapOut = null)
-    {
-        return IMapperTestDouble.Map<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>(mapOut ?? []);
-    }
-
-    private static Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> CreateMemberMapperMock(MemberReadModel[]? mapOut = null)
-    {
-        return IMapperTestDouble.Map<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>(mapOut ?? []);
-    }
-
     [Fact]
     public void Constructor_Should_Throw_When_MemberMapper_Is_Null()
     {
@@ -109,6 +99,25 @@ public sealed class GroupToGroupReadModelMapperTests
             result.Academies);
     }
 
+    [Fact]
+    public void Map_Should_Map_Empty_Status_When_Status_Is_Null()
+    {
+        // Arrange
+        GroupToGroupReadModelMapper sut = new(
+            CreateMemberMapperMock().Object,
+            CreateTrusteeMapperMock().Object);
+
+        Group input = new GroupBuilder()
+            .WithGroupStatus(statusLabel: null, effectiveDate: null)
+            .Build();
+
+        // Act
+        GroupReadModel result = sut.Map(input);
+
+        // Assert
+        Assert.Equal(string.Empty, result.Status);
+    }
+
 
     [Fact]
     public void Map_Should_Call_MemberMapper()
@@ -150,5 +159,15 @@ public sealed class GroupToGroupReadModelMapperTests
 
         // Assert
         trusteeMapperMock.VerifyMapperCalledWith(trustees);
+    }
+
+    private static Mock<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>> CreateTrusteeMapperMock(TrusteeReadModel[]? mapOut = null)
+    {
+        return IMapperTestDouble.Map<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>(mapOut ?? []);
+    }
+
+    private static Mock<IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>> CreateMemberMapperMock(MemberReadModel[]? mapOut = null)
+    {
+        return IMapperTestDouble.Map<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>(mapOut ?? []);
     }
 }
