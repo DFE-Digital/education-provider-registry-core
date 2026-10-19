@@ -1,10 +1,10 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
 
-internal static class CompaniesHouseIdTestDoubles
+public static class CompaniesHouseIdTestDoubles
 {
-    public static CompaniesHouseId Create() => Create("CH123");
+    public static CompaniesHouseId Stub() => Create("CH123");
 
     public static CompaniesHouseId Create(string value)
     {

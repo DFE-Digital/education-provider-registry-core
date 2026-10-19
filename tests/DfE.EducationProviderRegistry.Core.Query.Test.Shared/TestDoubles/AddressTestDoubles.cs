@@ -1,11 +1,11 @@
 ﻿using Bogus;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
 
-internal static class AddressTestDoubles
+public static class AddressTestDoubles
 {
-    internal static SiteAddressModel Stub() =>
+    public static SiteAddressModel Stub() =>
         Create(
             AddressLine1: "123 Example Street",
             Town: "Testville",
@@ -13,7 +13,7 @@ internal static class AddressTestDoubles
             Postcode: "TE5 7ST");
 
 
-    internal static SiteAddressModel Generate()
+    public static SiteAddressModel Generate()
     {
         Faker faker = new();
 
@@ -25,7 +25,7 @@ internal static class AddressTestDoubles
             Postcode: faker.Address.ZipCode());
     }
 
-    internal static SiteAddressModel Create(
+    public static SiteAddressModel Create(
         string? AddressLine1,
         string? AddressLine2 = null,
         string? Town = null,

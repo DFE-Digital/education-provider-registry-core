@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 
-internal sealed class SearchAggregateCollectionSeedHandler : ISeedDataHandler<IEnumerable<SearchAggregate>, SearchableAggregates>
+internal sealed class SearchAggregateCollectionSeedHandler : ISeedDataHandler<IEnumerable<SearchAggregate>, SearchableSearchAggregates>
 {
-    public async Task<SearchableAggregates> PersistAsync(IEnumerable<SearchAggregate> input, EducationProviderRegistryDbContext dbContext, CancellationToken ct = default)
+    public async Task<SearchableSearchAggregates> PersistAsync(IEnumerable<SearchAggregate> input, EducationProviderRegistryDbContext dbContext, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(input);
 
@@ -15,7 +15,7 @@ internal sealed class SearchAggregateCollectionSeedHandler : ISeedDataHandler<IE
 
         if (seed.Count == 0)
         {
-            return SearchableAggregates.Empty();
+            return SearchableSearchAggregates.Empty();
         }
 
         await dbContext.BulkInsertAsync(
@@ -30,7 +30,7 @@ internal sealed class SearchAggregateCollectionSeedHandler : ISeedDataHandler<IE
         return await QueryForCreated(dbContext, seed, ct);
     }
 
-    private static async Task<SearchableAggregates> QueryForCreated(EducationProviderRegistryDbContext dbContext, IEnumerable<SearchAggregate> aggregates, CancellationToken ct)
+    private static async Task<SearchableSearchAggregates> QueryForCreated(EducationProviderRegistryDbContext dbContext, IEnumerable<SearchAggregate> aggregates, CancellationToken ct)
     {
         List<string?> matchProviderIds = [.. aggregates.Select(x => x.ProviderId)];
 

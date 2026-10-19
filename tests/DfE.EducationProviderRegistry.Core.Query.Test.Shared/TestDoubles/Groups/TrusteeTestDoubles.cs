@@ -2,9 +2,9 @@
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
-internal static class TrusteeTestDoubles
+public static class TrusteeTestDoubles
 {
     public static IReadOnlyCollection<Trustee> Create(int count = 1)
     {

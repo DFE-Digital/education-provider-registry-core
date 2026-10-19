@@ -3,8 +3,8 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;

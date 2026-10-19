@@ -1,9 +1,9 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
-internal static class AcademyIdTestDoubles
+public static class AcademyIdTestDoubles
 {
     public static AcademyId Create(string value = "12345")
     {

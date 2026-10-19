@@ -2,9 +2,9 @@
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
-internal static class AcademyTestDouble
+public static class AcademyTestDouble
 {
     private const string AcademyNamePrefix = "Test Academy";
 

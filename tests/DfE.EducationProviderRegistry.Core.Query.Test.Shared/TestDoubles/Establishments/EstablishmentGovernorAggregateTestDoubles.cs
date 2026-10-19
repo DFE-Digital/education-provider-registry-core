@@ -1,8 +1,8 @@
 ﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
 
-internal static class EstablishmentGovernorAggregateTestDoubles
+public static class EstablishmentGovernorAggregateTestDoubles
 {
     public static EstablishmentGovernorAggregate Stub()
     {

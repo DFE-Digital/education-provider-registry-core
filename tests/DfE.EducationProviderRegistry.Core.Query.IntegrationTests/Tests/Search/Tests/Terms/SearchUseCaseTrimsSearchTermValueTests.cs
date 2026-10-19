@@ -41,7 +41,7 @@ public sealed class SearchUseCaseTrimsSearchTermValueTests : SearchUseCaseMatche
             .Build()
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             matchingEstablishments,
             TestContext.Current.CancellationToken);
 

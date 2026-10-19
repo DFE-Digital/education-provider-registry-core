@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.EstablishmentDetails;
 

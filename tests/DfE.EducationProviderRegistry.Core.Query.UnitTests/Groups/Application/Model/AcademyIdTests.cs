@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 

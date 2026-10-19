@@ -1,5 +1,4 @@
 ﻿using DfE.Core.Libraries.IntegrationTests.Database.Postgres.Container.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.Test.Database;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Extensions;
 using MartinCostello.Logging.XUnit;
 using Microsoft.Extensions.Configuration;

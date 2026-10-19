@@ -1,5 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -18,7 +18,7 @@ public sealed class GroupIdentityTests
     [Fact]
     public void Constructor_Sets_Properties_When_Valid()
     {
-        GroupId id = GroupIdTestDoubles.Create();
+        GroupId id = GroupIdTestDoubles.Stub();
         GroupUID uid = GroupUIDTestDoubles.Create(1);
 
         GroupIdentity identity = new(id, uid);
