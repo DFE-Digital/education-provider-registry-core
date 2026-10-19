@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 
@@ -112,6 +113,78 @@ public sealed class EstablishmentAggregateBuilder
     public EstablishmentAggregateBuilder WithPostcode(string? postCode)
     {
         _aggregate.Postcode = postCode;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithGroupName(string? name)
+    {
+        _aggregate.GroupName = name;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithGroupCode(string? code)
+    {
+        _aggregate.GroupCode = code;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithWebsite(string? website)
+    {
+        _aggregate.Website = website;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithTelephoneNumber(string? telephoneNumber)
+    {
+        _aggregate.TelephoneNumber = telephoneNumber;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithLocalAuthorityCode(int? localAuthorityCode)
+    {
+        _aggregate.LocalAuthorityCode = localAuthorityCode;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithLocalAuthorityName(string localAuthorityName)
+    {
+        _aggregate.LocalAuthorityName = localAuthorityName;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithLowAge(int? lowAge)
+    {
+        _aggregate.StatutoryLowAge = lowAge;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithHighAge(int? highAge)
+    {
+        _aggregate.StatutoryHighAge = highAge;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithEstablishmentNumber(string? establishmentNumber)
+    {
+        _aggregate.EstablishmentNumber = establishmentNumber;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithStatusCode(EstablishmentStatus? code)
+    {
+        _aggregate.StatusCode = code is null ? null : (int)code;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithOfstedInspectionDate(DateOnly? inspectionDate)
+    {
+        _aggregate.OfstedInspectionDate = inspectionDate;
+        return this;
+    }
+
+    public EstablishmentAggregateBuilder WithOfstedReportUrl(string? url)
+    {
+        _aggregate.OfstedReportUrl = url;
         return this;
     }
 

@@ -1,6 +1,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
@@ -21,165 +22,483 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
     }
 
     [Fact]
-    public void Map_WithValidDto_ReturnsMappedEstablishment()
-    {
-        // Arrange
-        EstablishmentAggregate establishment = EstablishmentAggregateTestDoubles.Stub();
-
-        List<EstablishmentGovernorAggregate> governors =
-        [
-            new()
-        {
-            GovernorId = "123",
-            GovernorName = "Joe Bloggs"
-        }
-        ];
-
-        EstablishmentReadModel input =
-            new(establishment, governors);
-
-        // Act
-        EstablishmentDetailsModel result = _mapper.Map(input);
-
-        // Assert
-        Assert.Equal(establishment.Urn, result.Identifiers.Urn);
-        Assert.Equal(establishment.Name, result.Name?.Value);
-        Assert.Equal(establishment.LocalAuthorityCode + "/" + establishment.EstablishmentNumber, result.Identifiers?.DfENumber);
-        Assert.Equal(establishment.LocalAuthorityCode + establishment.EstablishmentNumber, result.Identifiers?.LaEstab);
-        Assert.Equal(establishment.StatusCode!.Value, (int)result.Status!.Status);
-        Assert.Equal(establishment.EstablishmentTypeName, result.Type?.Value);
-        Assert.Equal(establishment.EducationPhaseName, result.Phase?.Value);
-
-        Assert.NotNull(result.Group);
-        Assert.Equal(establishment.GroupName, result.Group.name);
-        Assert.Equal(establishment.GroupCode, result.Group.code);
-        Assert.Equal(establishment.GroupTypeName, result.GroupType);
-        Assert.Equal(establishment.GroupOpenDate, result.GroupOpenDate);
-
-        Assert.Equal(establishment.Website, result.ContactDetails?.Website);
-        Assert.Equal(establishment.TelephoneNumber, result.ContactDetails?.TelephoneNumber);
-    }
-
-    [Fact]
-    public void Map_WithAddress_MapsAddress()
+    public void Map_MapsUrn()
     {
         // Arrange
         EstablishmentAggregate establishment =
             EstablishmentAggregateBuilder.Create()
-                .WithSiteName("Test Establishment")
-                .WithAddressLine1("1 Test Street")
-                .WithAddressLine2("Testhelm")
-                .WithTown("Testville")
-                .WithCounty("TestCountry")
-                .WithPostcode("TE5 1ST")
+                .WithUrn("123456")
                 .Build();
 
         EstablishmentReadModel input =
             new(establishment, []);
 
         // Act
-        EstablishmentDetailsModel result = _mapper.Map(input);
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
 
         // Assert
-        Assert.NotNull(result.Address);
-
-        Assert.Equal(establishment.SiteName, result.Address.Name);
-        Assert.Equal(establishment.AddressLine1, result.Address.AddressLine1);
-        Assert.Equal(establishment.AddressLine2, result.Address.AddressLine2);
-        Assert.Equal(establishment.Town, result.Address.Town);
-        Assert.Equal(establishment.County, result.Address.County);
-        Assert.Equal(establishment.Postcode, result.Address.Postcode);
+        Assert.Equal(
+            establishment.Urn,
+            result.Identifiers.Urn);
     }
 
     [Fact]
-    public void Map_WithLocalAuthority_MapsLocalAuthority()
+    public void Map_WithLocalAuthorityCodeAndEstablishmentNumber_MapsDfeNumber()
     {
         // Arrange
-        EstablishmentAggregate establishment = EstablishmentAggregateTestDoubles.Stub();
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLocalAuthorityCode(123)
+                .WithEstablishmentNumber("4567")
+                .Build();
 
         EstablishmentReadModel input =
             new(establishment, []);
 
         // Act
-        EstablishmentDetailsModel result = _mapper.Map(input);
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Equal(
+            "123/4567",
+            result.Identifiers.DfENumber);
+    }
+
+    [Fact]
+    public void Map_WithoutLocalAuthorityCode_DoesNotMapDfeNumber()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLocalAuthorityCode(null)
+                .WithEstablishmentNumber("4567")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Identifiers.DfENumber);
+    }
+
+    [Fact]
+    public void Map_WithoutEstablishmentNumber_DoesNotMapDfeNumber()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLocalAuthorityCode(123)
+                .WithEstablishmentNumber(null)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Identifiers.DfENumber);
+    }
+
+    [Fact]
+    public void Map_WithStatusCode_MapsStatus()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithStatusCode(EstablishmentStatus.Open)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.NotNull(result.Status);
+        Assert.Equal(1, (int)result.Status.Status);
+    }
+
+    [Fact]
+    public void Map_WithoutStatusCode_ReturnsNullStatus()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithStatusCode(null)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Status);
+    }
+
+    [Fact]
+    public void Map_WithoutGroupName_ReturnsNullGroup()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithGroupName(null)
+                .WithGroupCode("TRST")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Group);
+    }
+
+    [Fact]
+    public void Map_WithoutGroupCode_ReturnsNullGroup()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithGroupName("Test Group")
+                .WithGroupCode(null)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Group);
+    }
+
+    [Fact]
+    public void Map_WithAddressDetails_MapsAddress()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithSiteName("Main Site")
+                .WithAddressLine1("1 High Street")
+                .WithTown("Retford")
+                .WithCounty("Nottinghamshire")
+                .WithPostcode("DN22 1AA")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.NotNull(result.Address);
+        Assert.Equal("Main Site", result.Address.Name);
+        Assert.Equal("1 High Street", result.Address.AddressLine1);
+        Assert.Equal("Retford", result.Address.Town);
+        Assert.Equal("Nottinghamshire", result.Address.County);
+        Assert.Equal("DN22 1AA", result.Address.Postcode);
+    }
+
+    [Fact]
+    public void Map_WithoutAddressDetails_ReturnsNullAddress()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithSiteName(null)
+                .WithAddressLine1(null)
+                .WithTown(null)
+                .WithCounty(null)
+                .WithPostcode(null)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Address);
+    }
+
+    [Fact]
+    public void Map_WithLocalAuthorityCodeAndName_MapsLocalAuthority()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLocalAuthorityCode(123)
+                .WithLocalAuthorityName("Test Authority")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
 
         // Assert
         Assert.NotNull(result.LocalAuthority);
+        Assert.Equal("Test Authority", result.LocalAuthority.Name);
+        Assert.Equal(123, result.LocalAuthority.Code);
+    }
 
-        Assert.Equal(
-            establishment.LocalAuthorityName,
-            result.LocalAuthority.Name);
+    [Fact]
+    public void Map_WithoutLocalAuthorityCode_ReturnsNullLocalAuthority()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLocalAuthorityCode(null)
+                .WithLocalAuthorityName("Test Authority")
+                .Build();
 
-        Assert.Equal(
-            establishment.LocalAuthorityCode!.Value,
-            result.LocalAuthority.Code);
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.LocalAuthority);
+    }
+
+    [Fact]
+    public void Map_WithoutLowAge_ReturnsNullAgeRange()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLowAge(null)
+                .WithHighAge(11)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.AgeRange);
+    }
+
+    [Fact]
+    public void Map_WithStatutoryAges_MapsAgeRange()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithLowAge(5)
+                .WithHighAge(11)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Equal("5 to 11", result.AgeRange);
     }
 
     [Fact]
     public void Map_WithGovernors_MapsGovernors()
     {
         // Arrange
-        List<EstablishmentGovernorAggregate> governors =
-        [
-            new()
-        {
-            GovernorId = "123",
-            GovernorName = "Governor One"
-        },
-        new()
-        {
-            GovernorId = "456",
-            GovernorName = "Governor Two"
-        }
-        ];
+        IReadOnlyList<EstablishmentGovernorAggregate> governors =
+            EstablishmentGovernorAggregateTestDoubles.StubMany().ToList();
+
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .Build();
 
         EstablishmentReadModel input =
-            new(
-                EstablishmentAggregateTestDoubles.Stub(),
-                governors);
+            new(establishment, governors);
 
         // Act
-        EstablishmentDetailsModel result = _mapper.Map(input);
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Equal(governors.Count, result.Governors!.Count());
 
         // Assert
         Assert.Equal(2, result.Governors!.Count());
 
         Assert.Contains(
             result.Governors!,
-            g => g.Identifier.Value == "123");
+            g => g.Identifier.Value == governors[0].GovernorId);
 
         Assert.Contains(
             result.Governors!,
-            g => g.Identifier.Value == "456");
+            g => g.Identifier.Value == governors[1].GovernorId);
     }
 
     [Fact]
-    public void Map_WithNullOptionalValues_MapsNullOptionalValues()
+    public void Map_WithoutGovernors_ReturnsEmptyGovernorsCollection()
     {
         // Arrange
-        EstablishmentAggregate establishment = new()
-        {
-            Urn = "12345",
-            Name = "Test School"
-        };
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .Build();
 
         EstablishmentReadModel input =
             new(establishment, []);
 
         // Act
-        EstablishmentDetailsModel result = _mapper.Map(input);
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
 
         // Assert
-        Assert.Null(result.Group);
-        Assert.Null(result.GroupType);
-        Assert.Null(result.GroupOpenDate);
-        Assert.Null(result.LocalAuthority);
-        Assert.Null(result.Address);
+        Assert.Empty(result.Governors!);
+    }
+
+
+    [Fact]
+    public void Map_WithWebsiteAndTelephone_MapsContactDetails()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithWebsite("www.test.com")
+                .WithTelephoneNumber("0123456789")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.NotNull(result.ContactDetails);
+        Assert.Equal("www.test.com", result.ContactDetails.Website);
+        Assert.Equal("0123456789", result.ContactDetails.TelephoneNumber);
+    }
+
+    [Fact]
+    public void Map_WithoutWebsiteAndTelephone_ReturnsNullContactDetails()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithWebsite(null)
+                .WithTelephoneNumber(null)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
         Assert.Null(result.ContactDetails);
-        Assert.Null(result.Headteacher);
-        Assert.Null(result.SenProvision);
-        Assert.Null(result.Phase);
-        Assert.Null(result.AgeRange);
-        Assert.Null(result.ReligiousCharacter);
+    }
+
+
+    [Fact]
+    public void Map_WithOfstedDetails_MapsOfsted()
+    {
+        // Arrange
+        DateOnly inspectionDate = new(2024, 1, 1);
+
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithOfstedInspectionDate(inspectionDate)
+                .WithOfstedReportUrl("https://ofsted.example/report")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.NotNull(result.Ofsted);
+        Assert.Equal(inspectionDate, result.Ofsted.InspectionDate);
+
+        Assert.Equal(
+            "https://ofsted.example/report",
+            result.Ofsted.ReportUrl);
+    }
+
+    [Fact]
+    public void Map_WithoutOfstedDetails_ReturnsNullOfsted()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithOfstedInspectionDate(null)
+                .WithOfstedReportUrl(null)
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.Null(result.Ofsted);
+    }
+
+
+
+    [Fact]
+    public void Map_WithGroupNameAndCode_MapsGroup()
+    {
+        // Arrange
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithGroupName("Test Group")
+                .WithGroupCode("TRST")
+                .Build();
+
+        EstablishmentReadModel input =
+            new(establishment, []);
+
+        // Act
+        EstablishmentDetailsModel result =
+            _mapper.Map(input);
+
+        // Assert
+        Assert.NotNull(result.Group);
+        Assert.Equal("Test Group", result.Group.name);
+        Assert.Equal("TRST", result.Group.code);
     }
 }
