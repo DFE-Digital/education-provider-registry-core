@@ -60,7 +60,7 @@ public sealed class SearchUseCaseCollectionAndScalarFieldTests : SearchUseCaseMa
                 .Build()
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =

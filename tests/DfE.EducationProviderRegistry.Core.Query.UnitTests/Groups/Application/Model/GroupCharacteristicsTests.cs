@@ -1,7 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -15,7 +15,7 @@ public sealed class GroupCharacteristicsTests
             () => new(
                     null!,
                     AddressTestDoubles.Generate(),
-                    GroupTypeTestDoubles.Create(),
+                    GroupTypeTestDoubles.Stub(),
                     GroupStatusTestDoubles.Create());
 
         // Act
@@ -31,7 +31,7 @@ public sealed class GroupCharacteristicsTests
             () => new(
                     NameTestDoubles.Create(),
                     null!,
-                    GroupTypeTestDoubles.Create(),
+                    GroupTypeTestDoubles.Stub(),
                     GroupStatusTestDoubles.Create());
 
         // Act
@@ -61,7 +61,7 @@ public sealed class GroupCharacteristicsTests
         // Arrange
         Name name = NameTestDoubles.Create();
         SiteAddressModel address = AddressTestDoubles.Generate();
-        GroupType type = GroupTypeTestDoubles.Create();
+        GroupType type = GroupTypeTestDoubles.Stub();
         GroupStatus status = GroupStatusTestDoubles.Create();
 
         // Act
@@ -105,13 +105,13 @@ public sealed class GroupCharacteristicsTests
         GroupCharacteristics left = new(
             NameTestDoubles.Create("my-name-1"),
             AddressTestDoubles.Stub(),
-            GroupTypeTestDoubles.Create(),
+            GroupTypeTestDoubles.Stub(),
             GroupStatusTestDoubles.Create());
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create("my-name-2"),
             AddressTestDoubles.Stub(),
-            GroupTypeTestDoubles.Create(),
+            GroupTypeTestDoubles.Stub(),
             GroupStatusTestDoubles.Create());
 
         // Act
@@ -128,13 +128,13 @@ public sealed class GroupCharacteristicsTests
         GroupCharacteristics left = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Create(AddressLine1: "Address A"),
-            GroupTypeTestDoubles.Create(),
+            GroupTypeTestDoubles.Stub(),
             GroupStatusTestDoubles.Create());
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Create(AddressLine1: "Address B"),
-            GroupTypeTestDoubles.Create(),
+            GroupTypeTestDoubles.Stub(),
             GroupStatusTestDoubles.Create());
 
         // Act
@@ -174,13 +174,13 @@ public sealed class GroupCharacteristicsTests
         GroupCharacteristics left = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Generate(),
-            GroupTypeTestDoubles.Create(),
+            GroupTypeTestDoubles.Stub(),
             GroupStatusTestDoubles.Create("Opened"));
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Generate(),
-            GroupTypeTestDoubles.Create(),
+            GroupTypeTestDoubles.Stub(),
             GroupStatusTestDoubles.Create("Closed"));
 
         // Act

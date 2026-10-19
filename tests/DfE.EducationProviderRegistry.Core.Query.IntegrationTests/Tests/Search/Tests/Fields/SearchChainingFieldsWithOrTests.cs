@@ -49,7 +49,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build()
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
@@ -86,7 +86,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build()
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =
@@ -133,7 +133,7 @@ public sealed class SearchChainingFieldsWithOrTests : SearchUseCaseMatchesResult
                 .Build()
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         SearchRequest request =

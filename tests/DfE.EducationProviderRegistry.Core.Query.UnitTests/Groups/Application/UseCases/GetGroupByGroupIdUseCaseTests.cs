@@ -3,7 +3,7 @@ using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 using Microsoft.Extensions.Logging;
 using Moq;
 

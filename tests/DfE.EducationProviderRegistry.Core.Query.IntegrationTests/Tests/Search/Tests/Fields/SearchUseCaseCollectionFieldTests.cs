@@ -49,7 +49,7 @@ public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResu
                 .WithSearchTerm(SearchTermKey, searchTerm)
                 .Build();
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
 
         // act / assert
@@ -71,7 +71,7 @@ public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResu
                 .WithLocalAuthorityName("School Authority")
                 .Build();
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             [establishment], TestContext.Current.CancellationToken);
 
         SearchRequest request =
@@ -102,7 +102,7 @@ public sealed class SearchUseCaseCollectionFieldTests : SearchUseCaseMatchesResu
                 .Build()
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
             nonMatchingEstablishments, TestContext.Current.CancellationToken);
 
         SearchRequest request =

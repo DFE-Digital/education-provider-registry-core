@@ -1,4 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,8 +10,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddEducationProviderRegistryDatabaseFixture(this IServiceCollection services)
     {
-        services.AddSingleton<ISeedDataHandler<IEnumerable<SearchAggregate>, SearchableAggregates>, SearchAggregateCollectionSeedHandler>();
-
+        services.AddSingleton<ISeedDataHandler<IEnumerable<SearchAggregate>, SearchableSearchAggregates>, SearchAggregateCollectionSeedHandler>();
+        services.AddSingleton<ISeedDataHandler<IEnumerable<EstablishmentAggregate>, EstablishmentAggregates>, EstablishmentAggregateSeedDataHandler>();
         services.AddScoped<EducationProviderRegistryDatabaseFixture>();
 
         return services;
