@@ -30,6 +30,12 @@ public sealed class EstablishmentDetailsBuilder
     private string? _senProvision;
     private string? _localAuthorityName;
     private LocalAuthorityCode _localAuthorityCode;
+    private string? _ageRange;
+    private string? _gender;
+    private int? _pupilCount;
+    private string? _religious;
+    private string? _phase;
+    private string? _type;
 
     public static EstablishmentDetailsBuilder Create() => new();
 
@@ -160,6 +166,42 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
+    public EstablishmentDetailsBuilder WithAgeRange(int low, int high)
+    {
+        _ageRange = $"{low} to {high}";
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithGender(string gender)
+    {
+        _gender = gender;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithPupilCount(int count)
+    {
+        _pupilCount = count;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithReligiousCharacter(string religious)
+    {
+        _religious = religious;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithType(string type)
+    {
+        _type = type;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithPhase(string phase)
+    {
+        _phase = phase;
+        return this;
+    }
+
     public EstablishmentDetailsModel Build()
     {
         string urn =
@@ -186,7 +228,13 @@ public sealed class EstablishmentDetailsBuilder
                 null :
                 new(name: _groupName, code: _groupCode),
             SenProvision = _senProvision,
-            LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode)
+            LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode),
+            AgeRange = _ageRange,
+            Gender = _gender,
+            Pupils = _pupilCount is null ? null : new(_pupilCount.Value),
+            ReligiousCharacter = _religious,
+            Phase = new(_phase),
+            Type = _type is null ? null : new(_type)
         };
     }
 }
