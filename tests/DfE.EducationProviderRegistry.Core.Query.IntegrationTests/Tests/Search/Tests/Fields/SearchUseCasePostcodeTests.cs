@@ -35,7 +35,7 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
             SearchAggregateBuilder.Create().WithPostcode("AB2 3ER").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -65,7 +65,7 @@ public sealed class SearchUseCasePostcodeTests : SearchUseCaseMatchesResultsTest
             SearchAggregateBuilder.Create().WithPostcode("BB BBB").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

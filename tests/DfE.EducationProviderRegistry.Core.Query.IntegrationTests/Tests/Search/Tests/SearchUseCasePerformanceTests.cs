@@ -59,7 +59,7 @@ public sealed class SearchUseCasePerformanceTests : SearchUseCaseMatchesResultsT
                         .Build())
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(establishments, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(establishments, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -158,7 +158,7 @@ public sealed class GroupTests
     public void GetHashCode_WhenEqual_ShouldReturnSameValue()
     {
         // Arrange
-        GroupIdentity identity = new(GroupIdTestDoubles.Create(), GroupUIDTestDoubles.Create());
+        GroupIdentity identity = new(GroupIdTestDoubles.Stub(), GroupUIDTestDoubles.Create());
         GroupExternalIdentifiers externalIds = GroupExternalIdentifiersTestDoubles.Create();
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(7);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(9);
@@ -206,11 +206,11 @@ public sealed class GroupTests
         GroupCharacteristics? characteristics = null)
     {
         return CreateSut(
-            id ?? GroupIdentityTestDoubles.Create(),
+            id ?? GroupIdentityTestDoubles.Stub(),
             externalIds ??
                 new(
-                    UkprnTestDoubles.Create(),
-                    CompaniesHouseIdTestDoubles.Create()),
+                    UkprnTestDoubles.Stub(),
+                    CompaniesHouseIdTestDoubles.Stub()),
             composition ?? GroupCompositionTestDoubles.Create(),
             characteristics ?? GroupCharacteristicsTestDoubles.Create()
         );

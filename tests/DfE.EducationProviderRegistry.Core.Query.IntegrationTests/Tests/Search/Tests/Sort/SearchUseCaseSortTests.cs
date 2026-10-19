@@ -45,9 +45,9 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        SearchableAggregates _ =
+        SearchableSearchAggregates _ =
             await DatabaseFixture.SeedAsync<
-                IEnumerable<SearchAggregate>, SearchableAggregates>(_sortableSearchResults, ct);
+                IEnumerable<SearchAggregate>, SearchableSearchAggregates>(_sortableSearchResults, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -77,9 +77,9 @@ public sealed class SearchUseCaseSortTests : UseCaseIntegrationTestBase
         // Arrange
         CancellationToken ct = TestContext.Current.CancellationToken;
 
-        SearchableAggregates _ =
+        SearchableSearchAggregates _ =
             await DatabaseFixture.SeedAsync<
-                IEnumerable<SearchAggregate>, SearchableAggregates>(_sortableSearchResults, ct);
+                IEnumerable<SearchAggregate>, SearchableSearchAggregates>(_sortableSearchResults, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

@@ -35,7 +35,7 @@ public sealed class SearchUseCaseCompaniesHouseNumberTests : SearchUseCaseMatche
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("number-3").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -65,7 +65,7 @@ public sealed class SearchUseCaseCompaniesHouseNumberTests : SearchUseCaseMatche
             SearchAggregateBuilder.Create().WithCompaniesHouseNumber("STUB-3").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

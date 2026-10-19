@@ -35,7 +35,7 @@ public sealed class SearchUseCaseLocalAuthorityNameTests : SearchUseCaseMatchesR
             SearchAggregateBuilder.Create().WithLocalAuthorityName("Birmingham").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -65,7 +65,7 @@ public sealed class SearchUseCaseLocalAuthorityNameTests : SearchUseCaseMatchesR
             SearchAggregateBuilder.Create().WithLaEstab("Cardiff").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
