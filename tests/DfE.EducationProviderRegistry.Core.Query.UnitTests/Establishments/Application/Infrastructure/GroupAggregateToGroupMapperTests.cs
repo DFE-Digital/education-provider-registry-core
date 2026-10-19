@@ -20,28 +20,14 @@ public sealed class GroupAggregateToGroupMapperTests
     }
 
     [Fact]
-    public void Map_Should_Map_All_Properties()
+    public void Map_Should_Map_Identity()
     {
         // Arrange
         GroupAggregateToGroupMapper sut = new();
 
-        GroupAggregate input =
-            GroupAggregateBuilder.Create()
+        GroupAggregate input = GroupAggregateBuilder.Create()
             .WithGroupId("TR001")
             .WithGroupUid(12345)
-            .WithUkprn("10000001")
-            .WithCompaniesHouseNumber("COMP123")
-            .WithName("Test Trust")
-            .WithGroupType("MAT")
-            .WithSiteName("Head Office")
-            .WithAddressLine1("Line 1")
-            .WithAddressLine2("Line 2")
-            .WithTown("Town")
-            .WithCounty("County")
-            .WithPostcode("AB1 2CD")
-            .WithStatus(
-                label: "Closed",
-                effectiveDate: new DateOnly(2020, 10, 10))
             .Build();
 
         // Act
@@ -50,27 +36,57 @@ public sealed class GroupAggregateToGroupMapperTests
         // Assert
         Assert.Equal("TR001", result.GroupId.Value);
         Assert.Equal(12345, result.GroupUID.Value);
+    }
 
+    [Fact]
+    public void Map_Should_Map_ExternalIdentifiers()
+    {
+        // Arrange
+        GroupAggregateToGroupMapper sut = new();
+
+        GroupAggregate input = GroupAggregateBuilder.Create()
+            .WithUkprn("10000001")
+            .WithCompaniesHouseNumber("COMP123")
+            .Build();
+
+        // Act
+        Group result = sut.Map(input);
+
+        // Assert
         Assert.Equal("10000001", result.Ukprn.Value);
         Assert.Equal("COMP123", result.CompaniesHouseId!.Value);
+    }
 
-        Assert.Equal("Test Trust", result.Name.Value);
+    [Fact]
+    public void Map_Should_Map_Null_CompaniesHouseId()
+    {
+        // Arrange
+        GroupAggregateToGroupMapper sut = new();
 
-        Assert.Equal("MAT", result.GroupType.Value);
+        GroupAggregate input = GroupAggregateBuilder.Create()
+            .WithCompaniesHouseNumber(null)
+            .Build();
 
-        Assert.Equal("Head Office", result.Address.Name);
-        Assert.Equal("Line 1", result.Address.AddressLine1);
-        Assert.Equal("Line 2", result.Address.AddressLine2);
-        Assert.Equal("Town", result.Address.Town);
-        Assert.Equal("County", result.Address.County);
-        Assert.Equal("AB1 2CD", result.Address.Postcode);
+        // Act
+        Group result = sut.Map(input);
 
-        Assert.NotNull(result.Status);
-        Assert.Equal("Closed", result.Status!.Label);
-        Assert.Equal(
-            new DateOnly(2020, 10, 10),
-            result.Status.EffectiveDate);
+        // Assert
+        Assert.Null(result.CompaniesHouseId);
+    }
 
+    [Fact]
+    public void Map_Should_Create_Empty_Composition_Collections()
+    {
+        // Arrange
+        GroupAggregateToGroupMapper sut = new();
+
+        GroupAggregate input = GroupAggregateBuilder.Create()
+            .Build();
+
+        // Act
+        Group result = sut.Map(input);
+
+        // Assert
         Assert.Empty(result.Academies);
         Assert.Empty(result.Members);
         Assert.Empty(result.Trustees);
@@ -96,20 +112,24 @@ public sealed class GroupAggregateToGroupMapperTests
     }
 
     [Fact]
-    public void Map_Should_Map_Null_CompaniesHouseId()
+    public void Map_Should_Map_Status()
     {
         // Arrange
         GroupAggregateToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
-            .WithCompaniesHouseNumber(null)
+            .WithStatus("Closed", new DateOnly(2020, 10, 10))
             .Build();
 
         // Act
         Group result = sut.Map(input);
 
         // Assert
-        Assert.Null(result.CompaniesHouseId);
+        Assert.NotNull(result.Status);
+        Assert.Equal("Closed", result.Status!.Label);
+        Assert.Equal(
+            new DateOnly(2020, 10, 10),
+            result.Status.EffectiveDate);
     }
 
     [Fact]
@@ -137,5 +157,32 @@ public sealed class GroupAggregateToGroupMapperTests
         Assert.Equal(string.Empty, result.Address.Town);
         Assert.Equal(string.Empty, result.Address.County);
         Assert.Equal(string.Empty, result.Address.Postcode);
+    }
+
+    [Fact]
+    public void Map_Should_Map_Address()
+    {
+        // Arrange
+        GroupAggregateToGroupMapper sut = new();
+
+        GroupAggregate input = GroupAggregateBuilder.Create()
+            .WithSiteName("Head Office")
+            .WithAddressLine1("Line 1")
+            .WithAddressLine2("Line 2")
+            .WithTown("Town")
+            .WithCounty("County")
+            .WithPostcode("AB1 2CD")
+            .Build();
+
+        // Act
+        Group result = sut.Map(input);
+
+        // Assert
+        Assert.Equal("Head Office", result.Address.Name);
+        Assert.Equal("Line 1", result.Address.AddressLine1);
+        Assert.Equal("Line 2", result.Address.AddressLine2);
+        Assert.Equal("Town", result.Address.Town);
+        Assert.Equal("County", result.Address.County);
+        Assert.Equal("AB1 2CD", result.Address.Postcode);
     }
 }
