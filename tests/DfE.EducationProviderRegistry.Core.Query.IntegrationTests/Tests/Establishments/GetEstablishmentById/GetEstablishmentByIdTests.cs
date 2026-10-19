@@ -1,7 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Establishments.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
