@@ -1,17 +1,16 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
-internal sealed class GroupBuilder
+public sealed class GroupBuilder
 {
     private string _name = "Test Group Name";
     private string _groupId = "1234567";
     private int _groupUid = 1234;
     private string _ukprn = "UKPRN-1";
     private string _companiesHouseId = "CH1";
-    private GroupType _type = GroupTypeTestDoubles.Create();
+    private GroupType _type = GroupTypeTestDoubles.Stub();
     private SiteAddressModel _address = AddressTestDoubles.Generate();
     private GroupStatus _status = new("Open", new(2025, 01, 02));
 

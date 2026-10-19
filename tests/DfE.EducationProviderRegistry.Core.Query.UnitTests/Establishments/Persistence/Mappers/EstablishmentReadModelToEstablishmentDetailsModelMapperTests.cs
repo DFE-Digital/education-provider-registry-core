@@ -1,6 +1,6 @@
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.TestDoubles;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;
@@ -64,7 +64,15 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
     public void Map_WithAddress_MapsAddress()
     {
         // Arrange
-        EstablishmentAggregate establishment = EstablishmentAggregateTestDoubles.Stub();
+        EstablishmentAggregate establishment =
+            EstablishmentAggregateBuilder.Create()
+                .WithSiteName("Test Establishment")
+                .WithAddressLine1("1 Test Street")
+                .WithAddressLine2("Testhelm")
+                .WithTown("Testville")
+                .WithCounty("TestCountry")
+                .WithPostcode("TE5 1ST")
+                .Build();
 
         EstablishmentReadModel input =
             new(establishment, []);

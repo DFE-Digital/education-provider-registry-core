@@ -1,6 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +22,14 @@ public sealed class GetEstablishmentsReturnsResultsTests : UseCaseIntegrationTes
     [Fact]
     public async Task Returns_Results()
     {
-        // arrange
+        // Arrange
+        IReadOnlyCollection<EstablishmentAggregate> seed =
+            EstablishmentAggregateTestDoubles.StubMany(count: 10);
+
+        EstablishmentAggregates estab = await DatabaseFixture.SeedAsync<
+            IEnumerable<EstablishmentAggregate>, EstablishmentAggregates>(
+                seed, TestContext.Current.CancellationToken);
+
         GetEstablishmentsRequest request = GetEstablishmentsRequest.Create();
 
         // act
@@ -31,12 +39,6 @@ public sealed class GetEstablishmentsReturnsResultsTests : UseCaseIntegrationTes
 
         // assert
         Assert.NotNull(results);
-
-        // TODO: DBcontext still needs to be seeded with schema & data
-        // Currently test fails as there is no data in the database, so the results.Model is null or empty.
-        // Exception is thrown when trying to access Establishments table by dbContext
-
-        //Assert.NotNull(results.Model);
-        //Assert.NotEmpty(results.Model);
+        Assert.Equal(seed.Count, results.Model.Count);
     }
 }

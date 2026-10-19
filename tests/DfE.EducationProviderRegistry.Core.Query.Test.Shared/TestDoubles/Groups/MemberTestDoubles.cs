@@ -2,9 +2,9 @@
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
-internal static class MemberTestDoubles
+public static class MemberTestDoubles
 {
     public static IReadOnlyCollection<Member> Create(int count = 1)
     {
@@ -14,10 +14,11 @@ internal static class MemberTestDoubles
 
         for (int i = 0; i < count; i++)
         {
-            members.Add(CreateWith(
-                id: faker.Random.Number(1000000, 7777777).ToString(),
-                name: faker.Person.FullName,
-                startDate: faker.Date.Past()));
+            members.Add(
+                CreateWith(
+                    id: faker.Random.Number(1000000, 7777777).ToString(),
+                    name: faker.Person.FullName,
+                    startDate: faker.Date.Past()));
         }
 
         return members.AsReadOnly();

@@ -35,7 +35,7 @@ public sealed class SearchUseCaseCountyTests : SearchUseCaseMatchesResultsTestBa
             SearchAggregateBuilder.Create().WithCounty("d").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -66,7 +66,7 @@ public sealed class SearchUseCaseCountyTests : SearchUseCaseMatchesResultsTestBa
             SearchAggregateBuilder.Create().WithCounty("c").Build(),
         ];
 
-        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableAggregates>(seed, ct);
+        await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(seed, ct);
 
         SearchRequest request =
             SearchRequestBuilder.Create()

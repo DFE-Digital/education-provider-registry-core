@@ -1,11 +1,10 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Shared.TestDoubles;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 
-internal static class GroupReadModelTestDoubles
+public static class GroupReadModelTestDoubles
 {
-    internal static GroupReadModel Stub()
+    public static GroupReadModel Stub()
     {
         return new()
         {

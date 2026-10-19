@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
