@@ -335,7 +335,7 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
     {
         // Arrange
         IReadOnlyList<EstablishmentGovernorAggregate> governors =
-            EstablishmentGovernorAggregateTestDoubles.StubMany().ToList();
+            [.. EstablishmentGovernorAggregateTestDoubles.StubMany()];
 
         EstablishmentAggregate establishment =
             EstablishmentAggregateBuilder.Create()
