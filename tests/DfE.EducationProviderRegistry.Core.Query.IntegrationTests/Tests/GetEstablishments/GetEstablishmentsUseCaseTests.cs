@@ -4,13 +4,12 @@ using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstabli
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NetTopologySuite.Noding;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments;
 
-public sealed class GetEstablishmentsReturnsResultsTests : UseCaseIntegrationTestBase
+public sealed class GetEstablishmentsUseCaseTests : UseCaseIntegrationTestBase
 {
-    public GetEstablishmentsReturnsResultsTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public GetEstablishmentsUseCaseTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
