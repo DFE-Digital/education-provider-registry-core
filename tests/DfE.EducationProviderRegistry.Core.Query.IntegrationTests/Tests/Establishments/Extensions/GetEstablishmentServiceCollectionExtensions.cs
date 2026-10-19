@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishments.Extensions;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Establishments.Extensions;
 
 internal static class GetEstablishmentServiceCollectionExtensions
 {
