@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Shared;
+﻿using System.Security.Cryptography;
+using DfE.EducationProviderRegistry.Core.Query.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
 
@@ -17,8 +18,6 @@ public static class UniqueReferenceNumberTestDoubles
     public static UniqueReferenceNumber Random()
     {
         return new UniqueReferenceNumber(
-            new Random().Next(
-                minValue: 100000,
-                maxValue: 999999).ToString());
+            RandomNumberGenerator.GetInt32(100000, 999999).ToString());
     }
 }
