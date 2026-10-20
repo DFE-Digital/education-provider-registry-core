@@ -2,9 +2,8 @@
 using DfE.EducationProviderRegistry.Core.Query.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentByUrn;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishments.Request;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +22,7 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
 
         // Register dummy dependencies required by the use case
         services.AddSingleton<ILogger<GetEstablishmentsUseCase>, InMemoryLogger<GetEstablishmentsUseCase>>();
-        services.AddSingleton<ILogger<GetEstablishmentByIdUseCase>, InMemoryLogger<GetEstablishmentByIdUseCase>>();
+        services.AddSingleton<ILogger<GetEstablishmentByUrnUseCase>, InMemoryLogger<GetEstablishmentByUrnUseCase>>();
         services.AddScoped<IEstablishmentsRepository, EfPostgresEstablishmentRepository>();
 
         services.AddDbContext<EducationProviderRegistryDbContext>(options =>
@@ -47,16 +46,16 @@ public sealed class CompositionRootResolveEstablishmentsUseCaseTests
                     GetEstablishmentsRequest,
                     UseCaseResponse<IReadOnlyCollection<EstablishmentDetailsModel>>>>();
 
-        IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsReadModel>>? getEstablishmentByIdUseCase =
+        IUseCase<GetEstablishmentByUrnRequest, UseCaseResponse<EstablishmentDetailsReadModel>>? getEstablishmentByIdUseCase =
             scope.ServiceProvider.GetService<
                 IUseCase<
-                    GetEstablishmentByIdRequest,
+                    GetEstablishmentByUrnRequest,
                     UseCaseResponse<EstablishmentDetailsReadModel>>>();
 
         // Assert
         Assert.NotNull(getEstablishmentsUseCase);
         Assert.NotNull(getEstablishmentByIdUseCase);
         Assert.IsType<GetEstablishmentsUseCase>(getEstablishmentsUseCase);
-        Assert.IsType<GetEstablishmentByIdUseCase>(getEstablishmentByIdUseCase);
+        Assert.IsType<GetEstablishmentByUrnUseCase>(getEstablishmentByIdUseCase);
     }
 }

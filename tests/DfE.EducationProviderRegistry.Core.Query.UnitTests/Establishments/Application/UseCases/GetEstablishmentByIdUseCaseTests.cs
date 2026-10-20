@@ -2,7 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.EstablishmentDetails;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentByUrn;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -11,15 +11,15 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Appl
 public sealed class GetEstablishmentByIdUseCaseTests
 {
     private static readonly CancellationToken _token = CancellationToken.None;
-    private readonly Mock<ILogger<GetEstablishmentByIdUseCase>> _loggerMock;
+    private readonly Mock<ILogger<GetEstablishmentByUrnUseCase>> _loggerMock;
 
-    private static GetEstablishmentByIdUseCase CreateSut(
-        Mock<ILogger<GetEstablishmentByIdUseCase>> loggerMock,
+    private static GetEstablishmentByUrnUseCase CreateSut(
+        Mock<ILogger<GetEstablishmentByUrnUseCase>> loggerMock,
         Mock<IEstablishmentsRepository> repoMock) => new(loggerMock.Object, repoMock.Object);
 
     public GetEstablishmentByIdUseCaseTests()
     {
-        _loggerMock = MockTestDouble.Default<ILogger<GetEstablishmentByIdUseCase>>(MockBehavior.Loose);
+        _loggerMock = MockTestDouble.Default<ILogger<GetEstablishmentByUrnUseCase>>(MockBehavior.Loose);
     }
 
     [Fact]
@@ -37,9 +37,9 @@ public sealed class GetEstablishmentByIdUseCaseTests
                 (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
                 establishment);
 
-        GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
+        GetEstablishmentByUrnUseCase sut = CreateSut(_loggerMock, repoMock);
 
-        GetEstablishmentByIdRequest request = new(establishment.Identifiers.Urn);
+        GetEstablishmentByUrnRequest request = new(establishment.Identifiers.Urn);
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =
@@ -67,9 +67,9 @@ public sealed class GetEstablishmentByIdUseCaseTests
                 (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token),
                 null!);
 
-        GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
+        GetEstablishmentByUrnUseCase sut = CreateSut(_loggerMock, repoMock);
 
-        GetEstablishmentByIdRequest request = new("12345");
+        GetEstablishmentByUrnRequest request = new("12345");
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =
@@ -90,8 +90,8 @@ public sealed class GetEstablishmentByIdUseCaseTests
     public async Task HandleRequestAsync_WithInvalidUrn_ReturnsFailure()
     {
         // Arrange
-        GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, new Mock<IEstablishmentsRepository>());
-        GetEstablishmentByIdRequest request = new("INVALID_URN");
+        GetEstablishmentByUrnUseCase sut = CreateSut(_loggerMock, new Mock<IEstablishmentsRepository>());
+        GetEstablishmentByUrnRequest request = new("INVALID_URN");
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =
@@ -115,9 +115,9 @@ public sealed class GetEstablishmentByIdUseCaseTests
                 OperationCanceledException>(
                     (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token));
 
-        GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
+        GetEstablishmentByUrnUseCase sut = CreateSut(_loggerMock, repoMock);
 
-        GetEstablishmentByIdRequest request = new("12345");
+        GetEstablishmentByUrnRequest request = new("12345");
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =
@@ -145,9 +145,9 @@ public sealed class GetEstablishmentByIdUseCaseTests
                 Exception>(
                     (repo) => repo.GetEstablishmentById(It.IsAny<EstablishmentUrnModel>(), _token));
 
-        GetEstablishmentByIdUseCase sut = CreateSut(_loggerMock, repoMock);
+        GetEstablishmentByUrnUseCase sut = CreateSut(_loggerMock, repoMock);
 
-        GetEstablishmentByIdRequest request = new("12345");
+        GetEstablishmentByUrnRequest request = new("12345");
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =

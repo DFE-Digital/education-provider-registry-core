@@ -3,15 +3,15 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentByUrn;
 
-public sealed class GetEstablishmentByIdUseCase : IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsReadModel>>
+public sealed class GetEstablishmentByUrnUseCase : IUseCase<GetEstablishmentByUrnRequest, UseCaseResponse<EstablishmentDetailsReadModel>>
 {
-    private readonly ILogger<GetEstablishmentByIdUseCase> _logger;
+    private readonly ILogger<GetEstablishmentByUrnUseCase> _logger;
     private readonly IEstablishmentsRepository _establishmentRepository;
 
-    public GetEstablishmentByIdUseCase(
-        ILogger<GetEstablishmentByIdUseCase> logger,
+    public GetEstablishmentByUrnUseCase(
+        ILogger<GetEstablishmentByUrnUseCase> logger,
         IEstablishmentsRepository establishmentRepository)
     {
         ArgumentNullException.ThrowIfNull(logger);
@@ -22,7 +22,7 @@ public sealed class GetEstablishmentByIdUseCase : IUseCase<GetEstablishmentByIdR
     }
 
     public async Task<UseCaseResponse<EstablishmentDetailsReadModel>> HandleRequestAsync(
-        GetEstablishmentByIdRequest request,
+        GetEstablishmentByUrnRequest request,
         CancellationToken cancellationToken = default)
     {
         try
@@ -46,7 +46,7 @@ public sealed class GetEstablishmentByIdUseCase : IUseCase<GetEstablishmentByIdR
             _logger.LogError(
                 ex,
                 "{UseCase} execution was cancelled by the caller: {Message}",
-                nameof(GetEstablishmentByIdUseCase),
+                nameof(GetEstablishmentByUrnUseCase),
                 message
                 );
 
@@ -60,7 +60,7 @@ public sealed class GetEstablishmentByIdUseCase : IUseCase<GetEstablishmentByIdR
             _logger.LogError(
                 ex,
                 "{UseCase} encountered an unexpected error: {Message}",
-                nameof(GetEstablishmentByIdUseCase),
+                nameof(GetEstablishmentByUrnUseCase),
                 message);
 
             return UseCaseResponse<EstablishmentDetailsReadModel>.Failure(model: FailureResponseModel, error: message);

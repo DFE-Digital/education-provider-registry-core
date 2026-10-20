@@ -1,5 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentByUrn;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Establishments.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
@@ -35,12 +35,12 @@ public sealed class GetEstablishmentByIdTests : UseCaseIntegrationTestBase
 
         await DatabaseFixture.SeedAsync<IEnumerable<EstablishmentAggregate>, EstablishmentAggregates>([establishment], TestContext.Current.CancellationToken);
 
-        GetEstablishmentByIdRequest request = new(Urn: "123456");
+        GetEstablishmentByUrnRequest request = new(Urn: "123456");
 
         // Act
         UseCaseResponse<EstablishmentDetailsReadModel> result =
             await ExecuteUseCase<
-                GetEstablishmentByIdRequest,
+                GetEstablishmentByUrnRequest,
                 EstablishmentDetailsReadModel>(
                     request,
                     TestContext.Current.CancellationToken);
