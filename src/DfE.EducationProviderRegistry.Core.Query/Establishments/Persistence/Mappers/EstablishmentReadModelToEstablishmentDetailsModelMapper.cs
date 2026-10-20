@@ -15,9 +15,11 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
 
         EstablishmentGroupModel? group =
             (establishment.GroupName is null ||
-                establishment.GroupCode is null) ?
+                establishment.GroupUid is null) ?
                     null :
-                        new EstablishmentGroupModel(name: establishment.GroupName, code: establishment.GroupCode);
+                        new EstablishmentGroupModel(
+                            name: establishment.GroupName,
+                            uid: establishment.GroupUid.Value.ToString());
 
         SiteAddressModel? address =
             establishment.SiteName is null &&

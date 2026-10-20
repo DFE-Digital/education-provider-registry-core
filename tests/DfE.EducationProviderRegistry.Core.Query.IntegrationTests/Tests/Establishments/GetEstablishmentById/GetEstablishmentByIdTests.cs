@@ -29,7 +29,7 @@ public sealed class GetEstablishmentByIdTests : UseCaseIntegrationTestBase
                 .WithUrn("123456")
                 .WithName("Test School")
                 .WithGroupName("Trust A")
-                .WithGroupCode("TRST")
+                .WithGroupUid(1234L)
                 .WithWebsite("www.test.com")
                 .Build();
 
@@ -56,7 +56,7 @@ public sealed class GetEstablishmentByIdTests : UseCaseIntegrationTestBase
 
         Assert.NotNull(resultEstablishment.Group);
         Assert.Equal("Trust A", resultEstablishment.Group.name);
-        Assert.Equal("TRST", resultEstablishment.Group.code);
+        Assert.Equal("1234", resultEstablishment.Group.uid);
 
         Assert.NotNull(resultEstablishment.ContactDetails);
         Assert.Equal("www.test.com", resultEstablishment.ContactDetails.Website);

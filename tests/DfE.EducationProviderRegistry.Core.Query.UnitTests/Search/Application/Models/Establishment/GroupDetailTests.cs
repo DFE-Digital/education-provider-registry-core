@@ -11,8 +11,8 @@ public sealed class GroupDetailTests
         GroupDetail detail = new("Mock Trust", "TRUST001");
 
         // assert
-        Assert.Equal("Mock Trust", detail.PartOfName);
-        Assert.Equal("TRUST001", detail.PartOfCode);
+        Assert.Equal("Mock Trust", detail.Name);
+        Assert.Equal("TRUST001", detail.Uid);
     }
 
     [Fact]

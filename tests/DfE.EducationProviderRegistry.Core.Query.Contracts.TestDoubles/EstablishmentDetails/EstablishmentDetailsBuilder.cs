@@ -226,7 +226,7 @@ public sealed class EstablishmentDetailsBuilder
             Status = _status is null ? null : new(_status.Value, _statusEffectiveDate),
             Group = _groupName is null || _groupCode is null ?
                 null :
-                new(name: _groupName, code: _groupCode),
+                new(name: _groupName, uid: _groupCode),
             SenProvision = _senProvision,
             LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode),
             AgeRange = _ageRange,

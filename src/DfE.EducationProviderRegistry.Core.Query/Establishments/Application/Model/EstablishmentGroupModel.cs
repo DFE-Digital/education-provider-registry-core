@@ -1,3 +1,3 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public record EstablishmentGroupModel(string name, string code);
+public record EstablishmentGroupModel(string name, string uid);

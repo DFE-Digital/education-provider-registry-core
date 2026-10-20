@@ -98,8 +98,8 @@ public sealed class SearchResultsFromQueryResultsMapperTests
         Assert.Equal("Test Address Line, Test Addres line 2, Test City, Test County, AA1 1AA",
             mappedSearchResult.Address?.FullAddress);
         Assert.Equal("Test Local Authority", mappedSearchResult.LocalAuthority?.Name);
-        Assert.Equal("Test Group", mappedSearchResult.Group?.PartOfName);
-        Assert.Equal("GROUP1", mappedSearchResult.Group?.PartOfCode);
+        Assert.Equal("Test Group", mappedSearchResult.Group?.Name);
+        Assert.Equal("GROUP1", mappedSearchResult.Group?.Uid);
         Assert.Equal(2, mappedSearchResult.AcademyCount);
         Assert.Equal(totalCount, mapped.TotalCount);
 

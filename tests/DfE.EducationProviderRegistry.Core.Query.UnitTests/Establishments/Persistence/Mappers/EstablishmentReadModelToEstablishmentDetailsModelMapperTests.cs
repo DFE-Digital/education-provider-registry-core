@@ -485,7 +485,7 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
         EstablishmentAggregate establishment =
             EstablishmentAggregateBuilder.Create()
                 .WithGroupName("Test Group")
-                .WithGroupCode("TRST")
+                .WithGroupUid(123L)
                 .Build();
 
         EstablishmentReadModel input =
@@ -498,6 +498,6 @@ public sealed class EstablishmentReadModelToEstablishmentDetailsModelMapperTests
         // Assert
         Assert.NotNull(result.Group);
         Assert.Equal("Test Group", result.Group.name);
-        Assert.Equal("TRST", result.Group.code);
+        Assert.Equal("123", result.Group.uid);
     }
 }

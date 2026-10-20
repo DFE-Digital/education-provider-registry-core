@@ -128,6 +128,12 @@ public sealed class EstablishmentAggregateBuilder
         return this;
     }
 
+    public EstablishmentAggregateBuilder WithGroupUid(long? uid)
+    {
+        _aggregate.GroupUid = uid;
+        return this;
+    }
+
     public EstablishmentAggregateBuilder WithWebsite(string? website)
     {
         _aggregate.Website = website;

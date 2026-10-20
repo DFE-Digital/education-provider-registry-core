@@ -50,9 +50,9 @@ internal sealed class SearchResultsFromQueryResultsMapper
 
                     new SearchType(r.TypeName ?? string.Empty, r.TypeId),
 
-                    (r.GroupName is null || r.GroupCode is null) ?
+                    (r.GroupName is null || r.GroupUid is null) ?
                         null :
-                        new GroupDetail(partOfName: r.GroupName, partOfCode: r.GroupCode),
+                        new GroupDetail(name: r.GroupName, uid: r.GroupUid),
 
                     r.LocalAuthorityName is null ?
                         null :
