@@ -1,4 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Group;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Groups;
 using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
@@ -38,11 +38,11 @@ public sealed class GetGroupByIdTests : UseCaseIntegrationTestBase
             IEnumerable<GroupAggregate>,
             GroupAggregates>([group], TestContext.Current.CancellationToken);
 
-        GetGroupByGroupUniqueIdentifierRequest request = new(GroupUid: "12345");
+        GetGroupByGroupUidRequest request = new(GroupUid: "12345");
 
         // Act
         UseCaseResponse<GroupReadModelResponse> result =
-            await ExecuteUseCase<GetGroupByGroupUniqueIdentifierRequest, GroupReadModelResponse>(
+            await ExecuteUseCase<GetGroupByGroupUidRequest, GroupReadModelResponse>(
                 request, TestContext.Current.CancellationToken);
 
         // Assert

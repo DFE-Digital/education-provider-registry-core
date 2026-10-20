@@ -17,7 +17,7 @@ internal sealed class GroupAggregateToGroupMapper : IMapper<GroupAggregate, Grou
             uid: new(input.GroupUid));
 
         GroupExternalIdentifiers externalIds = new(
-          ukprn: new Ukprn(input.Ukprn),
+          ukprn: input.Ukprn is null ? null : new Ukprn(input.Ukprn),
           companiesHouseId: input.CompaniesHouseNumber is null ? null : new CompaniesHouseId(input.CompaniesHouseNumber));
 
         GroupComposition composition = new(

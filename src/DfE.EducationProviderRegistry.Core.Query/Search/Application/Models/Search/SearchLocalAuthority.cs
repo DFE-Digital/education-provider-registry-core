@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 
 /// <summary>
 /// Represents the local authority associated with a search result.

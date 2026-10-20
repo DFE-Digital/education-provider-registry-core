@@ -5,16 +5,16 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
 
-internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupUniqueIdentifierRequest, UseCaseResponse<GroupReadModelResponse>>
+internal sealed class GetGroupByGroupUidUseCase : IUseCase<GetGroupByGroupUidRequest, UseCaseResponse<GroupReadModelResponse>>
 {
-    private readonly ILogger<GetGroupByGroupIdUseCase> _logger;
+    private readonly ILogger<GetGroupByGroupUidUseCase> _logger;
     private readonly IGroupsRepository _groupsRepository;
     private readonly IMapper<Group, GroupReadModel> _modelToDtoMapper;
 
-    public GetGroupByGroupIdUseCase(
-        ILogger<GetGroupByGroupIdUseCase> logger,
+    public GetGroupByGroupUidUseCase(
+        ILogger<GetGroupByGroupUidUseCase> logger,
         IGroupsRepository groupsRepository,
         IMapper<Group, GroupReadModel> modelToDtoMapper)
     {
@@ -28,7 +28,7 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupUniqueI
     }
 
     public async Task<UseCaseResponse<GroupReadModelResponse>> HandleRequestAsync(
-        GetGroupByGroupUniqueIdentifierRequest request,
+        GetGroupByGroupUidRequest request,
         CancellationToken cancellationToken = default)
     {
         if (request is null)
@@ -40,14 +40,14 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupUniqueI
         {
             if (!GroupUID.TryCreate(request.GroupUid, out GroupUID groupUid))
             {
-                return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, $"Could not parse the GroupUniqueIdentifier {request.GroupUid}");
+                return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, $"Could not parse the GroupUniqueId {request.GroupUid}");
             }
 
             Group? group = await _groupsRepository.GetGroupByGroupUidAsync(groupUid, cancellationToken);
 
             if (group is null)
             {
-                return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, $"Group with GroupId {request.GroupUid} not found.");
+                return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, $"Group with GroupUid {request.GroupUid} not found.");
             }
 
             GroupReadModel dto = _modelToDtoMapper.Map(group);
@@ -63,7 +63,7 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupUniqueI
             _logger.LogError(
                 ex,
                 "{UseCase} execution was cancelled by the caller.",
-                nameof(GetGroupByGroupIdUseCase));
+                nameof(GetGroupByGroupUidUseCase));
 
             return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, "The operation was cancelled.");
         }
@@ -72,10 +72,10 @@ internal sealed class GetGroupByGroupIdUseCase : IUseCase<GetGroupByGroupUniqueI
             _logger.LogError(
                 ex,
                 "{UseCase} validation failed for GroupId {GroupId}",
-                nameof(GetGroupByGroupIdUseCase),
+                nameof(GetGroupByGroupUidUseCase),
                 request.GroupUid);
 
-            return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, "Invalid group identifier.");
+            return UseCaseResponse<GroupReadModelResponse>.Failure(Failure, "Invalid groupuid.");
         }
         catch (Exception ex)
         {
