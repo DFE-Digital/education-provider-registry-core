@@ -71,7 +71,7 @@ public sealed class GroupTests
 
         GroupComposition composition =
             GroupCompositionTestDoubles.Create(
-                academies: AcademyTestDouble.Create(7),
+                academies: AcademyTestDoubles.Create(7),
                 members: MemberTestDoubles.Create(9),
                 trustees: TrusteeTestDoubles.Create(13));
 
@@ -162,7 +162,7 @@ public sealed class GroupTests
         GroupExternalIdentifiers externalIds = GroupExternalIdentifiersTestDoubles.Create();
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(7);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(9);
-        IReadOnlyCollection<Academy> academies = AcademyTestDouble.Create(13);
+        IReadOnlyCollection<Academy> academies = AcademyTestDoubles.Create(13);
 
         GroupComposition composition = GroupCompositionTestDoubles.Create(members: members, trustees: trustees, academies: academies);
 
