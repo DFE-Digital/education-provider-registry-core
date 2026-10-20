@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Infras
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using Microsoft.Extensions.Logging;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
+namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentByUrn;
 
 public sealed class GetEstablishmentByUrnUseCase : IUseCase<GetEstablishmentByUrnRequest, UseCaseResponse<EstablishmentDetailsReadModel>>
 {
