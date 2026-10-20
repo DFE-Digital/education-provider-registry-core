@@ -23,7 +23,7 @@ public sealed class EstablishmentDetailsBuilder
     private string? _postcode;
 
     private string? _groupName;
-    private string? _groupCode;
+    private string? _groupUid;
     private string? _headteacher;
     private DateOnly? _ofstedDate;
     private string? _ofstedUrl;
@@ -130,9 +130,9 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
-    public EstablishmentDetailsBuilder WithGroupCode(string? code)
+    public EstablishmentDetailsBuilder WithGroupUid(string? uid)
     {
-        _groupCode = code;
+        _groupUid = uid;
         return this;
     }
 
@@ -224,9 +224,9 @@ public sealed class EstablishmentDetailsBuilder
             Ofsted = new(_ofstedDate, _ofstedUrl),
             Address = new(_siteName, _addressLine1, _addressLine2, _town, _county, _postcode),
             Status = _status is null ? null : new(_status.Value, _statusEffectiveDate),
-            Group = _groupName is null || _groupCode is null ?
+            Group = _groupName is null || _groupUid is null ?
                 null :
-                new(name: _groupName, uid: _groupCode),
+                new(name: _groupName, uid: _groupUid),
             SenProvision = _senProvision,
             LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode),
             AgeRange = _ageRange,
