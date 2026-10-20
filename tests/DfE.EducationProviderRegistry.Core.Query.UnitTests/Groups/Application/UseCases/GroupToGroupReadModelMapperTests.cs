@@ -69,7 +69,7 @@ public sealed class GroupToGroupReadModelMapperTests
             .WithAddress(stubAddress.AddressLine1, stubAddress.AddressLine2, stubAddress.Town, stubAddress.County, stubAddress.Postcode)
             .WithGroupStatus("Closed", new(2020, 10, 10))
             .WithType("mat")
-            .WithAcademies(AcademyTestDouble.Create(3))
+            .WithAcademies(AcademyTestDoubles.Create(3))
             .WithMembers(MemberTestDoubles.Create(5))
             .WithTrustees(TrusteeTestDoubles.Create(7))
             .Build();
