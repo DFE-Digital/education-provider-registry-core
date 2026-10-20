@@ -1,13 +1,12 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Shared;
 
-public sealed record Ukprn
+public sealed record class Ukprn
 {
-    public Ukprn(string? value)
+    public Ukprn(string value)
     {
-        Value = value ?? string.Empty;
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        Value = value;
     }
 
     public string Value { get; }
-
-    public static Ukprn CreateNoValue() => new(string.Empty);
 }
