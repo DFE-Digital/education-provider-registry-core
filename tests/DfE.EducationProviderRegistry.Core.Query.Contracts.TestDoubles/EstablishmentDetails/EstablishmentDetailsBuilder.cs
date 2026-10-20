@@ -215,7 +215,7 @@ public sealed class EstablishmentDetailsBuilder
                 EstablishmentIdentifiersModel(
                     urn: new EstablishmentUrnModel(
                         new UniqueReferenceNumber(urn)),
-                    ukprn: new Ukprn(_ukprn),
+                    ukprn: _ukprn is null ? null : new Ukprn(_ukprn),
                     dfeNumber: _dfeNumber is null ? null : new DfeNumber(_dfeNumber)),
             ContactDetails = new EstablishmentContactDetails(
                 Website: _website ?? string.Empty,

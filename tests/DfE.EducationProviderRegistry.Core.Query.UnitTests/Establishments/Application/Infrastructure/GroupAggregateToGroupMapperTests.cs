@@ -53,7 +53,7 @@ public sealed class GroupAggregateToGroupMapperTests
         Group result = sut.Map(input);
 
         // Assert
-        Assert.Equal("10000001", result.Ukprn.Value);
+        Assert.Equal("10000001", result.Ukprn!.Value);
         Assert.Equal("COMP123", result.CompaniesHouseId!.Value);
     }
 

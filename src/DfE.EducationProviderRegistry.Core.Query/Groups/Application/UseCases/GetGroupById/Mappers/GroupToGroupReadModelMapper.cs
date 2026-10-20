@@ -27,7 +27,7 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
             Name = input.Name.Value,
             GroupId = input.GroupId.Value,
             GroupUID = input.GroupUID.Value,
-            UKPRN = input.Ukprn.Value,
+            UKPRN = input.Ukprn?.Value,
             CompaniesHouseId = input.CompaniesHouseId?.Value,
             Address = input.Address.ToString(),
             Status = DisplayStatus(input.Status),
