@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establish
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.GetEstablishmentById;
+namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Establishments.GetEstablishmentById;
 
 public sealed class GetEstablishmentByIdTests : UseCaseIntegrationTestBase
 {

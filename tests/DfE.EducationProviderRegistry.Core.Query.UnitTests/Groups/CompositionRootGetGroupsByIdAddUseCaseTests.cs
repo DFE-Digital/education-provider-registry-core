@@ -2,8 +2,8 @@
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupById.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups;
@@ -29,8 +29,8 @@ public sealed class CompositionRootGetGroupsByIdAddUseCaseTests
 
         // Assert
         updated.ShouldContain<
-            IUseCase<GetGroupByGroupUniqueIdentifierRequest, UseCaseResponse<GroupReadModelResponse>>,
-            GetGroupByGroupIdUseCase>(ServiceLifetime.Scoped);
+            IUseCase<GetGroupByGroupUidRequest, UseCaseResponse<GroupReadModelResponse>>,
+            GetGroupByGroupUidUseCase>(ServiceLifetime.Scoped);
 
         updated.ShouldContain<IMapper<Group, GroupReadModel>, GroupToGroupReadModelMapper>(ServiceLifetime.Singleton);
         updated.ShouldContain<IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>>, TrusteeToTrusteeReadModelMapper>(ServiceLifetime.Singleton);
