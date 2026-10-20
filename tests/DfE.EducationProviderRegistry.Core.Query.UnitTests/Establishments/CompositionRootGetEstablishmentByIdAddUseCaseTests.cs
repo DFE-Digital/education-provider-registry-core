@@ -1,7 +1,7 @@
 ﻿using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.EducationProviderRegistry.Core.Query.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentById;
+using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.UseCases.GetEstablishmentByUrn;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments;
@@ -26,7 +26,7 @@ public sealed class CompositionRootGetEstablishmentByIdAddUseCaseTests
 
         // Assert
         updated.ShouldContain<
-            IUseCase<GetEstablishmentByIdRequest, UseCaseResponse<EstablishmentDetailsReadModel>>,
-            GetEstablishmentByIdUseCase>(ServiceLifetime.Scoped);
+            IUseCase<GetEstablishmentByUrnRequest, UseCaseResponse<EstablishmentDetailsReadModel>>,
+            GetEstablishmentByUrnUseCase>(ServiceLifetime.Scoped);
     }
 }
