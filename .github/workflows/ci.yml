@@ -110,11 +110,17 @@ jobs:
     - name: Run verify format
       run: dotnet format --verbosity=detailed --verify-no-changes
 
-    - name: Pack Core.Query NuGet Package with SemVer
+    - name: Pack Core.Query
       run: dotnet pack src/DfE.EducationProviderRegistry.Core.Query/ --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
-
+      
     - name: Pack Core.Contracts.TestDoubles
       run: dotnet pack tests/DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles/ --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
+
+    - name: Pack Core.Query.Test.Shared
+      run: dotnet pack tests/DfE.EducationProviderRegistry.Core.Query.Test.Shared/ \
+        --configuration Release \
+        --output ./nupkg \
+        /p:PackageVersion=${{ env.VERSION }}
 
     - name: Pack Core.Query.Test.Database
       run: dotnet pack tests/DfE.EducationProviderRegistry.Core.Query.Test.Database/ --configuration Release --output ./nupkg /p:PackageVersion=${{ env.VERSION }}
