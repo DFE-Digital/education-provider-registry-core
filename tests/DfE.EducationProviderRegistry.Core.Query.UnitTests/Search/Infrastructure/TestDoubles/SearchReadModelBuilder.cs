@@ -97,7 +97,7 @@ internal sealed class SearchReadModelBuilder
             TypeId: _typeId,
             Address: _address!,
             LocalAuthorityName: _localAuthorityName,
-            GroupCode: _groupCode,
+            GroupUid: _groupCode,
             GroupName: _groupName,
             ProviderCategory: _providerCategory,
             GroupStatusCode: _groupStatusCode,

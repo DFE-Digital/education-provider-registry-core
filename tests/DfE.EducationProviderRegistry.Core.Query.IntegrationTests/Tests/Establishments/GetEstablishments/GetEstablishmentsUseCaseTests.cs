@@ -53,7 +53,7 @@ public sealed class GetEstablishmentsUseCaseTests : UseCaseIntegrationTestBase
                 .WithUrn("123456")
                 .WithName("Test School")
                 .WithGroupName("Trust A")
-                .WithGroupCode("TRST")
+                .WithGroupUid(1234L)
                 .WithWebsite("www.test.com")
                 .Build();
 
@@ -79,7 +79,7 @@ public sealed class GetEstablishmentsUseCaseTests : UseCaseIntegrationTestBase
 
         Assert.NotNull(school.Group);
         Assert.Equal("Trust A", school.Group.name);
-        Assert.Equal("TRST", school.Group.code);
+        Assert.Equal("1234", school.Group.uid);
 
         Assert.NotNull(school.ContactDetails);
         Assert.Equal("www.test.com", school.ContactDetails.Website);

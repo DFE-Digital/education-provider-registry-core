@@ -11,25 +11,25 @@ public sealed record class GroupDetail
     /// <summary>
     /// Gets the display name of the group the search provider result is part of.
     /// </summary>
-    public string PartOfName { get; }
+    public string Name { get; }
 
     /// <summary>
     /// Gets the identifying code of the group the search provider result is part of.
     /// </summary>
-    public string PartOfCode { get; }
+    public string Uid { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GroupDetail"/> record.
     /// </summary>
-    /// <param name="partOfName">The display name of the group.</param>
-    /// <param name="partOfCode">The identifying code of the group.</param>
-    public GroupDetail(string partOfName, string partOfCode)
+    /// <param name="name">The display name of the group.</param>
+    /// <param name="uid">The identifying code of the group.</param>
+    public GroupDetail(string name, string uid)
     {
-        ArgumentNullException.ThrowIfNull(partOfName);
-        ArgumentNullException.ThrowIfNull(partOfCode);
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(uid);
 
-        PartOfName = partOfName;
-        PartOfCode = partOfCode;
+        Name = name;
+        Uid = uid;
     }
 
     /// <summary>
