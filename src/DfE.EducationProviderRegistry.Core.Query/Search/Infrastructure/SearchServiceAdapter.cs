@@ -92,7 +92,14 @@ public sealed class SearchServiceAdapter
         int totalCount =
             await searchResultsQuery.CountAsync(cancellationToken);
 
-        // 1. Project directly into SearchReadModel.
+        // count facets across all matches, independently of the current page
+        IReadOnlyList<AggregatedFacetResult> facets =
+            await _facetAggregator.CalculateFacetsAsync(
+                searchResultsQuery,
+                request.Facets,
+                cancellationToken);
+
+        // Apply pagination only to the dsplayed results
         List<SearchReadModel> searchResults =
             await searchResultsQuery
                 .OrderByDirection(t => t.ProviderName, request.SortOrdering.Direction)
@@ -116,19 +123,6 @@ public sealed class SearchServiceAdapter
                 )
                 .ToListAsync(cancellationToken);
 
-        // 2. Define available URN's.
-        ReadOnlyCollection<string> urns =
-            searchResults
-                .Select(entity => entity.Id)
-                .ToList()
-                .AsReadOnly();
-
-        // 3. Define Facets.
-        IReadOnlyList<AggregatedFacetResult> facets =
-            await _facetAggregator.CalculateFacetsAsync(
-                urns,
-                request.Facets,
-                cancellationToken);
 
         return _resultsMapper.Map(
             (searchResults, facets, totalCount));

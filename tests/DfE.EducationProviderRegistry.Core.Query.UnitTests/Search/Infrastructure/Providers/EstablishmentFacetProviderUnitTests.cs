@@ -13,28 +13,22 @@ public sealed class EstablishmentFacetProviderUnitTests
     public async Task GetFacetsAsync_Throws_WhenFacetNameUnknown()
     {
         // arrange
-        EducationProviderRegistryDbContext context =
+        await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
-        IDbContextFactory<EducationProviderRegistryDbContext> factory =
-            TestDbContextFactory.CreateFactory(context);
-
         Dictionary<object, FacetDefinition<SearchAggregate>> selectors = [];
-        FacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(selectors);
 
         // act/assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            provider.GetFacetsAsync(["10001"], "UnknownFacet", TestContext.Current.CancellationToken));
+            provider.GetFacetsAsync(context.SearchAggregate, "UnknownFacet", TestContext.Current.CancellationToken));
     }
 
     [Fact]
-    public async Task GetFacetsAsync_ReturnsEmpty_WhenIdsEmpty()
+    public async Task GetFacetsAsync_ReturnsEmpty_WhenQueryHasNoMatches()
     {
-        EducationProviderRegistryDbContext context =
+        await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
-
-        IDbContextFactory<EducationProviderRegistryDbContext> factory =
-            TestDbContextFactory.CreateFactory(context);
 
         Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
             new()
@@ -42,10 +36,10 @@ public sealed class EstablishmentFacetProviderUnitTests
                 { "Type", new FacetDefinition<SearchAggregate>(e => e.ProviderName!, e => e.ProviderTypeName!) }
             };
 
-        FacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(selectors);
 
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync([], "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(context.SearchAggregate.Where(_ => false), "Type", TestContext.Current.CancellationToken);
 
         Assert.Empty(results);
     }
@@ -54,11 +48,9 @@ public sealed class EstablishmentFacetProviderUnitTests
     public async Task GetFacetsAsync_GroupsAndCountsCorrectly()
     {
         // arrange
-        EducationProviderRegistryDbContext context =
+        await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
-        IDbContextFactory<EducationProviderRegistryDbContext> factory =
-            TestDbContextFactory.CreateFactory(context);
 
         SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", "primaryType", 1);
         SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "primaryType", 1);
@@ -75,11 +67,11 @@ public sealed class EstablishmentFacetProviderUnitTests
                     e => e.ProviderTypeName!) }
             };
 
-        FacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(selectors);
 
         // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(["A", "B", "C"], "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(context.SearchAggregate, "Type", TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal(2, results.Count);
@@ -95,11 +87,8 @@ public sealed class EstablishmentFacetProviderUnitTests
     public async Task GetFacetsAsync_OrdersDescendingByCount()
     {
         // arrange
-        EducationProviderRegistryDbContext context =
+        await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
-
-        IDbContextFactory<EducationProviderRegistryDbContext> factory =
-            TestDbContextFactory.CreateFactory(context);
 
         SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", "X", 1);
         SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "X", 1);
@@ -116,12 +105,11 @@ public sealed class EstablishmentFacetProviderUnitTests
                     e => e.ProviderTypeName!) }
             };
 
-        FacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(selectors);
 
         // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(
-                ["A", "B", "C"], "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(context.SearchAggregate, "Type", TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal("1", results[0].Value);
@@ -134,11 +122,8 @@ public sealed class EstablishmentFacetProviderUnitTests
     public async Task GetFacetsAsync_HandlesNullFacetValues()
     {
         // arrange
-        EducationProviderRegistryDbContext context =
+        await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
-
-        IDbContextFactory<EducationProviderRegistryDbContext> factory =
-            TestDbContextFactory.CreateFactory(context);
 
         SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", null!, 1);
         SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "Primary", 2);
@@ -161,11 +146,11 @@ public sealed class EstablishmentFacetProviderUnitTests
                 }
             };
 
-        FacetProvider provider = new(factory, selectors);
+        FacetProvider provider = new(selectors);
 
         // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(["A", "B"], "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(context.SearchAggregate, "Type", TestContext.Current.CancellationToken);
 
         // assert
         Assert.Contains(

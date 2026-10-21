@@ -2,6 +2,7 @@
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Facets.TestDoubles;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Facets;
@@ -11,13 +12,13 @@ public class FacetAggregationStepTests
     [Fact]
     public async Task CalculateFacetsAsync_ReturnsEmpty_WhenRequestedFacetsIsNull()
     {
-        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IQueryable<SearchAggregate> matchingQuery = Array.Empty<SearchAggregate>().AsQueryable();
 
         Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock();
 
         IReadOnlyList<AggregatedFacetResult> result =
             await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, null, CancellationToken.None);
+                .CalculateFacetsAsync(matchingQuery, null, CancellationToken.None);
 
         Assert.Empty(result);
         facetProviderMock.VerifyNoOtherCalls();
@@ -26,13 +27,13 @@ public class FacetAggregationStepTests
     [Fact]
     public async Task CalculateFacetsAsync_ReturnsEmpty_WhenRequestedFacetsIsEmpty()
     {
-        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IQueryable<SearchAggregate> matchingQuery = Array.Empty<SearchAggregate>().AsQueryable();
 
         Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock();
 
         IReadOnlyList<AggregatedFacetResult> result =
             await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, [], CancellationToken.None);
+                .CalculateFacetsAsync(matchingQuery, [], CancellationToken.None);
 
         Assert.Empty(result);
         facetProviderMock.VerifyNoOtherCalls();
@@ -42,7 +43,7 @@ public class FacetAggregationStepTests
     public async Task CalculateFacetsAsync_CallsProviderOncePerDistinctFacet_IgnoringCase()
     {
         // arrange
-        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IQueryable<SearchAggregate> matchingQuery = Array.Empty<SearchAggregate>().AsQueryable();
         IEnumerable<string> requested = new[] { "Type", "type", "TYPE" };
 
         Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock(builder =>
@@ -52,7 +53,7 @@ public class FacetAggregationStepTests
         // act
         IReadOnlyList<AggregatedFacetResult> result =
             await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, requested, CancellationToken.None);
+                .CalculateFacetsAsync(matchingQuery, requested, CancellationToken.None);
 
         // assert/verify
         Assert.Single(result);
@@ -61,7 +62,7 @@ public class FacetAggregationStepTests
         facetProviderMock.Verify(
             facetProvider =>
                 facetProvider.GetFacetsAsync(
-                    urns, "Type", It.IsAny<CancellationToken>()),
+                    matchingQuery, "Type", It.IsAny<CancellationToken>()),
             Times.Once);
 
         facetProviderMock.VerifyNoOtherCalls();
@@ -71,7 +72,7 @@ public class FacetAggregationStepTests
     public async Task CalculateFacetsAsync_ReturnsAggregatedResults_FromProvider()
     {
         // arrange
-        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IQueryable<SearchAggregate> matchingQuery = Array.Empty<SearchAggregate>().AsQueryable();
         IEnumerable<string> requested = new[] { "Status" };
 
         IReadOnlyList<FacetResult> providerResults =
@@ -88,7 +89,7 @@ public class FacetAggregationStepTests
         // act
         IReadOnlyList<AggregatedFacetResult> result =
             await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, requested, CancellationToken.None);
+                .CalculateFacetsAsync(matchingQuery, requested, CancellationToken.None);
 
         // assert/verify
         Assert.Single(result);
@@ -102,7 +103,7 @@ public class FacetAggregationStepTests
     public async Task CalculateFacetsAsync_PreservesFacetOrder()
     {
         // arrange
-        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IQueryable<SearchAggregate> matchingQuery = Array.Empty<SearchAggregate>().AsQueryable();
         IEnumerable<string> requested = new[] { "A", "B", "C" };
 
         Mock<IFacetProvider> facetProviderMock = FacetProviderTestDouble.Mock(builder =>
@@ -115,7 +116,7 @@ public class FacetAggregationStepTests
         // act
         IReadOnlyList<AggregatedFacetResult> result =
             await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, requested, CancellationToken.None);
+                .CalculateFacetsAsync(matchingQuery, requested, CancellationToken.None);
 
         // assert/verify
         Assert.Equal(["A", "B", "C"],
@@ -128,7 +129,7 @@ public class FacetAggregationStepTests
     public async Task CalculateFacetsAsync_PropagatesExceptions_FromProvider()
     {
         // arrange
-        IReadOnlyList<string> urns = new[] { "100", "200" };
+        IQueryable<SearchAggregate> matchingQuery = Array.Empty<SearchAggregate>().AsQueryable();
         IEnumerable<string> requested = new[] { "ErrorFacet" };
 
         Mock<IFacetProvider> facetProviderMock =
@@ -138,7 +139,7 @@ public class FacetAggregationStepTests
         // act
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(urns, requested, CancellationToken.None));
+                .CalculateFacetsAsync(matchingQuery, requested, CancellationToken.None));
 
         // verify
         facetProviderMock.VerifyAll();

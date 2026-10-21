@@ -1,5 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 
@@ -9,11 +10,12 @@ public class FacetAggregator : IFacetAggregator
 
     public FacetAggregator(IFacetProvider facetProvider)
     {
+        ArgumentNullException.ThrowIfNull(facetProvider);
         _facetProvider = facetProvider;
     }
 
     public async Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
-        IReadOnlyList<string> urns,
+        IQueryable<SearchAggregate> matchingQuery,
         IEnumerable<string>? requestedFacets,
         CancellationToken cancellationToken)
     {
@@ -29,7 +31,7 @@ public class FacetAggregator : IFacetAggregator
         {
             IReadOnlyList<FacetResult> providerResults =
                 await _facetProvider.GetFacetsAsync(
-                    urns,
+                    matchingQuery,
                     facet,
                     cancellationToken);
 
