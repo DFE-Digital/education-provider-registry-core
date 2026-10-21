@@ -123,7 +123,7 @@ public sealed class SearchServiceAdapter
                 )
                 .ToListAsync(cancellationToken);
 
-     
+
         return _resultsMapper.Map(
             (searchResults, facets, totalCount));
     }
