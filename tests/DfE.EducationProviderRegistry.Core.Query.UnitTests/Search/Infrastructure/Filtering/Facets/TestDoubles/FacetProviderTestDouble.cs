@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Facets.TestDoubles;
@@ -49,7 +50,7 @@ public static class FacetProviderTestDouble
         {
             _responses[facetName] = null!;
             _mock
-                .Setup(p => p.GetFacetsAsync(It.IsAny<IReadOnlyList<string>>(), facetName, It.IsAny<CancellationToken>()))
+                .Setup(p => p.GetFacetsAsync(It.IsAny<IQueryable<SearchAggregate>>(), facetName, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(ex);
 
             return this;
@@ -67,7 +68,7 @@ public static class FacetProviderTestDouble
 
                 _mock
                     .Setup(p => p.GetFacetsAsync(
-                        It.IsAny<IReadOnlyList<string>>(),
+                        It.IsAny<IQueryable<SearchAggregate>>(),
                         facetName,
                         It.IsAny<CancellationToken>()))
                     .ReturnsAsync(results);
