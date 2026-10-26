@@ -169,7 +169,7 @@ public static class CompositionRoot
             {
                 ["searchprovidertypeid"] =
                     new FacetDefinition<SearchAggregate>(
-                        ValueSelector: searchProvider => searchProvider.ProviderTypeName,
+                        ValueSelector: searchProvider => searchProvider.ProviderTypeId,
                         LabelSelector: searchProvider => searchProvider.ProviderTypeName)
             });
 
