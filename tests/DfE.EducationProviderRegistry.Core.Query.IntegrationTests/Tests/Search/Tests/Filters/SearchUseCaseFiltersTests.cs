@@ -19,7 +19,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
                 field.WithFieldName(nameof(SearchAggregate.ProviderName))
                     .AppendContainsMatchBehaviour());
 
-        builder.WithFilter(filterKey: "searchprovidertypeid", concreteFilter: "SearchProviderTypeFilter");
+        builder.WithFilter(filterKey: "searchprovidertypename", concreteFilter: "SearchProviderTypeFilter");
     }
 
     [Fact]
