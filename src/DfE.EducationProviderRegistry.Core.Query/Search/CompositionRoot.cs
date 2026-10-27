@@ -173,7 +173,7 @@ public static class CompositionRoot
         services.AddSingleton(
             new Dictionary<object, FacetDefinition<SearchAggregate>>()
             {
-                ["searchprovidername"] =
+                ["searchprovidertypename"] =
                     new FacetDefinition<SearchAggregate>(
                         ValueSelector: searchProvider => searchProvider.ProviderTypeName,
                         LabelSelector: searchProvider => searchProvider.ProviderTypeName),
