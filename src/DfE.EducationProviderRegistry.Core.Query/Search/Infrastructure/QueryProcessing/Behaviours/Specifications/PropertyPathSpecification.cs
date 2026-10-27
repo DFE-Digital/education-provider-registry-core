@@ -8,6 +8,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryPr
 internal abstract class PropertyPathSpecification<TEntity> : ISpecification<TEntity>
 {
     private readonly string _propertyPath;
+    private readonly LambdaExpression? _selector;
 
     protected PropertyPathSpecification(string propertyPath)
     {
@@ -15,10 +16,30 @@ internal abstract class PropertyPathSpecification<TEntity> : ISpecification<TEnt
         _propertyPath = propertyPath;
     }
 
+    protected PropertyPathSpecification(LambdaExpression selector)
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+        if (selector.Parameters.Count != 1 || selector.Parameters[0].Type != typeof(TEntity))
+            throw new ArgumentException("The selector must have one parameter of the entity type.", nameof(selector));
+
+        _selector = selector;
+    }
+
+    protected virtual bool HasConstraints => true;
+
     protected abstract Expression BuildExpression(Expression access);
 
     public Expression<Func<TEntity, bool>> ToExpression()
     {
+        if (!HasConstraints)
+            return _ => true;
+
+        if (_selector is not null)
+        {
+            return Expression.Lambda<Func<TEntity, bool>>(
+                BuildExpression(_selector.Body), _selector.Parameters);
+        }
+
         ResolvedPath resolved =
             PropertyPathResolver.Resolve<TEntity>(_propertyPath);
 
