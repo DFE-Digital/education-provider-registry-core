@@ -25,7 +25,7 @@ public sealed class CompositionRootTests
             provider.GetRequiredService<Dictionary<object, FacetDefinition<SearchAggregate>>>();
 
         // assert
-        Assert.True(definitions.ContainsKey("searchprovidertypeid"));
+        Assert.True(definitions.ContainsKey("searchprovidertypename"));
     }
 
     [Fact]

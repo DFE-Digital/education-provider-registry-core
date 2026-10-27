@@ -20,9 +20,6 @@ public sealed record class SearchType
     /// <param name="name">
     /// The raw search provider type value. Must not be <c>null</c> or empty.
     /// </param>
-    /// <param name="id">
-    /// The raw search provider ID value.
-    /// </param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="type"/> is <c>null</c>.
     /// </exception>

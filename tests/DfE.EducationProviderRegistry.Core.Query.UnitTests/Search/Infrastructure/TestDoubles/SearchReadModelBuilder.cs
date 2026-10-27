@@ -9,7 +9,6 @@ internal sealed class SearchReadModelBuilder
     private string _id = "123456";
     private string _name = "Test Establishment";
     private string _typeName = "Test Type";
-    private int _typeId = 123;
     private string? _address = "Test Address Line, Test Address Line 2, Test City, Test County, AA1 1AA";
     private string _localAuthorityName = "Test Local Authority";
     private string _groupCode = "GROUP1";
@@ -36,12 +35,6 @@ internal sealed class SearchReadModelBuilder
     public SearchReadModelBuilder WithTypeName(string value)
     {
         _typeName = value;
-        return this;
-    }
-
-    public SearchReadModelBuilder WithTypeId(int value)
-    {
-        _typeId = value;
         return this;
     }
 
@@ -78,7 +71,7 @@ internal sealed class SearchReadModelBuilder
 
     public SearchReadModelBuilder WithEstablishmentStatusCode(int statusCode)
     {
-        _groupStatusCode = statusCode;
+        _establishmentStatusCode = statusCode;
         return this;
     }
 
@@ -94,7 +87,6 @@ internal sealed class SearchReadModelBuilder
             Id: _id,
             Name: _name,
             TypeName: _typeName,
-            TypeId: _typeId,
             Address: _address!,
             LocalAuthorityName: _localAuthorityName,
             GroupUid: _groupCode,

@@ -176,7 +176,7 @@ public static class CompositionRoot
                 ["searchprovidertypename"] =
                     new FacetDefinition<SearchAggregate>(
                         ValueSelector: searchProvider => searchProvider.ProviderTypeName,
-                        LabelSelector: searchProvider => searchProvider.ProviderTypeName),
+                        LabelSelector: searchProvider => searchProvider.ProviderTypeName)
             });
 
         services.AddScoped<IFacetAggregator, FacetAggregator>();
