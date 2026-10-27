@@ -9,32 +9,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 public sealed class EstablishmentTypeFilterTests
 {
     [Fact]
-    public void CreateSpecification_GivenNonNumericValue_ThrowsFormatException()
-    {
-        // Arrange
-        SearchProviderTypeFilter sut = new();
-
-        SearchFilterRequest request = RequestFilterValues(["a"]);
-
-        // Act / Assert
-        Assert.Throws<FormatException>(
-            () => sut.CreateSpecification(request));
-    }
-
-    [Fact]
-    public void CreateSpecification_GivenValueOutsideInt64Range_ThrowsOverflowException()
-    {
-        // Arrange
-        SearchProviderTypeFilter sut = new();
-
-        SearchFilterRequest request = RequestFilterValues(["999999999999999999999999999999"]);
-
-        // Act / Assert
-        Assert.Throws<OverflowException>(
-            () => sut.CreateSpecification(request));
-    }
-
-    [Fact]
     public void CreateSpecification_GivenOnlyNullFilterValues_Evaluates_To_True()
     {
         // Arrange
@@ -44,7 +18,7 @@ public sealed class EstablishmentTypeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            ProviderTypeId = 999
+            ProviderTypeName = "999"
         };
 
         // Act
@@ -68,7 +42,7 @@ public sealed class EstablishmentTypeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            ProviderTypeId = 2
+            ProviderTypeName = "2"
         };
 
         // Act
@@ -92,7 +66,7 @@ public sealed class EstablishmentTypeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            ProviderTypeId = 2
+            ProviderTypeName = "2"
         };
 
         // Act
@@ -114,7 +88,7 @@ public sealed class EstablishmentTypeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            ProviderTypeId = 2
+            ProviderTypeName = "2"
         };
 
         SearchProviderTypeFilter sut = new();
@@ -136,7 +110,7 @@ public sealed class EstablishmentTypeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            ProviderTypeId = 3
+            ProviderTypeName = "3"
         };
 
         SearchProviderTypeFilter sut = new();

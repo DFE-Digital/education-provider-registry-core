@@ -32,7 +32,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(1)
+                .WithProviderTypeName("1")
                 .Build()
         ];
 
@@ -40,7 +40,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(2)
+                .WithProviderTypeName("2")
                 .Build()
         ];
 
@@ -50,7 +50,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest(new FilterRequest("searchprovidertypeid", [1]))
+                .WithFilterRequest(new FilterRequest("searchprovidertypename", ["1"]))
                 .Build();
 
         // act // assert
@@ -70,12 +70,12 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(1)
+                .WithProviderTypeName("1")
                 .Build(),
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(2)
+                .WithProviderTypeName("2")
                 .Build()
         ];
 
@@ -83,7 +83,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(3)
+                .WithProviderTypeName("3")
                 .Build()
         ];
 
@@ -93,7 +93,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest(new FilterRequest("searchprovidertypeid", [1, 2]))
+                .WithFilterRequest(new FilterRequest("searchprovidertypename", ["1", "2"]))
                 .Build();
 
         // act / assert
@@ -115,12 +115,12 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(1)
+                .WithProviderTypeName("1")
                 .Build(),
 
         SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(2)
+                .WithProviderTypeName("2")
                 .Build()
         ];
 
@@ -130,7 +130,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest(new FilterRequest("searchprovidertypeid", [999]))
+                .WithFilterRequest(new FilterRequest("searchprovidertypename", ["999"]))
                 .Build();
 
         // act / assert
@@ -150,12 +150,12 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(1)
+                .WithProviderTypeName("1")
                 .Build(),
 
         SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithProviderTypeId(2)
+                .WithProviderTypeName("2")
                 .Build()
         ];
 
@@ -163,7 +163,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName("academy")
-                .WithProviderTypeId(1)
+                .WithProviderTypeName("1")
                 .Build()
         ];
 

@@ -16,7 +16,7 @@ public sealed class SearchResultsTests
                 "Testville, " +
                 "Testshire, " +
                 "TE5 7ST"),
-            type: SearchType.Create("Academy", 1),
+            type: SearchType.Create("Academy"),
             group: GroupDetail.Create("Mock Trust", "TRUST001"),
             localAuthority: SearchLocalAuthority.Create("Test LA"),
             providerCategory: new SearchCategory("Establishment"),

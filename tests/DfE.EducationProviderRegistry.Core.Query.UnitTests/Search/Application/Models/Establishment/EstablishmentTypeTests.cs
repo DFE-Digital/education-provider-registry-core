@@ -9,7 +9,7 @@ public sealed class EstablishmentTypeTests
     public void Constructor_ShouldAssignValueCorrectly()
     {
         // arrange
-        SearchType type = new("Academy", 1);
+        SearchType type = new("Academy");
 
         // assert
         Assert.Equal("Academy", type.Name);
@@ -19,8 +19,8 @@ public sealed class EstablishmentTypeTests
     public void FactoryMethod_ShouldReturnEquivalentInstance()
     {
         // arrange
-        SearchType viaCtor = new("Academy", 1);
-        SearchType viaFactory = SearchType.Create("Academy", 1);
+        SearchType viaCtor = new("Academy");
+        SearchType viaFactory = SearchType.Create("Academy");
 
         // assert
         Assert.Equal(viaCtor, viaFactory);
@@ -51,7 +51,7 @@ public sealed class EstablishmentTypeTests
     {
         // arrange/assert
         Assert.Throws<ArgumentNullException>(() =>
-            SearchType.Create(null!, 1));
+            SearchType.Create(null!));
     }
 
     [Theory]
@@ -62,6 +62,6 @@ public sealed class EstablishmentTypeTests
     {
         // arrange/assert
         Assert.Throws<ArgumentException>(() =>
-            SearchType.Create(invalid, 1));
+            SearchType.Create(invalid));
     }
 }
