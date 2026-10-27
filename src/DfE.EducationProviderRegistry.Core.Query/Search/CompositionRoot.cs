@@ -142,6 +142,8 @@ public static class CompositionRoot
             .Bind(configuration.GetRequiredSection(nameof(SearchConfiguration)));
 
         services.TryAddScoped<SearchProviderTypeFilter>();
+        services.TryAddScoped<SearchOpenedDateFilter>();
+        services.TryAddScoped<SearchClosedDateFilter>();
 
         services.TryAddScoped<ISearchFilterSpecificationFactory<SearchAggregate>>(provider =>
         {
@@ -149,7 +151,11 @@ public static class CompositionRoot
                 new()
                 {
                     ["SearchProviderTypeFilter"] = () =>
-                        provider.GetRequiredService<SearchProviderTypeFilter>()
+                        provider.GetRequiredService<SearchProviderTypeFilter>(),
+                    ["SearchOpenedDateFilter"] = () =>
+                        provider.GetRequiredService<SearchOpenedDateFilter>(),
+                    ["SearchClosedDateFilter"] = () =>
+                        provider.GetRequiredService<SearchClosedDateFilter>()
                 };
 
             return new SearchFilterSpecificationFactory<SearchAggregate>(map);
@@ -167,10 +173,10 @@ public static class CompositionRoot
         services.AddSingleton(
             new Dictionary<object, FacetDefinition<SearchAggregate>>()
             {
-                ["searchprovidertypeid"] =
+                ["searchprovidername"] =
                     new FacetDefinition<SearchAggregate>(
                         ValueSelector: searchProvider => searchProvider.ProviderTypeName,
-                        LabelSelector: searchProvider => searchProvider.ProviderTypeName)
+                        LabelSelector: searchProvider => searchProvider.ProviderTypeName),
             });
 
         services.AddScoped<IFacetAggregator, FacetAggregator>();

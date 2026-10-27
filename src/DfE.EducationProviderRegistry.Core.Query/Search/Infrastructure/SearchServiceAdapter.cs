@@ -110,7 +110,6 @@ public sealed class SearchServiceAdapter
                         Id: searchProvider.ProviderId,
                         Name: searchProvider.ProviderName ?? string.Empty,
                         TypeName: searchProvider.ProviderTypeName ?? string.Empty,
-                        TypeId: searchProvider.ProviderTypeId,
                         Address: searchProvider.ProviderAddress ?? string.Empty,
                         LocalAuthorityName: searchProvider.LocalAuthorityName ?? string.Empty,
                         GroupUid: searchProvider.GroupUid,
@@ -133,7 +132,6 @@ public record SearchReadModel(
     string Id,                  // Urn OR GroupId.
     string Name,                // SearchAggregate OR Group name.
     string TypeName,            // SearchAggregate OR Group type.
-    long? TypeId,
     string? Address,
     string? LocalAuthorityName,
     string? GroupUid,

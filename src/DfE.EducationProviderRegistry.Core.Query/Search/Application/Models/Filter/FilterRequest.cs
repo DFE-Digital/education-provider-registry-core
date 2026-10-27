@@ -25,9 +25,9 @@ public class FilterRequest
     /// <exception cref="ArgumentNullException">Thrown if filterName or filterValues is null.</exception>
     public FilterRequest(string filterName, IList<object> filterValues)
     {
-        FilterName = filterName ??
-            throw new ArgumentNullException(nameof(filterName));
-        _filterValues = filterValues ??
-            throw new ArgumentNullException(nameof(filterValues));
+        ArgumentNullException.ThrowIfNull(filterName);
+        ArgumentNullException.ThrowIfNull(filterValues);
+        FilterName = filterName;
+        _filterValues = filterValues;
     }
 }
