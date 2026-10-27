@@ -69,7 +69,7 @@ public sealed class EstablishmentsSearchProviderUnitTests
         Mock<ISearchOrchestrator<SearchAggregate>> orchestrator = Orchestrator();
 
         Expression<Func<SearchAggregate, bool>> filterExpression =
-            entity => entity.ProviderTypeId == 1;
+            entity => entity.ProviderTypeName == "1";
 
         Mock<ISearchFilterExpressionsBuilder<SearchAggregate>> filterBuilder =
             FilterBuilder(filterExpression);

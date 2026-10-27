@@ -23,7 +23,7 @@ public static class SearchAggregateResultTestDouble
             new(_faker.Address.FullAddress());
 
         SearchType type =
-            SearchType.Create("Academy", 1);
+            SearchType.Create("Academy");
 
         GroupDetail group =
             GroupDetail.Create("Mock Trust", "TRUST001");

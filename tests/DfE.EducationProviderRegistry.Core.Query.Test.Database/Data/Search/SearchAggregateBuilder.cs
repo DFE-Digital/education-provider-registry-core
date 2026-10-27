@@ -20,7 +20,6 @@ public sealed class SearchAggregateBuilder
             ProviderAddress = "1 Test Street, Test Town, Test County, TE1 1ST",
             LocalAuthorityName = "Test Authority",
             ProviderCategory = "Establishment",
-            ProviderTypeId = 1, // Community school
             ProviderTypeName = "Multi-Academy Trust"
         };
     }
@@ -101,12 +100,6 @@ public sealed class SearchAggregateBuilder
     public SearchAggregateBuilder WithCounty(string county)
     {
         _searchAggregate.County = county;
-        return this;
-    }
-
-    public SearchAggregateBuilder WithProviderTypeId(long typeId)
-    {
-        _searchAggregate.ProviderTypeId = typeId;
         return this;
     }
 

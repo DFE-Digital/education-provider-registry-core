@@ -10,7 +10,7 @@ internal static class SearchCriteriaOptionsStub
                 },
                 {
                     "SearchCriteria:Facets:0",
-                    "searchprovidertypeid" // FacetDefinition must be defined
+                    "searchprovidertypename" // FacetDefinition must be defined
                 }
         };
 }

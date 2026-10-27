@@ -119,7 +119,6 @@ public class SearchServiceAdapterTests
             ProviderName = "School A",
             ProviderAddress = "Addr, Town, County, PC",
             ProviderTypeName = "Type",
-            ProviderTypeId = 12,
         });
 
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -143,8 +142,7 @@ public class SearchServiceAdapterTests
                     projection.items[0].Id == "100" &&
                     projection.items[0].Name == "School A" &&
                     projection.items[0].Address == "Addr, Town, County, PC" &&
-                    projection.items[0].TypeName == "Type" &&
-                    projection.items[0].TypeId == 12
+                    projection.items[0].TypeName == "Type"
                 )), Times.Once);
 
     }

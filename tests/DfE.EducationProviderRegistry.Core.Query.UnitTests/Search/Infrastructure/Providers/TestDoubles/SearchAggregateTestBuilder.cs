@@ -11,8 +11,7 @@ internal static class SearchAggregateTestBuilder
     public static SearchAggregate Create(
         string providerId,
         string name,
-        string typeName,
-        long typeId)
+        string typeName)
     {
         return new SearchAggregate
         {
@@ -20,7 +19,6 @@ internal static class SearchAggregateTestBuilder
             ProviderId = providerId,
             ProviderName = name,
             ProviderTypeName = typeName,
-            ProviderTypeId = typeId
         };
     }
 }
