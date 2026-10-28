@@ -39,10 +39,10 @@ internal static class SearchFilterRequestParseHelpers
         {
             null => null,
             DateTime dateTime => DateOnly.FromDateTime(dateTime),
-            string value => DateOnly.Parse(
+            string value => DateOnly.ParseExact(
                 value,
-                CultureInfo.GetCultureInfo("en-GB")),
-
+                ["yyyy-MM-dd"],
+                CultureInfo.InvariantCulture),
             _ => throw new ArgumentException(
                 $"Unsupported filter value type '{input.GetType().Name}'.")
         };
