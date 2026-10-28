@@ -3,9 +3,9 @@
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
 
-internal sealed class IntegerFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
+internal sealed class ConvertFilterValuesToIntegerSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
 {
-    public IntegerFilterValueSearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
+    public ConvertFilterValuesToIntegerSearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
     {
     }
 

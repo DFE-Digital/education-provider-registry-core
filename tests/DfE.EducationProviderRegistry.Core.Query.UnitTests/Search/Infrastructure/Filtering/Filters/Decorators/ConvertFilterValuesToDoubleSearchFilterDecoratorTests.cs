@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters.Decorators;
 
-public sealed class DoubleFilterValueSearchFilterDecoratorTests
+public sealed class ConvertFilterValuesToDoubleSearchFilterDecoratorTests
 {
     [Fact]
     public void CreateSpecification_WithDoubleValue_PreservesValue()
@@ -14,7 +14,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DoubleFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDoubleSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -42,7 +42,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DoubleFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDoubleSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -66,7 +66,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DoubleFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDoubleSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -89,7 +89,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DoubleFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDoubleSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =

@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters.Decorators;
 
-public sealed class LongFilterValueSearchFilterDecoratorTests
+public sealed class ConvertFilterValuesToLongSearchFilterDecoratorTests
 {
     [Fact]
     public void CreateSpecification_WithLongValue_PreservesValue()
@@ -14,7 +14,7 @@ public sealed class LongFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        LongFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToLongSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -42,7 +42,7 @@ public sealed class LongFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        LongFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToLongSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -68,7 +68,7 @@ public sealed class LongFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        LongFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToLongSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -91,7 +91,7 @@ public sealed class LongFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        LongFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToLongSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =

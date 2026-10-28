@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters.Decorators;
 
-public sealed class StringFilterValueSearchFilterDecoratorTests
+public sealed class ConvertFilterValuesToStringSearchFilterDecoratorTests
 {
     [Theory]
     [InlineData((byte)1, "1")]
@@ -26,7 +26,7 @@ public sealed class StringFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        StringFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -47,7 +47,7 @@ public sealed class StringFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        StringFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -68,7 +68,7 @@ public sealed class StringFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        StringFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -89,7 +89,7 @@ public sealed class StringFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        StringFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -115,7 +115,7 @@ public sealed class StringFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        StringFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =

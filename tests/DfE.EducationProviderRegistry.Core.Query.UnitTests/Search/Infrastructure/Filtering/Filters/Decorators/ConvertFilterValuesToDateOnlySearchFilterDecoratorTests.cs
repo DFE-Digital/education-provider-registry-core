@@ -5,7 +5,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters.Decorators;
 
-public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
+public sealed class ConvertFilterValuesToDateOnlySearchFilterDecoratorTests
 {
     [Fact]
     public void CreateSpecification_WithDateOnlyValue_PreservesValue()
@@ -16,7 +16,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DateOnlyFilterValueSearchFilterDecorator<SearchAggregate> sut = new(inner);
+        ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate> sut = new(inner);
 
         SearchFilterRequest request =
             SearchFilterRequestTestDoubles.StubFilterValues(expected);
@@ -39,7 +39,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DateOnlyFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -63,7 +63,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DateOnlyFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -87,7 +87,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DateOnlyFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -113,7 +113,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
             SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        DateOnlyFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =
@@ -136,7 +136,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         FakeSearchFilter<SearchAggregate> inner =
            SearchFilterTestDouble.Fake<SearchAggregate>();
 
-        StringFilterValueSearchFilterDecorator<SearchAggregate> sut =
+        ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate> sut =
             new(inner);
 
         SearchFilterRequest request =

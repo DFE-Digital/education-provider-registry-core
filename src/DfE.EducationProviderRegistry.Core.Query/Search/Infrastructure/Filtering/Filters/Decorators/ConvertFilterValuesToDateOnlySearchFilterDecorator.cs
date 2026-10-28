@@ -2,9 +2,9 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
-internal sealed class DateOnlyFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
+internal sealed class ConvertFilterValuesToDateOnlySearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
 {
-    public DateOnlyFilterValueSearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
+    public ConvertFilterValuesToDateOnlySearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
     {
     }
 

@@ -2,9 +2,9 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
-internal sealed class LongFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
+internal sealed class ConvertFilterValuesToLongSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
 {
-    public LongFilterValueSearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
+    public ConvertFilterValuesToLongSearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
     {
     }
 
