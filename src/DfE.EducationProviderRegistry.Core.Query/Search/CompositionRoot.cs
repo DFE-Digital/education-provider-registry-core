@@ -149,7 +149,12 @@ public static class CompositionRoot
                 new()
                 {
                     ["SearchProviderTypeFilter"] = () =>
-                        provider.GetRequiredService<SearchProviderTypeFilter>()
+                        provider.GetRequiredService<SearchProviderTypeFilter>(),
+                    ["OpenedDateFilter"] = () =>
+                        provider.GetRequiredService<OpenedDateFilter>(),
+                    ["ClosedDateFilter"] = () =>
+                        provider.GetRequiredService<ClosedDateFilter>(),
+
                 };
 
             return new SearchFilterSpecificationFactory<SearchAggregate>(map);
@@ -170,7 +175,7 @@ public static class CompositionRoot
                 ["searchprovidertypename"] =
                     new FacetDefinition<SearchAggregate>(
                         ValueSelector: searchProvider => searchProvider.ProviderTypeName,
-                        LabelSelector: searchProvider => searchProvider.ProviderTypeName)
+                        LabelSelector: searchProvider => searchProvider.ProviderTypeName),
             });
 
         services.AddScoped<IFacetAggregator, FacetAggregator>();
