@@ -1,5 +1,5 @@
 ﻿using System.IO.Compression;
-using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.Compression;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Datasets.Infrastructure;
 

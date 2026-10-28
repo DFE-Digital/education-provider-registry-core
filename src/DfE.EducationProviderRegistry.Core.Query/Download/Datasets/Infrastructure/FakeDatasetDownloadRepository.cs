@@ -2,7 +2,7 @@
 using System.Text;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
-using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.Compression;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastructure;
 
