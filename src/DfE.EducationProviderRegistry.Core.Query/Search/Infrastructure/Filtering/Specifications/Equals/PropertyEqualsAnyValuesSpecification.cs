@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Specifications.Equals;
 
 public sealed class PropertyEqualsAnyValuesSpecification<TProjection, TProperty>
     : ISpecification<TProjection>
