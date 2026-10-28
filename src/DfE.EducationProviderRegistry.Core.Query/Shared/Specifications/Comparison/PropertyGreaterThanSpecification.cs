@@ -1,12 +1,12 @@
 ﻿using System.Linq.Expressions;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Specifications.Comparison;
+namespace DfE.EducationProviderRegistry.Core.Query.Shared.Specifications.Comparison;
 
-internal sealed class PropertyLessThanOrEqualSpecification<TProjection, TProperty>
+internal sealed class PropertyGreaterThanSpecification<TProjection, TProperty>
     : PropertyComparisonSpecification<TProjection, TProperty>
     where TProperty : struct, IComparable<TProperty>
 {
-    public PropertyLessThanOrEqualSpecification(
+    public PropertyGreaterThanSpecification(
         Expression<Func<TProjection, TProperty?>> property,
         TProperty comparator)
         : base(property, comparator)
@@ -17,6 +17,6 @@ internal sealed class PropertyLessThanOrEqualSpecification<TProjection, TPropert
         Expression property,
         Expression comparator)
     {
-        return Expression.LessThanOrEqual(property, comparator);
+        return Expression.GreaterThan(property, comparator);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Specifications.Comparison;
+namespace DfE.EducationProviderRegistry.Core.Query.Shared.Specifications.Comparison;
 
 // IComparable<TProperty> provides a semantic constraint that TProperty
 // supports ordering. Expression construction additionally requires the
