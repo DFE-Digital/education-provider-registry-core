@@ -1,5 +1,4 @@
-﻿using DfE.Core.Libraries.DesignPatterns.Specification;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
@@ -20,7 +19,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
         DateOnlyFilterValueSearchFilterDecorator<SearchAggregate> sut = new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [expected]);
+            SearchFilterRequestTestDoubles.StubFilterValues(expected);
 
         // Act
         sut.CreateSpecification(request);
@@ -44,7 +43,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [value]);
+            SearchFilterRequestTestDoubles.StubFilterValues(value);
 
         // Act
         sut.CreateSpecification(request);
@@ -68,7 +67,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", ["2026-10-15"]);
+            SearchFilterRequestTestDoubles.StubFilterValues("2026-10-15");
 
         // Act
         sut.CreateSpecification(request);
@@ -118,7 +117,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [value]);
+            SearchFilterRequestTestDoubles.StubFilterValues(value);
 
         // Act
         sut.CreateSpecification(request);
@@ -141,7 +140,7 @@ public sealed class DateOnlyFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [expected]);
+            SearchFilterRequestTestDoubles.StubFilterValues(expected);
 
         // Act
         sut.CreateSpecification(request);

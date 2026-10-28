@@ -18,7 +18,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [1.5d]);
+            SearchFilterRequestTestDoubles.StubFilterValues(1.5d);
 
         // Act
         sut.CreateSpecification(request);
@@ -46,7 +46,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [value]);
+            SearchFilterRequestTestDoubles.StubFilterValues(value);
 
         // Act
         sut.CreateSpecification(request);
@@ -70,7 +70,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [value]);
+            SearchFilterRequestTestDoubles.StubFilterValues(value);
 
         // Act
         sut.CreateSpecification(request);
@@ -93,7 +93,7 @@ public sealed class DoubleFilterValueSearchFilterDecoratorTests
             new(inner);
 
         SearchFilterRequest request =
-            new("STUB-KEY", [value]);
+            SearchFilterRequestTestDoubles.StubFilterValues(value);
 
         // Act
         sut.CreateSpecification(request);
