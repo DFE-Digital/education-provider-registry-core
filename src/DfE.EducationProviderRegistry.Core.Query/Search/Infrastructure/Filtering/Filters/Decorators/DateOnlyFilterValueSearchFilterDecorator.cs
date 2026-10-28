@@ -1,0 +1,36 @@
+﻿using System.Globalization;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.FilterValueConverters;
+
+internal sealed class DateOnlyFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
+{
+    public DateOnlyFilterValueSearchFilterDecorator(ISearchFilter<TProjection> inner) : base(inner)
+    {
+    }
+
+    protected override object Convert(object value)
+    {
+#nullable disable
+        return value switch
+        {
+            null => null,
+
+            DateOnly dateOnly =>
+                dateOnly,
+
+            DateTime dateTime =>
+                DateOnly.FromDateTime(dateTime),
+
+            string stringValue when DateOnly.TryParseExact(
+                stringValue,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateOnly result) =>
+                    result,
+
+            _ => value
+        };
+#nullable enable
+    }
+}

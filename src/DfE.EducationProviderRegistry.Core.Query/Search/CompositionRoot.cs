@@ -15,6 +15,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.FilterValueConverters;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
@@ -149,11 +150,15 @@ public static class CompositionRoot
                 new()
                 {
                     ["SearchProviderTypeFilter"] = () =>
-                        provider.GetRequiredService<SearchProviderTypeFilter>(),
+                        new StringFilterValueSearchFilterDecorator<SearchAggregate>(
+                            inner: provider.GetRequiredService<SearchProviderTypeFilter>()),
                     ["OpenedDateFilter"] = () =>
-                        new DateRangeFilter((aggregate) => aggregate.OpenedDate),
+                        new DateOnlyFilterValueSearchFilterDecorator<SearchAggregate>(
+                            inner: new DateRangeFilter((aggregate) => aggregate.OpenedDate)),
+
                     ["ClosedDateFilter"] = () =>
-                        new DateRangeFilter((aggregate) => aggregate.ClosedDate)
+                        new DateOnlyFilterValueSearchFilterDecorator<SearchAggregate>(
+                            inner: new DateRangeFilter((aggregate) => aggregate.ClosedDate))
                 };
 
             return new SearchFilterSpecificationFactory<SearchAggregate>(map);
