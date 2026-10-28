@@ -19,7 +19,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<ArgumentException>(act);
@@ -33,7 +33,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<ArgumentException>(act);
@@ -52,7 +52,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<ArgumentException>(act);
@@ -66,7 +66,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<ArgumentException>(act);
@@ -80,7 +80,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<ArgumentException>(act);
@@ -94,7 +94,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2026, 10, 15), result.Range.Lower);
@@ -108,12 +108,12 @@ public sealed class SearchFilterRequestParseHelpersTests
         SearchFilterRequest request = new(
             "key",
             [
-                new DateTime(2026, 10, 15, 10, 30, 00)
+                new DateTime(2026, 10, 15, 10, 30, 00, DateTimeKind.Unspecified)
             ]);
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2026, 10, 15), result.Range.Lower);
@@ -133,7 +133,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2026, 10, 15), result.Range.Lower);
@@ -147,13 +147,13 @@ public sealed class SearchFilterRequestParseHelpersTests
         SearchFilterRequest request = new(
             "key",
             [
-                new DateTime(2026, 10, 15, 10, 30, 00),
+                new DateTime(2026, 10, 15, 10, 30, 00, DateTimeKind.Unspecified),
                 null!
             ]);
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2026, 10, 15), result.Range.Lower);
@@ -173,7 +173,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Null(result.Range.Lower);
@@ -188,12 +188,12 @@ public sealed class SearchFilterRequestParseHelpersTests
             "key",
             [
                 null!,
-                new DateTime(2026, 10, 15, 15, 45, 00)
+                new DateTime(2026, 10, 15, 15, 45, 00, DateTimeKind.Unspecified)
             ]);
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Null(result.Range.Lower);
@@ -213,7 +213,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2025, 10, 15), result.Range.Lower);
@@ -227,13 +227,13 @@ public sealed class SearchFilterRequestParseHelpersTests
         SearchFilterRequest request = new(
             "key",
             [
-                new DateTime(2025, 10, 15, 10, 30, 00),
-                new DateTime(2026, 10, 15, 15, 45, 00)
+                new DateTime(2025, 10, 15, 10, 30, 00, DateTimeKind.Unspecified),
+                new DateTime(2026, 10, 15, 15, 45, 00, DateTimeKind.Unspecified)
             ]);
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2025, 10, 15), result.Range.Lower);
@@ -248,12 +248,12 @@ public sealed class SearchFilterRequestParseHelpersTests
             "key",
             [
                 "2025-10-15",
-                new DateTime(2026, 10, 15, 15, 45, 00)
+                new DateTime(2026, 10, 15, 15, 45, 00, DateTimeKind.Unspecified)
             ]);
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2025, 10, 15), result.Range.Lower);
@@ -267,13 +267,13 @@ public sealed class SearchFilterRequestParseHelpersTests
         SearchFilterRequest request = new(
             "key",
             [
-                new DateTime(2025, 10, 15, 10, 30, 00),
+                new DateTime(2025, 10, 15, 10, 30, 00, DateTimeKind.Unspecified),
                 "2026-10-15"
             ]);
 
         // Act
         DateRange result =
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Equal(new DateOnly(2025, 10, 15), result.Range.Lower);
@@ -293,7 +293,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<FormatException>(act);
@@ -317,7 +317,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<FormatException>(act);
@@ -336,7 +336,7 @@ public sealed class SearchFilterRequestParseHelpersTests
 
         // Act
         Func<DateRange> act = () =>
-            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
+            request.ParseFilterRequestDates();
 
         // Assert
         Assert.Throws<ArgumentException>(act);
