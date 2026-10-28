@@ -150,14 +150,14 @@ public static class CompositionRoot
                 new()
                 {
                     ["SearchProviderTypeFilter"] = () =>
-                        new StringFilterValueSearchFilterDecorator<SearchAggregate>(
+                        new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
                             inner: provider.GetRequiredService<SearchProviderTypeFilter>()),
                     ["OpenedDateFilter"] = () =>
-                        new DateOnlyFilterValueSearchFilterDecorator<SearchAggregate>(
+                        new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
                             inner: new DateRangeFilter((aggregate) => aggregate.OpenedDate)),
 
                     ["ClosedDateFilter"] = () =>
-                        new DateOnlyFilterValueSearchFilterDecorator<SearchAggregate>(
+                        new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
                             inner: new DateRangeFilter((aggregate) => aggregate.ClosedDate))
                 };
 
