@@ -1,6 +1,6 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.FilterValueConverters;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
 internal abstract class FilterValueSearchFilterDecorator<TProjection> : ISearchFilter<TProjection>
 {

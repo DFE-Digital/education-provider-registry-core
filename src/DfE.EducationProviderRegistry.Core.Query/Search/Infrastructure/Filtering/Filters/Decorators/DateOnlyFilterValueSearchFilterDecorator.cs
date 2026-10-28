@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.FilterValueConverters;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
 internal sealed class DateOnlyFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
 {
