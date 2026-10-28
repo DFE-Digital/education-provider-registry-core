@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.F
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.FilterExpressions;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters;
 
 public sealed class SearchProviderTypeFilterTests
 {

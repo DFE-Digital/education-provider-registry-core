@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.EducationProviderRegistry.Core.Query.Shared.Specifications.Equals;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
