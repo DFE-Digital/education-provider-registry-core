@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.FilterValueConverters;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
 internal sealed class LongFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
 {

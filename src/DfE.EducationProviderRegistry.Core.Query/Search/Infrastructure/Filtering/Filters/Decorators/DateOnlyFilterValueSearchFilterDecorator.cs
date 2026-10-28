@@ -8,9 +8,9 @@ internal sealed class DateOnlyFilterValueSearchFilterDecorator<TProjection> : Fi
     {
     }
 
+#nullable disable
     protected override object Convert(object value)
     {
-#nullable disable
         return value switch
         {
             null => null,
@@ -31,6 +31,6 @@ internal sealed class DateOnlyFilterValueSearchFilterDecorator<TProjection> : Fi
 
             _ => value
         };
-#nullable enable
     }
+#nullable enable    
 }

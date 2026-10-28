@@ -10,6 +10,6 @@ public sealed class SearchProviderTypeFilter : ISearchFilter<SearchAggregate>
     {
         return new PropertyEqualsAnyValuesSpecification<SearchAggregate, string?>(
             searchProvider => searchProvider.ProviderTypeName,
-            request.FilterValues.Cast<string>().ToArray());
+            request.FilterValues.Cast<string?>().ToArray());
     }
 }

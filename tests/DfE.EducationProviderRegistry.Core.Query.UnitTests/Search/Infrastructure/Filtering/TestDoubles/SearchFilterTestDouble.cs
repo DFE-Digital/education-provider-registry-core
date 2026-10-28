@@ -7,13 +7,12 @@ using Moq;
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 [ExcludeFromCodeCoverage]
-internal static class SearchFilterExpressionTestDouble
+internal static class SearchFilterTestDouble
 {
     public static Mock<ISearchFilter<TProjection>> Mock<TProjection>()
         where TProjection : class => new(MockBehavior.Strict);
 
-    public static Mock<ISearchFilter<TProjection>> MockForSpecification<TProjection>(ISpecification<TProjection> spec)
-    where TProjection : class
+    public static Mock<ISearchFilter<TProjection>> MockForSpecification<TProjection>(ISpecification<TProjection> spec) where TProjection : class
     {
         Mock<ISearchFilter<TProjection>> exprMock = Mock<TProjection>();
 
@@ -24,5 +23,19 @@ internal static class SearchFilterExpressionTestDouble
             .Verifiable();
 
         return exprMock;
+    }
+
+    public static FakeSearchFilter<TProjection> Fake<TProjection>() => new();
+}
+
+internal sealed class FakeSearchFilter<TProjection> : ISearchFilter<TProjection>
+{
+    public SearchFilterRequest? Request { get; private set; }
+
+    public ISpecification<TProjection> CreateSpecification(SearchFilterRequest request)
+    {
+        Request = request;
+
+        return SpecificationTestDoubles.True<TProjection>();
     }
 }

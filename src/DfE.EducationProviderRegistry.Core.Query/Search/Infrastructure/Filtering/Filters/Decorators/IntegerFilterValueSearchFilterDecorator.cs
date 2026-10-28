@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.FilterValueConverters;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 
 
 internal sealed class IntegerFilterValueSearchFilterDecorator<TProjection> : FilterValueSearchFilterDecorator<TProjection>
@@ -14,13 +13,15 @@ internal sealed class IntegerFilterValueSearchFilterDecorator<TProjection> : Fil
     {
         return value switch
         {
-            int intValue => intValue,
+            int intValue =>
+                intValue,
 
             string stringValue when int.TryParse(
                 stringValue,
                 NumberStyles.Integer,
                 CultureInfo.InvariantCulture,
-                out int result) => result,
+                out int result) =>
+                    result,
 
             _ => value
         };

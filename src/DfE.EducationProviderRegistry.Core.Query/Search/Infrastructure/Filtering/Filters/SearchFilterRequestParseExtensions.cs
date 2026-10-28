@@ -35,7 +35,7 @@ internal static class SearchFilterRequestParseExtensions
     ///     </item>
     /// </list>
     /// </remarks>
-    public static DateRange ParseFilterRequestDates(this SearchFilterRequest request)
+    public static DateRange ParseDateRange(this SearchFilterRequest request)
     {
         if (request.FilterValues.Length == 0)
         {
