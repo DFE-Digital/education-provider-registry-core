@@ -1,10 +1,10 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
-internal sealed record DateFilterRange
+internal sealed record DateRange
 {
     private static readonly DateOnly _minValue = new(1800, 1, 1);
 
-    public DateFilterRange(BoundedRange<DateOnly> boundedRange)
+    public DateRange(BoundedRange<DateOnly> boundedRange)
     {
         if (boundedRange.Lower.HasValue)
         {

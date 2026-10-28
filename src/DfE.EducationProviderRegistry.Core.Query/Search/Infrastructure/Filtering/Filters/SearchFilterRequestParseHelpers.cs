@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filteri
 
 internal static class SearchFilterRequestParseHelpers
 {
-    public static DateFilterRange ParseFilterRequestDates(SearchFilterRequest request)
+    public static DateRange ParseFilterRequestDates(SearchFilterRequest request)
     {
         if (request.FilterValues.Length == 0)
         {
