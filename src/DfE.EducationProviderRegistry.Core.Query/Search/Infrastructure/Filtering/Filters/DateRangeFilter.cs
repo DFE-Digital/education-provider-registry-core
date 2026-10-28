@@ -21,33 +21,22 @@ internal sealed class DateRangeFilter : ISearchFilter<SearchAggregate>
         DateFilterRange filter =
             SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
 
-        BoundedRange<DateOnly> boundedRange = filter.Range;
+        BoundedRange<DateOnly> range = filter.Range;
 
-        if (boundedRange.HasLowerAndUpperBounds)
+        if (range.HasLowerAndUpperBounds)
         {
-            return new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
-                        _propertyTarget,
-                        filter.Range.Lower!.Value,
-                        ComparisonOperator.GreaterThanOrEqual)
-                .And(
-                    new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
-                        _propertyTarget,
-                        filter.Range.Upper!.Value,
-                        ComparisonOperator.LessThanOrEqual));
+            return GreaterThanOrEqualTo(range.Lower!.Value)
+                .And(LessThanOrEqualTo(range.Upper!.Value));
         }
 
-        if (boundedRange.HasLowerBounds)
+        if (range.HasLowerBounds)
         {
-            return new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
-                _propertyTarget,
-                filter.Range.Lower!.Value,
-                ComparisonOperator.GreaterThanOrEqual);
+            return GreaterThanOrEqualTo(range.Lower!.Value);
         }
 
-        // filter can only have Upper bounds
-        return new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
-            _propertyTarget,
-            filter.Range.Upper!.Value,
-            ComparisonOperator.LessThanOrEqual);
+        return LessThanOrEqualTo(range.Upper!.Value);
     }
+
+    private PropertyGreaterThanOrEqualSpecification<SearchAggregate, DateOnly> GreaterThanOrEqualTo(DateOnly value) => new(_propertyTarget, value);
+    private PropertyLessThanOrEqualSpecification<SearchAggregate, DateOnly> LessThanOrEqualTo(DateOnly value) => new(_propertyTarget, value);
 }
