@@ -142,8 +142,6 @@ public static class CompositionRoot
             .Bind(configuration.GetRequiredSection(nameof(SearchConfiguration)));
 
         services.TryAddScoped<SearchProviderTypeFilter>();
-        services.TryAddScoped<OpenedDateFilter>();
-        services.TryAddScoped<ClosedDateFilter>();
 
         services.TryAddScoped<ISearchFilterSpecificationFactory<SearchAggregate>>(provider =>
         {
@@ -153,9 +151,9 @@ public static class CompositionRoot
                     ["SearchProviderTypeFilter"] = () =>
                         provider.GetRequiredService<SearchProviderTypeFilter>(),
                     ["OpenedDateFilter"] = () =>
-                        provider.GetRequiredService<OpenedDateFilter>(),
+                        new DateRangeFilter((aggregate) => aggregate.OpenedDate),
                     ["ClosedDateFilter"] = () =>
-                        provider.GetRequiredService<ClosedDateFilter>()
+                        new DateRangeFilter((aggregate) => aggregate.ClosedDate)
                 };
 
             return new SearchFilterSpecificationFactory<SearchAggregate>(map);
