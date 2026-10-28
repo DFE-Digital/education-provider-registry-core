@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.F
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;
 
-namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.FilterExpressions;
+namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters;
 
 public sealed class SearchFilterSpecificationFactoryTests
 {

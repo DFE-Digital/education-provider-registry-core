@@ -1,4 +1,4 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
 public readonly record struct BoundedRange<T> where T : struct, IComparable<T>
 {
