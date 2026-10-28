@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filteri
 
 public static class SearchFilterRequestParseHelpers
 {
-    internal static IReadOnlyCollection<DateOnly> ParseFilterRequestDates(SearchFilterRequest request)
+    internal static (DateOnly from, DateOnly to) ParseFilterRequestDates(SearchFilterRequest request)
     {
         List<DateOnly> values = [.. request.FilterValues
             .Where(filterValue => filterValue is not null)
@@ -19,6 +19,16 @@ public static class SearchFilterRequestParseHelpers
                     $"Unsupported filter value type '{filterValue.GetType().Name}'.")
             })];
 
-        return values;
+        if (values.Count == 0)
+        {
+            throw new ArgumentException("No parsed values to filter in FilterRequestValues");
+        }
+
+        if (values.Count > 2)
+        {
+            throw new ArgumentException("More values than comparable for DateFilterRange");
+        }
+
+        return (values[0], values[1]);
     }
 }

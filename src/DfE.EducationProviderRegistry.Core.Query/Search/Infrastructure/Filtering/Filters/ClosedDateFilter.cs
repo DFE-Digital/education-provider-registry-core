@@ -1,4 +1,5 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Specifications.Comparison;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
@@ -8,19 +9,17 @@ internal sealed class ClosedDateFilter : ISearchFilter<SearchAggregate>
 {
     public ISpecification<SearchAggregate> CreateSpecification(SearchFilterRequest request)
     {
-        IReadOnlyCollection<DateOnly> requestFilterValues = SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
-
-        if (requestFilterValues.Count == 0)
-        {
-            throw new ArgumentException("No parsed values to filter in ClosedDateFilter");
-        }
-
-        // the latest date
-        DateOnly lessThanValue = requestFilterValues.Max();
+        (DateOnly from, DateOnly to) =
+            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
 
         return new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
-            (aggregate) => aggregate.ClosedDate,
-            lessThanValue,
-            ComparisonOperator.LessThanOrEqual);
+                    (aggregate) => aggregate.ClosedDate,
+                    from,
+                    ComparisonOperator.GreaterThanOrEqual)
+            .And(
+                new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
+                    (aggregate) => aggregate.ClosedDate,
+                    to,
+                    ComparisonOperator.LessThanOrEqual));
     }
 }

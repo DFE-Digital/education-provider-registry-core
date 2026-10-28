@@ -1,4 +1,5 @@
 ﻿using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Specifications.Comparison;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
@@ -8,19 +9,17 @@ internal sealed class OpenedDateFilter : ISearchFilter<SearchAggregate>
 {
     public ISpecification<SearchAggregate> CreateSpecification(SearchFilterRequest request)
     {
-        IReadOnlyCollection<DateOnly> requestFilterValues = SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
-
-        if (requestFilterValues.Count == 0)
-        {
-            throw new ArgumentException("No parsed values to filter in OpenDateFilter");
-        }
-
-        // the earliest date
-        DateOnly greaterThanValue = requestFilterValues.Min();
+        (DateOnly from, DateOnly to) =
+            SearchFilterRequestParseHelpers.ParseFilterRequestDates(request);
 
         return new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
-            (aggregate) => aggregate.OpenedDate,
-            greaterThanValue,
-            ComparisonOperator.GreaterThanOrEqual);
+                    (aggregate) => aggregate.OpenedDate,
+                    from,
+                    ComparisonOperator.GreaterThanOrEqual)
+            .And(
+                new PropertyComparisonSpecification<SearchAggregate, DateOnly>(
+                    (aggregate) => aggregate.OpenedDate,
+                    to,
+                    ComparisonOperator.LessThanOrEqual));
     }
 }
