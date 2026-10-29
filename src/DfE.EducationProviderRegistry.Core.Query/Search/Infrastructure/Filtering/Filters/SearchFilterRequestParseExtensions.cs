@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
 internal static class SearchFilterRequestParseExtensions
 {
@@ -37,39 +35,39 @@ internal static class SearchFilterRequestParseExtensions
     ///     </item>
     /// </list>
     /// </remarks>
-    public static DateRange ParseFilterRequestDates(this SearchFilterRequest request)
+    public static DateRange ParseDateRange(this SearchFilterRequest request)
     {
         if (request.FilterValues.Length == 0)
         {
-            throw new ArgumentException("No parsed values to filter in FilterRequestValues");
+            throw new ArgumentException("No values to filter in FilterRequestValues.");
         }
 
         if (request.FilterValues.Length > 2)
         {
-            throw new ArgumentException("More values than comparable for DateFilterRange");
+            throw new ArgumentException("More values than comparable for DateFilterRange.");
         }
 
-        DateOnly? lower = ParseDate(request.FilterValues[0]);
+        DateOnly? lower = ToDateOnly(request.FilterValues[0]);
 
-        DateOnly? upper = request.FilterValues.Length == 2 ? ParseDate(request.FilterValues[1]) : null;
+        DateOnly? upper =
+            request.FilterValues.Length == 2 ?
+                ToDateOnly(request.FilterValues[1])
+                    : null;
 
         BoundedRange<DateOnly> bounds = new(lower, upper);
 
         return new(bounds);
     }
 
-    private static DateOnly? ParseDate(object? input)
+    private static DateOnly? ToDateOnly(object? value)
     {
-        return input switch
+        return value switch
         {
             null => null,
-            DateTime dateTime => DateOnly.FromDateTime(dateTime),
-            string value => DateOnly.ParseExact(
-                value,
-                ["yyyy-MM-dd"],
-                CultureInfo.InvariantCulture),
+            DateOnly dateOnly => dateOnly,
+
             _ => throw new ArgumentException(
-                $"Unsupported filter value type '{input.GetType().Name}'.")
+                $"Unsupported filter value type '{value.GetType().Name}'.")
         };
     }
 }
