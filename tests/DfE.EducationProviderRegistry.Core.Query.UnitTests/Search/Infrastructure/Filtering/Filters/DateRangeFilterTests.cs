@@ -27,7 +27,9 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", ["2026-01-01"]);
+        SearchFilterRequest request = new(
+            "key",
+            [new DateOnly(2026, 1, 1)]);
 
         SearchAggregate aggregate = new()
         {
@@ -48,7 +50,9 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", ["2026-01-01"]);
+        SearchFilterRequest request = new(
+            "key",
+            [new DateOnly(2026, 1, 1)]);
 
         SearchAggregate aggregate = new()
         {
@@ -69,7 +73,9 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", ["2026-01-02"]);
+        SearchFilterRequest request = new(
+            "key",
+            [new DateOnly(2026, 1, 2)]);
 
         SearchAggregate aggregate = new()
         {
@@ -90,7 +96,9 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", [null!, "2026-01-31"]);
+        SearchFilterRequest request = new(
+            "key",
+            [null!, new DateOnly(2026, 1, 31)]);
 
         SearchAggregate aggregate = new()
         {
@@ -111,7 +119,9 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", [null!, "2026-01-31"]);
+        SearchFilterRequest request = new(
+            "key",
+            [null!, new DateOnly(2026, 1, 31)]);
 
         SearchAggregate aggregate = new()
         {
@@ -132,7 +142,9 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", [null!, "2026-01-31"]);
+        SearchFilterRequest request = new(
+            "key",
+            [null!, new DateOnly(2026, 1, 31)]);
 
         SearchAggregate aggregate = new()
         {
@@ -151,12 +163,20 @@ public sealed class DateRangeFilterTests
     [InlineData(2026, 1, 1)]
     [InlineData(2026, 1, 15)]
     [InlineData(2026, 1, 31)]
-    public void CreateSpecification_WhenDateIsWithinBothBounds_IsSatisfied(int year, int month, int day)
+    public void CreateSpecification_WhenDateIsWithinBothBounds_IsSatisfied(
+        int year,
+        int month,
+        int day)
     {
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", ["2026-01-01", "2026-01-31"]);
+        SearchFilterRequest request = new(
+            "key",
+            [
+                new DateOnly(2026, 1, 1),
+                new DateOnly(2026, 1, 31)
+            ]);
 
         SearchAggregate aggregate = new()
         {
@@ -174,12 +194,20 @@ public sealed class DateRangeFilterTests
     [Theory]
     [InlineData(2025, 12, 31)]
     [InlineData(2026, 2, 1)]
-    public void CreateSpecification_WhenDateIsOutsideBothBounds_IsNotSatisfied(int year, int month, int day)
+    public void CreateSpecification_WhenDateIsOutsideBothBounds_IsNotSatisfied(
+        int year,
+        int month,
+        int day)
     {
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", ["2026-01-01", "2026-01-31"]);
+        SearchFilterRequest request = new(
+            "key",
+            [
+                new DateOnly(2026, 1, 1),
+                new DateOnly(2026, 1, 31)
+            ]);
 
         SearchAggregate aggregate = new()
         {
@@ -200,7 +228,12 @@ public sealed class DateRangeFilterTests
         // Arrange
         DateRangeFilter sut = new(aggregate => aggregate.OpenedDate);
 
-        SearchFilterRequest request = new("key", ["2026-01-01", "2026-01-31"]);
+        SearchFilterRequest request = new(
+            "key",
+            [
+                new DateOnly(2026, 1, 1),
+                new DateOnly(2026, 1, 31)
+            ]);
 
         SearchAggregate aggregate = new()
         {
