@@ -12,8 +12,7 @@ internal sealed class ConvertFilterValuesToStringSearchFilterDecorator<TProjecti
     {
         return value switch
         {
-            string stringValue =>
-                stringValue,
+            string stringValue => stringValue,
 
             byte or sbyte or
             short or ushort or

@@ -87,13 +87,19 @@ public sealed class FacetProvider : IFacetProvider
         PropertyInfo valuePropertyInfo,
         CancellationToken cancellationToken)
     {
+        ParameterExpression parameter =
+            Expression.Parameter(typeof(SearchAggregate), "searchAggregate");
 
-        Expression boxExpression = Expression.Convert(
-            Expression.Property(SearchAggregateParameterExpression, valuePropertyInfo),
-            typeof(object));
+        Expression propertyExpression =
+            Expression.Property(parameter, valuePropertyInfo);
+
+        Expression boxExpression =
+            Expression.Convert(propertyExpression, typeof(object));
 
         Expression<Func<SearchAggregate, object>> valueSelector =
-            Expression.Lambda<Func<SearchAggregate, object>>(boxExpression, SearchAggregateParameterExpression);
+            Expression.Lambda<Func<SearchAggregate, object>>(
+                boxExpression,
+                parameter);
 
         IQueryable<IGrouping<object, SearchAggregate>> grouped =
             matchingQuery.GroupBy(valueSelector);
@@ -111,9 +117,11 @@ public sealed class FacetProvider : IFacetProvider
 
             return
             [
-                .. rawFacetResults.Select(facetResult =>
+                .. rawFacetResults
+                .Select(facetResult =>
                 {
-                    string value = facetResult.Value?.ToString() ?? string.Empty;
+                    string value =
+                        facetResult.Value?.ToString() ?? string.Empty;
 
                     return new FacetResult(
                         value: value,
@@ -124,9 +132,8 @@ public sealed class FacetProvider : IFacetProvider
             ];
         }
 
-        // If a label property is defined, we need to resolve it and ensure it's a string property.
-
-        PropertyInfo labelPropertyInfo = ResolveProperty(facetDefinition.LabelProperty);
+        PropertyInfo labelPropertyInfo =
+            ResolveProperty(facetDefinition.LabelProperty);
 
         if (labelPropertyInfo.PropertyType != typeof(string))
         {
@@ -136,8 +143,8 @@ public sealed class FacetProvider : IFacetProvider
 
         Expression<Func<SearchAggregate, string?>> labelSelector =
             Expression.Lambda<Func<SearchAggregate, string?>>(
-                Expression.Property(SearchAggregateParameterExpression, labelPropertyInfo),
-                SearchAggregateParameterExpression);
+                Expression.Property(parameter, labelPropertyInfo),
+                parameter);
 
         var labelledFacetResults =
             await grouped
@@ -154,9 +161,11 @@ public sealed class FacetProvider : IFacetProvider
 
         return
         [
-            .. labelledFacetResults.Select(facetResult =>
+            .. labelledFacetResults
+            .Select(facetResult =>
             {
-                string value = facetResult.Value?.ToString() ?? string.Empty;
+                string value =
+                    facetResult.Value?.ToString() ?? string.Empty;
 
                 return new FacetResult(
                     value: value,
@@ -172,11 +181,13 @@ public sealed class FacetProvider : IFacetProvider
         PropertyInfo collectionPropertyInfo,
         CancellationToken cancellationToken)
     {
+        ParameterExpression parameter =
+            Expression.Parameter(typeof(SearchAggregate), "searchAggregate");
+
         Expression<Func<SearchAggregate, IEnumerable<string>>> collectionSelector =
-            Expression.Lambda<
-                Func<SearchAggregate, IEnumerable<string>>>(
-                    Expression.Property(SearchAggregateParameterExpression, collectionPropertyInfo),
-                    SearchAggregateParameterExpression);
+            Expression.Lambda<Func<SearchAggregate, IEnumerable<string>>>(
+                Expression.Property(parameter, collectionPropertyInfo),
+                parameter);
 
         var rawFacetResults =
             await matchingQuery
@@ -192,7 +203,8 @@ public sealed class FacetProvider : IFacetProvider
 
         return
         [
-            .. rawFacetResults.Select(facetResult =>
+            .. rawFacetResults
+            .Select(facetResult =>
                 new FacetResult(
                     value: facetResult.Value,
                     label: facetResult.Value,
@@ -213,6 +225,4 @@ public sealed class FacetProvider : IFacetProvider
         return propertyType != typeof(string) &&
             typeof(IEnumerable<string>).IsAssignableFrom(propertyType);
     }
-
-    private static ParameterExpression SearchAggregateParameterExpression => Expression.Parameter(typeof(SearchAggregate), "searchAggregate");
 }
