@@ -4,14 +4,14 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 
-public class FacetAggregator : IFacetAggregator
+public sealed class FacetAggregator : IFacetAggregator
 {
-    private readonly IFacetProvider _facetProvider;
+    private readonly IFacetProvider _provider;
 
-    public FacetAggregator(IFacetProvider facetProvider)
+    public FacetAggregator(IFacetProvider provider)
     {
-        ArgumentNullException.ThrowIfNull(facetProvider);
-        _facetProvider = facetProvider;
+        ArgumentNullException.ThrowIfNull(provider);
+        _provider = provider;
     }
 
     public async Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
@@ -19,23 +19,26 @@ public class FacetAggregator : IFacetAggregator
         IEnumerable<string>? requestedFacets,
         CancellationToken cancellationToken)
     {
-        if (requestedFacets is null || !requestedFacets.Any())
-            return Array.Empty<AggregatedFacetResult>();
+        ArgumentNullException.ThrowIfNull(matchingQuery);
 
-        List<string> distinct =
-            [.. requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase)];
+        if (requestedFacets is null || !requestedFacets.Any())
+        {
+            return [];
+        }
 
         List<AggregatedFacetResult> results = [];
 
-        foreach (string facet in distinct)
+        foreach (string facet in requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase))
         {
             IReadOnlyList<FacetResult> providerResults =
-                await _facetProvider.GetFacetsAsync(
+                await _provider.GetFacetsAsync(
                     matchingQuery,
                     facet,
                     cancellationToken);
 
-            results.Add(new AggregatedFacetResult(facet, providerResults));
+            results.Add(new AggregatedFacetResult(
+                facet,
+                providerResults));
         }
 
         return results;

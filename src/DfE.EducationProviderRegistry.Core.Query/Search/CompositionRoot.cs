@@ -18,6 +18,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.F
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
@@ -85,6 +86,13 @@ public static class CompositionRoot
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        services.AddOptions<FacetOptions>()
+            .Bind(configuration.GetSection(nameof(FacetOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddSingleton(serviceProvider =>
+            serviceProvider.GetRequiredService<IOptions<FacetOptions>>().Value);
 
         services.TryAddScoped<ISqlFilterExpressionTranslator<SearchAggregate>,
             SqlFilterExpressionTranslator<SearchAggregate>>();
@@ -167,15 +175,6 @@ public static class CompositionRoot
             ReadOnlyCollection<FilterRequest>,
             ReadOnlyCollection<SearchFilterRequest>>,
             SearchRequestFiltersToCoreFiltersMapper>();
-
-        services.AddSingleton(
-            new Dictionary<object, FacetDefinition<SearchAggregate>>()
-            {
-                ["searchprovidertypename"] =
-                    new FacetDefinition<SearchAggregate>(
-                        ValueSelector: searchProvider => searchProvider.ProviderTypeName,
-                        LabelSelector: searchProvider => searchProvider.ProviderTypeName),
-            });
 
         services.AddScoped<IFacetAggregator, FacetAggregator>();
 
