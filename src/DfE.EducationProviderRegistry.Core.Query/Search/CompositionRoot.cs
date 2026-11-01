@@ -92,6 +92,7 @@ public static class CompositionRoot
             .Bind(configuration.GetSection(nameof(FacetOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
         services.AddSingleton(serviceProvider =>
             serviceProvider.GetRequiredService<IOptions<FacetOptions>>().Value);
 
