@@ -1,18 +1,27 @@
-﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
+using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Facets;
 
 public static class FacetOptionsConfigurationStub
 {
-    public static Dictionary<string, string?> Stub()
+    public static FacetOptions Stub()
     {
-        return new Dictionary<string, string?>
+        Dictionary<string, FacetDefinition> definitions = new()
         {
-            [$"FacetOptions:Definitions:searchprovidertypename:ValueProperty"] =
-                nameof(SearchAggregate.ProviderTypeName),
+            {
+                "searchprovidertypename",
+                new FacetDefinition()
+                {
+                    ValueProperty = nameof(SearchAggregate.ProviderTypeName),
+                    LabelProperty = nameof(SearchAggregate.ProviderTypeName)
+                }
+            }
+        };
 
-            [$"FacetOptions:Definitions:searchprovidertypename:LabelProperty"] =
-                nameof(SearchAggregate.ProviderTypeName)
+        return new()
+        {
+            Definitions = definitions
         };
     }
 }

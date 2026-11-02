@@ -1,16 +1,12 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Criteria;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Criteria;
 
 internal static class SearchCriteriaOptionsStub
 {
-    public static readonly Dictionary<string, string?> Stub = new()
-        {
-                {
-                    "SearchCriteria:SearchFields:0",
-                    "TypeName"
-                },
-                {
-                    "SearchCriteria:Facets:0",
-                    "searchprovidertypename" // FacetDefinition must be defined
-                }
-        };
+    public static SearchCriteria Stub() => new()
+    {
+        SearchFields = ["TypeName"],
+        Facets = ["searchprovidertypename"],
+    };
 }
