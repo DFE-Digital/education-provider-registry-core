@@ -13,20 +13,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search;
 
 public sealed class CompositionRootTests
 {
-    [Fact]
-    public void CompositionRoot_Registers_FacetDefinitionDictionary()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        // act
-        Dictionary<object, FacetDefinition<SearchAggregate>> definitions =
-            provider.GetRequiredService<Dictionary<object, FacetDefinition<SearchAggregate>>>();
-
-        // assert
-        Assert.True(definitions.ContainsKey("searchprovidertypename"));
-    }
 
     [Fact]
     public void CompositionRoot_Registers_SearchOrchestrator()

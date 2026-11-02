@@ -127,6 +127,12 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
+    public SearchAggregateBuilder WithSen(params string[] values)
+    {
+        _searchAggregate.Sen = [.. values];
+        return this;
+    }
+
     public SearchAggregateBuilder SetValue(string property, string value)
     {
         if (string.IsNullOrWhiteSpace(property))

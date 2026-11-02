@@ -1,21 +1,40 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Filters;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 
-internal static class FilterKeyToFilterExpressionMapOptionsConfigurationStub
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Filters;
+
+internal static class FilterKeyToFilterExpressionMapOptionsStub
 {
-    private const string RootConfigurationKey = "FilterKeyToFilterExpressionMapOptions:SearchFilterToExpressionMap";
-
-    public static readonly Dictionary<string, string?> StubFilter = new()
-        {
-            {$"{RootConfigurationKey}:STUB:FilterExpressionKey", "STUBBED_FILTER" }
-        };
-
-    public static Dictionary<string, string?> StubFilterOptions(IEnumerable<KeyValuePair<string, string?>> filterKeyToFilterMapping)
+    public static FilterKeyToFilterExpressionMapOptions Stub()
     {
-        Dictionary<string, string?> configuration =
-            filterKeyToFilterMapping.ToDictionary(
-                keySelector: (t) => $"{RootConfigurationKey}:{t.Key}:FilterExpressionKey",
-                elementSelector: (t) => t.Value);
+        return new FilterKeyToFilterExpressionMapOptions
+        {
+            SearchFilterToExpressionMap =
+                new Dictionary<string, FilterExpressionOptions>
+                {
+                    {
+                        "STUB",
+                        new FilterExpressionOptions
+                        {
+                            FilterExpressionKey = "STUBBED_FILTER"
+                        }
+                    }
+                }
+        };
+    }
 
-        return configuration;
+    public static FilterKeyToFilterExpressionMapOptions Stub(IEnumerable<KeyValuePair<string, string?>> filters)
+    {
+        ArgumentNullException.ThrowIfNull(filters);
+
+        return new FilterKeyToFilterExpressionMapOptions
+        {
+            SearchFilterToExpressionMap =
+                filters.ToDictionary(
+                    filter => filter.Key,
+                    filter => new FilterExpressionOptions
+                    {
+                        FilterExpressionKey = filter.Value!
+                    })
+        };
     }
 }

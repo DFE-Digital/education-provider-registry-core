@@ -1,41 +1,46 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 
-public class FacetAggregator : IFacetAggregator
+public sealed class FacetAggregator : IFacetAggregator
 {
-    private readonly IFacetProvider _facetProvider;
+    private readonly IFacetProvider _provider;
 
-    public FacetAggregator(IFacetProvider facetProvider)
+    public FacetAggregator(IFacetProvider provider)
     {
-        ArgumentNullException.ThrowIfNull(facetProvider);
-        _facetProvider = facetProvider;
+        ArgumentNullException.ThrowIfNull(provider);
+        _provider = provider;
     }
 
     public async Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
-        IEnumerable<string>? requestedFacets,
+        IReadOnlyCollection<FacetContext> facets,
         CancellationToken cancellationToken)
     {
-        if (requestedFacets is null || !requestedFacets.Any())
-            return Array.Empty<AggregatedFacetResult>();
+        ArgumentNullException.ThrowIfNull(matchingQuery);
 
-        List<string> distinct =
-            [.. requestedFacets.Distinct(StringComparer.OrdinalIgnoreCase)];
+        if (facets is null || facets.Count == 0)
+        {
+            return [];
+        }
 
         List<AggregatedFacetResult> results = [];
 
-        foreach (string facet in distinct)
+        foreach (FacetContext facetContext in facets)
         {
             IReadOnlyList<FacetResult> providerResults =
-                await _facetProvider.GetFacetsAsync(
+                await _provider.GetFacetsAsync(
                     matchingQuery,
-                    facet,
+                    facetContext.Facet,
+                    [.. facetContext.Filter?.FilterValues ?? []],
                     cancellationToken);
 
-            results.Add(new AggregatedFacetResult(facet, providerResults));
+            results.Add(new AggregatedFacetResult(
+                facetContext.Facet,
+                providerResults));
         }
 
         return results;

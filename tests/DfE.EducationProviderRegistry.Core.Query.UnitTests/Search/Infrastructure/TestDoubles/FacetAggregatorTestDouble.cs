@@ -13,9 +13,9 @@ public static class FacetAggregatorTestDouble
         mock.Setup(facetAggregator =>
             facetAggregator.CalculateFacetsAsync(
                 It.IsAny<IQueryable<SearchAggregate>>(),
-                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<IReadOnlyCollection<FacetContext>>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<AggregatedFacetResult>());
+            .ReturnsAsync([]);
 
         return mock;
     }

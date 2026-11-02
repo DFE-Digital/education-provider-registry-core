@@ -1,13 +1,12 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Request;
-using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 
 namespace DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Tests.Filters;
 
-public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestBase
+public sealed class SearchUseCaseFilterScalarValuesTests : SearchUseCaseMatchesResultsTestBase
 {
     private const string DefaultedSearchTerm = "term-1";
-    public SearchUseCaseFiltersTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
+    public SearchUseCaseFilterScalarValuesTests(IServiceProvider testServicesProvider) : base(testServicesProvider)
     {
     }
 
@@ -50,7 +49,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest(new FilterRequest("searchprovidertypename", ["1"]))
+                .WithFilterRequest("searchprovidertypename", ["1"])
                 .Build();
 
         // act // assert
@@ -93,7 +92,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest(new FilterRequest("searchprovidertypename", ["1", "2"]))
+                .WithFilterRequest("searchprovidertypename", ["1", "2"])
                 .Build();
 
         // act / assert
@@ -130,7 +129,7 @@ public sealed class SearchUseCaseFiltersTests : SearchUseCaseMatchesResultsTestB
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest(new FilterRequest("searchprovidertypename", ["999"]))
+                .WithFilterRequest("searchprovidertypename", ["999"])
                 .Build();
 
         // act / assert

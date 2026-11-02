@@ -1,9 +1,10 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
+using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Search;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers.TestDoubles;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Providers;
 
@@ -16,31 +17,44 @@ public sealed class EstablishmentFacetProviderUnitTests
         await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
-        Dictionary<object, FacetDefinition<SearchAggregate>> selectors = [];
-        FacetProvider provider = new(selectors);
+        FacetOptions options =
+            FacetOptionsTestDouble.Empty();
+
+        FacetProvider provider = new(options);
 
         // act/assert
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            provider.GetFacetsAsync(context.SearchAggregate, "UnknownFacet", TestContext.Current.CancellationToken));
+            provider.GetFacetsAsync(
+                context.SearchAggregate,
+                "UnknownFacet",
+                [],
+                TestContext.Current.CancellationToken));
     }
 
     [Fact]
     public async Task GetFacetsAsync_ReturnsEmpty_WhenQueryHasNoMatches()
     {
+        // arrange
         await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
-        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
-            new()
-            {
-                { "Type", new FacetDefinition<SearchAggregate>(e => e.ProviderName!, e => e.ProviderTypeName!) }
-            };
+        FacetOptions options =
+            FacetOptionsTestDouble.Stub(
+                "Type",
+                nameof(SearchAggregate.ProviderTypeName),
+                nameof(SearchAggregate.ProviderTypeName));
 
-        FacetProvider provider = new(selectors);
+        FacetProvider provider = new(options);
 
+        // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(context.SearchAggregate.Where(_ => false), "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(
+                context.SearchAggregate.Where(_ => false),
+                "Type",
+                [],
+                TestContext.Current.CancellationToken);
 
+        // assert
         Assert.Empty(results);
     }
 
@@ -51,33 +65,52 @@ public sealed class EstablishmentFacetProviderUnitTests
         await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
+        SearchAggregate a =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("A School")
+                .WithProviderTypeName("primaryType")
+                .Build();
 
-        SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", "primaryType");
-        SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "primaryType");
-        SearchAggregate c = SearchAggregateTestBuilder.Create("C", "C School", "secondaryType");
+        SearchAggregate b =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("B School")
+                .WithProviderTypeName("primaryType")
+                .Build();
+
+        SearchAggregate c =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("C School")
+                .WithProviderTypeName("secondaryType")
+                .Build();
 
         context.SearchAggregate.AddRange(a, b, c);
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
-            new()
-            {
-                { "Type", new FacetDefinition<SearchAggregate>(
-                    e => e.ProviderTypeName!,
-                    e => e.ProviderTypeName!) }
-            };
+        await context.SaveChangesAsync(
+            TestContext.Current.CancellationToken);
 
-        FacetProvider provider = new(selectors);
+        FacetOptions options =
+            FacetOptionsTestDouble.Stub(
+                "Type",
+                nameof(SearchAggregate.ProviderTypeName),
+                nameof(SearchAggregate.ProviderTypeName));
+
+        FacetProvider provider = new(options);
 
         // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(context.SearchAggregate, "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(
+                context.SearchAggregate,
+                "Type",
+                [],
+                TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal(2, results.Count);
+
         Assert.Equal("primaryType", results[0].Value);
         Assert.Equal("primaryType", results[0].Label);
         Assert.Equal(2, results[0].Count);
+
         Assert.Equal("secondaryType", results[1].Value);
         Assert.Equal("secondaryType", results[1].Label);
         Assert.Equal(1, results[1].Count);
@@ -90,26 +123,44 @@ public sealed class EstablishmentFacetProviderUnitTests
         await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
-        SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", "X");
-        SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "X");
-        SearchAggregate c = SearchAggregateTestBuilder.Create("C", "C School", "Y");
+        SearchAggregate a =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("A School")
+                .WithProviderTypeName("X")
+                .Build();
+
+        SearchAggregate b =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("B School")
+                .WithProviderTypeName("X")
+                .Build();
+
+        SearchAggregate c =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("C School")
+                .WithProviderTypeName("Y")
+                .Build();
 
         context.SearchAggregate.AddRange(a, b, c);
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
-            new()
-            {
-                { "Type", new FacetDefinition<SearchAggregate>(
-                    e => e.ProviderTypeName!,
-                    e => e.ProviderTypeName!) }
-            };
+        await context.SaveChangesAsync(
+            TestContext.Current.CancellationToken);
 
-        FacetProvider provider = new(selectors);
+        FacetOptions options =
+            FacetOptionsTestDouble.Stub(
+                "Type",
+                nameof(SearchAggregate.ProviderTypeName),
+                nameof(SearchAggregate.ProviderTypeName));
+
+        FacetProvider provider = new(options);
 
         // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(context.SearchAggregate, "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(
+                context.SearchAggregate,
+                "Type",
+                [],
+                TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal("X", results[0].Label);
@@ -125,42 +176,55 @@ public sealed class EstablishmentFacetProviderUnitTests
         await using EducationProviderRegistryDbContext context =
             EducationProviderRegistryDbContextFactory.CreateDbContext();
 
-        SearchAggregate a = SearchAggregateTestBuilder.Create("A", "A School", null!);
-        SearchAggregate b = SearchAggregateTestBuilder.Create("B", "B School", "Primary");
+        SearchAggregate a =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("A School")
+                .WithProviderTypeName(null!)
+                .Build();
+
+        SearchAggregate b =
+            SearchAggregateBuilder.Create()
+                .WithProviderName("B School")
+                .WithProviderTypeName("Primary")
+                .Build();
 
         context.SearchAggregate.AddRange(a, b);
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        Dictionary<object, FacetDefinition<SearchAggregate>> selectors =
-            new()
-            {
-                {
-                    "Type",
-                    new FacetDefinition<SearchAggregate>(
-                        searchResult => searchResult.ProviderId == "A"
-                            ? null!
-                            : searchResult.ProviderTypeName!,
-                        searchResult => searchResult.ProviderId == "A"
-                            ? null!
-                            : searchResult.ProviderTypeName!)
-                }
-            };
+        await context.SaveChangesAsync(
+            TestContext.Current.CancellationToken);
 
-        FacetProvider provider = new(selectors);
+        FacetOptions options =
+            FacetOptionsTestDouble.Stub(
+                "Type",
+                nameof(SearchAggregate.ProviderTypeName),
+                nameof(SearchAggregate.ProviderTypeName));
+
+        FacetProvider provider = new(options);
 
         // act
         IReadOnlyList<FacetResult> results =
-            await provider.GetFacetsAsync(context.SearchAggregate, "Type", TestContext.Current.CancellationToken);
+            await provider.GetFacetsAsync(
+                context.SearchAggregate,
+                "Type",
+                [],
+                TestContext.Current.CancellationToken);
 
         // assert
         Assert.Contains(
             results,
-            r => r.Value == string.Empty &&
-                 r.Label == string.Empty);
+            result =>
+                result.Value == string.Empty &&
+                result.Label == string.Empty);
 
         Assert.Contains(
             results,
-            r => r.Value == "Primary" &&
-                 r.Label == "Primary");
+            result =>
+                result.Value == "Primary" &&
+                result.Label == "Primary");
     }
+
+    // Note: Ef.InMemory does not support translating ToString() in LINQ queries,
+    // so we cannot test the scenario where the value property is not a string.
+    // In a real database, this would work as expected.
+    // This is tested as integration tests with a real database.
 }
