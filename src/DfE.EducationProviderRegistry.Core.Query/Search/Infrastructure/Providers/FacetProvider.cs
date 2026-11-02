@@ -49,7 +49,7 @@ public sealed class FacetProvider : IFacetProvider
     public async Task<IReadOnlyList<FacetResult>> GetFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         string facet,
-        IReadOnlyCollection<object> filterValues,
+        IList<object> filterValues,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(matchingQuery);
@@ -181,7 +181,7 @@ public sealed class FacetProvider : IFacetProvider
     private static async Task<IReadOnlyList<FacetResult>> GetCollectionFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         PropertyInfo collectionPropertyInfo,
-        IReadOnlyCollection<object> filterValues,
+        IList<object> filterValues,
         CancellationToken cancellationToken)
     {
         ParameterExpression parameter =

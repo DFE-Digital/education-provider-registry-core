@@ -35,7 +35,7 @@ public sealed class FacetAggregator : IFacetAggregator
                 await _provider.GetFacetsAsync(
                     matchingQuery,
                     facetContext.Facet,
-                    facetContext.Filter?.FilterValues.AsReadOnly() ?? [],
+                    [.. facetContext.Filter?.FilterValues ?? []],
                     cancellationToken);
 
             results.Add(new AggregatedFacetResult(

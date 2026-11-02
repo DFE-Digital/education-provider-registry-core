@@ -24,6 +24,6 @@ public interface IFacetProvider
     Task<IReadOnlyList<FacetResult>> GetFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         string facet,
-        IReadOnlyCollection<object> filterValues,
+        IList<object> filterValues,
         CancellationToken cancellationToken = default);
 }
