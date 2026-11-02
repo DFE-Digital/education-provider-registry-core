@@ -27,6 +27,7 @@ public sealed class EstablishmentFacetProviderUnitTests
             provider.GetFacetsAsync(
                 context.SearchAggregate,
                 "UnknownFacet",
+                [],
                 TestContext.Current.CancellationToken));
     }
 
@@ -50,6 +51,7 @@ public sealed class EstablishmentFacetProviderUnitTests
             await provider.GetFacetsAsync(
                 context.SearchAggregate.Where(_ => false),
                 "Type",
+                [],
                 TestContext.Current.CancellationToken);
 
         // assert
@@ -99,6 +101,7 @@ public sealed class EstablishmentFacetProviderUnitTests
             await provider.GetFacetsAsync(
                 context.SearchAggregate,
                 "Type",
+                [],
                 TestContext.Current.CancellationToken);
 
         // assert
@@ -156,6 +159,7 @@ public sealed class EstablishmentFacetProviderUnitTests
             await provider.GetFacetsAsync(
                 context.SearchAggregate,
                 "Type",
+                [],
                 TestContext.Current.CancellationToken);
 
         // assert
@@ -202,6 +206,7 @@ public sealed class EstablishmentFacetProviderUnitTests
             await provider.GetFacetsAsync(
                 context.SearchAggregate,
                 "Type",
+                [],
                 TestContext.Current.CancellationToken);
 
         // assert
@@ -218,6 +223,8 @@ public sealed class EstablishmentFacetProviderUnitTests
                 result.Label == "Primary");
     }
 
-    // Note: Ef.InMemory does not support translating ToString() in LINQ queries, so we cannot test the scenario where the value property is not a string. In a real database, this would work as expected.
+    // Note: Ef.InMemory does not support translating ToString() in LINQ queries,
+    // so we cannot test the scenario where the value property is not a string.
+    // In a real database, this would work as expected.
     // This is tested as integration tests with a real database.
 }
