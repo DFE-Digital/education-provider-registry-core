@@ -24,4 +24,17 @@ public static class FacetOptionsConfigurationStub
             Definitions = definitions
         };
     }
+
+    public static FacetOptions StubFor(IEnumerable<KeyValuePair<string, FacetDefinition>> definitions)
+    {
+        ArgumentNullException.ThrowIfNull(definitions);
+
+        return new()
+        {
+            Definitions =
+                definitions.ToDictionary(
+                    definition => definition.Key,
+                    definition => definition.Value)
+        };
+    }
 }

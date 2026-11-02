@@ -1,11 +1,12 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Criteria;
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Filters;
-using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.SearchConfiguration;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.SearchConfigurations;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
+using DfE.EducationProviderRegistry.Core.Query.Test.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
 
@@ -13,7 +14,6 @@ public sealed class SearchUseCaseConfigurationBuilder
 {
     private readonly List<(string termKey, string fieldChainPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)> _terms;
     private readonly List<KeyValuePair<string, string?>> _filters;
-    // TODO should facets be dynamically consumed as part of SearchCriteria
     private readonly List<string> _facets;
     private readonly Dictionary<string, FacetDefinition> _facetDefinitions;
 
@@ -94,55 +94,50 @@ public sealed class SearchUseCaseConfigurationBuilder
                 ? FilterKeyToFilterExpressionMapOptionsStub.Stub(_filters)
                 : FilterKeyToFilterExpressionMapOptionsStub.Stub();
 
-        Dictionary<string, string?> filterKeyToFilterExpressionConfiguration =
-            FilterKeyToFilterExpressionMapOptionsConfigurationAdaptor.ToConfiguration(
-                filterOptions);
 
         // SearchConfiguration
-        SearchConfigurationBuilder searchConfigBuilder = SearchConfigurationBuilder.Create();
+        SearchConfigurationBuilder searchConfigurationBuilder = SearchConfigurationBuilder.Create();
 
-        foreach ((string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>> fieldsConfigure) in _terms)
+        foreach ((string termKey, string chainFieldsWithPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>> fieldsConfigure)
+            in _terms)
         {
             IndexedFieldConfiguration[] fields =
-            [.. fieldsConfigure.Select(fieldConfigure =>
+            [
+                .. fieldsConfigure.Select(fieldConfigure =>
                 {
-                    IndexedFieldConfigurationBuilder builder = IndexedFieldConfigurationBuilder.Create();
-                    fieldConfigure.Invoke(builder);
-                    return builder.Build();
-                })];
+                    IndexedFieldConfigurationBuilder builder =
+                        IndexedFieldConfigurationBuilder.Create();
 
-            searchConfigBuilder.WithBehaviourForSearchTerm(termKey, fields, fieldChainingPredicate: chainFieldsWithPredicate);
+                    fieldConfigure.Invoke(builder);
+
+                    return builder.Build();
+                })
+            ];
+
+            searchConfigurationBuilder.WithBehaviourForSearchTerm(termKey, fields, fieldChainingPredicate: chainFieldsWithPredicate);
         }
 
-        Dictionary<string, string?> builtSearchConfiguration = searchConfigBuilder.Build();
+        SearchConfiguration searchConfiguration = searchConfigurationBuilder.Build();
 
         // FacetOptions
-        Dictionary<string, string?> facetOptionsConfiguration =
-            FacetOptionsConfigurationAdaptor.ToConfiguration(
-                _facetDefinitions.Count == 0 ?
-                    // FacetOptions:Definitions is required for every requested facet
-                    FacetOptionsConfigurationStub.Stub() :
-                        new FacetOptions()
-                        {
-                            Definitions = _facetDefinitions
-                        });
+        // FacetOptions:Definitions is required for every requested facet
+        FacetOptions facetOptions =
+            _facetDefinitions.Count == 0 ?
+                FacetOptionsConfigurationStub.Stub() :
+                FacetOptionsConfigurationStub.StubFor(_facetDefinitions);
 
         // SearchCriteria
         // SearchCriteria:Facets is required for every requested facet
-        Dictionary<string, string?> searchCriteriaConfiguration =
-            SearchCriteriaConfigurationAdaptor.ToConfiguration(
-                _facets.Count == 0 ?
-                    SearchCriteriaOptionsStub.Stub() :
-                    new SearchCriteria()
-                    {
-                        Facets = _facets
-                    });
+        SearchCriteria searchCriteria =
+            _facets.Count == 0 ?
+                SearchCriteriaOptionsStub.Stub() :
+                SearchCriteriaOptionsStub.StubFor(_facets);
 
         return
-            filterKeyToFilterExpressionConfiguration
-                .Concat(facetOptionsConfiguration)
-                .Concat(searchCriteriaConfiguration)
-                .Concat(builtSearchConfiguration)
+            ObjectToConfigurationAdaptor.ToConfiguration(filterOptions, rootConfigurationKey: nameof(FilterKeyToFilterExpressionMapOptions))
+                .Concat(ObjectToConfigurationAdaptor.ToConfiguration(facetOptions, nameof(FacetOptions)))
+                .Concat(ObjectToConfigurationAdaptor.ToConfiguration(searchCriteria, nameof(SearchCriteria)))
+                .Concat(ObjectToConfigurationAdaptor.ToConfiguration(searchConfiguration, nameof(SearchConfiguration)))
                 .ToDictionary();
     }
 }

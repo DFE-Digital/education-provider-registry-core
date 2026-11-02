@@ -9,4 +9,13 @@ internal static class SearchCriteriaOptionsStub
         SearchFields = ["TypeName"],
         Facets = ["searchprovidertypename"],
     };
+
+    public static SearchCriteria StubFor(IEnumerable<string> facets)
+    {
+        return new SearchCriteria()
+        {
+            SearchFields = ["TypeName"],
+            Facets = facets?.ToList() ?? []
+        };
+    }
 }
