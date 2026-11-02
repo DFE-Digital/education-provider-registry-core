@@ -1,7 +1,8 @@
 ﻿using System.Security.Cryptography;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 
 public sealed class GroupAggregateBuilder
 {

@@ -1,7 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 
 public static class AcademyIdTestDoubles
 {
