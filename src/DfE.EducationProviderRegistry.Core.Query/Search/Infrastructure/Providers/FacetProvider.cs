@@ -74,7 +74,7 @@ public sealed class FacetProvider : IFacetProvider
             ? await GetCollectionFacetsAsync(
                 matchingQuery,
                 valueProperty,
-                filterValues,
+                [.. filterValues.OfType<string>()],
                 cancellationToken)
             : await GetScalarFacetsAsync(
                 matchingQuery,
@@ -181,7 +181,7 @@ public sealed class FacetProvider : IFacetProvider
     private static async Task<IReadOnlyList<FacetResult>> GetCollectionFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         PropertyInfo collectionPropertyInfo,
-        IList<object> filterValues,
+        string[] filterValues,
         CancellationToken cancellationToken)
     {
         ParameterExpression parameter =
@@ -204,7 +204,7 @@ public sealed class FacetProvider : IFacetProvider
         // Grouping these collections would produce facets for A, B and C, even though only A is selected.
         // Restrict the flattened collection to the selected values before aggregating the facet results.
         // This ensures that only the selected values are returned in the facet results.
-        if (filterValues.Count > 0)
+        if (filterValues.Length > 0)
         {
             facetValues =
                 facetValues.Where(value => filterValues.Contains(value));

@@ -1,11 +1,8 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
+﻿using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Search.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
