@@ -6,7 +6,6 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
-using DfE.EducationProviderRegistry.Core.Query.Test.Shared;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
 

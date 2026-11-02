@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Shared;
 
 public static class CompaniesHouseIdTestDoubles
 {

@@ -1,7 +1,7 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Group;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Groups;
-using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

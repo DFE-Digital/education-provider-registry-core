@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Establishments;
 
 public static class EstablishmentGovernorAggregateTestDoubles
 {

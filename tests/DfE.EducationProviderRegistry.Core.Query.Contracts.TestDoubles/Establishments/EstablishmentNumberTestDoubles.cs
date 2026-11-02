@@ -2,7 +2,7 @@
 using Bogus.Bson;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Establishments;
 
 public static class EstablishmentNumberTestDoubles
 {

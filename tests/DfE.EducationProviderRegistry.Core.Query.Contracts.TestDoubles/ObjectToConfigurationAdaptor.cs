@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles;
 
 public static class ObjectToConfigurationAdaptor
 {

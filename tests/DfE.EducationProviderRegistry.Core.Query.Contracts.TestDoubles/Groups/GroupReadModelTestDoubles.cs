@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
+namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 
 public static class GroupReadModelTestDoubles
 {
