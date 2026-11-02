@@ -140,9 +140,6 @@ public sealed class SearchServiceAdapter
             (searchResults, facets, totalCount));
     }
 }
-
-public sealed record FacetContext(string Facet, FilterRequest? Filter);
-
 public record SearchReadModel(
     string Id,                  // Urn OR GroupId.
     string Name,                // SearchAggregate OR Group name.
