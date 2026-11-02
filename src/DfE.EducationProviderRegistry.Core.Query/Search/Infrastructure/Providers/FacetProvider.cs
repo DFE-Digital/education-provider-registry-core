@@ -49,6 +49,7 @@ public sealed class FacetProvider : IFacetProvider
     public async Task<IReadOnlyList<FacetResult>> GetFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         string facet,
+        IReadOnlyCollection<object> filterValues,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(matchingQuery);
@@ -73,6 +74,7 @@ public sealed class FacetProvider : IFacetProvider
             ? await GetCollectionFacetsAsync(
                 matchingQuery,
                 valueProperty,
+                filterValues,
                 cancellationToken)
             : await GetScalarFacetsAsync(
                 matchingQuery,
@@ -179,6 +181,7 @@ public sealed class FacetProvider : IFacetProvider
     private static async Task<IReadOnlyList<FacetResult>> GetCollectionFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         PropertyInfo collectionPropertyInfo,
+        IReadOnlyCollection<object> filterValues,
         CancellationToken cancellationToken)
     {
         ParameterExpression parameter =
@@ -189,10 +192,26 @@ public sealed class FacetProvider : IFacetProvider
                 Expression.Property(parameter, collectionPropertyInfo),
                 parameter);
 
-        var rawFacetResults =
-            await matchingQuery
+        IQueryable<string> facetValues =
+            matchingQuery
                 .SelectMany(collectionSelector)
-                .Where(value => !string.IsNullOrEmpty(value))
+                .Where(value => !string.IsNullOrEmpty(value));
+
+        // The query filters collections containing a selected value, but collections may contain other values.
+        // For example, filtering SEN by "MLD" may return:
+        //   Provider A -> ["A", "B"]
+        //   Provider B -> ["A", "C"]
+        // Grouping these collections would produce facets for A, B and C, even though only A is selected.
+        // Restrict the flattened collection to the selected values before aggregating the facet results.
+        // This ensures that only the selected values are returned in the facet results.
+        if (filterValues.Count > 0)
+        {
+            facetValues =
+                facetValues.Where(value => filterValues.Contains(value));
+        }
+
+        var rawFacetResults =
+            await facetValues
                 .GroupBy(value => value)
                 .Select(groupedFacet => new
                 {

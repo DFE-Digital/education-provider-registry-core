@@ -6,11 +6,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.Shared.Specifications.Contain
 public sealed class PropertyContainsAnyValuesSpecification<TProjection, TProperty>
     : ISpecification<TProjection>
 {
-    private readonly Expression<Func<TProjection, IEnumerable<TProperty>>> _property;
-    private readonly IReadOnlyCollection<TProperty?> _values;
+    private readonly Expression<Func<TProjection, IEnumerable<TProperty>?>> _property;
+    private readonly IReadOnlyCollection<TProperty> _values;
 
     public PropertyContainsAnyValuesSpecification(
-        Expression<Func<TProjection, IEnumerable<TProperty>>> property,
+        Expression<Func<TProjection, IEnumerable<TProperty>?>> property,
         IReadOnlyCollection<TProperty> values)
     {
         ArgumentNullException.ThrowIfNull(property);
@@ -34,15 +34,24 @@ public sealed class PropertyContainsAnyValuesSpecification<TProjection, TPropert
 
         ParameterExpression parameter = _property.Parameters[0];
 
-        Expression body =
-            _values.Select(value =>
+        Expression propertyIsNotNull =
+            Expression.NotEqual(
+                _property.Body,
+                Expression.Constant(null, _property.Body.Type));
+
+        Expression containsAnyValue = _values
+            .Select(value =>
                 (Expression)Expression.Call(
                     typeof(Enumerable),
                     nameof(Enumerable.Contains),
                     [typeof(TProperty)],
                     _property.Body,
                     Expression.Constant(value, typeof(TProperty))))
-                .Aggregate(Expression.OrElse);
+            .Aggregate(Expression.OrElse);
+
+        Expression body = Expression.AndAlso(
+            propertyIsNotNull,
+            containsAnyValue);
 
         return Expression.Lambda<Func<TProjection, bool>>(body, parameter);
     }

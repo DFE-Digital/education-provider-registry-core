@@ -1,4 +1,5 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
@@ -23,5 +24,6 @@ public interface IFacetProvider
     Task<IReadOnlyList<FacetResult>> GetFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
         string facet,
+        IReadOnlyCollection<object> filterValues,
         CancellationToken cancellationToken = default);
 }

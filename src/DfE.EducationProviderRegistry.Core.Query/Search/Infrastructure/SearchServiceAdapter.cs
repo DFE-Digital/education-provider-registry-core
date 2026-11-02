@@ -93,10 +93,23 @@ public sealed class SearchServiceAdapter
             await searchResultsQuery.CountAsync(cancellationToken);
 
         // count facets across all matches, independently of the current page
+
+        IReadOnlyList<FacetContext> facetContexts =
+        [
+            .. request.Facets
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(facet =>
+                    new FacetContext(
+                        facet,
+                        request.SearchFilterRequests.SingleOrDefault(
+                            filter =>
+                                string.Equals(filter.FilterName,facet, StringComparison.OrdinalIgnoreCase))))
+        ];
+
         IReadOnlyList<AggregatedFacetResult> facets =
             await _facetAggregator.CalculateFacetsAsync(
                 searchResultsQuery,
-                request.Facets,
+                facetContexts,
                 cancellationToken);
 
         // Apply pagination only to the dsplayed results
@@ -127,6 +140,8 @@ public sealed class SearchServiceAdapter
             (searchResults, facets, totalCount));
     }
 }
+
+public sealed record FacetContext(string Facet, FilterRequest? Filter);
 
 public record SearchReadModel(
     string Id,                  // Urn OR GroupId.
