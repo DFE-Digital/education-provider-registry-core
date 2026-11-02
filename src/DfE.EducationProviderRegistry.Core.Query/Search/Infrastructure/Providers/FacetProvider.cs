@@ -198,7 +198,7 @@ public sealed class FacetProvider : IFacetProvider
                 .Where(value => !string.IsNullOrEmpty(value));
 
         // The query filters collections containing a selected value, but collections may contain other values.
-        // For example, filtering SEN by "MLD" may return:
+        // For example, filtering SEN by "A" may return:
         //   Provider A -> ["A", "B"]
         //   Provider B -> ["A", "C"]
         // Grouping these collections would produce facets for A, B and C, even though only A is selected.
