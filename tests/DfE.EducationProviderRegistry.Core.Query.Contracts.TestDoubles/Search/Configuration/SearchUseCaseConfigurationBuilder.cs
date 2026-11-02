@@ -48,7 +48,7 @@ public sealed class SearchUseCaseConfigurationBuilder
         Action<IndexedFieldConfigurationBuilder> configureField,
         ChainFieldsBehaviour fieldChainedBehaviour = ChainFieldsBehaviour.OR) => WithSearchTerm(termKey, [configureField], fieldChainedBehaviour);
 
-    public SearchUseCaseConfigurationBuilder WithRequestFacet(string facet)
+    public SearchUseCaseConfigurationBuilder WithFacet(string facet)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(facet);
         _facets.Add(facet);
@@ -70,12 +70,12 @@ public sealed class SearchUseCaseConfigurationBuilder
         return this;
     }
 
-    public SearchUseCaseConfigurationBuilder WithFacetDefinition(string facetName, string valueProperty, string labelProperty)
+    public SearchUseCaseConfigurationBuilder WithFacetDefinition(string facet, string valueProperty, string? labelProperty = null)
     {
-        _facetDefinitions[facetName] = new FacetDefinition()
+        _facetDefinitions[facet] = new FacetDefinition()
         {
+            ValueProperty = valueProperty,
             LabelProperty = labelProperty,
-            ValueProperty = valueProperty
         };
 
         return this;
