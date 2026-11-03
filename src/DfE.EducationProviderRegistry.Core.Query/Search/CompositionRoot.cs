@@ -181,7 +181,7 @@ public static class CompositionRoot
                     filter => filter.Key,
                     filter => (Func<ISearchFilter<SearchAggregate>>)(() =>
                         new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
-                            inner: new EqualsFilter(filter.Value))));
+                            inner: new EqualsFilter<SearchAggregate>(filter.Value))));
 
             map["OpenedDateFilter"] = () =>
                 new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
