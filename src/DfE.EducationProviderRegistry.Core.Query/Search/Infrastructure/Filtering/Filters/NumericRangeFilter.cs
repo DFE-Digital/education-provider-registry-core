@@ -28,21 +28,19 @@ internal sealed class NumericRangeFilter : ISearchFilter<SearchAggregate>
 
         if (range.HasLowerAndUpperBounds)
         {
-            return LowerPropertyLessThanOrEqualTo(range.Lower!.Value)
-                .And(UpperPropertyGreaterThanOrEqualTo(range.Upper!.Value));
+            return LowerPropertyGreaterThanOrEqualTo(range.Lower!.Value)
+                .And(UpperPropertyLessThanOrEqualTo(range.Upper!.Value));
         }
 
         if (range.HasLowerBounds)
         {
-            return LowerPropertyLessThanOrEqualTo(range.Lower!.Value);
+            return LowerPropertyGreaterThanOrEqualTo(range.Lower!.Value);
         }
 
-        return UpperPropertyGreaterThanOrEqualTo(range.Upper!.Value);
+        return UpperPropertyLessThanOrEqualTo(range.Upper!.Value);
     }
 
-    private PropertyLessThanOrEqualSpecification<SearchAggregate, int> LowerPropertyLessThanOrEqualTo(int value) =>
-        new(_lowerPropertyTarget, value);
+    private PropertyGreaterThanOrEqualSpecification<SearchAggregate, int> LowerPropertyGreaterThanOrEqualTo(int value) => new(_lowerPropertyTarget, value);
 
-    private PropertyGreaterThanOrEqualSpecification<SearchAggregate, int> UpperPropertyGreaterThanOrEqualTo(int value) =>
-        new(_upperPropertyTarget, value);
+    private PropertyLessThanOrEqualSpecification<SearchAggregate, int> UpperPropertyLessThanOrEqualTo(int value) => new(_upperPropertyTarget, value);
 }
