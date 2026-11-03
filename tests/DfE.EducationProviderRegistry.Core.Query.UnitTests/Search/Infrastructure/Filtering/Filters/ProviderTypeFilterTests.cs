@@ -6,7 +6,7 @@ using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters;
 
-public sealed class SearchProviderTypeFilterTests
+public sealed class EqualsFilterTests
 {
     [Fact]
     public void Constructor_GivenNullPropertySelector_ThrowsArgumentNullException()

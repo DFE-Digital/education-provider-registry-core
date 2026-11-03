@@ -54,11 +54,11 @@ public sealed class SearchUseCaseConfigurationBuilder
         return this;
     }
 
-    public SearchUseCaseConfigurationBuilder WithFilter(string filterKey, string concreteFilter)
+    public SearchUseCaseConfigurationBuilder WithFilter(string filterKey, string targetFilter)
     {
         _filters.Add(
             new(
-                filterKey, concreteFilter));
+                filterKey, targetFilter));
 
         return this;
     }

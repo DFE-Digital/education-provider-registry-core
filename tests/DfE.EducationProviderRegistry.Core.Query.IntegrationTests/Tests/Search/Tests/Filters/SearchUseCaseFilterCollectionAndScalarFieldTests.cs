@@ -32,7 +32,7 @@ public sealed class SearchUseCaseFilterCollectionAndScalarFieldTests : SearchUse
                 valueProperty: nameof(SearchAggregate.Sen))
             .WithFilter(
                 SenFacetKey,
-                concreteFilter: nameof(SenFilter));
+                targetFilter: nameof(SenFilter));
     }
 
     [Fact]

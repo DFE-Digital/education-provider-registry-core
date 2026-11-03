@@ -18,7 +18,7 @@ public sealed class SearchUseCaseFilterScalarValuesTests : SearchUseCaseMatchesR
                 field.WithFieldName(nameof(SearchAggregate.ProviderName))
                     .AppendContainsMatchBehaviour());
 
-        builder.WithFilter(filterKey: "searchprovidertypename", concreteFilter: "SearchProviderTypeFilter");
+        builder.WithFilter(filterKey: "providertypename", targetFilter: "ProviderTypeNameFilter");
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public sealed class SearchUseCaseFilterScalarValuesTests : SearchUseCaseMatchesR
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest("searchprovidertypename", ["1"])
+                .WithFilterRequest("providertypename", ["1"])
                 .Build();
 
         // act // assert
@@ -92,7 +92,7 @@ public sealed class SearchUseCaseFilterScalarValuesTests : SearchUseCaseMatchesR
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest("searchprovidertypename", ["1", "2"])
+                .WithFilterRequest("providertypename", ["1", "2"])
                 .Build();
 
         // act / assert
@@ -129,7 +129,7 @@ public sealed class SearchUseCaseFilterScalarValuesTests : SearchUseCaseMatchesR
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest("searchprovidertypename", ["999"])
+                .WithFilterRequest("providertypename", ["999"])
                 .Build();
 
         // act / assert
