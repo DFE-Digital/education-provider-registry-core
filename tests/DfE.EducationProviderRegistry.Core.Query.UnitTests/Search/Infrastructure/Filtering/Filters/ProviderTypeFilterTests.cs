@@ -12,7 +12,7 @@ public sealed class SearchProviderTypeFilterTests
     public void Constructor_GivenNullPropertySelector_ThrowsArgumentNullException()
     {
         // Arrange
-        Func<EqualsFilter> construct = () => new(null!);
+        Func<EqualsFilter<SearchAggregate>> construct = () => new(null!);
 
         // Act
         ArgumentNullException exception =
@@ -26,7 +26,7 @@ public sealed class SearchProviderTypeFilterTests
     public void CreateSpecification_GivenOnlyNullFilterValues_EvaluatesToFalse()
     {
         // Arrange
-        EqualsFilter sut = new(x => x.ProviderTypeName);
+        EqualsFilter<SearchAggregate> sut = new(x => x.ProviderTypeName);
 
         SearchFilterRequest request = new("STUB-KEY", [null!]);
 
@@ -50,7 +50,7 @@ public sealed class SearchProviderTypeFilterTests
     public void CreateSpecification_GivenNullFilterValuesAndMatchingProviderType_EvaluatesToTrue()
     {
         // Arrange
-        EqualsFilter sut = new(x => x.ProviderTypeName);
+        EqualsFilter<SearchAggregate> sut = new(x => x.ProviderTypeName);
 
         SearchFilterRequest request =
             SearchFilterRequestTestDoubles.StubFilterValues("1", null!, "2");
@@ -75,7 +75,7 @@ public sealed class SearchProviderTypeFilterTests
     public void CreateSpecification_GivenNullFilterValuesAndNoMatchingProviderType_EvaluatesToFalse()
     {
         // Arrange
-        EqualsFilter sut = new(x => x.ProviderTypeName);
+        EqualsFilter<SearchAggregate> sut = new(x => x.ProviderTypeName);
 
         SearchFilterRequest request =
             SearchFilterRequestTestDoubles.StubFilterValues("1", null!);
@@ -100,7 +100,7 @@ public sealed class SearchProviderTypeFilterTests
     public void CreateSpecification_GivenMatchingProviderType_EvaluatesToTrue()
     {
         // Arrange
-        EqualsFilter sut = new(x => x.ProviderTypeName);
+        EqualsFilter<SearchAggregate> sut = new(x => x.ProviderTypeName);
 
         SearchFilterRequest request =
             SearchFilterRequestTestDoubles.StubFilterValues("1", "2");
@@ -125,7 +125,7 @@ public sealed class SearchProviderTypeFilterTests
     public void CreateSpecification_GivenNonMatchingProviderType_EvaluatesToFalse()
     {
         // Arrange
-        EqualsFilter sut = new(x => x.ProviderTypeName);
+        EqualsFilter<SearchAggregate> sut = new(x => x.ProviderTypeName);
 
         SearchFilterRequest request =
             SearchFilterRequestTestDoubles.StubFilterValues("1", "2");
