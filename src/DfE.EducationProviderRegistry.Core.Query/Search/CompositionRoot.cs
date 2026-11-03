@@ -195,7 +195,7 @@ public static class CompositionRoot
 
             map["AgeRangeFilter"] = () =>
                 new ConvertFilterValuesToIntegerSearchFilterDecorator<SearchAggregate>(
-                    inner: new NumericRangeFilter(
+                    inner: new NumericRangeFilter<SearchAggregate>(
                         aggregate => aggregate.AgeLow,
                         aggregate => aggregate.AgeHigh));
 

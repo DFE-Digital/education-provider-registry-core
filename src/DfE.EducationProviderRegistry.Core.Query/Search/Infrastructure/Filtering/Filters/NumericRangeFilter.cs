@@ -2,18 +2,17 @@
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
 using DfE.EducationProviderRegistry.Core.Query.Shared.Specifications.Comparison;
-using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
-internal sealed class NumericRangeFilter : ISearchFilter<SearchAggregate>
+internal sealed class NumericRangeFilter<TModel> : ISearchFilter<TModel>
 {
-    private readonly Expression<Func<SearchAggregate, int?>> _lowerPropertyTarget;
-    private readonly Expression<Func<SearchAggregate, int?>> _upperPropertyTarget;
+    private readonly Expression<Func<TModel, int?>> _lowerPropertyTarget;
+    private readonly Expression<Func<TModel, int?>> _upperPropertyTarget;
 
     public NumericRangeFilter(
-        Expression<Func<SearchAggregate, int?>> lowerPropertyTarget,
-        Expression<Func<SearchAggregate, int?>> upperPropertyTarget)
+        Expression<Func<TModel, int?>> lowerPropertyTarget,
+        Expression<Func<TModel, int?>> upperPropertyTarget)
     {
         ArgumentNullException.ThrowIfNull(lowerPropertyTarget);
         ArgumentNullException.ThrowIfNull(upperPropertyTarget);
@@ -22,7 +21,7 @@ internal sealed class NumericRangeFilter : ISearchFilter<SearchAggregate>
         _upperPropertyTarget = upperPropertyTarget;
     }
 
-    public ISpecification<SearchAggregate> CreateSpecification(SearchFilterRequest request)
+    public ISpecification<TModel> CreateSpecification(SearchFilterRequest request)
     {
         BoundedRange<int> range = request.ParseNumericRange();
 
@@ -40,7 +39,7 @@ internal sealed class NumericRangeFilter : ISearchFilter<SearchAggregate>
         return UpperPropertyLessThanOrEqualTo(range.Upper!.Value);
     }
 
-    private PropertyGreaterThanOrEqualSpecification<SearchAggregate, int> LowerPropertyGreaterThanOrEqualTo(int value) => new(_lowerPropertyTarget, value);
+    private PropertyGreaterThanOrEqualSpecification<TModel, int> LowerPropertyGreaterThanOrEqualTo(int value) => new(_lowerPropertyTarget, value);
 
-    private PropertyLessThanOrEqualSpecification<SearchAggregate, int> UpperPropertyLessThanOrEqualTo(int value) => new(_upperPropertyTarget, value);
+    private PropertyLessThanOrEqualSpecification<TModel, int> UpperPropertyLessThanOrEqualTo(int value) => new(_upperPropertyTarget, value);
 }

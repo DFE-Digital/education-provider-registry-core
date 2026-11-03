@@ -11,7 +11,7 @@ public sealed class NumericRangeFilterTests
     public void Constructor_GivenNullLowerPropertyTarget_ThrowsArgumentNullException()
     {
         // Arrange
-        Func<NumericRangeFilter> construct = () =>
+        Func<NumericRangeFilter<SearchAggregate>> construct = () =>
             new(
                 null!,
                 x => x.AgeHigh);
@@ -28,7 +28,7 @@ public sealed class NumericRangeFilterTests
     public void Constructor_GivenNullUpperPropertyTarget_ThrowsArgumentNullException()
     {
         // Arrange
-        Func<NumericRangeFilter> construct = () =>
+        Func<NumericRangeFilter<SearchAggregate>> construct = () =>
             new(
                 x => x.AgeLow,
                 null!);
@@ -45,7 +45,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderWithinRange_EvaluatesToTrue()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -73,7 +73,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenLowerAndUpperBoundsEqualToProviderBounds_EvaluatesToTrue()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -101,7 +101,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderLowAgeBelowLowerBound_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -129,7 +129,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderHighAgeAboveUpperBound_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -157,7 +157,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenOnlyLowerBoundAndProviderLowAgeAboveLowerBound_EvaluatesToTrue()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -185,7 +185,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenOnlyLowerBoundEqualToProviderLowAge_EvaluatesToTrue()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -213,7 +213,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenOnlyLowerBoundAndProviderLowAgeBelowLowerBound_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -242,7 +242,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenOnlyUpperBoundAndProviderHighAgeBelowUpperBound_EvaluatesToTrue()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -270,7 +270,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenOnlyUpperBoundEqualToProviderHighAge_EvaluatesToTrue()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -298,7 +298,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenOnlyUpperBoundAndProviderHighAgeAboveUpperBound_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -326,7 +326,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenLowerBoundAndProviderLowAgeIsNull_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -354,7 +354,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenUpperBoundAndProviderHighAgeIsNull_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -382,7 +382,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenBothBoundsAndProviderLowAgeIsNull_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
@@ -410,7 +410,7 @@ public sealed class NumericRangeFilterTests
     public void CreateSpecification_GivenBothBoundsAndProviderHighAgeIsNull_EvaluatesToFalse()
     {
         // Arrange
-        NumericRangeFilter sut = new(
+        NumericRangeFilter<SearchAggregate> sut = new(
             x => x.AgeLow,
             x => x.AgeHigh);
 
