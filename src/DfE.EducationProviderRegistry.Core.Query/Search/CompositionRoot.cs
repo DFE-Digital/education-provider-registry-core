@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.Core.Libraries.DesignPatterns.Specification;
@@ -151,28 +152,56 @@ public static class CompositionRoot
             .AddOptions<SearchConfiguration>()
             .Bind(configuration.GetRequiredSection(nameof(SearchConfiguration)));
 
-        services.TryAddScoped<SearchProviderTypeFilter>();
         services.TryAddScoped<SenFilter>();
 
         services.TryAddScoped<ISearchFilterSpecificationFactory<SearchAggregate>>(provider =>
         {
+            Dictionary<string, Expression<Func<SearchAggregate, object?>>> equalsFilters =
+            new()
+            {
+                ["ProviderTypeNameFilter"] = aggregate => aggregate.ProviderTypeName,
+                ["EstablishmentStatusFilter"] = aggregate => aggregate.StatusName,
+                ["EstablishmentEducationPhaseFilter"] = aggregate => aggregate.EducationPhase,
+                ["GroupTypeFilter"] = aggregate => aggregate.GroupType,
+                ["FurtherEducationTypeFilter"] = aggregate => aggregate.FurtherEducationType,
+                ["AdmissionPolicyFilter"] = aggregate => aggregate.Admissions,
+                ["BoardingFilter"] = aggregate => aggregate.Boarding,
+                ["NurseryFilter"] = aggregate => aggregate.Nursery,
+                ["GenderFilter"] = aggregate => aggregate.Gender,
+                ["ReligiousCharacterFilter"] = aggregate => aggregate.ReligiousCharacter,
+                ["SixthFormFilter"] = aggregate => aggregate.SixthForm,
+                ["DioceseFilter"] = aggregate => aggregate.Diocese,
+                ["ReligiousEthosFilter"] = aggregate => aggregate.ReligiousEthos,
+                ["Section41Filter"] = aggregate => aggregate.Section41,
+                ["SpecialClassFilter"] = aggregate => aggregate.SpecialClass
+            };
+
             Dictionary<string, Func<ISearchFilter<SearchAggregate>>> map =
-                new()
-                {
-                    ["SearchProviderTypeFilter"] = () =>
+                equalsFilters.ToDictionary(
+                    filter => filter.Key,
+                    filter => (Func<ISearchFilter<SearchAggregate>>)(() =>
                         new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
-                            inner: provider.GetRequiredService<SearchProviderTypeFilter>()),
+                            inner: new EqualsFilter(filter.Value))));
 
-                    ["OpenedDateFilter"] = () =>
-                        new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
-                            inner: new DateRangeFilter((aggregate) => aggregate.OpenedDate)),
-                    ["ClosedDateFilter"] = () =>
-                        new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
-                            inner: new DateRangeFilter((aggregate) => aggregate.ClosedDate)),
+            map["OpenedDateFilter"] = () =>
+                new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
+                    inner: new DateRangeFilter(
+                        aggregate => aggregate.OpenedDate));
 
-                    ["SenFilter"] = () => new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
-                            inner: provider.GetRequiredService<SenFilter>()),
-                };
+            map["ClosedDateFilter"] = () =>
+                new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
+                    inner: new DateRangeFilter(
+                        aggregate => aggregate.ClosedDate));
+
+            map["AgeRangeFilter"] = () =>
+                new ConvertFilterValuesToIntegerSearchFilterDecorator<SearchAggregate>(
+                    inner: new NumericRangeFilter(
+                        aggregate => aggregate.AgeLow,
+                        aggregate => aggregate.AgeHigh));
+
+            map["SenFilter"] = () =>
+                new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
+                    inner: provider.GetRequiredService<SenFilter>());
 
             return new SearchFilterSpecificationFactory<SearchAggregate>(map);
         });

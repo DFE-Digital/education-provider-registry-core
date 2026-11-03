@@ -93,7 +93,7 @@ internal sealed class SearchReadModelBuilder
             GroupName: _groupName,
             ProviderCategory: _providerCategory,
             GroupStatusCode: _groupStatusCode,
-            EstablishmentStatusCode: _establishmentStatusCode,
+            EstablishmentStatus: _establishmentStatusCode,
             AcademyCount: _academyCount);
     }
 }

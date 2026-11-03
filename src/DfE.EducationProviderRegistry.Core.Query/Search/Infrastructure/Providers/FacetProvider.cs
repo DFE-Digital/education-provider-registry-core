@@ -95,16 +95,28 @@ public sealed class FacetProvider : IFacetProvider
         Expression propertyExpression =
             Expression.Property(parameter, valuePropertyInfo);
 
-        Expression boxExpression =
+        Expression notNullExpression =
+            Expression.NotEqual(
+                propertyExpression,
+                Expression.Constant(null, valuePropertyInfo.PropertyType));
+
+        Expression<Func<SearchAggregate, bool>> notNullPredicate =
+            Expression.Lambda<Func<SearchAggregate, bool>>(
+                notNullExpression,
+                parameter);
+
+        Expression boxValueExpression =
             Expression.Convert(propertyExpression, typeof(object));
 
         Expression<Func<SearchAggregate, object>> valueSelector =
             Expression.Lambda<Func<SearchAggregate, object>>(
-                boxExpression,
+                boxValueExpression,
                 parameter);
 
         IQueryable<IGrouping<object, SearchAggregate>> grouped =
-            matchingQuery.GroupBy(valueSelector);
+            matchingQuery
+                .Where(notNullPredicate)
+                .GroupBy(valueSelector);
 
         if (string.IsNullOrWhiteSpace(facetDefinition.LabelProperty))
         {

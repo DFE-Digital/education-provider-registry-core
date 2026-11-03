@@ -59,8 +59,8 @@ internal sealed class SearchResultsFromQueryResultsMapper
                         new SearchLocalAuthority(r.LocalAuthorityName),
                     new SearchCategory(r.ProviderCategory),
 
-                    r.EstablishmentStatusCode is not null ?
-                            r.EstablishmentStatusCode switch
+                    r.EstablishmentStatus is not null ?
+                            r.EstablishmentStatus switch
                             {
                                 1 => SearchProviderStatus.Open,
                                 2 => SearchProviderStatus.Closed,

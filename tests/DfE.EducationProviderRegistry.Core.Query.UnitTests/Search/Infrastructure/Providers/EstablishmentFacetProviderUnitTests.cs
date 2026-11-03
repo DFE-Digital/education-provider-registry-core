@@ -210,13 +210,8 @@ public sealed class EstablishmentFacetProviderUnitTests
                 TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Contains(
-            results,
-            result =>
-                result.Value == string.Empty &&
-                result.Label == string.Empty);
 
-        Assert.Contains(
+        Assert.Single(
             results,
             result =>
                 result.Value == "Primary" &&

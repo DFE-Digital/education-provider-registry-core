@@ -37,15 +37,7 @@ internal static class SearchFilterRequestParseExtensions
     /// </remarks>
     public static DateRange ParseDateRange(this SearchFilterRequest request)
     {
-        if (request.FilterValues.Length == 0)
-        {
-            throw new ArgumentException("No values to filter in FilterRequestValues.");
-        }
-
-        if (request.FilterValues.Length > 2)
-        {
-            throw new ArgumentException("More values than comparable for DateFilterRange.");
-        }
+        ValidateRange(request);
 
         DateOnly? lower = ToDateOnly(request.FilterValues[0]);
 
@@ -59,6 +51,20 @@ internal static class SearchFilterRequestParseExtensions
         return new(bounds);
     }
 
+    public static BoundedRange<int> ParseNumericRange(this SearchFilterRequest request)
+    {
+        ValidateRange(request);
+
+        int? lower = request.FilterValues[0] is int lowerValue ? lowerValue : null;
+
+        int? upper = request.FilterValues.Length == 2 &&
+            request.FilterValues[1] is int upperValue ?
+                upperValue :
+                    null;
+
+        return new BoundedRange<int>(lower, upper);
+    }
+
     private static DateOnly? ToDateOnly(object? value)
     {
         return value switch
@@ -69,6 +75,19 @@ internal static class SearchFilterRequestParseExtensions
             _ => throw new ArgumentException(
                 $"Unsupported filter value type '{value.GetType().Name}'.")
         };
+    }
+
+    private static void ValidateRange(SearchFilterRequest request)
+    {
+        if (request.FilterValues.Length == 0)
+        {
+            throw new ArgumentException("No values to filter in FilterRequestValues.");
+        }
+
+        if (request.FilterValues.Length > 2)
+        {
+            throw new ArgumentException("More values than comparable for range.");
+        }
     }
 }
 
