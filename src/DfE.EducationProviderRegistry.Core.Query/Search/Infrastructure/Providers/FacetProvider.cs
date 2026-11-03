@@ -142,7 +142,7 @@ public sealed class FacetProvider : IFacetProvider
                         label: value,
                         count: facetResult.Count);
                 })
-                .OrderByDescending(facetResult => facetResult.Count)
+                .OrderBy(facetResult => facetResult.Label)
             ];
         }
 
