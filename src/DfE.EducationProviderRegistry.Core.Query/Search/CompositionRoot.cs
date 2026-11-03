@@ -159,20 +159,20 @@ public static class CompositionRoot
             Dictionary<string, Expression<Func<SearchAggregate, object?>>> equalsFilters =
             new()
             {
-                ["ProviderTypeNameFilter"] = aggregate => aggregate.ProviderTypeName,
-                ["EstablishmentStatusFilter"] = aggregate => aggregate.StatusName,
-                ["EstablishmentEducationPhaseFilter"] = aggregate => aggregate.EducationPhase,
-                ["GroupTypeFilter"] = aggregate => aggregate.GroupType,
-                ["FurtherEducationTypeFilter"] = aggregate => aggregate.FurtherEducationType,
-                ["AdmissionPolicyFilter"] = aggregate => aggregate.Admissions,
+                ["AdmissionFilter"] = aggregate => aggregate.Admissions,
                 ["BoardingFilter"] = aggregate => aggregate.Boarding,
-                ["NurseryFilter"] = aggregate => aggregate.Nursery,
-                ["GenderFilter"] = aggregate => aggregate.Gender,
-                ["ReligiousCharacterFilter"] = aggregate => aggregate.ReligiousCharacter,
-                ["SixthFormFilter"] = aggregate => aggregate.SixthForm,
                 ["DioceseFilter"] = aggregate => aggregate.Diocese,
+                ["EducationPhaseFilter"] = aggregate => aggregate.EducationPhase,
+                ["EstablishmentStatusFilter"] = aggregate => aggregate.StatusName,
+                ["FurtherEducationTypeFilter"] = aggregate => aggregate.FurtherEducationType,
+                ["GroupTypeFilter"] = aggregate => aggregate.GroupType,
+                ["GenderFilter"] = aggregate => aggregate.Gender,
+                ["NurseryFilter"] = aggregate => aggregate.Nursery,
+                ["ProviderTypeNameFilter"] = aggregate => aggregate.ProviderTypeName,
+                ["ReligiousCharacterFilter"] = aggregate => aggregate.ReligiousCharacter,
                 ["ReligiousEthosFilter"] = aggregate => aggregate.ReligiousEthos,
                 ["Section41Filter"] = aggregate => aggregate.Section41,
+                ["SixthFormFilter"] = aggregate => aggregate.SixthForm,
                 ["SpecialClassFilter"] = aggregate => aggregate.SpecialClass
             };
 
