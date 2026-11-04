@@ -1,13 +1,14 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Filter;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets.Providers;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Facets;
 
-public class FacetAggregationStepTests
+public class FacetAggregatorTests
 {
     [Fact]
     public async Task CalculateFacetsAsync_ReturnsEmpty_WhenFacetContextsIsEmpty()
@@ -16,263 +17,426 @@ public class FacetAggregationStepTests
         IQueryable<SearchAggregate> matchingQuery =
             Array.Empty<SearchAggregate>().AsQueryable();
 
-        IReadOnlyCollection<FacetContext> facetContexts = [];
+        IReadOnlyCollection<FacetFilterContext> facetContexts = [];
 
-        Mock<IFacetProvider> facetProviderMock = new();
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(StringComparer.OrdinalIgnoreCase);
+
+        FacetAggregator sut =
+            new(facetResultProviders);
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(
-                    matchingQuery,
-                    facetContexts,
-                    CancellationToken.None);
+            await sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
 
         // assert
         Assert.Empty(result);
-
-        facetProviderMock.VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task CalculateFacetsAsync_PassesFilterValuesForFacet_ToProvider()
     {
         // arrange
-        IQueryable<SearchAggregate> matchingQuery =
-            Array.Empty<SearchAggregate>().AsQueryable();
-
         IList<object> filterValues =
         [
             "MLD - Moderate Learning Difficulty",
             "SEMH - Social, Emotional and Mental Health"
         ];
 
-        FilterRequest filterRequest = new("sen", filterValues);
+        FilterRequest filterRequest =
+            new("sen", filterValues);
 
-        IReadOnlyCollection<FacetContext> facetContexts =
+        IReadOnlyCollection<FacetFilterContext> facetContexts =
         [
             new("sen", filterRequest)
         ];
 
-        Mock<IFacetProvider> facetProviderMock = new();
+        SearchAggregate searchAggregate =
+            new()
+            {
+                ProviderId = "1"
+            };
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "sen",
-                    It.Is<IList<object>>(values => values.SequenceEqual(filterValues)),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        IQueryable<SearchAggregate> matchingQuery =
+            CreateMatchingQuery(searchAggregate);
+
+        Mock<IFacetResultProvider> facetResultProviderMock =
+            new();
+
+        facetResultProviderMock
+            .Setup(provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.Is<IList<object>>(values =>
+                        values.SequenceEqual(filterValues))))
+            .Returns([]);
+
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["sen"] = facetResultProviderMock.Object
+            };
+
+        FacetAggregator sut =
+            new(facetResultProviders);
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(
-                    matchingQuery,
-                    facetContexts,
-                    CancellationToken.None);
+            await sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
 
         // assert
-        Assert.Single(result);
-        Assert.Equal("sen", result[0].FacetName);
+        AggregatedFacetResult aggregatedFacetResult =
+            Assert.Single(result);
 
-        facetProviderMock.Verify(
-            facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "sen",
-                    It.Is<IList<object>>(values => values.SequenceEqual(filterValues)),
-                    It.IsAny<CancellationToken>()),
+        Assert.Equal(
+            "sen",
+            aggregatedFacetResult.FacetName);
+
+        facetResultProviderMock.Verify(
+            provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.Is<IList<object>>(values =>
+                        values.SequenceEqual(filterValues))),
             Times.Once);
 
-        facetProviderMock.VerifyNoOtherCalls();
+        facetResultProviderMock.VerifyNoOtherCalls();
     }
 
     [Fact]
-    public async Task CalculateFacetsAsync_CallsProviderOncePerFacet()
+    public async Task CalculateFacetsAsync_CallsRegisteredProviderForFacet()
     {
         // arrange
-        IQueryable<SearchAggregate> matchingQuery =
-            Array.Empty<SearchAggregate>().AsQueryable();
-
-        IReadOnlyCollection<FacetContext> facetContexts =
+        IReadOnlyCollection<FacetFilterContext> facetContexts =
         [
-            new("Type", null)
+            new("boarding", null)
         ];
 
-        Mock<IFacetProvider> facetProviderMock = new();
+        SearchAggregate searchAggregate =
+            new()
+            {
+                ProviderId = "1",
+                Boarding = "Does not have boarders"
+            };
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "Type",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        IQueryable<SearchAggregate> matchingQuery =
+            CreateMatchingQuery(searchAggregate);
+
+        Mock<IFacetResultProvider> facetResultProviderMock =
+            new();
+
+        facetResultProviderMock
+            .Setup(provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.Is<IList<object>>(values =>
+                        values.Count == 0)))
+            .Returns([]);
+
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["boarding"] = facetResultProviderMock.Object
+            };
+
+        FacetAggregator sut =
+            new(facetResultProviders);
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(
-                    matchingQuery,
-                    facetContexts,
-                    CancellationToken.None);
+            await sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
 
         // assert
-        Assert.Single(result);
-        Assert.Equal("Type", result[0].FacetName);
+        AggregatedFacetResult aggregatedFacetResult =
+            Assert.Single(result);
 
-        facetProviderMock.Verify(
-            facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "Type",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()),
+        Assert.Equal(
+            "boarding",
+            aggregatedFacetResult.FacetName);
+
+        facetResultProviderMock.Verify(
+            provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.Is<IList<object>>(values =>
+                        values.Count == 0)),
             Times.Once);
 
-        facetProviderMock.VerifyNoOtherCalls();
+        facetResultProviderMock.VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task CalculateFacetsAsync_ReturnsAggregatedResults_FromProvider()
     {
         // arrange
-        IQueryable<SearchAggregate> matchingQuery =
-            Array.Empty<SearchAggregate>().AsQueryable();
-
-        IReadOnlyCollection<FacetContext> facetContexts =
+        IReadOnlyCollection<FacetFilterContext> facetContexts =
         [
-            new("Status", null)
+            new("status", null)
         ];
 
-        IReadOnlyList<FacetResult> providerResults =
-            new List<FacetResult>
+        SearchAggregate searchAggregate =
+            new()
             {
-                new("Open", "label", 10),
-                new("Closed", "label", 5)
+                ProviderId = "1",
+                StatusName = "Open"
             };
 
-        Mock<IFacetProvider> facetProviderMock = new();
+        IQueryable<SearchAggregate> matchingQuery =
+            CreateMatchingQuery(searchAggregate);
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "Status",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(providerResults);
+        IReadOnlyList<FacetResult> providerResults =
+        [
+            new("Open", "Open", 10),
+            new("Closed", "Closed", 5)
+        ];
+
+        Mock<IFacetResultProvider> facetResultProviderMock =
+            new();
+
+        facetResultProviderMock
+            .Setup(provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.Is<IList<object>>(values =>
+                        values.Count == 0)))
+            .Returns(providerResults);
+
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["status"] = facetResultProviderMock.Object
+            };
+
+        FacetAggregator sut =
+            new(facetResultProviders);
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(
-                    matchingQuery,
-                    facetContexts,
-                    CancellationToken.None);
+            await sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
 
         // assert
-        Assert.Single(result);
-        Assert.Equal("Status", result[0].FacetName);
-        Assert.Equal(providerResults, result[0].Values);
+        AggregatedFacetResult aggregatedFacetResult =
+            Assert.Single(result);
 
-        facetProviderMock.VerifyAll();
+        Assert.Equal(
+            "status",
+            aggregatedFacetResult.FacetName);
+
+        Assert.Equal(
+            providerResults,
+            aggregatedFacetResult.Values);
+
+        facetResultProviderMock.VerifyAll();
     }
 
     [Fact]
     public async Task CalculateFacetsAsync_PreservesFacetOrder()
     {
         // arrange
-        IQueryable<SearchAggregate> matchingQuery =
-            Array.Empty<SearchAggregate>().AsQueryable();
-
-        IReadOnlyCollection<FacetContext> facetContexts =
+        IReadOnlyCollection<FacetFilterContext> facetContexts =
         [
-            new("A", null),
-            new("B", null),
-            new("C", null)
+            new("boarding", null),
+            new("status", null),
+            new("sen", null)
         ];
 
-        Mock<IFacetProvider> facetProviderMock = new();
+        SearchAggregate searchAggregate =
+            new()
+            {
+                ProviderId = "1"
+            };
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "A",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        IQueryable<SearchAggregate> matchingQuery =
+            CreateMatchingQuery(searchAggregate);
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "B",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        Mock<IFacetResultProvider> boardingProviderMock =
+            CreateFacetResultProviderMock();
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "C",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+        Mock<IFacetResultProvider> statusProviderMock =
+            CreateFacetResultProviderMock();
+
+        Mock<IFacetResultProvider> senProviderMock =
+            CreateFacetResultProviderMock();
+
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["boarding"] = boardingProviderMock.Object,
+                ["status"] = statusProviderMock.Object,
+                ["sen"] = senProviderMock.Object
+            };
+
+        FacetAggregator sut =
+            new(facetResultProviders);
 
         // act
         IReadOnlyList<AggregatedFacetResult> result =
-            await new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(
-                    matchingQuery,
-                    facetContexts,
-                    CancellationToken.None);
+            await sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
 
         // assert
         Assert.Equal(
-            ["A", "B", "C"],
-            result.Select(result => result.FacetName));
+            ["boarding", "status", "sen"],
+            result.Select(aggregatedFacet =>
+                aggregatedFacet.FacetName));
 
-        facetProviderMock.VerifyAll();
+        boardingProviderMock.VerifyAll();
+        statusProviderMock.VerifyAll();
+        senProviderMock.VerifyAll();
+    }
+
+    [Fact]
+    public async Task CalculateFacetsAsync_ThrowsInvalidOperationException_WhenFacetIsUnknown()
+    {
+        // arrange
+        IReadOnlyCollection<FacetFilterContext> facetContexts =
+        [
+            new("unknown", null)
+        ];
+
+        SearchAggregate searchAggregate =
+            new()
+            {
+                ProviderId = "1"
+            };
+
+        IQueryable<SearchAggregate> matchingQuery =
+            CreateMatchingQuery(searchAggregate);
+
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(
+                StringComparer.OrdinalIgnoreCase);
+
+        FacetAggregator sut =
+            new(facetResultProviders);
+
+        // act
+        Task act() =>
+            sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
+
+        // assert
+        await Assert.ThrowsAsync<InvalidOperationException>(act);
     }
 
     [Fact]
     public async Task CalculateFacetsAsync_PropagatesExceptions_FromProvider()
     {
         // arrange
-        IQueryable<SearchAggregate> matchingQuery =
-            Array.Empty<SearchAggregate>().AsQueryable();
-
-        IReadOnlyCollection<FacetContext> facetContexts =
+        IReadOnlyCollection<FacetFilterContext> facetContexts =
         [
-            new("ErrorFacet", null)
+            new("status", null)
         ];
 
-        Mock<IFacetProvider> facetProviderMock = new();
+        SearchAggregate searchAggregate =
+            new()
+            {
+                ProviderId = "1"
+            };
 
-        facetProviderMock
-            .Setup(facetProvider =>
-                facetProvider.GetFacetsAsync(
-                    matchingQuery,
-                    "ErrorFacet",
-                    It.Is<IList<object>>(values => values.Count == 0),
-                    It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("Boom"));
+        IQueryable<SearchAggregate> matchingQuery =
+            CreateMatchingQuery(searchAggregate);
+
+        Mock<IFacetResultProvider> facetResultProviderMock =
+            new();
+
+        facetResultProviderMock
+            .Setup(provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.IsAny<IList<object>>()))
+            .Throws(
+                new InvalidOperationException("Boom"));
+
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            new Dictionary<string, IFacetResultProvider>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["status"] = facetResultProviderMock.Object
+            };
+
+        FacetAggregator sut =
+            new(facetResultProviders);
 
         // act
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            new FacetAggregator(facetProviderMock.Object)
-                .CalculateFacetsAsync(
-                    matchingQuery,
-                    facetContexts,
-                    CancellationToken.None));
+        Task act() =>
+            sut.CalculateFacetsAsync(
+                matchingQuery,
+                facetContexts,
+                CancellationToken.None);
 
         // assert
-        facetProviderMock.VerifyAll();
+        await Assert.ThrowsAsync<InvalidOperationException>(act);
+
+        facetResultProviderMock.VerifyAll();
+    }
+
+    private static IQueryable<SearchAggregate> CreateMatchingQuery(
+        params SearchAggregate[] searchAggregates)
+    {
+        DbContextOptions<FacetTestDbContext> options =
+            new DbContextOptionsBuilder<FacetTestDbContext>()
+                .UseInMemoryDatabase(
+                    Guid.NewGuid().ToString())
+                .Options;
+
+        FacetTestDbContext context =
+            new(options);
+
+        context.SearchAggregates.AddRange(
+            searchAggregates);
+
+        context.SaveChanges();
+
+        return context.SearchAggregates;
+    }
+
+    private static Mock<IFacetResultProvider>
+        CreateFacetResultProviderMock()
+    {
+        Mock<IFacetResultProvider> mock =
+            new();
+
+        mock
+            .Setup(provider =>
+                provider.GetFacets(
+                    It.IsAny<IEnumerable<FacetProjection>>(),
+                    It.Is<IList<object>>(values =>
+                        values.Count == 0)))
+            .Returns([]);
+
+        return mock;
+    }
+
+    private sealed class FacetTestDbContext : DbContext
+    {
+        public FacetTestDbContext(
+            DbContextOptions<FacetTestDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<SearchAggregate> SearchAggregates =>
+            Set<SearchAggregate>();
     }
 }

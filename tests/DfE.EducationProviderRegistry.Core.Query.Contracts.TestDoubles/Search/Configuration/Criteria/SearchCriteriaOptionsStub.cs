@@ -7,7 +7,7 @@ internal static class SearchCriteriaOptionsStub
     public static SearchCriteria Stub() => new()
     {
         SearchFields = ["TypeName"],
-        Facets = ["searchprovidertypename"],
+        Facets = ["providertypename"],
     };
 
     public static SearchCriteria StubFor(IEnumerable<string> facets)

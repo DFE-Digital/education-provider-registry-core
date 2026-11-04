@@ -83,17 +83,19 @@ internal sealed class SearchReadModelBuilder
 
     public SearchReadModel Build()
     {
-        return new(
-            Id: _id,
-            Name: _name,
-            TypeName: _typeName,
-            Address: _address!,
-            LocalAuthorityName: _localAuthorityName,
-            GroupUid: _groupCode,
-            GroupName: _groupName,
-            ProviderCategory: _providerCategory,
-            GroupStatusCode: _groupStatusCode,
-            EstablishmentStatusCode: _establishmentStatusCode,
-            AcademyCount: _academyCount);
+        return new()
+        {
+            Id = _id,
+            Name = _name,
+            TypeName = _typeName,
+            Address = _address!,
+            LocalAuthorityName = _localAuthorityName,
+            GroupUid = _groupCode,
+            GroupName = _groupName,
+            ProviderCategory = _providerCategory,
+            GroupStatusCode = _groupStatusCode,
+            EstablishmentStatusCode = _establishmentStatusCode,
+            AcademyCount = _academyCount
+        };
     }
 }

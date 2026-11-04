@@ -13,7 +13,7 @@ public static class FacetAggregatorTestDouble
         mock.Setup(facetAggregator =>
             facetAggregator.CalculateFacetsAsync(
                 It.IsAny<IQueryable<SearchAggregate>>(),
-                It.IsAny<IReadOnlyCollection<FacetContext>>(),
+                It.IsAny<IReadOnlyCollection<FacetFilterContext>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
 

@@ -27,9 +27,6 @@ public sealed class SearchUseCaseFilterCollectionAndScalarFieldTests : SearchUse
 
         builder
             .WithFacet(SenFacetKey)
-            .WithFacetDefinition(
-                SenFacetKey,
-                valueProperty: nameof(SearchAggregate.Sen))
             .WithFilter(
                 SenFacetKey,
                 targetFilter: nameof(SenFilter));
