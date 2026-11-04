@@ -2,4 +2,4 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
 
-public sealed record FacetContext(string Facet, FilterRequest? Filter);
+public sealed record FacetFilterContext(string Facet, FilterRequest? Filter);

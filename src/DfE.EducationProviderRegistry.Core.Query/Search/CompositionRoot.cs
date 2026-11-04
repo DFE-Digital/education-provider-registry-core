@@ -14,13 +14,13 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Respo
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators.EntityMetadataResolver;
@@ -89,14 +89,6 @@ public static class CompositionRoot
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddOptions<FacetOptions>()
-            .Bind(configuration.GetSection(nameof(FacetOptions)))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        services.AddSingleton(serviceProvider =>
-            serviceProvider.GetRequiredService<IOptions<FacetOptions>>().Value);
-
         services.TryAddScoped<ISqlFilterExpressionTranslator<SearchAggregate>,
             SqlFilterExpressionTranslator<SearchAggregate>>();
 
@@ -118,8 +110,6 @@ public static class CompositionRoot
                 sp.GetRequiredService<ISearchProjectionBuilder<SearchAggregate>>(),
                 sp.GetRequiredService<ISearchFilterExpressionsBuilder<SearchAggregate>>(),
                 searchColumn: "name"));
-
-        services.TryAddScoped<IFacetProvider, FacetProvider>();
 
         // ---------------------------------------------------------
         // Mappers
@@ -215,6 +205,29 @@ public static class CompositionRoot
             ReadOnlyCollection<SearchFilterRequest>>,
             SearchRequestFiltersToCoreFiltersMapper>();
 
+        static IFacetResultProvider Scalar(Func<FacetProjection, string?> selector) => new ScalarFacetResultProvider(selector);
+
+        Dictionary<string, IFacetResultProvider> facetResultProviders = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["admissionpolicy"] = Scalar(projection => projection.Admissions),
+            ["boarding"] = Scalar(projection => projection.Boarding),
+            ["diocese"] = Scalar(projection => projection.Diocese),
+            ["educationphase"] = Scalar(projection => projection.EducationPhase),
+            ["furthereducationtype"] = Scalar(projection => projection.FurtherEducationType),
+            ["gender"] = Scalar(projection => projection.Gender),
+            ["grouptype"] = Scalar(projection => projection.GroupType),
+            ["nursery"] = Scalar(projection => projection.Nursery),
+            ["religiouscharacter"] = Scalar(projection => projection.ReligiousCharacter),
+            ["religiousethos"] = Scalar(projection => projection.ReligiousEthos),
+            ["providertypename"] = Scalar(projection => projection.ProviderTypeName),
+            ["section41"] = Scalar(projection => projection.Section41),
+            ["sixthform"] = Scalar(projection => projection.SixthForm),
+            ["specialclass"] = Scalar(projection => projection.SpecialClass),
+            ["status"] = Scalar(projection => projection.StatusName),
+            ["sen"] = new CollectionFacetResultProvider(projection => projection.Sen ?? []),
+        };
+
+        services.AddSingleton<IReadOnlyDictionary<string, IFacetResultProvider>>(facetResultProviders);
         services.AddScoped<IFacetAggregator, FacetAggregator>();
 
         // ---------------------------------------------------------

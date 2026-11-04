@@ -1,10 +1,8 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Criteria;
-using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Facets;
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.Filters;
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration.SearchConfigurations;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
-using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.QueryProcessing.Configuration;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Search.Configuration;
@@ -14,14 +12,12 @@ public sealed class SearchUseCaseConfigurationBuilder
     private readonly List<(string termKey, string fieldChainPredicate, IEnumerable<Action<IndexedFieldConfigurationBuilder>>)> _terms;
     private readonly List<KeyValuePair<string, string?>> _filters;
     private readonly List<string> _facets;
-    private readonly Dictionary<string, FacetDefinition> _facetDefinitions;
 
     public SearchUseCaseConfigurationBuilder()
     {
         _terms = [];
         _filters = [];
         _facets = [];
-        _facetDefinitions = [];
     }
 
     public SearchUseCaseConfigurationBuilder WithSearchTerm(
@@ -69,17 +65,6 @@ public sealed class SearchUseCaseConfigurationBuilder
         return this;
     }
 
-    public SearchUseCaseConfigurationBuilder WithFacetDefinition(string facet, string valueProperty, string? labelProperty = null)
-    {
-        _facetDefinitions[facet] = new FacetDefinition()
-        {
-            ValueProperty = valueProperty,
-            LabelProperty = labelProperty,
-        };
-
-        return this;
-    }
-
     public static SearchUseCaseConfigurationBuilder Create()
     {
         return new();
@@ -118,13 +103,6 @@ public sealed class SearchUseCaseConfigurationBuilder
 
         SearchConfiguration searchConfiguration = searchConfigurationBuilder.Build();
 
-        // FacetOptions
-        // FacetOptions:Definitions is required for every requested facet
-        FacetOptions facetOptions =
-            _facetDefinitions.Count == 0 ?
-                FacetOptionsConfigurationStub.Stub() :
-                FacetOptionsConfigurationStub.StubFor(_facetDefinitions);
-
         // SearchCriteria
         // SearchCriteria:Facets is required for every requested facet
         SearchCriteria searchCriteria =
@@ -134,7 +112,6 @@ public sealed class SearchUseCaseConfigurationBuilder
 
         return
             ObjectToConfigurationAdaptor.ToConfiguration(filterOptions, rootConfigurationKey: nameof(FilterKeyToFilterExpressionMapOptions))
-                .Concat(ObjectToConfigurationAdaptor.ToConfiguration(facetOptions, nameof(FacetOptions)))
                 .Concat(ObjectToConfigurationAdaptor.ToConfiguration(searchCriteria, nameof(SearchCriteria)))
                 .Concat(ObjectToConfigurationAdaptor.ToConfiguration(searchConfiguration, nameof(SearchConfiguration)))
                 .ToDictionary();
