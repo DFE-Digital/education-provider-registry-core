@@ -4,7 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.F
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Facets;
 
-public class CollectionFacetResultProviderTests
+public sealed class CollectionFacetResultProviderTests
 {
     [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenSelectorIsNull()
@@ -96,26 +96,41 @@ public class CollectionFacetResultProviderTests
         // assert
         Assert.Equal(3, result.Count);
 
-        Assert.Contains(
-            new FacetResult(
-                "MLD - Moderate Learning Difficulty",
-                "MLD - Moderate Learning Difficulty",
-                2),
-            result);
+        Assert.Equal(
+            "ASD - Autistic Spectrum Disorder",
+            result[0].Value);
 
-        Assert.Contains(
-            new FacetResult(
-                "SEMH - Social, Emotional and Mental Health",
-                "SEMH - Social, Emotional and Mental Health",
-                1),
-            result);
+        Assert.Equal(
+            "ASD - Autistic Spectrum Disorder",
+            result[0].Label);
 
-        Assert.Contains(
-            new FacetResult(
-                "ASD - Autistic Spectrum Disorder",
-                "ASD - Autistic Spectrum Disorder",
-                1),
-            result);
+        Assert.Equal(
+            1,
+            result[0].Count);
+
+        Assert.Equal(
+            "MLD - Moderate Learning Difficulty",
+            result[1].Value);
+
+        Assert.Equal(
+            "MLD - Moderate Learning Difficulty",
+            result[1].Label);
+
+        Assert.Equal(
+            2,
+            result[1].Count);
+
+        Assert.Equal(
+            "SEMH - Social, Emotional and Mental Health",
+            result[2].Value);
+
+        Assert.Equal(
+            "SEMH - Social, Emotional and Mental Health",
+            result[2].Label);
+
+        Assert.Equal(
+            1,
+            result[2].Count);
     }
 
     [Fact]
@@ -149,11 +164,16 @@ public class CollectionFacetResultProviderTests
             Assert.Single(result);
 
         Assert.Equal(
-            new FacetResult(
-                "MLD",
-                "MLD",
-                1),
-            facetResult);
+            "MLD",
+            facetResult.Value);
+
+        Assert.Equal(
+            "MLD",
+            facetResult.Label);
+
+        Assert.Equal(
+            1,
+            facetResult.Count);
     }
 
     [Fact]
@@ -199,11 +219,16 @@ public class CollectionFacetResultProviderTests
             Assert.Single(result);
 
         Assert.Equal(
-            new FacetResult(
-                "MLD",
-                "MLD",
-                2),
-            facetResult);
+            "MLD",
+            facetResult.Value);
+
+        Assert.Equal(
+            "MLD",
+            facetResult.Label);
+
+        Assert.Equal(
+            2,
+            facetResult.Count);
     }
 
     [Fact]
@@ -248,19 +273,29 @@ public class CollectionFacetResultProviderTests
         // assert
         Assert.Equal(2, result.Count);
 
-        Assert.Contains(
-            new FacetResult(
-                "MLD",
-                "MLD",
-                2),
-            result);
+        Assert.Equal(
+            "ASD",
+            result[0].Value);
 
-        Assert.Contains(
-            new FacetResult(
-                "ASD",
-                "ASD",
-                1),
-            result);
+        Assert.Equal(
+            "ASD",
+            result[0].Label);
+
+        Assert.Equal(
+            1,
+            result[0].Count);
+
+        Assert.Equal(
+            "MLD",
+            result[1].Value);
+
+        Assert.Equal(
+            "MLD",
+            result[1].Label);
+
+        Assert.Equal(
+            2,
+            result[1].Count);
     }
 
     [Fact]
@@ -296,6 +331,14 @@ public class CollectionFacetResultProviderTests
 
         // assert
         Assert.Equal(2, result.Count);
+
+        Assert.Equal(
+            "MLD",
+            result[0].Value);
+
+        Assert.Equal(
+            "SEMH",
+            result[1].Value);
     }
 
     [Fact]
@@ -358,5 +401,17 @@ public class CollectionFacetResultProviderTests
 
         // assert
         Assert.Equal(2, result.Count);
+
+        Assert.Contains(
+            result,
+            facetResult =>
+                facetResult.Value == "MLD" &&
+                facetResult.Count == 1);
+
+        Assert.Contains(
+            result,
+            facetResult =>
+                facetResult.Value == "mld" &&
+                facetResult.Count == 1);
     }
 }

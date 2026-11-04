@@ -4,8 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.F
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Facets;
 
-
-public class ScalarFacetResultProviderTests
+public sealed class ScalarFacetResultProviderTests
 {
     [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenSelectorIsNull()
@@ -64,18 +63,28 @@ public class ScalarFacetResultProviderTests
         Assert.Equal(2, result.Count);
 
         Assert.Equal(
-            new FacetResult(
-                "Boarding school",
-                "Boarding school",
-                2),
-            result[0]);
+            "Boarding school",
+            result[0].Value);
 
         Assert.Equal(
-            new FacetResult(
-                "Does not have boarders",
-                "Does not have boarders",
-                1),
-            result[1]);
+            "Boarding school",
+            result[0].Label);
+
+        Assert.Equal(
+            2,
+            result[0].Count);
+
+        Assert.Equal(
+            "Does not have boarders",
+            result[1].Value);
+
+        Assert.Equal(
+            "Does not have boarders",
+            result[1].Label);
+
+        Assert.Equal(
+            1,
+            result[1].Count);
     }
 
     [Fact]
@@ -103,11 +112,16 @@ public class ScalarFacetResultProviderTests
             Assert.Single(result);
 
         Assert.Equal(
-            new FacetResult(
-                "Boarding school",
-                "Boarding school",
-                1),
-            facetResult);
+            "Boarding school",
+            facetResult.Value);
+
+        Assert.Equal(
+            "Boarding school",
+            facetResult.Label);
+
+        Assert.Equal(
+            1,
+            facetResult.Count);
     }
 
     [Fact]
@@ -158,5 +172,17 @@ public class ScalarFacetResultProviderTests
 
         // assert
         Assert.Equal(2, result.Count);
+
+        Assert.Contains(
+            result,
+            facetResult =>
+                facetResult.Value == "Boarding" &&
+                facetResult.Count == 1);
+
+        Assert.Contains(
+            result,
+            facetResult =>
+                facetResult.Value == "boarding" &&
+                facetResult.Count == 1);
     }
 }
