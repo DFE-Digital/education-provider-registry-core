@@ -18,12 +18,12 @@ public sealed class FacetAggregator : IFacetAggregator
 
     public async Task<IReadOnlyList<AggregatedFacetResult>> CalculateFacetsAsync(
         IQueryable<SearchAggregate> matchingQuery,
-        IReadOnlyCollection<FacetFilterContext> facets,
+        IReadOnlyCollection<FacetFilterContext> filters,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(matchingQuery);
 
-        if (facets is null || facets.Count == 0)
+        if (filters is null || filters.Count == 0)
         {
             return [];
         }
@@ -53,7 +53,7 @@ public sealed class FacetAggregator : IFacetAggregator
 
         List<AggregatedFacetResult> results = [];
 
-        foreach (FacetFilterContext facetContext in facets)
+        foreach (FacetFilterContext facetContext in filters)
         {
             if (!_facetResultProviders.TryGetValue(facetContext.Facet, out IFacetResultProvider? provider))
             {
