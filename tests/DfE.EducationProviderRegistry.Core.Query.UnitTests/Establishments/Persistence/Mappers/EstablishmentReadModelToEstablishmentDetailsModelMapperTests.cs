@@ -1,6 +1,6 @@
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Establishments;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Establishments.Persistence.Mappers;
-using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Establishments;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Establishments.Persistence.Mappers;

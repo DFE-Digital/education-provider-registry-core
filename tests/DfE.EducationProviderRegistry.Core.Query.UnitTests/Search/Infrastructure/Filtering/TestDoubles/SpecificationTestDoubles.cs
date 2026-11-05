@@ -5,17 +5,19 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructu
 
 internal static class SpecificationTestDoubles
 {
-    internal static ISpecification<T> Create<T>(
-        Expression<Func<T, bool>>? expression = null)
+    public static ISpecification<T> True<T>() => new Fake<T>((t) => true);
+    public static ISpecification<T> False<T>() => new Fake<T>((t) => false);
+
+    internal static ISpecification<T> Create<T>(Expression<Func<T, bool>>? expression = null)
     {
-        return new TestSpecification<T>(expression ?? ((t) => true));
+        return new Fake<T>(expression ?? ((t) => true));
     }
 
-    private sealed class TestSpecification<T> : ISpecification<T>
+    private sealed class Fake<T> : ISpecification<T>
     {
         private readonly Expression<Func<T, bool>> _expression;
 
-        public TestSpecification(Expression<Func<T, bool>> expression)
+        public Fake(Expression<Func<T, bool>> expression)
         {
             ArgumentNullException.ThrowIfNull(expression);
             _expression = expression;

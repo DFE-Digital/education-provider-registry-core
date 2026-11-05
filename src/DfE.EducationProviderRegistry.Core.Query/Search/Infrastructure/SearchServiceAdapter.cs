@@ -89,66 +89,83 @@ public sealed class SearchServiceAdapter
                 filteredResults,
                 _termMapper.Map(request.SearchTerms));
 
+        // count facets across all matches, independently of the current page
         int totalCount =
             await searchResultsQuery.CountAsync(cancellationToken);
 
-        // 1. Project directly into SearchReadModel.
+        IReadOnlyList<FacetFilterContext> facetContexts =
+        [
+            .. request.Facets
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(facet =>
+                    new FacetFilterContext(
+                        facet,
+                        request.SearchFilterRequests.SingleOrDefault(
+                            filter =>
+                                string.Equals(filter.FilterName,facet, StringComparison.OrdinalIgnoreCase))))
+        ];
+
+        IReadOnlyList<AggregatedFacetResult> facets =
+            await _facetAggregator.CalculateFacetsAsync(
+                searchResultsQuery,
+                facetContexts,
+                cancellationToken);
+
+        // Apply pagination only to the dsplayed results
         List<SearchReadModel> searchResults =
             await searchResultsQuery
                 .OrderByDirection(t => t.ProviderName, request.SortOrdering.Direction)
                 .Skip(request.Offset)
                 .Take(request.PageSize)
-                .Select(searchProvider =>
-                    new SearchReadModel(
-                        Id: searchProvider.ProviderId,
-                        Name: searchProvider.ProviderName ?? string.Empty,
-                        TypeName: searchProvider.ProviderTypeName ?? string.Empty,
-                        TypeId: searchProvider.ProviderTypeId,
-                        Address: searchProvider.ProviderAddress ?? string.Empty,
-                        LocalAuthorityName: searchProvider.LocalAuthorityName ?? string.Empty,
-                        GroupUid: searchProvider.GroupUid,
-                        GroupName: searchProvider.GroupName,
-                        ProviderCategory: searchProvider.ProviderCategory ?? string.Empty,
-                        EstablishmentStatusCode: searchProvider.EstablishmentStatus,
-                        GroupStatusCode: searchProvider.GroupStatus,
-                        AcademyCount: searchProvider.AcademyCounts ?? 0
-                    )
-                )
+                .Select(searchProvider => new SearchReadModel
+                {
+                    Id = searchProvider.ProviderId,
+                    Name = searchProvider.ProviderName ?? string.Empty,
+                    TypeName = searchProvider.ProviderTypeName ?? string.Empty,
+                    Address = searchProvider.ProviderAddress ?? string.Empty,
+                    LocalAuthorityName = searchProvider.LocalAuthorityName ?? string.Empty,
+                    GroupUid = searchProvider.GroupUid,
+                    GroupName = searchProvider.GroupName,
+                    ProviderCategory = searchProvider.ProviderCategory ?? string.Empty,
+                    EstablishmentStatusCode = searchProvider.StatusCode,
+                    GroupStatusCode = searchProvider.GroupStatus,
+                    AcademyCount = searchProvider.AcademyCounts ?? 0,
+                })
                 .ToListAsync(cancellationToken);
 
-        // 2. Define available URN's.
-        ReadOnlyCollection<string> urns =
-            searchResults
-                .Select(entity => entity.Id)
-                .ToList()
-                .AsReadOnly();
-
-        // 3. Define Facets.
-        IReadOnlyList<AggregatedFacetResult> facets =
-            await _facetAggregator.CalculateFacetsAsync(
-                urns,
-                request.Facets,
-                cancellationToken);
 
         return _resultsMapper.Map(
             (searchResults, facets, totalCount));
     }
 }
+public sealed record SearchReadModel
+{
+    // Urn OR GroupId.
+    public required string Id { get; init; }
 
-public record SearchReadModel(
-    string Id,                  // Urn OR GroupId.
-    string Name,                // SearchAggregate OR Group name.
-    string TypeName,            // SearchAggregate OR Group type.
-    long? TypeId,
-    string? Address,
-    string? LocalAuthorityName,
-    string? GroupUid,
-    string? GroupName,
-    string ProviderCategory,     // Either "Group" OR "SearchAggregate".
-    int? EstablishmentStatusCode,
-    int? GroupStatusCode,
-    int AcademyCount
-);
+    // SearchAggregate OR Group name.
+    public required string Name { get; init; }
+
+    // SearchAggregate OR Group type.
+    public required string TypeName { get; init; }
+
+    public string? Address { get; init; }
+
+    public string? LocalAuthorityName { get; init; }
+
+    public string? GroupUid { get; init; }
+
+    public string? GroupName { get; init; }
+
+    // Either "Group" OR "SearchAggregate".
+    public required string ProviderCategory { get; init; }
+
+    public int? EstablishmentStatusCode { get; init; }
+
+    public int? GroupStatusCode { get; init; }
+
+    public int AcademyCount { get; init; }
+}
 
 public static class QueryableExtensions
 {

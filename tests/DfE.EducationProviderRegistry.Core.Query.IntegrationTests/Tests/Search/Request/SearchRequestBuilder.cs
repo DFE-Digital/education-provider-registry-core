@@ -42,11 +42,11 @@ internal sealed class SearchRequestBuilder
         return this;
     }
 
-    public SearchRequestBuilder WithFilterRequest(
-        FilterRequest filterRequests)
+    public SearchRequestBuilder WithFilterRequest(string filter, IList<object> filterValues)
     {
         _filterRequests ??= [];
-        _filterRequests.Add(filterRequests);
+        _filterRequests.Add(
+            new FilterRequest(filter, filterValues));
         return this;
     }
 

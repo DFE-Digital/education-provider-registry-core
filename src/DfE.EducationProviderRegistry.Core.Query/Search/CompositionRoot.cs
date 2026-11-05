@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using DfE.Core.Libraries.CleanArchitecture.Application;
 using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.Core.Libraries.DesignPatterns.Specification;
@@ -13,7 +14,9 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Respo
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Decorators;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Mappers;
@@ -108,8 +111,6 @@ public static class CompositionRoot
                 sp.GetRequiredService<ISearchFilterExpressionsBuilder<SearchAggregate>>(),
                 searchColumn: "name"));
 
-        services.TryAddScoped<IFacetProvider, FacetProvider>();
-
         // ---------------------------------------------------------
         // Mappers
         // ---------------------------------------------------------
@@ -141,16 +142,56 @@ public static class CompositionRoot
             .AddOptions<SearchConfiguration>()
             .Bind(configuration.GetRequiredSection(nameof(SearchConfiguration)));
 
-        services.TryAddScoped<SearchProviderTypeFilter>();
+        services.TryAddScoped<SenFilter>();
 
         services.TryAddScoped<ISearchFilterSpecificationFactory<SearchAggregate>>(provider =>
         {
+            Dictionary<string, Expression<Func<SearchAggregate, object?>>> equalsFilters =
+            new()
+            {
+                ["AdmissionFilter"] = aggregate => aggregate.Admissions,
+                ["BoardingFilter"] = aggregate => aggregate.Boarding,
+                ["DioceseFilter"] = aggregate => aggregate.Diocese,
+                ["EducationPhaseFilter"] = aggregate => aggregate.EducationPhase,
+                ["EstablishmentStatusFilter"] = aggregate => aggregate.StatusName,
+                ["FurtherEducationTypeFilter"] = aggregate => aggregate.FurtherEducationType,
+                ["GroupTypeFilter"] = aggregate => aggregate.GroupType,
+                ["GenderFilter"] = aggregate => aggregate.Gender,
+                ["NurseryFilter"] = aggregate => aggregate.Nursery,
+                ["ProviderTypeNameFilter"] = aggregate => aggregate.ProviderTypeName,
+                ["ReligiousCharacterFilter"] = aggregate => aggregate.ReligiousCharacter,
+                ["ReligiousEthosFilter"] = aggregate => aggregate.ReligiousEthos,
+                ["Section41Filter"] = aggregate => aggregate.Section41,
+                ["SixthFormFilter"] = aggregate => aggregate.SixthForm,
+                ["SpecialClassFilter"] = aggregate => aggregate.SpecialClass
+            };
+
             Dictionary<string, Func<ISearchFilter<SearchAggregate>>> map =
-                new()
-                {
-                    ["SearchProviderTypeFilter"] = () =>
-                        provider.GetRequiredService<SearchProviderTypeFilter>()
-                };
+                equalsFilters.ToDictionary(
+                    filter => filter.Key,
+                    filter => (Func<ISearchFilter<SearchAggregate>>)(() =>
+                        new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
+                            inner: new EqualsFilter<SearchAggregate>(filter.Value))));
+
+            map["OpenedDateFilter"] = () =>
+                new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
+                    inner: new DateRangeFilter(
+                        aggregate => aggregate.OpenedDate));
+
+            map["ClosedDateFilter"] = () =>
+                new ConvertFilterValuesToDateOnlySearchFilterDecorator<SearchAggregate>(
+                    inner: new DateRangeFilter(
+                        aggregate => aggregate.ClosedDate));
+
+            map["AgeRangeFilter"] = () =>
+                new ConvertFilterValuesToIntegerSearchFilterDecorator<SearchAggregate>(
+                    inner: new NumericRangeFilter<SearchAggregate>(
+                        aggregate => aggregate.AgeLow,
+                        aggregate => aggregate.AgeHigh));
+
+            map["SenFilter"] = () =>
+                new ConvertFilterValuesToStringSearchFilterDecorator<SearchAggregate>(
+                    inner: provider.GetRequiredService<SenFilter>());
 
             return new SearchFilterSpecificationFactory<SearchAggregate>(map);
         });
@@ -164,15 +205,29 @@ public static class CompositionRoot
             ReadOnlyCollection<SearchFilterRequest>>,
             SearchRequestFiltersToCoreFiltersMapper>();
 
-        services.AddSingleton(
-            new Dictionary<object, FacetDefinition<SearchAggregate>>()
-            {
-                ["searchprovidertypeid"] =
-                    new FacetDefinition<SearchAggregate>(
-                        searchProvider => searchProvider.ProviderTypeId,
-                        searchProvider => searchProvider.ProviderTypeName)
-            });
+        static IFacetResultProvider Scalar(Func<FacetProjection, string?> selector) => new ScalarFacetResultProvider(selector);
 
+        Dictionary<string, IFacetResultProvider> facetResultProviders = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["admissionpolicy"] = Scalar(projection => projection.Admissions),
+            ["boarding"] = Scalar(projection => projection.Boarding),
+            ["diocese"] = Scalar(projection => projection.Diocese),
+            ["educationphase"] = Scalar(projection => projection.EducationPhase),
+            ["furthereducationtype"] = Scalar(projection => projection.FurtherEducationType),
+            ["gender"] = Scalar(projection => projection.Gender),
+            ["grouptype"] = Scalar(projection => projection.GroupType),
+            ["nursery"] = Scalar(projection => projection.Nursery),
+            ["religiouscharacter"] = Scalar(projection => projection.ReligiousCharacter),
+            ["religiousethos"] = Scalar(projection => projection.ReligiousEthos),
+            ["providertypename"] = Scalar(projection => projection.ProviderTypeName),
+            ["section41"] = Scalar(projection => projection.Section41),
+            ["sixthform"] = Scalar(projection => projection.SixthForm),
+            ["specialclass"] = Scalar(projection => projection.SpecialClass),
+            ["status"] = Scalar(projection => projection.StatusName),
+            ["sen"] = new CollectionFacetResultProvider(projection => projection.Sen ?? []),
+        };
+
+        services.AddSingleton<IReadOnlyDictionary<string, IFacetResultProvider>>(facetResultProviders);
         services.AddScoped<IFacetAggregator, FacetAggregator>();
 
         // ---------------------------------------------------------

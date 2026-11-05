@@ -6,11 +6,11 @@
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="coverlet.msbuild" Version="10.0.1" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
-    <PackageVersion Include="DfE.Core.Libraries.CrossCutting" Version="1.0.43" />
-    <PackageVersion Include="DfE.Core.Libraries.Testing" Version="1.0.43" />
-    <PackageVersion Include="DfE.Core.Libraries.IntegrationTests" Version="1.0.43" />
-    <PackageVersion Include="DfE.Core.Libraries.IntegrationTests.Containers" Version="1.0.43" />
-    <PackageVersion Include="DfE.Core.Libraries.IntegrationTests.Database.Postgres" Version="1.0.43" />
+    <PackageVersion Include="DfE.Core.Libraries.CrossCutting" Version="1.0.44" />
+    <PackageVersion Include="DfE.Core.Libraries.Testing" Version="1.0.44" />
+    <PackageVersion Include="DfE.Core.Libraries.IntegrationTests" Version="1.0.44" />
+    <PackageVersion Include="DfE.Core.Libraries.IntegrationTests.Containers" Version="1.0.44" />
+    <PackageVersion Include="DfE.Core.Libraries.IntegrationTests.Database.Postgres" Version="1.0.44" />
     <PackageVersion Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.9" />
@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.8" />

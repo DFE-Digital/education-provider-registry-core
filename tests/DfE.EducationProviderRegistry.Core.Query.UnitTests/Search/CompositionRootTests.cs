@@ -1,6 +1,7 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Facets.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.Projections;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Providers.SearchOrchestrators;
@@ -13,20 +14,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search;
 
 public sealed class CompositionRootTests
 {
-    [Fact]
-    public void CompositionRoot_Registers_FacetDefinitionDictionary()
-    {
-        // arrange
-        IServiceProvider provider =
-            ServiceProviderBuilder.BuildServiceProvider();
-
-        // act
-        Dictionary<object, FacetDefinition<SearchAggregate>> definitions =
-            provider.GetRequiredService<Dictionary<object, FacetDefinition<SearchAggregate>>>();
-
-        // assert
-        Assert.True(definitions.ContainsKey("searchprovidertypeid"));
-    }
 
     [Fact]
     public void CompositionRoot_Registers_SearchOrchestrator()
@@ -80,7 +67,7 @@ public sealed class CompositionRootTests
     }
 
     [Fact]
-    public void CompositionRoot_Registers_FacetProvider()
+    public void CompositionRoot_Registers_FacetResultProviders()
     {
         // arrange
         IServiceProvider provider =
@@ -89,11 +76,16 @@ public sealed class CompositionRootTests
         using IServiceScope scope = provider.CreateScope();
 
         // act
-        IFacetProvider facetProvider =
-            scope.ServiceProvider.GetRequiredService<IFacetProvider>();
+        IReadOnlyDictionary<string, IFacetResultProvider> facetResultProviders =
+            scope.ServiceProvider
+                .GetRequiredService<IReadOnlyDictionary<string, IFacetResultProvider>>();
 
         // assert
-        Assert.IsType<FacetProvider>(facetProvider);
+        Assert.IsType<ScalarFacetResultProvider>(
+            facetResultProviders["boarding"]);
+
+        Assert.IsType<CollectionFacetResultProvider>(
+            facetResultProviders["sen"]);
     }
 
     [Fact]

@@ -1,10 +1,10 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
+using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Shared;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
-using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles;
-using DfE.EducationProviderRegistry.Core.Query.Test.Shared.TestDoubles.Groups;
 using Moq;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;

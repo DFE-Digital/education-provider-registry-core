@@ -48,7 +48,7 @@ internal sealed class SearchResultsFromQueryResultsMapper
                     new SearchAddress(
                         FullAddress: r.Address ?? string.Empty),
 
-                    new SearchType(r.TypeName ?? string.Empty, r.TypeId),
+                    new SearchType(r.TypeName ?? string.Empty),
 
                     (r.GroupName is null || r.GroupUid is null) ?
                         null :

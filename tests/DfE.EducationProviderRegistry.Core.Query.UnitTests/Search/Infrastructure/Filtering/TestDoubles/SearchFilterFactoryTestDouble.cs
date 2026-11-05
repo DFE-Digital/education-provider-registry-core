@@ -26,7 +26,7 @@ internal static class SearchFilterFactoryTestDouble
     {
         // Mock the filter expression itself
         Mock<ISearchFilter<TProjection>> exprMock =
-            SearchFilterExpressionTestDouble.MockForSpecification<TProjection>(spec);
+            SearchFilterTestDouble.MockForSpecification<TProjection>(spec);
 
         exprMock
             .Setup((filter) =>
