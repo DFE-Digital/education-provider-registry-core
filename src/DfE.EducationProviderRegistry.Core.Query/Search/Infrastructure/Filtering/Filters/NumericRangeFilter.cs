@@ -1,7 +1,6 @@
 ﻿using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
-using DfE.EducationProviderRegistry.Core.Query.Shared.Specifications.Comparison;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
@@ -27,19 +26,16 @@ internal sealed class NumericRangeFilter<TModel> : ISearchFilter<TModel>
 
         if (range.HasLowerAndUpperBounds)
         {
-            return LowerPropertyGreaterThanOrEqualTo(range.Lower!.Value)
-                .And(UpperPropertyLessThanOrEqualTo(range.Upper!.Value));
+            return _lowerPropertyTarget
+                .GreaterThanOrEqualTo(range.Lower!.Value)
+                .And(_upperPropertyTarget.LessThanOrEqualTo(range.Upper!.Value));
         }
 
         if (range.HasLowerBounds)
         {
-            return LowerPropertyGreaterThanOrEqualTo(range.Lower!.Value);
+            return _lowerPropertyTarget.GreaterThanOrEqualTo(range.Lower!.Value);
         }
 
-        return UpperPropertyLessThanOrEqualTo(range.Upper!.Value);
+        return _upperPropertyTarget.LessThanOrEqualTo(range.Upper!.Value);
     }
-
-    private PropertyGreaterThanOrEqualSpecification<TModel, int> LowerPropertyGreaterThanOrEqualTo(int value) => new(_lowerPropertyTarget, value);
-
-    private PropertyLessThanOrEqualSpecification<TModel, int> UpperPropertyLessThanOrEqualTo(int value) => new(_upperPropertyTarget, value);
 }
