@@ -4,7 +4,6 @@ using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Use
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.Compression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -34,12 +33,7 @@ public static class CompositionRoot
         services
             .TryAddScoped<
                 IDatasetDownloadRepository,
-                FakeDatasetDownloadRepository>();
-
-        services
-            .TryAddScoped<
-                IFileCompressor,
-                FileCompressor>();
+                DatasetDownloadRepository>();
 
         return services;
     }

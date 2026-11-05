@@ -32,7 +32,10 @@ public sealed class DownloadDatasetsUseCase :
         {
             Dataset? model =
                 await _datasetDownloadRepository
-                    .GetDatasetByName(request.Filename, cancellationToken);
+                    .GetDatasetByName(
+                        request.DatasetName,
+                        request.FileNameKeys,
+                        cancellationToken);
 
             DownloadDatasetsResponse response = new(model);
 

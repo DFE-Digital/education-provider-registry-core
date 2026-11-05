@@ -6,11 +6,14 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application
 public sealed class DownloadDatasetsRequest :
     IUseCaseRequest<UseCaseResponse<DownloadDatasetsResponse>>
 {
-    public DownloadDatasetsRequest(string filename)
+    public DownloadDatasetsRequest(string datasetName, string[] fileNameKeys)
     {
-        Filename = filename ??
-            throw new ArgumentNullException(nameof(filename));
+        DatasetName = datasetName ??
+            throw new ArgumentNullException(nameof(datasetName));
+        FileNameKeys = fileNameKeys ??
+            throw new ArgumentNullException(nameof(fileNameKeys));
     }
 
-    public string Filename { get; }
+    public string DatasetName { get; }
+    public string[] FileNameKeys { get; }
 }

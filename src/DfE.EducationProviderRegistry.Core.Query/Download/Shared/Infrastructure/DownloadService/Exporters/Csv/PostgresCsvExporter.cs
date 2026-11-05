@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.CsvExporter;
+namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 
 public sealed class PostgresCsvExporter : IPostgresCsvExporter
 {
@@ -12,18 +12,17 @@ public sealed class PostgresCsvExporter : IPostgresCsvExporter
 
     private readonly IConfiguration _configuration;
 
-    public PostgresCsvExporter(
-        IConfiguration configuration)
+    public PostgresCsvExporter(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public async Task ExportAsync(
-        string outputPath,
+    public async Task ExportToStreamAsync(
+        Stream targetStream,
         string query,
         CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
+        ArgumentNullException.ThrowIfNull(targetStream);
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
         string connectionString =
@@ -31,44 +30,27 @@ public sealed class PostgresCsvExporter : IPostgresCsvExporter
             ?? throw new InvalidOperationException(
                 $"Configuration value '{ConnectionStringKey}' is missing.");
 
-        await using NpgsqlConnection connection =
-            new(connectionString);
-
+        await using NpgsqlConnection connection = new(connectionString);
         await connection.OpenAsync(cancellationToken);
 
-        await using FileStream fileStream =
-            new(
-                outputPath,
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                BufferSize,
-                useAsync: true);
+        await using StreamWriter writer = new(targetStream, leaveOpen: true);
 
-        await using StreamWriter writer =
-            new(fileStream);
-
-        string copyQuery =
-            string.Format(
-                CopyQueryTemplate,
-                query);
+        string copyQuery = string.Format(CopyQueryTemplate, query);
 
         using NpgsqlCopyTextReader reader =
             await connection.BeginTextExportAsync(
                 copyQuery,
                 cancellationToken);
 
-        char[] buffer =
-            ArrayPool<char>.Shared.Rent(BufferSize);
+        char[] buffer = ArrayPool<char>.Shared.Rent(BufferSize);
 
         try
         {
             while (true)
             {
-                int charsRead =
-                    await reader.ReadAsync(
-                        buffer.AsMemory(0, BufferSize),
-                        cancellationToken);
+                int charsRead = await reader.ReadAsync(
+                    buffer.AsMemory(0, BufferSize),
+                    cancellationToken);
 
                 if (charsRead == 0)
                 {

@@ -6,5 +6,6 @@ public interface IDatasetDownloadRepository
 {
     Task<Dataset?> GetDatasetByName(
         string datasetName,
+        string[] fileNameKeys,
         CancellationToken cancellationToken = default);
 }
