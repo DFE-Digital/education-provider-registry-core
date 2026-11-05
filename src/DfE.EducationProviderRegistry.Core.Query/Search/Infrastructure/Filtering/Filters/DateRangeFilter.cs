@@ -25,13 +25,13 @@ internal sealed class DateRangeFilter : ISearchFilter<SearchAggregate>
         if (range.HasLowerAndUpperBounds)
         {
 
-            _propertyTarget.GreaterThanOrEqualTo(range.Lower!.Value)
+            return _propertyTarget.GreaterThanOrEqualTo(range.Lower!.Value)
                 .And(_propertyTarget.LessThanOrEqualTo(range.Upper!.Value));
         }
 
         if (range.HasLowerBounds)
         {
-            _propertyTarget.GreaterThanOrEqualTo(range.Lower!.Value);
+            return _propertyTarget.GreaterThanOrEqualTo(range.Lower!.Value);
         }
 
         return _propertyTarget.LessThanOrEqualTo(range.Upper!.Value);
