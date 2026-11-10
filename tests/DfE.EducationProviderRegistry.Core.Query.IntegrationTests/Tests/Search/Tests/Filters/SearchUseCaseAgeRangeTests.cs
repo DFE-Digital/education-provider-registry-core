@@ -26,7 +26,7 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
     }
 
     [Fact]
-    public async Task Returns_Providers_With_MinimumAge_Equal_To_Or_Greater_Than_Requested_Minimum()
+    public async Task Returns_Filtered_Results_When_Minimum_Age_Requested()
     {
         const string stubEstablishmentMatchesName = "school";
 
@@ -35,14 +35,14 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(10)
-                .WithMaximumAge(15)
+                .WithMinimumAge(5)
+                .WithMaximumAge(10)
                 .Build(),
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(11)
-                .WithMaximumAge(16)
+                .WithMinimumAge(10)
+                .WithMaximumAge(15)
                 .Build()
         ];
 
@@ -50,8 +50,8 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(5)
-                .WithMaximumAge(10)
+                .WithMinimumAge(11)
+                .WithMaximumAge(16)
                 .Build(),
 
             SearchAggregateBuilder.Create()
@@ -62,7 +62,8 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
-            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+            [.. matchingEstablishments, .. nonMatchingEstablishments],
+            TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -78,7 +79,7 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
     }
 
     [Fact]
-    public async Task Returns_Providers_With_MaximumAge_Equal_To_Or_Less_Than_Requested_Maximum()
+    public async Task Returns_Filtered_Results_When_Maximum_Age_Requested()
     {
         const string stubEstablishmentMatchesName = "school";
 
@@ -89,6 +90,12 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
                 .WithProviderName(stubEstablishmentMatchesName)
                 .WithMinimumAge(5)
                 .WithMaximumAge(10)
+                .Build(),
+
+            SearchAggregateBuilder.Create()
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithMinimumAge(10)
+                .WithMaximumAge(15)
                 .Build()
         ];
 
@@ -96,19 +103,20 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(10)
-                .WithMaximumAge(15)
+                .WithMinimumAge(11)
+                .WithMaximumAge(16)
                 .Build(),
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(11)
-                .WithMaximumAge(16)
+                .WithMinimumAge(5)
+                .WithMaximumAge(9)
                 .Build()
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
-            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+            [.. matchingEstablishments, .. nonMatchingEstablishments],
+            TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -124,7 +132,7 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
     }
 
     [Fact]
-    public async Task Returns_Providers_With_AgeRange_Contained_Within_Requested_Range()
+    public async Task Returns_Filtered_Results_When_Age_Range_Requested()
     {
         const string stubEstablishmentMatchesName = "school";
 
@@ -133,14 +141,20 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         [
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
+                .WithMinimumAge(5)
+                .WithMaximumAge(10)
+                .Build(),
+
+            SearchAggregateBuilder.Create()
+                .WithProviderName(stubEstablishmentMatchesName)
                 .WithMinimumAge(7)
                 .WithMaximumAge(10)
                 .Build(),
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(8)
-                .WithMaximumAge(9)
+                .WithMinimumAge(5)
+                .WithMaximumAge(15)
                 .Build()
         ];
 
@@ -154,31 +168,26 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(5)
+                .WithMinimumAge(8)
                 .WithMaximumAge(10)
+                .Build(),
+
+            SearchAggregateBuilder.Create()
+                .WithProviderName(stubEstablishmentMatchesName)
+                .WithMinimumAge(7)
+                .WithMaximumAge(9)
                 .Build(),
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
                 .WithMinimumAge(10)
                 .WithMaximumAge(15)
-                .Build(),
-
-            SearchAggregateBuilder.Create()
-                .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(3)
-                .WithMaximumAge(6)
-                .Build(),
-
-            SearchAggregateBuilder.Create()
-                .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(11)
-                .WithMaximumAge(16)
                 .Build()
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
-            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+            [.. matchingEstablishments, .. nonMatchingEstablishments],
+            TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
@@ -194,7 +203,7 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
     }
 
     [Fact]
-    public async Task Returns_No_Results_When_No_Provider_AgeRange_Is_Contained_Within_Requested_Range()
+    public async Task Returns_No_Results_When_Age_Range_Does_Not_Match()
     {
         const string stubEstablishmentMatchesName = "school";
 
@@ -211,8 +220,8 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
 
             SearchAggregateBuilder.Create()
                 .WithProviderName(stubEstablishmentMatchesName)
-                .WithMinimumAge(5)
-                .WithMaximumAge(10)
+                .WithMinimumAge(8)
+                .WithMaximumAge(9)
                 .Build(),
 
             SearchAggregateBuilder.Create()
@@ -223,12 +232,13 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
-            nonMatchingEstablishments, TestContext.Current.CancellationToken);
+            nonMatchingEstablishments,
+            TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
                 .WithSearchTerm(DefaultedSearchTerm, stubEstablishmentMatchesName)
-                .WithFilterRequest("age_range", ["7", "9"])
+                .WithFilterRequest("age_range", ["7", "10"])
                 .Build();
 
         // act / assert
@@ -239,7 +249,7 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
     }
 
     [Fact]
-    public async Task Returns_All_Search_Matches_When_No_AgeRange_Filter_Provided()
+    public async Task Returns_All_Search_Matches_When_No_Age_Range_Filter_Provided()
     {
         const string stubEstablishmentMatchesName = "school";
 
@@ -269,7 +279,8 @@ public sealed class SearchUseCaseFilterAgeRangeTests : SearchUseCaseMatchesResul
         ];
 
         await DatabaseFixture.SeedAsync<IEnumerable<SearchAggregate>, SearchableSearchAggregates>(
-            [.. matchingEstablishments, .. nonMatchingEstablishments], TestContext.Current.CancellationToken);
+            [.. matchingEstablishments, .. nonMatchingEstablishments],
+            TestContext.Current.CancellationToken);
 
         SearchRequest request =
             SearchRequestBuilder.Create()
