@@ -17,10 +17,11 @@ public sealed class DownloadDatasetsUseCaseTests
     public async Task HandleRequest_ValidRequest_InvokesRepositoryCorrectly()
     {
         // arrange
-        const string filename = "dataset.csv";
+        const string datasetName = "EducationalEstablishments";
+        string[] fileNameKeys = ["establishment-csv", "contacts-csv"];
 
         using MemoryStream expectedStream = new([1, 2, 3]);
-        Dataset expected = new(filename, "text/csv", "csv", 3, expectedStream);
+        Dataset expected = new("dataset.csv", "text/csv", "csv", 3, expectedStream);
 
         DatasetDownloadRepositoryTestDouble.Capture capture = new();
 
@@ -31,18 +32,20 @@ public sealed class DownloadDatasetsUseCaseTests
             MockTestDouble.Default<ILogger<DownloadDatasetsUseCase>>(MockBehavior.Loose);
 
         DownloadDatasetsUseCase sut = new(repository.Object, logger.Object);
-        DownloadDatasetsRequest request = new(filename);
+        DownloadDatasetsRequest request = new(datasetName, fileNameKeys);
 
         // act
         UseCaseResponse<DownloadDatasetsResponse> response =
             await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
         // verify
-        Assert.Equal(filename, capture.Filename);
+        Assert.Equal(datasetName, capture.DatasetName);
+        Assert.Equal(fileNameKeys, capture.FileNameKeys);
 
         repository.Verify(datasetDownloadRepository =>
             datasetDownloadRepository.GetDatasetByName(
-                filename,
+                datasetName,
+                fileNameKeys,
                 It.IsAny<CancellationToken>()),
             Times.Once);
 
@@ -51,14 +54,12 @@ public sealed class DownloadDatasetsUseCaseTests
         // assert
         Assert.NotNull(response.Model);
         Assert.NotNull(response.Model.DownloadedDataset);
-
-        // Assert properties individually to avoid Stream reference-equality issues
+        // Assert properties individually to avoid Stream reference-equality issues.
         Assert.Equal(expected.Filename, response.Model.DownloadedDataset.Filename);
         Assert.Equal(expected.DataType, response.Model.DownloadedDataset.DataType);
         Assert.Equal(expected.DataFormat, response.Model.DownloadedDataset.DataFormat);
         Assert.Equal(expected.FileSize, response.Model.DownloadedDataset.FileSize);
         Assert.NotNull(response.Model.DownloadedDataset.FileStream);
-
         Assert.True(response.SuccessfulRequest);
     }
 
@@ -82,6 +83,7 @@ public sealed class DownloadDatasetsUseCaseTests
         repository.Verify(datasetDownloadRepository =>
             datasetDownloadRepository.GetDatasetByName(
                 It.IsAny<string>(),
+                It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
 
@@ -109,7 +111,7 @@ public sealed class DownloadDatasetsUseCaseTests
         DownloadDatasetsUseCase sut =
             new(repository.Object, logger.Object);
 
-        DownloadDatasetsRequest request = new("dataset.csv");
+        DownloadDatasetsRequest request = new("EducationalEstablishments", ["establishment-csv"]);
 
         // act
         UseCaseResponse<DownloadDatasetsResponse> response =
@@ -138,7 +140,7 @@ public sealed class DownloadDatasetsUseCaseTests
         DownloadDatasetsUseCase sut =
             new(repository.Object, logger.Object);
 
-        DownloadDatasetsRequest request = new("dataset.csv");
+        DownloadDatasetsRequest request = new("EducationalEstablishments", ["establishment-csv"]);
 
         // act
         UseCaseResponse<DownloadDatasetsResponse> response =
@@ -169,7 +171,7 @@ public sealed class DownloadDatasetsUseCaseTests
         DownloadDatasetsUseCase sut =
             new(repository.Object, logger.Object);
 
-        DownloadDatasetsRequest request = new("dataset.csv");
+        DownloadDatasetsRequest request = new("EducationalEstablishments", ["establishment-csv"]);
 
         // act
         UseCaseResponse<DownloadDatasetsResponse> response =
@@ -200,7 +202,7 @@ public sealed class DownloadDatasetsUseCaseTests
         DownloadDatasetsUseCase sut =
             new(repository.Object, logger.Object);
 
-        DownloadDatasetsRequest request = new("missing.csv");
+        DownloadDatasetsRequest request = new("MissingDataset", ["missing-csv"]);
 
         // act
         UseCaseResponse<DownloadDatasetsResponse> response =

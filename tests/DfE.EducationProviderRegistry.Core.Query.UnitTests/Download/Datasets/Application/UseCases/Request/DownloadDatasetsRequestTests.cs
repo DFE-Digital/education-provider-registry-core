@@ -7,51 +7,68 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Datasets.A
 public sealed class DownloadDatasetsRequestTests
 {
     [Fact]
-    public void Constructor_ValidFilename_SetsFilenameProperty()
+    public void Constructor_ValidArguments_SetsPropertiesCorrectly()
     {
         // arrange
-        const string filename = "dataset.csv";
+        const string datasetName = "EducationalEstablishments";
+        string[] fileNameKeys = ["establishment-csv", "contacts-csv"];
 
         // act
-        DownloadDatasetsRequest request = new(filename);
+        DownloadDatasetsRequest request = new(datasetName, fileNameKeys);
 
         // assert
-        Assert.Equal(filename, request.Filename);
+        Assert.Equal(datasetName, request.DatasetName);
+        Assert.Equal(fileNameKeys, request.FileNameKeys);
     }
 
     [Fact]
-    public void Constructor_NullFilename_ThrowsArgumentNullException()
+    public void Constructor_NullDatasetName_ThrowsArgumentNullException()
     {
         // arrange
-        string? filename = null;
+        string? datasetName = null;
+        string[] fileNameKeys = ["establishment-csv"];
 
         // act
         ArgumentNullException exception =
             Assert.Throws<ArgumentNullException>(() =>
-                new DownloadDatasetsRequest(filename!));
+                new DownloadDatasetsRequest(datasetName!, fileNameKeys));
 
         // assert
-        Assert.Equal("filename", exception.ParamName);
+        Assert.Equal("datasetName", exception.ParamName);
     }
 
     [Fact]
-    public void FilenameProperty_IsReadOnly()
+    public void Constructor_NullFileNameKeys_ThrowsArgumentNullException()
     {
         // arrange
-        DownloadDatasetsRequest request = new("dataset.csv");
+        const string datasetName = "EducationalEstablishments";
+        string[]? fileNameKeys = null;
 
         // act
-        string value = request.Filename;
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(() =>
+                new DownloadDatasetsRequest(datasetName, fileNameKeys!));
 
         // assert
-        Assert.Equal("dataset.csv", value);
+        Assert.Equal("fileNameKeys", exception.ParamName);
+    }
+
+    [Fact]
+    public void Properties_AreReadOnly()
+    {
+        // arrange
+        DownloadDatasetsRequest request = new("EducationalEstablishments", ["establishment-csv"]);
+
+        // act & assert
+        Assert.Equal("EducationalEstablishments", request.DatasetName);
+        Assert.Single(request.FileNameKeys);
     }
 
     [Fact]
     public void Type_ImplementsCorrectUseCaseRequestInterface()
     {
         // arrange
-        DownloadDatasetsRequest request = new("dataset.csv");
+        DownloadDatasetsRequest request = new("EducationalEstablishments", []);
 
         // act
         bool implementsInterface =
@@ -78,4 +95,3 @@ public sealed class DownloadDatasetsRequestTests
         Assert.True(matches);
     }
 }
-

@@ -1,20 +1,29 @@
 ﻿using System.Buffers;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 
 public sealed class PostgresCsvExporter : IPostgresCsvExporter
 {
-    private const string ConnectionStringKey = "eprweb_eprdat_dotnet_db_connection";
-    private const string CopyQueryTemplate = "COPY ({0}) TO STDOUT WITH CSV HEADER";
     private const int BufferSize = 32 * 1024;
+    private readonly IPostgresCsvReader _postgresCsvReader;
+    private readonly ArrayPool<char> _bufferPool;
 
-    private readonly IConfiguration _configuration;
+    public PostgresCsvExporter(
+        IPostgresCsvReader postgresCsvReader)
+        : this(
+            postgresCsvReader,
+            ArrayPool<char>.Shared){
+    }
 
-    public PostgresCsvExporter(IConfiguration configuration)
+    internal PostgresCsvExporter(
+        IPostgresCsvReader postgresCsvReader,
+        ArrayPool<char> bufferPool)
     {
-        _configuration = configuration;
+        ArgumentNullException.ThrowIfNull(postgresCsvReader);
+        ArgumentNullException.ThrowIfNull(bufferPool);
+
+        _postgresCsvReader = postgresCsvReader;
+        _bufferPool = bufferPool;
     }
 
     public async Task ExportToStreamAsync(
@@ -25,32 +34,25 @@ public sealed class PostgresCsvExporter : IPostgresCsvExporter
         ArgumentNullException.ThrowIfNull(targetStream);
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-        string connectionString =
-            _configuration[ConnectionStringKey]
-            ?? throw new InvalidOperationException(
-                $"Configuration value '{ConnectionStringKey}' is missing.");
+        await _postgresCsvReader.OpenAsync(
+            query,
+            cancellationToken);
 
-        await using NpgsqlConnection connection = new(connectionString);
-        await connection.OpenAsync(cancellationToken);
+        await using StreamWriter writer = new(
+            targetStream,
+            leaveOpen: true);
 
-        await using StreamWriter writer = new(targetStream, leaveOpen: true);
-
-        string copyQuery = string.Format(CopyQueryTemplate, query);
-
-        using NpgsqlCopyTextReader reader =
-            await connection.BeginTextExportAsync(
-                copyQuery,
-                cancellationToken);
-
-        char[] buffer = ArrayPool<char>.Shared.Rent(BufferSize);
+        char[] buffer =
+            _bufferPool.Rent(BufferSize);
 
         try
         {
             while (true)
             {
-                int charsRead = await reader.ReadAsync(
-                    buffer.AsMemory(0, BufferSize),
-                    cancellationToken);
+                int charsRead =
+                    await _postgresCsvReader.ReadAsync(
+                        buffer.AsMemory(0, BufferSize),
+                        cancellationToken);
 
                 if (charsRead == 0)
                 {
@@ -62,11 +64,12 @@ public sealed class PostgresCsvExporter : IPostgresCsvExporter
                     cancellationToken);
             }
 
-            await writer.FlushAsync(cancellationToken);
+            await writer.FlushAsync(
+                cancellationToken);
         }
         finally
         {
-            ArrayPool<char>.Shared.Return(buffer);
+            _bufferPool.Return(buffer);
         }
     }
 }

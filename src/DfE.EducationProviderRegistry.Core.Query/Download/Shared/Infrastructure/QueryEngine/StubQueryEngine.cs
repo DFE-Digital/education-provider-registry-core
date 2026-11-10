@@ -22,7 +22,7 @@ public sealed class StubQueryEngine : IQueryEngine
             "open-provider" =>
                 _dbContext.EstablishmentAggregate
                     .AsNoTracking()
-                    .Where(sa => sa.StatusCode == 1)
+                    .Where(sa => sa.StatusCode == 1)    // open.
                     .Select(sa => new EstablishmentDownloadDto
                     {
                         EstablishmentUniqueReferenceNumberUrn = sa.Urn,
@@ -36,7 +36,7 @@ public sealed class StubQueryEngine : IQueryEngine
             "closed-provider" =>
                 _dbContext.EstablishmentAggregate
                     .AsNoTracking()
-                    .Where(sa => sa.StatusCode == 0)
+                    .Where(sa => sa.StatusCode == 2)    // closed.
                     .Select(sa => new EstablishmentDownloadDto
                     {
                         EstablishmentUniqueReferenceNumberUrn = sa.Urn,

@@ -3,7 +3,6 @@ using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Inf
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
 using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.QueryEngine;
-using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.QueryEngine.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastructure;
@@ -47,7 +46,7 @@ public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
                 await using Stream entryStream = entry.Open();
 
                 IQueryable<object> queryable =
-                    _queryEngine.BuildQuery(fileKey); // Hard-fixed to 'SearchAggregateDto', will change to TProjection or similar.
+                    _queryEngine.BuildQuery(fileKey);
 
                 ArgumentNullException.ThrowIfNull(queryable);
 

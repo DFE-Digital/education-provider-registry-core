@@ -8,7 +8,8 @@ public static class DatasetDownloadRepositoryTestDouble
 {
     public sealed class Capture
     {
-        public string? Filename { get; internal set; }
+        public string? DatasetName { get; internal set; }
+        public string[]? FileNameKeys { get; internal set; }
     }
 
     public static Mock<IDatasetDownloadRepository> Mock() => new();
@@ -20,6 +21,7 @@ public static class DatasetDownloadRepositoryTestDouble
         mock.Setup(downloadDatasetRepository =>
             downloadDatasetRepository.GetDatasetByName(
                 It.IsAny<string>(),
+                It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
@@ -33,10 +35,12 @@ public static class DatasetDownloadRepositoryTestDouble
         mock.Setup(downloadDatasetRepository =>
             downloadDatasetRepository.GetDatasetByName(
                 It.IsAny<string>(),
+                It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()))
-            .Callback<string, CancellationToken>((filename, _) =>
+            .Callback<string, string[], CancellationToken>((datasetName, fileNameKeys, _) =>
             {
-                capture.Filename = filename;
+                capture.DatasetName = datasetName;
+                capture.FileNameKeys = fileNameKeys;
             })
             .ReturnsAsync(result);
 
@@ -50,6 +54,7 @@ public static class DatasetDownloadRepositoryTestDouble
         mock.Setup(downloadDatasetRepository =>
             downloadDatasetRepository.GetDatasetByName(
                 It.IsAny<string>(),
+                It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(ex);
 
