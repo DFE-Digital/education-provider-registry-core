@@ -42,7 +42,7 @@ public sealed class NumericRangeFilterTests
     }
 
     [Fact]
-    public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderWithinRange_EvaluatesToTrue()
+    public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderCoversRange_EvaluatesToTrue()
     {
         // Arrange
         NumericRangeFilter<SearchAggregate> sut = new(
@@ -54,8 +54,8 @@ public sealed class NumericRangeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            AgeLow = 7,
-            AgeHigh = 11
+            AgeLow = 4,
+            AgeHigh = 17
         };
 
         // Act
@@ -98,7 +98,7 @@ public sealed class NumericRangeFilterTests
     }
 
     [Fact]
-    public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderLowAgeBelowLowerBound_EvaluatesToFalse()
+    public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderDoesNotCoverLowerBound_EvaluatesToFalse()
     {
         // Arrange
         NumericRangeFilter<SearchAggregate> sut = new(
@@ -110,35 +110,7 @@ public sealed class NumericRangeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            AgeLow = 4,
-            AgeHigh = 11
-        };
-
-        // Act
-        ISpecification<SearchAggregate> specification =
-            sut.CreateSpecification(request);
-
-        bool result =
-            specification.IsSatisfiedBy(searchAggregate);
-
-        // Assert
-        Assert.False(result);
-    }
-
-    [Fact]
-    public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderHighAgeAboveUpperBound_EvaluatesToFalse()
-    {
-        // Arrange
-        NumericRangeFilter<SearchAggregate> sut = new(
-            x => x.AgeLow,
-            x => x.AgeHigh);
-
-        SearchFilterRequest request = new(
-            "age_range", [5, 16]);
-
-        SearchAggregate searchAggregate = new()
-        {
-            AgeLow = 5,
+            AgeLow = 6,
             AgeHigh = 17
         };
 
@@ -154,7 +126,35 @@ public sealed class NumericRangeFilterTests
     }
 
     [Fact]
-    public void CreateSpecification_GivenOnlyLowerBoundAndProviderLowAgeAboveLowerBound_EvaluatesToTrue()
+    public void CreateSpecification_GivenLowerAndUpperBoundsAndProviderDoesNotCoverUpperBound_EvaluatesToFalse()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [5, 16]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = 4,
+            AgeHigh = 15
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenOnlyLowerBoundAndProviderCoversRequestedAge_EvaluatesToTrue()
     {
         // Arrange
         NumericRangeFilter<SearchAggregate> sut = new(
@@ -166,7 +166,7 @@ public sealed class NumericRangeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            AgeLow = 7,
+            AgeLow = 4,
             AgeHigh = 11
         };
 
@@ -210,7 +210,7 @@ public sealed class NumericRangeFilterTests
     }
 
     [Fact]
-    public void CreateSpecification_GivenOnlyLowerBoundAndProviderLowAgeBelowLowerBound_EvaluatesToFalse()
+    public void CreateSpecification_GivenOnlyLowerBoundEqualToProviderHighAge_EvaluatesToTrue()
     {
         // Arrange
         NumericRangeFilter<SearchAggregate> sut = new(
@@ -218,12 +218,39 @@ public sealed class NumericRangeFilterTests
             x => x.AgeHigh);
 
         SearchFilterRequest request = new(
-            "age_range",
-            [5, null!]);
+            "age_range", [5, null!]);
 
         SearchAggregate searchAggregate = new()
         {
-            AgeLow = 4,
+            AgeLow = 2,
+            AgeHigh = 5
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenOnlyLowerBoundAndProviderStartsAboveRequestedAge_EvaluatesToFalse()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [5, null!]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = 6,
             AgeHigh = 11
         };
 
@@ -239,7 +266,35 @@ public sealed class NumericRangeFilterTests
     }
 
     [Fact]
-    public void CreateSpecification_GivenOnlyUpperBoundAndProviderHighAgeBelowUpperBound_EvaluatesToTrue()
+    public void CreateSpecification_GivenOnlyLowerBoundAndProviderEndsBelowRequestedAge_EvaluatesToFalse()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [5, null!]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = 2,
+            AgeHigh = 4
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenOnlyUpperBoundAndProviderCoversRequestedAge_EvaluatesToTrue()
     {
         // Arrange
         NumericRangeFilter<SearchAggregate> sut = new(
@@ -252,7 +307,7 @@ public sealed class NumericRangeFilterTests
         SearchAggregate searchAggregate = new()
         {
             AgeLow = 5,
-            AgeHigh = 11
+            AgeHigh = 17
         };
 
         // Act
@@ -295,7 +350,63 @@ public sealed class NumericRangeFilterTests
     }
 
     [Fact]
-    public void CreateSpecification_GivenOnlyUpperBoundAndProviderHighAgeAboveUpperBound_EvaluatesToFalse()
+    public void CreateSpecification_GivenOnlyUpperBoundEqualToProviderLowAge_EvaluatesToTrue()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [null!, 16]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = 16,
+            AgeHigh = 18
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenOnlyUpperBoundAndProviderStartsAboveRequestedAge_EvaluatesToFalse()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [null!, 16]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = 17,
+            AgeHigh = 18
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenOnlyUpperBoundAndProviderEndsBelowRequestedAge_EvaluatesToFalse()
     {
         // Arrange
         NumericRangeFilter<SearchAggregate> sut = new(
@@ -308,7 +419,7 @@ public sealed class NumericRangeFilterTests
         SearchAggregate searchAggregate = new()
         {
             AgeLow = 5,
-            AgeHigh = 17
+            AgeHigh = 15
         };
 
         // Act
@@ -337,6 +448,62 @@ public sealed class NumericRangeFilterTests
         {
             AgeLow = null,
             AgeHigh = 11
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenLowerBoundAndProviderHighAgeIsNull_EvaluatesToFalse()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [5, null!]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = 4,
+            AgeHigh = null
+        };
+
+        // Act
+        ISpecification<SearchAggregate> specification =
+            sut.CreateSpecification(request);
+
+        bool result =
+            specification.IsSatisfiedBy(searchAggregate);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void CreateSpecification_GivenUpperBoundAndProviderLowAgeIsNull_EvaluatesToFalse()
+    {
+        // Arrange
+        NumericRangeFilter<SearchAggregate> sut = new(
+            x => x.AgeLow,
+            x => x.AgeHigh);
+
+        SearchFilterRequest request = new(
+            "age_range", [null!, 16]);
+
+        SearchAggregate searchAggregate = new()
+        {
+            AgeLow = null,
+            AgeHigh = 17
         };
 
         // Act
@@ -392,7 +559,7 @@ public sealed class NumericRangeFilterTests
         SearchAggregate searchAggregate = new()
         {
             AgeLow = null,
-            AgeHigh = 11
+            AgeHigh = 17
         };
 
         // Act
@@ -419,7 +586,7 @@ public sealed class NumericRangeFilterTests
 
         SearchAggregate searchAggregate = new()
         {
-            AgeLow = 7,
+            AgeLow = 4,
             AgeHigh = null
         };
 

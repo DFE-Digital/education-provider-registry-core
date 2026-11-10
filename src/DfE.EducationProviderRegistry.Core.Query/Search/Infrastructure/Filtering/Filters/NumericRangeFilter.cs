@@ -26,16 +26,18 @@ internal sealed class NumericRangeFilter<TModel> : ISearchFilter<TModel>
 
         if (range.HasLowerAndUpperBounds)
         {
-            return _lowerPropertyTarget
-                .GreaterThanOrEqualTo(range.Lower!.Value)
-                .And(_upperPropertyTarget.LessThanOrEqualTo(range.Upper!.Value));
+            return _lowerPropertyTarget.LessThanOrEqualTo(range.Lower!.Value)
+                .And(_upperPropertyTarget.GreaterThanOrEqualTo(range.Upper!.Value));
         }
 
         if (range.HasLowerBounds)
         {
-            return _lowerPropertyTarget.GreaterThanOrEqualTo(range.Lower!.Value);
+            return
+                _lowerPropertyTarget.LessThanOrEqualTo(range.Lower!.Value)
+                .And(_upperPropertyTarget.GreaterThanOrEqualTo(range.Lower!.Value));
         }
 
-        return _upperPropertyTarget.LessThanOrEqualTo(range.Upper!.Value);
+        return _lowerPropertyTarget.LessThanOrEqualTo(range.Upper!.Value)
+            .And(_upperPropertyTarget.GreaterThanOrEqualTo(range.Upper!.Value));
     }
 }
