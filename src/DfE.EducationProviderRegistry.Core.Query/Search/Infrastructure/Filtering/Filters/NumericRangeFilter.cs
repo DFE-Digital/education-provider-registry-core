@@ -36,7 +36,7 @@ internal sealed class NumericRangeFilter<TModel> : ISearchFilter<TModel>
 
         if (range.HasLowerBounds)
         {
-            return _lowerPropertyTarget.LessThanOrEqualTo(range.Lower!.Value)
+            return _lowerPropertyTarget.LessThanOrEqualTo(range.Lower.Value)
                 .And(_upperPropertyTarget.GreaterThanOrEqualTo(range.Lower!.Value));
         }
 
