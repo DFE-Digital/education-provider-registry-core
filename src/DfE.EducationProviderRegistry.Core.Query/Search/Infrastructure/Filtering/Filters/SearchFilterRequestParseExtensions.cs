@@ -1,4 +1,7 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+﻿using System.Globalization;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
 internal static class SearchFilterRequestParseExtensions
 {
@@ -35,20 +38,22 @@ internal static class SearchFilterRequestParseExtensions
     ///     </item>
     /// </list>
     /// </remarks>
-    public static DateRange ParseDateRange(this SearchFilterRequest request)
+    public static DateRange ParseDateRange(
+        this SearchFilterRequest request)
     {
         ValidateRange(request);
 
-        DateOnly? lower = ToDateOnly(request.FilterValues[0]);
+        DateOnly? lower =
+            ToDateOnly(request.FilterValues[0]);
 
         DateOnly? upper =
             request.FilterValues.Length == 2 ?
-                ToDateOnly(request.FilterValues[1])
-                    : null;
+                ToDateOnly(request.FilterValues[1]) :
+                    null;
 
         BoundedRange<DateOnly> bounds = new(lower, upper);
 
-        return new(bounds);
+        return new DateRange(bounds);
     }
 
     public static BoundedRange<int> ParseNumericRange(this SearchFilterRequest request)

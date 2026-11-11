@@ -17,8 +17,7 @@ internal sealed class DateRangeFilter : ISearchFilter<SearchAggregate>
 
     public ISpecification<SearchAggregate> CreateSpecification(SearchFilterRequest request)
     {
-        DateRange filter =
-            request.ParseDateRange();
+        DateRange filter = request.ParseDateRange();
 
         BoundedRange<DateOnly> range = filter.Range;
 
