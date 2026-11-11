@@ -41,7 +41,7 @@ internal sealed class NumericRangeFilter<TModel> : ISearchFilter<TModel>
         }
 
         return _lowerPropertyTarget
-            .LessThanOrEqualTo(range.Upper!.Value)
+            .LessThanOrEqualTo(range.Upper.Value)
             .And(_upperPropertyTarget.GreaterThanOrEqualTo(range.Upper!.Value));
     }
 }
