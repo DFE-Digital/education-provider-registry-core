@@ -11,22 +11,17 @@ internal sealed record DateRange
         List<ValidationErrorCode> errors = [];
 
         if (boundedRange.Lower.HasValue &&
-                boundedRange.Lower.Value < _minimumDate)
+            boundedRange.Lower.Value < _minimumDate)
         {
-            errors.Add(ValidationErrorCode.LowerBoundBeforeMinimum);
+            errors.Add(
+                ValidationErrorCode.LowerBeforeMinimum);
         }
 
         if (boundedRange.Upper.HasValue &&
-                boundedRange.Upper.Value < _minimumDate)
+            boundedRange.Upper.Value < _minimumDate)
         {
-            errors.Add(ValidationErrorCode.UpperBoundBeforeMinimum);
-        }
-
-        if (boundedRange.Lower.HasValue &&
-                boundedRange.Upper.HasValue &&
-                    boundedRange.Upper.Value <= boundedRange.Lower.Value)
-        {
-            errors.Add(ValidationErrorCode.UpperBoundNotAfterLowerBound);
+            errors.Add(
+                ValidationErrorCode.UpperBeforeMinimum);
         }
 
         if (errors.Count > 0)

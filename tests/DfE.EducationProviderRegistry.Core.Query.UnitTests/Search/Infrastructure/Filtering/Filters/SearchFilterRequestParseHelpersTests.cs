@@ -1,5 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters;
@@ -158,9 +159,8 @@ public sealed class SearchFilterRequestParseHelpersTests
         Assert.Equal(new DateOnly(2025, 10, 15), result.Range.Lower);
         Assert.Equal(new DateOnly(2026, 10, 15), result.Range.Upper);
     }
-
     [Fact]
-    public void ParseDateRange_WithLowerBoundAfterUpperBound_ThrowsArgumentException()
+    public void ParseDateRange_WithLowerBoundAfterUpperBound_ThrowsInvalidRangeException()
     {
         // Arrange
         SearchFilterRequest request =
@@ -173,6 +173,12 @@ public sealed class SearchFilterRequestParseHelpersTests
             request.ParseDateRange();
 
         // Assert
-        Assert.Throws<ArgumentException>(act);
+        InvalidRangeException exception =
+            Assert.Throws<InvalidRangeException>(act);
+
+        Assert.Single(exception.Errors);
+        Assert.Contains(
+            ValidationErrorCode.UpperNotGreaterThanLower,
+            exception.Errors);
     }
 }

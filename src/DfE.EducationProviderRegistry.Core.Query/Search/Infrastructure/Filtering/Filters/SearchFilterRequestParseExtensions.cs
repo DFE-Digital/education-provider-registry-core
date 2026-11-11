@@ -51,6 +51,13 @@ internal static class SearchFilterRequestParseExtensions
                 ToDateOnly(request.FilterValues[1]) :
                     null;
 
+        if (lower.HasValue &&
+                upper.HasValue &&
+                    lower.Value > upper.Value)
+        {
+            throw new InvalidRangeException([ValidationErrorCode.UpperNotGreaterThanLower]);
+        }
+
         BoundedRange<DateOnly> bounds = new(lower, upper);
 
         return new DateRange(bounds);
@@ -66,6 +73,7 @@ internal static class SearchFilterRequestParseExtensions
             request.FilterValues[1] is int upperValue ?
                 upperValue :
                     null;
+
 
         return new BoundedRange<int>(lower, upper);
     }

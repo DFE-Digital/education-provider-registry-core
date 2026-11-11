@@ -2,7 +2,7 @@
 
 public enum ValidationErrorCode
 {
-    LowerBoundBeforeMinimum = 1,
-    UpperBoundBeforeMinimum,
-    UpperBoundNotAfterLowerBound
+    LowerBeforeMinimum = 1,
+    UpperBeforeMinimum,
+    UpperNotGreaterThanLower
 }
