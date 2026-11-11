@@ -63,19 +63,32 @@ internal static class SearchFilterRequestParseExtensions
         return new DateRange(bounds);
     }
 
-    public static BoundedRange<int> ParseNumericRange(this SearchFilterRequest request)
+    public static AgeRange ParseNumericRange(this SearchFilterRequest request)
     {
         ValidateRange(request);
 
-        int? lower = request.FilterValues[0] is int lowerValue ? lowerValue : null;
+        int? lower =
+            request.FilterValues[0] is int lowerValue
+                ? lowerValue
+                : null;
 
-        int? upper = request.FilterValues.Length == 2 &&
-            request.FilterValues[1] is int upperValue ?
-                upperValue :
-                    null;
+        int? upper =
+            request.FilterValues.Length == 2 && request.FilterValues[1] is int upperValue ?
+                upperValue
+                    : null;
 
+        if (lower.HasValue &&
+                upper.HasValue &&
+                    lower.Value >= upper.Value)
+        {
+            throw new InvalidRangeException([ValidationErrorCode.UpperNotGreaterThanLower]);
+        }
 
-        return new BoundedRange<int>(lower, upper);
+        BoundedRange<int> bounds = new(
+            lower,
+            upper);
+
+        return new AgeRange(bounds);
     }
 
     private static DateOnly? ToDateOnly(object? value)

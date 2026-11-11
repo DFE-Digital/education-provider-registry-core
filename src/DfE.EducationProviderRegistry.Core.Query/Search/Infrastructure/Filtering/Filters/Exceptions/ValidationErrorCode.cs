@@ -3,6 +3,8 @@
 public enum ValidationErrorCode
 {
     LowerBeforeMinimum = 1,
+    LowerAfterMaximum,
     UpperBeforeMinimum,
+    UpperAfterMaximum,
     UpperNotGreaterThanLower
 }
