@@ -18,9 +18,9 @@ public sealed class FilterValidationError
         ArgumentException.ThrowIfNullOrWhiteSpace(filterName);
 
         FilterName = filterName;
-        ErrorCode = errorMessage;
+        Error = errorMessage;
     }
 
     public string FilterName { get; }
-    public ValidationErrorCode ErrorCode { get; }
+    public ValidationErrorCode Error { get; }
 }
