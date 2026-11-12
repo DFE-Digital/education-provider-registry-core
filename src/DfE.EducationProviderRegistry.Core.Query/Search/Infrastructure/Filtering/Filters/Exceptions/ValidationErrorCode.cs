@@ -2,11 +2,11 @@
 
 public enum ValidationErrorCode
 {
-    LowerBeforeMinimum = 1,
+    LowerNotValid = 1,
+    LowerBeforeMinimum,
     LowerAfterMaximum,
+    UpperNotValid,
     UpperBeforeMinimum,
     UpperAfterMaximum,
     UpperNotGreaterThanLower,
-    LowerNotValid,
-    UpperNotValid
 }
