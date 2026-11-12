@@ -115,15 +115,28 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
             AgeRange = ageRange,
             Gender = establishment.Gender,
 
+            Pupils = establishment.NumberOfPupils is null
+                ? null
+                : new EstablishmentPupils(
+                    total: establishment.NumberOfPupils.Value,
+                    boys: establishment.NumberOfBoys ?? 0,
+                    girls: establishment.NumberOfGirls ?? 0),
+
+            FreeSchoolMeals = establishment.FsmNumber is null || establishment.FsmPercentage is null
+                ? null
+                : new EstablishmentFreeSchoolMeals(
+                    number: establishment.FsmNumber.Value,
+                    percentage: establishment.FsmPercentage.Value),
+
             ReligiousCharacter = establishment.ReligiousCharacter,
+            ReligiousEthos = establishment.ReligiousEthos,
+            Diocese = establishment.Diocese,
 
             Ofsted = ofsted,
 
             Governors = governors,
 
             Headteacher = establishment.HeadteacherName,
-
-            SenProvision = establishment.SenProvision,
 
             ContactDetails = contactDetails
         };
