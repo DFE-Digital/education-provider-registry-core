@@ -3,6 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Infrastructure
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
@@ -74,10 +75,15 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                         request.PageSize),
                     cancellationToken);
 
-            SearchResponse model = new(searchResults.Results!, searchResults.FacetResults!, searchResults.TotalCount);
+            SearchResponse model = new(
+                searchProviderResults: searchResults.Results!,
+                facetedResults: searchResults.FacetResults!,
+                totalNumberOfResults: searchResults.TotalCount,
+                availableFilters: [.. _searchCriteria.Filters]);
 
             return UseCaseResponse<SearchResponse>.Success(model);
         }
+
         catch (OperationCanceledException ex)
         {
             const string message = "The search request was cancelled by the caller.";
@@ -89,6 +95,17 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                 message);
 
             return UseCaseResponse<SearchResponse>.Failure(NoResultsSearchResponse, error: message);
+        }
+        catch (FilterValidationException exception)
+        {
+            SearchResponse response = new(
+                searchProviderResults: null,
+                facetedResults: null,
+                totalNumberOfResults: 0,
+                [.. _searchCriteria.Filters],
+                validationErrors: exception.ValidationErrors);
+
+            return UseCaseResponse<SearchResponse>.Failure(response, error: exception.Message);
         }
         catch (SearchException ex)
         {
@@ -120,5 +137,6 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
         new(
             searchProviderResults: null,
             facetedResults: null,
+            availableFilters: null,
             totalNumberOfResults: 0);
 }

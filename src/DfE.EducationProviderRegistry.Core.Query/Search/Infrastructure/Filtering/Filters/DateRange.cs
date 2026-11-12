@@ -1,32 +1,36 @@
-﻿namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
+
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 
 internal sealed record DateRange
 {
-    private static readonly DateOnly _minValue = new(1800, 1, 1);
+    private static readonly DateOnly _minimumDate = new(1800, 1, 1);
 
     public DateRange(BoundedRange<DateOnly> boundedRange)
     {
-        if (boundedRange.Lower.HasValue)
+        List<ValidationErrorCode> errors = [];
+
+        if (boundedRange.Lower.HasValue &&
+            boundedRange.Lower.Value < _minimumDate)
         {
-            Validate(boundedRange.Lower.Value);
+            errors.Add(
+                ValidationErrorCode.LowerBeforeMinimum);
         }
 
-        if (boundedRange.Upper.HasValue)
+        if (boundedRange.Upper.HasValue &&
+            boundedRange.Upper.Value < _minimumDate)
         {
-            Validate(boundedRange.Upper.Value);
+            errors.Add(
+                ValidationErrorCode.UpperBeforeMinimum);
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new InvalidRangeException(errors);
         }
 
         Range = boundedRange;
     }
 
     public BoundedRange<DateOnly> Range { get; }
-
-    private static void Validate(DateOnly date)
-    {
-        if (date < _minValue)
-        {
-            throw new ArgumentException(
-                "Filter date must be greater than or equal to 1800-01-01.");
-        }
-    }
 }

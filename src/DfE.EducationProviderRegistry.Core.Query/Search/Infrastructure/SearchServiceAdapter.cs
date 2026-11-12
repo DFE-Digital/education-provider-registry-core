@@ -15,8 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure;
 
-public sealed class SearchServiceAdapter
-    : ISearchServiceAdapter<SearchAggregateResults, SearchFacets>
+public sealed class SearchServiceAdapter : ISearchServiceAdapter<SearchAggregateResults, SearchFacets>
 {
     private readonly EducationProviderRegistryDbContext _dbContext;
     private readonly ISearchQueryProcessor<SearchAggregate> _searchSpecOrchestrator;
@@ -101,7 +100,7 @@ public sealed class SearchServiceAdapter
                     new FacetFilterContext(
                         facet,
                         request.SearchFilterRequests.SingleOrDefault(
-                            filter =>
+                            (filter) =>
                                 string.Equals(filter.FilterName,facet, StringComparison.OrdinalIgnoreCase))))
         ];
 
