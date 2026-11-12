@@ -20,11 +20,13 @@ public sealed class SearchResponse
         SearchAggregateResults? searchProviderResults,
         SearchFacets? facetedResults,
         int totalNumberOfResults,
+        IReadOnlyList<string>? availableFilters,
         IReadOnlyCollection<FilterValidationError>? validationErrors = null)
     {
         SearchProviderResults = searchProviderResults;
         FacetedResults = facetedResults;
         TotalNumberOfResults = totalNumberOfResults;
+        AvailableFilters = availableFilters ?? [];
         ValidationErrors = validationErrors ?? [];
     }
 
@@ -37,6 +39,11 @@ public sealed class SearchResponse
     /// Gets the faceted aggregation results used for UI filtering, analytics, or navigation.
     /// </summary>
     public SearchFacets? FacetedResults { get; }
+
+    /// <summary>
+    /// Gets the available filters.
+    /// </summary>
+    public IReadOnlyList<string> AvailableFilters { get; }
 
     /// <summary>
     /// Gets the filter validation errors.

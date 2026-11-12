@@ -15,4 +15,9 @@ public class SearchCriteria
     /// The collection of facets to apply in the search request.
     /// </summary>
     public IList<string> Facets { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the filter values.
+    /// </summary>
+    public IList<string> Filters { get; set; } = [];
 }

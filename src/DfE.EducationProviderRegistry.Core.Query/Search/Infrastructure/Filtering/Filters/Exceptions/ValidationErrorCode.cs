@@ -6,5 +6,7 @@ public enum ValidationErrorCode
     LowerAfterMaximum,
     UpperBeforeMinimum,
     UpperAfterMaximum,
-    UpperNotGreaterThanLower
+    UpperNotGreaterThanLower,
+    LowerNotValid,
+    UpperNotValid
 }

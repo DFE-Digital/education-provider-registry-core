@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Extensions;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
 

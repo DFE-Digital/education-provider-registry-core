@@ -75,7 +75,11 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                         request.PageSize),
                     cancellationToken);
 
-            SearchResponse model = new(searchResults.Results!, searchResults.FacetResults!, searchResults.TotalCount);
+            SearchResponse model = new(
+                searchProviderResults: searchResults.Results!,
+                facetedResults: searchResults.FacetResults!,
+                totalNumberOfResults: searchResults.TotalCount,
+                availableFilters: [.. _searchCriteria.Filters]);
 
             return UseCaseResponse<SearchResponse>.Success(model);
         }
@@ -98,6 +102,7 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
                 searchProviderResults: null,
                 facetedResults: null,
                 totalNumberOfResults: 0,
+                [.. _searchCriteria.Filters],
                 validationErrors: exception.ValidationErrors);
 
             return UseCaseResponse<SearchResponse>.Failure(response, error: exception.Message);
@@ -132,5 +137,6 @@ public sealed class SearchUseCase : IUseCase<SearchRequest, UseCaseResponse<Sear
         new(
             searchProviderResults: null,
             facetedResults: null,
+            availableFilters: null,
             totalNumberOfResults: 0);
 }
