@@ -38,27 +38,37 @@ internal static class SearchFilterRequestParseExtensions
     ///     </item>
     /// </list>
     /// </remarks>
-    public static DateRange ParseDateRange(
-        this SearchFilterRequest request)
+
+    public static DateRange ParseDateRange(this SearchFilterRequest request)
     {
         ValidateRange(request);
 
+        List<ValidationErrorCode> errors = [];
+
         DateOnly? lower =
-            ToDateOnly(request.FilterValues[0], ValidationErrorCode.LowerNotValid);
+            ToDateOnly(
+                request.FilterValues[0],
+                ValidationErrorCode.LowerNotValid,
+                errors);
 
         DateOnly? upper =
-            request.FilterValues.Length == 2 ?
-                ToDateOnly(request.FilterValues[1], ValidationErrorCode.UpperNotValid) :
-                    null;
+            request.FilterValues.Length == 2
+                ? ToDateOnly(
+                    request.FilterValues[1],
+                    ValidationErrorCode.UpperNotValid,
+                    errors)
+                : null;
+
+        if (errors.Count > 0)
+        {
+            throw new InvalidRangeException(errors);
+        }
 
         if (lower.HasValue &&
-            upper.HasValue &&
-            lower.Value > upper.Value)
+                upper.HasValue &&
+                    lower.Value > upper.Value)
         {
-            throw new InvalidRangeException(
-            [
-                ValidationErrorCode.UpperNotGreaterThanLower
-            ]);
+            throw new InvalidRangeException([ValidationErrorCode.UpperNotGreaterThanLower]);
         }
 
         BoundedRange<DateOnly> bounds = new(
@@ -68,25 +78,40 @@ internal static class SearchFilterRequestParseExtensions
         return new DateRange(bounds);
     }
 
-    public static AgeRange ParseNumericRange(this SearchFilterRequest request)
+    public static AgeRange ParseNumericRange(
+        this SearchFilterRequest request)
     {
         ValidateRange(request);
 
+        List<ValidationErrorCode> errors = [];
+
         int? lower =
-            request.FilterValues[0] is int lowerValue
-                ? lowerValue
-                : null;
+            ToInteger(
+                request.FilterValues[0],
+                ValidationErrorCode.LowerNotValid,
+                errors);
 
         int? upper =
-            request.FilterValues.Length == 2 && request.FilterValues[1] is int upperValue ?
-                upperValue
-                    : null;
+            request.FilterValues.Length == 2 ?
+                ToInteger(
+                    request.FilterValues[1],
+                    ValidationErrorCode.UpperNotValid,
+                    errors) :
+                null;
+
+        if (errors.Count > 0)
+        {
+            throw new InvalidRangeException(errors);
+        }
 
         if (lower.HasValue &&
-                upper.HasValue &&
-                    lower.Value >= upper.Value)
+            upper.HasValue &&
+            lower.Value >= upper.Value)
         {
-            throw new InvalidRangeException([ValidationErrorCode.UpperNotGreaterThanLower]);
+            throw new InvalidRangeException(
+            [
+                ValidationErrorCode.UpperNotGreaterThanLower
+            ]);
         }
 
         BoundedRange<int> bounds = new(
@@ -98,16 +123,40 @@ internal static class SearchFilterRequestParseExtensions
 
     private static DateOnly? ToDateOnly(
         object? value,
-        ValidationErrorCode invalidValueError)
+        ValidationErrorCode invalidValueError,
+        List<ValidationErrorCode> errors)
     {
-        return value switch
+        switch (value)
         {
-            null => null,
+            case null:
+                return null;
 
-            DateOnly dateOnly => dateOnly,
+            case DateOnly dateOnly:
+                return dateOnly;
 
-            _ => throw new InvalidRangeException([invalidValueError])
-        };
+            default:
+                errors.Add(invalidValueError);
+                return null;
+        }
+    }
+
+    private static int? ToInteger(
+        object? value,
+        ValidationErrorCode invalidValueError,
+        List<ValidationErrorCode> errors)
+    {
+        switch (value)
+        {
+            case null:
+                return null;
+
+            case int integer:
+                return integer;
+
+            default:
+                errors.Add(invalidValueError);
+                return null;
+        }
     }
 
     private static void ValidateRange(SearchFilterRequest request)

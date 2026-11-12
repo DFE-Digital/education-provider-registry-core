@@ -95,7 +95,8 @@ public sealed class SearchFilterRequestParseExtensionTests
     public void ParseDateRange_WithSingleNullValue_ThrowsArgumentException()
     {
         // Arrange
-        SearchFilterRequest request = new("stub-key", [null!]);
+        SearchFilterRequest request =
+            new("stub-key", [null!]);
 
         // Act
         Func<DateRange> act = () =>
@@ -112,7 +113,8 @@ public sealed class SearchFilterRequestParseExtensionTests
         DateOnly lower = new(2026, 10, 15);
 
         SearchFilterRequest request =
-            SearchFilterRequestTestDoubles.StubFilterValues(lower);
+            SearchFilterRequestTestDoubles.StubFilterValues(
+                lower);
 
         // Act
         DateRange result =
@@ -208,6 +210,7 @@ public sealed class SearchFilterRequestParseExtensionTests
             ValidationErrorCode.UpperNotGreaterThanLower,
             error);
     }
+
     [Fact]
     public void ParseDateRange_WithInvalidLowerDateString_ThrowsLowerNotValid()
     {
@@ -256,5 +259,33 @@ public sealed class SearchFilterRequestParseExtensionTests
         Assert.Equal(
             ValidationErrorCode.UpperNotValid,
             error);
+    }
+
+    [Fact]
+    public void ParseDateRange_WithInvalidLowerAndUpperDateStrings_ThrowsInvalidRangeExceptionWithBothErrors()
+    {
+        // Arrange
+        SearchFilterRequest request =
+            SearchFilterRequestTestDoubles.StubFilterValues(
+                "2026--",
+                "2000-13-32");
+
+        // Act
+        Func<DateRange> act = () =>
+            request.ParseDateRange();
+
+        // Assert
+        InvalidRangeException exception =
+            Assert.Throws<InvalidRangeException>(act);
+
+        Assert.Equal(2, exception.Errors.Count);
+
+        Assert.Contains(
+            ValidationErrorCode.LowerNotValid,
+            exception.Errors);
+
+        Assert.Contains(
+            ValidationErrorCode.UpperNotValid,
+            exception.Errors);
     }
 }
