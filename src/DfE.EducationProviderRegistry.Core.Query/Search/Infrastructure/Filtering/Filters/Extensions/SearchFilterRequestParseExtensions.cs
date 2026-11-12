@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Extensions;
 
 internal static class SearchFilterRequestParseExtensions
 {
