@@ -44,21 +44,26 @@ internal static class SearchFilterRequestParseExtensions
         ValidateRange(request);
 
         DateOnly? lower =
-            ToDateOnly(request.FilterValues[0]);
+            ToDateOnly(request.FilterValues[0], ValidationErrorCode.LowerNotValid);
 
         DateOnly? upper =
             request.FilterValues.Length == 2 ?
-                ToDateOnly(request.FilterValues[1]) :
+                ToDateOnly(request.FilterValues[1], ValidationErrorCode.UpperNotValid) :
                     null;
 
         if (lower.HasValue &&
-                upper.HasValue &&
-                    lower.Value > upper.Value)
+            upper.HasValue &&
+            lower.Value > upper.Value)
         {
-            throw new InvalidRangeException([ValidationErrorCode.UpperNotGreaterThanLower]);
+            throw new InvalidRangeException(
+            [
+                ValidationErrorCode.UpperNotGreaterThanLower
+            ]);
         }
 
-        BoundedRange<DateOnly> bounds = new(lower, upper);
+        BoundedRange<DateOnly> bounds = new(
+            lower,
+            upper);
 
         return new DateRange(bounds);
     }
@@ -91,28 +96,26 @@ internal static class SearchFilterRequestParseExtensions
         return new AgeRange(bounds);
     }
 
-    private static DateOnly? ToDateOnly(object? value)
+    private static DateOnly? ToDateOnly(
+        object? value,
+        ValidationErrorCode invalidValueError)
     {
         return value switch
         {
             null => null,
+
             DateOnly dateOnly => dateOnly,
 
-            _ => throw new ArgumentException(
-                $"Unsupported filter value type '{value.GetType().Name}'.")
+            _ => throw new InvalidRangeException([invalidValueError])
         };
     }
 
     private static void ValidateRange(SearchFilterRequest request)
     {
-        if (request.FilterValues.Length == 0)
+        if (request.FilterValues.Length is < 1 or > 2)
         {
-            throw new ArgumentException("No values to filter in FilterRequestValues.");
-        }
-
-        if (request.FilterValues.Length > 2)
-        {
-            throw new ArgumentException("More values than comparable for range.");
+            throw new ArgumentException(
+                "Range filters require one or two filter values.");
         }
     }
 }
