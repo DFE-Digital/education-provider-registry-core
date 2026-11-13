@@ -27,15 +27,18 @@ public sealed class EstablishmentDetailsBuilder
     private string? _headteacher;
     private DateOnly? _ofstedDate;
     private string? _ofstedUrl;
-    private string? _senProvision;
     private string? _localAuthorityName;
     private LocalAuthorityCode _localAuthorityCode;
     private string? _ageRange;
     private string? _gender;
     private int? _pupilCount;
+    private int? _pupilBoyCount;
+    private int? _pupilGirlCount;
     private string? _religious;
     private string? _phase;
     private string? _type;
+    private int? _freeSchoolMealsNumber;
+    private int? _freeSchoolMealsPercentage;
 
     public static EstablishmentDetailsBuilder Create() => new();
 
@@ -154,12 +157,6 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
-    public EstablishmentDetailsBuilder WithSenProvision(string? sen)
-    {
-        _senProvision = sen;
-        return this;
-    }
-
     public EstablishmentDetailsBuilder WithLocalAuthorityName(string laName)
     {
         _localAuthorityName = laName;
@@ -184,6 +181,18 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
+    public EstablishmentDetailsBuilder WithPupilBoyCount(int count)
+    {
+        _pupilBoyCount = count;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithPupilGirlCount(int count)
+    {
+        _pupilGirlCount = count;
+        return this;
+    }
+
     public EstablishmentDetailsBuilder WithReligiousCharacter(string religious)
     {
         _religious = religious;
@@ -199,6 +208,18 @@ public sealed class EstablishmentDetailsBuilder
     public EstablishmentDetailsBuilder WithPhase(string phase)
     {
         _phase = phase;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithFreeSchoolMealsNumber(int count)
+    {
+        _freeSchoolMealsNumber = count;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithFreeSchoolMealsPercentage(int percentage)
+    {
+        _freeSchoolMealsPercentage = percentage;
         return this;
     }
 
@@ -227,11 +248,15 @@ public sealed class EstablishmentDetailsBuilder
             Group = _groupName is null || _groupUid is null ?
                 null :
                 new(name: _groupName, uid: _groupUid),
-            SenProvision = _senProvision,
             LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode),
             AgeRange = _ageRange,
             Gender = _gender,
-            Pupils = _pupilCount is null ? null : new(_pupilCount.Value),
+            Pupils = _pupilCount is null || _pupilBoyCount is null || _pupilGirlCount is null ?
+                null :
+                new(_pupilCount.Value, _pupilBoyCount.Value, _pupilGirlCount.Value),
+            FreeSchoolMeals = _freeSchoolMealsNumber is null || _freeSchoolMealsPercentage is null ?
+                null :
+                new(_freeSchoolMealsNumber.Value, _freeSchoolMealsPercentage.Value),
             ReligiousCharacter = _religious,
             Phase = new(_phase),
             Type = _type is null ? null : new(_type)
