@@ -138,6 +138,8 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
 
             Headteacher = establishment.HeadteacherName,
 
+            SenProvision = establishment.SenProvision,
+
             ContactDetails = contactDetails
         };
     }

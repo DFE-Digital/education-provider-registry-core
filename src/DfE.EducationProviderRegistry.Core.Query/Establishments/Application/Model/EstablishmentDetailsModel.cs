@@ -36,6 +36,8 @@ public sealed record EstablishmentDetailsModel
 
     public string? Headteacher { get; set; }
 
+    public string? SenProvision { get; set; }
+
     public EstablishmentContactDetails? ContactDetails { get; set; }
     public EstablishmentPupils? Pupils { get; set; }
 

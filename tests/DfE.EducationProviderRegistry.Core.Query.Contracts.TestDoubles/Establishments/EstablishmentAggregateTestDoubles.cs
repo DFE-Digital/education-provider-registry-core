@@ -57,6 +57,7 @@ public static class EstablishmentAggregateTestDoubles
                     .RuleFor(estab => estab.OfstedInspectionDate, faker => DateOnly.FromDateTime(faker.Date.Past(5)))
                     .RuleFor(estab => estab.OfstedReportUrl, faker => faker.Internet.Url())
                     .RuleFor(estab => estab.HeadteacherName, faker => faker.Name.FullName())
+                    .RuleFor(estab => estab.SenProvision, faker => faker.Random.Bool() ? "SEN Support" : null)
                     .RuleFor(estab => estab.Website, faker => faker.Internet.Url())
                     .RuleFor(estab => estab.TelephoneNumber, faker => faker.Phone.PhoneNumber())
             );
