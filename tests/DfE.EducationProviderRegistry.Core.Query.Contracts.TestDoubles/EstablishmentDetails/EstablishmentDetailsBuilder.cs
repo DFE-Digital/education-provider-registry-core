@@ -27,6 +27,7 @@ public sealed class EstablishmentDetailsBuilder
     private string? _headteacher;
     private DateOnly? _ofstedDate;
     private string? _ofstedUrl;
+    private string? _senProvision;
     private string? _localAuthorityName;
     private LocalAuthorityCode _localAuthorityCode;
     private string? _ageRange;
@@ -157,6 +158,12 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
+    public EstablishmentDetailsBuilder WithSenProvision(string? sen)
+    {
+        _senProvision = sen;
+        return this;
+    }
+
     public EstablishmentDetailsBuilder WithLocalAuthorityName(string laName)
     {
         _localAuthorityName = laName;
@@ -248,6 +255,7 @@ public sealed class EstablishmentDetailsBuilder
             Group = _groupName is null || _groupUid is null ?
                 null :
                 new(name: _groupName, uid: _groupUid),
+            SenProvision = _senProvision,
             LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode),
             AgeRange = _ageRange,
             Gender = _gender,
