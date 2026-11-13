@@ -8,8 +8,8 @@ public sealed record EstablishmentDetailsModel
     public required EstablishmentIdentifiersModel Identifiers { get; init; }
 
     public EstablishmentStatusModel? Status { get; init; }
-    public DateOnly? OpenDate { get; init; }
-    public DateOnly? CloseDate { get; init; }
+    public DateOnly? OpenedDate { get; init; }
+    public DateOnly? ClosedDate { get; init; }
 
     public EstablishmentTypeModel? Type { get; init; }
     public PhaseOfEducationModel? Phase { get; init; }
@@ -37,6 +37,7 @@ public sealed record EstablishmentDetailsModel
     public string? Headteacher { get; set; }
 
     public string? SenProvision { get; set; }
+    public List<string>? SenProvisions { get; init; }
 
     public EstablishmentContactDetails? ContactDetails { get; set; }
     public EstablishmentPupils? Pupils { get; set; }

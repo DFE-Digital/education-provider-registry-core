@@ -96,6 +96,8 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
                 : new EstablishmentStatusModel(
                     status: (EstablishmentStatus)establishment.StatusCode,
                     effectiveDate: establishment.StatusDate),
+            OpenedDate = establishment.OpenedDate,
+            ClosedDate = establishment.ClosedDate,
 
             Type = establishment.EstablishmentTypeName is null
                 ? null
@@ -139,6 +141,7 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
             Headteacher = establishment.HeadteacherName,
 
             SenProvision = establishment.SenProvision,
+            SenProvisions = establishment.Sen,
 
             ContactDetails = contactDetails
         };
