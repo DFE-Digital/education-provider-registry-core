@@ -14,6 +14,8 @@ public sealed class EstablishmentDetailsBuilder
     private string? _telephoneNumber;
 
     private EstablishmentStatus? _status;
+    private DateOnly? _openedDate;
+    private DateOnly? _closedDate;
     private DateOnly? _statusEffectiveDate;
     private string? _siteName;
     private string? _addressLine1;
@@ -36,6 +38,8 @@ public sealed class EstablishmentDetailsBuilder
     private int? _pupilBoyCount;
     private int? _pupilGirlCount;
     private string? _religious;
+    private string? _religiousEthos;
+    private string? _diocese;
     private string? _phase;
     private string? _type;
     private int? _freeSchoolMealsNumber;
@@ -83,6 +87,18 @@ public sealed class EstablishmentDetailsBuilder
     public EstablishmentDetailsBuilder WithStatus(EstablishmentStatus? status)
     {
         _status = status;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithOpenedDate(DateOnly? date)
+    {
+        _openedDate = date;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithClosedDate(DateOnly? date)
+    {
+        _closedDate = date;
         return this;
     }
 
@@ -206,6 +222,18 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
+    public EstablishmentDetailsBuilder WithReligiousEthos(string religiousEthos)
+    {
+        _religiousEthos = religiousEthos;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithDiocese(string diocese)
+    {
+        _diocese = diocese;
+        return this;
+    }
+
     public EstablishmentDetailsBuilder WithType(string type)
     {
         _type = type;
@@ -252,6 +280,8 @@ public sealed class EstablishmentDetailsBuilder
             Ofsted = new(_ofstedDate, _ofstedUrl),
             Address = new(_siteName, _addressLine1, _addressLine2, _town, _county, _postcode),
             Status = _status is null ? null : new(_status.Value, _statusEffectiveDate),
+            OpenedDate = _openedDate,
+            ClosedDate = _closedDate,
             Group = _groupName is null || _groupUid is null ?
                 null :
                 new(name: _groupName, uid: _groupUid),
@@ -266,8 +296,10 @@ public sealed class EstablishmentDetailsBuilder
                 null :
                 new(_freeSchoolMealsNumber.Value, _freeSchoolMealsPercentage.Value),
             ReligiousCharacter = _religious,
+            ReligiousEthos = _religiousEthos,
+            Diocese = _diocese,
             Phase = new(_phase),
-            Type = _type is null ? null : new(_type)
+            Type = _type is null ? null : new(_type),
         };
     }
 }
