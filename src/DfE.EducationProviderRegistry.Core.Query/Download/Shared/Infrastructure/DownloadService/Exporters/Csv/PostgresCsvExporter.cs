@@ -1,32 +1,18 @@
-﻿using System.Buffers;
-
-namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
+﻿namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 
 public sealed class PostgresCsvExporter : IPostgresCsvExporter
 {
-    private const int BufferSize = 32 * 1024;
-    private readonly IPostgresCsvReader _postgresCsvReader;
-    private readonly ArrayPool<char> _bufferPool;
+    private readonly IPostgresCsvReader _reader;
 
     public PostgresCsvExporter(
-        IPostgresCsvReader postgresCsvReader)
-        : this(
-            postgresCsvReader,
-            ArrayPool<char>.Shared){
-    }
-
-    internal PostgresCsvExporter(
-        IPostgresCsvReader postgresCsvReader,
-        ArrayPool<char> bufferPool)
+        IPostgresCsvReader reader)
     {
-        ArgumentNullException.ThrowIfNull(postgresCsvReader);
-        ArgumentNullException.ThrowIfNull(bufferPool);
+        ArgumentNullException.ThrowIfNull(reader);
 
-        _postgresCsvReader = postgresCsvReader;
-        _bufferPool = bufferPool;
+        _reader = reader;
     }
 
-    public async Task ExportToStreamAsync(
+    public Task ExportToStreamAsync(
         Stream targetStream,
         string query,
         CancellationToken cancellationToken)
@@ -34,42 +20,9 @@ public sealed class PostgresCsvExporter : IPostgresCsvExporter
         ArgumentNullException.ThrowIfNull(targetStream);
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
-        await _postgresCsvReader.OpenAsync(
+        return _reader.CopyToStreamAsync(
+            targetStream,
             query,
             cancellationToken);
-
-        await using StreamWriter writer = new(
-            targetStream,
-            leaveOpen: true);
-
-        char[] buffer =
-            _bufferPool.Rent(BufferSize);
-
-        try
-        {
-            while (true)
-            {
-                int charsRead =
-                    await _postgresCsvReader.ReadAsync(
-                        buffer.AsMemory(0, BufferSize),
-                        cancellationToken);
-
-                if (charsRead == 0)
-                {
-                    break;
-                }
-
-                await writer.WriteAsync(
-                    buffer.AsMemory(0, charsRead),
-                    cancellationToken);
-            }
-
-            await writer.FlushAsync(
-                cancellationToken);
-        }
-        finally
-        {
-            _bufferPool.Return(buffer);
-        }
     }
 }

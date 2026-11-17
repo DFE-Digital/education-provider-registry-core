@@ -12,45 +12,37 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace DfE.EducationProviderRegistry.Core.Query.Download;
 
 /// <summary>
-/// Registers all application-level and infrastructure-level dependencies
-/// required for all download focussed behaviour within the service.
+/// Registers application-level and infrastructure-level dependencies
+/// required for download-focused behaviour.
 /// </summary>
 public static class CompositionRoot
 {
-    /// <summary>
-    /// Registers application-layer and infrastructure-layer dataset download
-    /// dependencies, including the <see cref="DownloadDatasetsUseCase"/>.
-    /// </summary>
     public static IServiceCollection AddDownloadDatasetDependencies(
         this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services
-            .TryAddScoped<IUseCase<
+        services.TryAddScoped<
+            IUseCase<
                 DownloadDatasetsRequest,
                 UseCaseResponse<DownloadDatasetsResponse>>,
-                DownloadDatasetsUseCase>();
+            DownloadDatasetsUseCase>();
 
-        services
-            .TryAddScoped<
-                IDatasetDownloadRepository,
-                DatasetDownloadRepository>();
+        services.TryAddScoped<
+            IDatasetDownloadRepository,
+            DatasetDownloadRepository>();
 
-        services
-            .TryAddScoped<
-                IQueryEngine,
-                StubQueryEngine>();
+        services.TryAddScoped<
+            IQueryEngine,
+            StubQueryEngine>();
 
-        services
-            .TryAddScoped<
-                IPostgresCsvReader,
-                PostgresCsvReader>();
+        services.TryAddTransient<
+            IPostgresCsvReader,
+            PostgresCsvReader>();
 
-        services
-            .TryAddScoped<
-                IPostgresCsvExporter,
-                PostgresCsvExporter>();
+        services.TryAddTransient<
+            IPostgresCsvExporter,
+            PostgresCsvExporter>();
 
         return services;
     }

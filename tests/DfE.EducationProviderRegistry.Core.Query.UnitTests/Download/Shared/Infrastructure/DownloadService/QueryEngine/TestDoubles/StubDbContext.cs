@@ -45,7 +45,7 @@ public sealed class StubDbContext : IDisposable
         DbContext.GroupAggregate.Add(
             new GroupAggregate
             {
-                Ukprn = "500001",
+                GroupUid = 500001,
                 GroupId = "G01",
                 Name = "Trust Alpha",
                 GroupTypeName = "Multi-Academy Trust"

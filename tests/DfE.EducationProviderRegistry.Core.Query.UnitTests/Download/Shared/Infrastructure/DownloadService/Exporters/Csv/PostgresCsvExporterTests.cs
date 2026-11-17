@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Text;
+﻿using System.Text;
 using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Shared.Infrastructure.DownloadService.Exporters.Csv.TestDoubles;
 using Moq;
@@ -8,14 +7,52 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Shared.Inf
 
 public sealed class PostgresCsvExporterTests
 {
-    private const int BufferSize = 32 * 1024;
+    [Fact]
+    public void Constructor_NullReader_ThrowsArgumentNullException()
+    {
+        // Act
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(() =>
+                new PostgresCsvExporter(null!));
+
+        // Assert
+        Assert.Equal(
+            "reader",
+            exception.ParamName);
+    }
+
+    [Fact]
+    public async Task ExportToStreamAsync_NullTargetStream_ThrowsArgumentNullException()
+    {
+        // Arrange
+        Mock<IPostgresCsvReader> postgresCsvReader =
+            new(MockBehavior.Strict);
+
+        PostgresCsvExporter exporter =
+            new(postgresCsvReader.Object);
+
+        // Act
+        ArgumentNullException exception =
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                exporter.ExportToStreamAsync(
+                    null!,
+                    "SELECT id FROM educational_establishments",
+                    TestContext.Current.CancellationToken));
+
+        // Assert
+        Assert.Equal(
+            "targetStream",
+            exception.ParamName);
+
+        postgresCsvReader.VerifyNoOtherCalls();
+    }
 
     [Fact]
     public async Task ExportToStreamAsync_NullQuery_ThrowsArgumentNullException()
     {
         // Arrange
         Mock<IPostgresCsvReader> postgresCsvReader =
-            PostgresCsvReaderTestDouble.Mock();
+            new(MockBehavior.Strict);
 
         PostgresCsvExporter exporter =
             new(postgresCsvReader.Object);
@@ -50,7 +87,7 @@ public sealed class PostgresCsvExporterTests
     {
         // Arrange
         Mock<IPostgresCsvReader> postgresCsvReader =
-            PostgresCsvReaderTestDouble.Mock();
+            new(MockBehavior.Strict);
 
         PostgresCsvExporter exporter =
             new(postgresCsvReader.Object);
@@ -70,6 +107,49 @@ public sealed class PostgresCsvExporterTests
         Assert.Equal(
             "query",
             exception.ParamName);
+
+        postgresCsvReader.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task ExportToStreamAsync_ValidArguments_DelegatesToReader()
+    {
+        // Arrange
+        const string query =
+            "SELECT id, name FROM educational_establishments ORDER BY id";
+
+        CancellationToken cancellationToken =
+            TestContext.Current.CancellationToken;
+
+        Mock<IPostgresCsvReader> postgresCsvReader =
+            new(MockBehavior.Strict);
+
+        await using MemoryStream targetStream =
+            new();
+
+        postgresCsvReader
+            .Setup(reader => reader.CopyToStreamAsync(
+                targetStream,
+                query,
+                cancellationToken))
+            .Returns(Task.CompletedTask);
+
+        PostgresCsvExporter exporter =
+            new(postgresCsvReader.Object);
+
+        // Act
+        await exporter.ExportToStreamAsync(
+            targetStream,
+            query,
+            cancellationToken);
+
+        // Assert
+        postgresCsvReader.Verify(
+            reader => reader.CopyToStreamAsync(
+                targetStream,
+                query,
+                cancellationToken),
+            Times.Once);
 
         postgresCsvReader.VerifyNoOtherCalls();
     }
@@ -105,70 +185,13 @@ public sealed class PostgresCsvExporterTests
             TestContext.Current.CancellationToken);
 
         // Assert
-        targetStream.Position = 0;
-
-        using StreamReader reader =
-            new(
-                targetStream,
-                Encoding.UTF8,
-                detectEncodingFromByteOrderMarks: true,
-                leaveOpen: true);
-
         string csvOutput =
-            await reader.ReadToEndAsync(
-                TestContext.Current.CancellationToken);
+            Encoding.UTF8.GetString(
+                targetStream.ToArray());
 
         Assert.Equal(csv, csvOutput);
         Assert.Equal(query, postgresCsvReader.Query);
-        Assert.Equal(1, postgresCsvReader.OpenCount);
-        Assert.True(postgresCsvReader.ReadCount > 0);
-    }
-
-    [Fact]
-    public async Task ExportToStreamAsync_MultipleReads_StreamsCompleteCsvSuccessfully()
-    {
-        // Arrange
-        const string csv =
-            """
-            id,name
-            1,Academy One
-            2,School Two
-
-            """;
-
-        FakePostgresCsvReader postgresCsvReader =
-            PostgresCsvReaderTestDouble.CreateFake(
-                csv,
-                maximumCharactersPerRead: 5);
-
-        PostgresCsvExporter exporter =
-            new(postgresCsvReader);
-
-        await using MemoryStream targetStream =
-            new();
-
-        // Act
-        await exporter.ExportToStreamAsync(
-            targetStream,
-            "SELECT id, name FROM educational_establishments",
-            TestContext.Current.CancellationToken);
-
-        // Assert
-        targetStream.Position = 0;
-
-        using StreamReader reader =
-            new(
-                targetStream,
-                Encoding.UTF8,
-                detectEncodingFromByteOrderMarks: true,
-                leaveOpen: true);
-
-        string csvOutput =
-            await reader.ReadToEndAsync(
-                TestContext.Current.CancellationToken);
-
-        Assert.Equal(csv, csvOutput);
-        Assert.True(postgresCsvReader.ReadCount > 1);
+        Assert.Equal(1, postgresCsvReader.CopyCount);
     }
 
     [Fact]
@@ -176,7 +199,8 @@ public sealed class PostgresCsvExporterTests
     {
         // Arrange
         FakePostgresCsvReader postgresCsvReader =
-            PostgresCsvReaderTestDouble.CreateFake("id,name\n1,Academy One\n");
+            PostgresCsvReaderTestDouble.CreateFake(
+                "id,name\n1,Academy One\n");
 
         PostgresCsvExporter exporter =
             new(postgresCsvReader);
@@ -199,8 +223,11 @@ public sealed class PostgresCsvExporterTests
     public async Task ExportToStreamAsync_ValidQuery_PassesCancellationTokenToReader()
     {
         // Arrange
+        using CancellationTokenSource cancellationTokenSource =
+            new();
+
         CancellationToken cancellationToken =
-            TestContext.Current.CancellationToken;
+            cancellationTokenSource.Token;
 
         FakePostgresCsvReader postgresCsvReader =
             PostgresCsvReaderTestDouble.CreateFake("id\n1\n");
@@ -220,98 +247,112 @@ public sealed class PostgresCsvExporterTests
         // Assert
         Assert.Equal(
             cancellationToken,
-            postgresCsvReader.OpenCancellationToken);
-
-        Assert.All(
-            postgresCsvReader.ReadCancellationTokens,
-            token => Assert.Equal(
-                cancellationToken,
-                token));
+            postgresCsvReader.CancellationToken);
     }
 
     [Fact]
-    public async Task ExportToStreamAsync_ReadFails_ReturnsBuffer()
+    public async Task ExportToStreamAsync_ReaderFails_PropagatesException()
     {
         // Arrange
-        char[] buffer =
-            new char[BufferSize];
+        const string query =
+            "SELECT id FROM educational_establishments";
 
-        Mock<ArrayPool<char>> bufferPool =
-            new();
+        CancellationToken cancellationToken =
+            TestContext.Current.CancellationToken;
 
-        bufferPool
-            .Setup(pool => pool.Rent(BufferSize))
-            .Returns(buffer);
+        IOException expectedException =
+            new("Reading failed.");
 
         Mock<IPostgresCsvReader> postgresCsvReader =
-            PostgresCsvReaderTestDouble.MockFor(
-                ValueTask.FromException<int>(
-                    new IOException("Reading failed.")));
-
-        PostgresCsvExporter exporter =
-            new(
-                postgresCsvReader.Object,
-                bufferPool.Object);
+            new(MockBehavior.Strict);
 
         await using MemoryStream targetStream =
             new();
 
+        postgresCsvReader
+            .Setup(reader => reader.CopyToStreamAsync(
+                targetStream,
+                query,
+                cancellationToken))
+            .ThrowsAsync(expectedException);
+
+        PostgresCsvExporter exporter =
+            new(postgresCsvReader.Object);
+
         // Act
-        IOException exception =
+        IOException actualException =
             await Assert.ThrowsAsync<IOException>(() =>
                 exporter.ExportToStreamAsync(
                     targetStream,
-                    "SELECT id FROM educational_establishments",
-                    TestContext.Current.CancellationToken));
+                    query,
+                    cancellationToken));
 
         // Assert
-        Assert.Equal(
-            "Reading failed.",
-            exception.Message);
+        Assert.Same(
+            expectedException,
+            actualException);
 
-        bufferPool.Verify(
-            pool => pool.Return(buffer, false),
+        postgresCsvReader.Verify(
+            reader => reader.CopyToStreamAsync(
+                targetStream,
+                query,
+                cancellationToken),
             Times.Once);
+
+        postgresCsvReader.VerifyNoOtherCalls();
     }
 
     [Fact]
-    public async Task ExportToStreamAsync_ExportCompletes_ReturnsBuffer()
+    public async Task ExportToStreamAsync_CalledTwice_UsesReaderForBothExports()
     {
         // Arrange
-        char[] buffer =
-            new char[BufferSize];
+        const string csv =
+            """
+            id,name
+            1,Academy One
 
-        Mock<ArrayPool<char>> bufferPool =
-            new();
+            """;
 
-        bufferPool
-            .Setup(pool => pool.Rent(BufferSize))
-            .Returns(buffer);
-
-        Mock<IPostgresCsvReader> postgresCsvReader =
-            PostgresCsvReaderTestDouble.MockFor(ValueTask.FromResult(0));
+        FakePostgresCsvReader postgresCsvReader =
+            PostgresCsvReaderTestDouble.CreateFake(csv);
 
         PostgresCsvExporter exporter =
-            new(
-                postgresCsvReader.Object,
-                bufferPool.Object);
+            new(postgresCsvReader);
 
-        await using MemoryStream targetStream =
+        await using MemoryStream firstTargetStream =
+            new();
+
+        await using MemoryStream secondTargetStream =
             new();
 
         // Act
         await exporter.ExportToStreamAsync(
-            targetStream,
-            "SELECT id FROM educational_establishments",
+            firstTargetStream,
+            "SELECT id, name FROM first_table",
+            TestContext.Current.CancellationToken);
+
+        await exporter.ExportToStreamAsync(
+            secondTargetStream,
+            "SELECT id, name FROM second_table",
             TestContext.Current.CancellationToken);
 
         // Assert
-        bufferPool.Verify(
-            pool => pool.Rent(BufferSize),
-            Times.Once);
+        Assert.Equal(
+            csv,
+            Encoding.UTF8.GetString(
+                firstTargetStream.ToArray()));
 
-        bufferPool.Verify(
-            pool => pool.Return(buffer, false),
-            Times.Once);
+        Assert.Equal(
+            csv,
+            Encoding.UTF8.GetString(
+                secondTargetStream.ToArray()));
+
+        Assert.Equal(
+            2,
+            postgresCsvReader.CopyCount);
+
+        Assert.Equal(
+            "SELECT id, name FROM second_table",
+            postgresCsvReader.Query);
     }
 }

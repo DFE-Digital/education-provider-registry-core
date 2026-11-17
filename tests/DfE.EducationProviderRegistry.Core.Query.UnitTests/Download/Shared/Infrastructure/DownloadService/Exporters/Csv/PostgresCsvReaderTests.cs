@@ -5,114 +5,135 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Shared.Inf
 
 public sealed class PostgresCsvReaderUnitTests
 {
-    private const string ConnectionStringKey = "eprweb_eprdat_dotnet_db_connection";
+    private const string ConnectionStringKey =
+        "eprweb_eprdat_dotnet_db_connection";
 
     [Fact]
     public void Constructor_NullConfiguration_ThrowsArgumentNullException()
     {
-        // Act/Assert
-        ArgumentNullException exception = Assert.Throws<ArgumentNullException>(() =>
-            new PostgresCsvReader(null!));
+        // Act
+        ArgumentNullException exception =
+            Assert.Throws<ArgumentNullException>(() =>
+                new PostgresCsvReader(null!));
 
-        Assert.Equal("configuration", exception.ParamName);
+        // Assert
+        Assert.Equal(
+            "configuration",
+            exception.ParamName);
     }
 
     [Fact]
-    public async Task OpenAsync_WhenDisposed_ThrowsObjectDisposedException()
+    public async Task CopyToStreamAsync_NullTargetStream_ThrowsArgumentNullException()
     {
         // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        PostgresCsvReader reader = new (configuration);
-        await reader.DisposeAsync();
+        IConfigurationRoot configuration =
+            new ConfigurationBuilder()
+                .Build();
 
-        // Act/Assert
-        await Assert.ThrowsAsync<ObjectDisposedException>(() =>
-            reader.OpenAsync("SELECT * FROM educational_establishments", TestContext.Current.CancellationToken));
+        PostgresCsvReader reader =
+            new(configuration);
+
+        // Act
+        ArgumentNullException exception =
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                reader.CopyToStreamAsync(
+                    null!,
+                    "SELECT * FROM educational_establishments",
+                    TestContext.Current.CancellationToken));
+
+        // Assert
+        Assert.Equal(
+            "targetStream",
+            exception.ParamName);
+    }
+
+    [Fact]
+    public async Task CopyToStreamAsync_NullQuery_ThrowsArgumentNullException()
+    {
+        // Arrange
+        IConfigurationRoot configuration =
+            new ConfigurationBuilder()
+                .Build();
+
+        PostgresCsvReader reader =
+            new(configuration);
+
+        await using MemoryStream targetStream =
+            new();
+
+        // Act
+        ArgumentNullException exception =
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                reader.CopyToStreamAsync(
+                    targetStream,
+                    null!,
+                    TestContext.Current.CancellationToken));
+
+        // Assert
+        Assert.Equal(
+            "query",
+            exception.ParamName);
     }
 
     [Theory]
     [InlineData("")]
+    [InlineData(" ")]
     [InlineData("   ")]
-    public async Task OpenAsync_NullOrWhitespaceQuery_ThrowsArgumentException(string? invalidQuery)
+    [InlineData("\t")]
+    [InlineData("\r\n")]
+    public async Task CopyToStreamAsync_EmptyOrWhitespaceQuery_ThrowsArgumentException(
+        string invalidQuery)
     {
         // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        await using PostgresCsvReader reader = new(configuration);
+        IConfigurationRoot configuration =
+            new ConfigurationBuilder()
+                .Build();
 
-        // Act/Assert
-        ArgumentException exception = await Assert.ThrowsAsync<ArgumentException>(() =>
-            reader.OpenAsync(invalidQuery!, TestContext.Current.CancellationToken));
+        PostgresCsvReader reader =
+            new(configuration);
 
-        Assert.Equal("query", exception.ParamName);
-    }
+        await using MemoryStream targetStream =
+            new();
 
-    [Theory]
-    [InlineData(null)]
-    public async Task OpenAsync_NullOrWhitespaceQuery_ThrowsArgumentNuillException(string? invalidQuery)
-    {
-        // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        await using PostgresCsvReader reader = new(configuration);
+        // Act
+        ArgumentException exception =
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                reader.CopyToStreamAsync(
+                    targetStream,
+                    invalidQuery,
+                    TestContext.Current.CancellationToken));
 
-        // Act/Assert
-        ArgumentException exception = await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            reader.OpenAsync(invalidQuery!, TestContext.Current.CancellationToken));
-
-        Assert.Equal("query", exception.ParamName);
-    }
-
-    [Fact]
-    public async Task OpenAsync_MissingConfiguration_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        await using PostgresCsvReader reader = new(configuration);
-
-        // Act/Assert
-        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            reader.OpenAsync("SELECT * FROM educational_establishments", TestContext.Current.CancellationToken));
-
-        Assert.Contains(ConnectionStringKey, exception.Message);
+        // Assert
+        Assert.Equal(
+            "query",
+            exception.ParamName);
     }
 
     [Fact]
-    public async Task ReadAsync_WhenDisposed_ThrowsObjectDisposedException()
+    public async Task CopyToStreamAsync_MissingConfiguration_ThrowsInvalidOperationException()
     {
         // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        PostgresCsvReader reader = new(configuration);
-        await reader.DisposeAsync();
-        Memory<char> buffer = new char[1024];
+        IConfigurationRoot configuration =
+            new ConfigurationBuilder()
+                .Build();
 
-        // Act/Assert
-        await Assert.ThrowsAsync<ObjectDisposedException>(() =>
-            reader.ReadAsync(buffer, TestContext.Current.CancellationToken).AsTask());
-    }
+        PostgresCsvReader reader =
+            new(configuration);
 
-    [Fact]
-    public async Task ReadAsync_WhenNotOpened_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        await using PostgresCsvReader reader = new(configuration);
-        Memory<char> buffer = new char[1024];
+        await using MemoryStream targetStream =
+            new();
 
-        // Act/Assert
-        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            reader.ReadAsync(buffer, TestContext.Current.CancellationToken).AsTask());
+        // Act
+        InvalidOperationException exception =
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                reader.CopyToStreamAsync(
+                    targetStream,
+                    "SELECT * FROM educational_establishments",
+                    TestContext.Current.CancellationToken));
 
-        Assert.Equal("The PostgreSQL CSV reader has not been opened.", exception.Message);
-    }
-
-    [Fact]
-    public async Task DisposeAsync_MultipleCalls_IsIdempotentAndSafe()
-    {
-        // Arrange
-        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
-        PostgresCsvReader reader = new(configuration);
-
-        // Act/Assert
-        await reader.DisposeAsync();
-        await reader.DisposeAsync();
+        // Assert
+        Assert.Contains(
+            ConnectionStringKey,
+            exception.Message);
     }
 }

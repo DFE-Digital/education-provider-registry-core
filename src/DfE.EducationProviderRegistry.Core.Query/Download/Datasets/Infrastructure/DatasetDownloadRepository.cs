@@ -9,14 +9,17 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastruct
 
 public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
 {
-    private readonly IPostgresCsvExporter _postgresCsvExporter;
+    private readonly IPostgresCsvExporter _exporter;
     private readonly IQueryEngine _queryEngine;
 
     public DatasetDownloadRepository(
-        IPostgresCsvExporter postgresCsvExporter,
+        IPostgresCsvExporter exporter,
         IQueryEngine queryEngine)
     {
-        _postgresCsvExporter = postgresCsvExporter;
+        ArgumentNullException.ThrowIfNull(exporter);
+        ArgumentNullException.ThrowIfNull(queryEngine);
+
+        _exporter = exporter;
         _queryEngine = queryEngine;
     }
 
@@ -33,35 +36,53 @@ public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
             return null;
         }
 
+        DateTime downloadDate = DateTime.Now;
+
         MemoryStream memoryStream = new();
 
-        using (ZipArchive archive = new(memoryStream, ZipArchiveMode.Create, leaveOpen: true))
+        try
         {
-            foreach (string fileKey in fileNameKeys)
+            using (ZipArchive archive = new(memoryStream, ZipArchiveMode.Create, leaveOpen: true))
             {
-                string entryName = $"{fileKey}_{DateTime.Now:yyyyMMdd}.csv";
+                foreach (string fileKey in fileNameKeys)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                ZipArchiveEntry entry = archive.CreateEntry(entryName, CompressionLevel.Optimal);
+                    string entryName =
+                        $"{fileKey}_{downloadDate:yyyyMMdd}.csv";
 
-                await using Stream entryStream = entry.Open();
+                    ZipArchiveEntry entry =
+                        archive.CreateEntry(
+                            entryName,
+                            CompressionLevel.Optimal);
 
-                IQueryable<object> queryable =
-                    _queryEngine.BuildQuery(fileKey);
+                    await using Stream entryStream = entry.Open();
 
-                ArgumentNullException.ThrowIfNull(queryable);
+                    IQueryable<object> queryable =
+                        _queryEngine.BuildQuery(fileKey);
 
-                await _postgresCsvExporter
-                    .ExportToStreamAsync(entryStream, queryable.ToQueryString(), cancellationToken);
+                    ArgumentNullException.ThrowIfNull(queryable);
+
+                    await _exporter.ExportToStreamAsync(
+                        entryStream,
+                        queryable.ToQueryString(),
+                        cancellationToken);
+                }
             }
+
+            memoryStream.Position = 0;
+
+            return new Dataset(
+                Filename: $"{datasetName}_{downloadDate:yyyyMMdd}.zip",
+                DataType: datasetName,
+                DataFormat: "ZIP",
+                FileSize: memoryStream.Length,
+                FileStream: memoryStream);
         }
-
-        memoryStream.Position = 0;
-
-        return new Dataset(
-            Filename: $"{datasetName}_{DateTime.Now:yyyyMMdd}.zip",
-            DataType: datasetName,
-            DataFormat: "ZIP",
-            FileSize: memoryStream.Length,
-            FileStream: memoryStream);
+        catch
+        {
+            await memoryStream.DisposeAsync();
+            throw;
+        }
     }
 }
