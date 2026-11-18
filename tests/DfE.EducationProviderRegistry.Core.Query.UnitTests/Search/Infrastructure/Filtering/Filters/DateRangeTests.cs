@@ -1,11 +1,12 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.Filters;
 
 public sealed class DateRangeTests
 {
     [Fact]
-    public void Constructor_LowerBoundBeforeMinimum_ThrowsArgumentException()
+    public void Constructor_LowerBoundBeforeMinimum_ThrowsInvalidRangeException()
     {
         // Arrange
         BoundedRange<DateOnly> boundedRange = new(
@@ -16,20 +17,56 @@ public sealed class DateRangeTests
         Func<DateRange> construct = () => new(boundedRange);
 
         // Assert
-        Assert.Throws<ArgumentException>(construct);
+        InvalidRangeException exception =
+            Assert.Throws<InvalidRangeException>(construct);
+
+        Assert.Contains(
+            ValidationErrorCode.LowerBeforeMinimum,
+            exception.Errors);
     }
 
     [Fact]
-    public void Constructor_UpperBoundBeforeMinimum_ThrowsArgumentException()
+    public void Constructor_UpperBoundBeforeMinimum_ThrowsInvalidRangeException()
     {
         // Arrange
-        BoundedRange<DateOnly> boundedRange = new(null, new DateOnly(1799, 12, 31));
+        BoundedRange<DateOnly> boundedRange = new(
+            null,
+            new DateOnly(1799, 12, 31));
 
         // Act
         Func<DateRange> construct = () => new(boundedRange);
 
         // Assert
-        Assert.Throws<ArgumentException>(construct);
+        InvalidRangeException exception =
+            Assert.Throws<InvalidRangeException>(construct);
+
+        Assert.Contains(
+            ValidationErrorCode.UpperBeforeMinimum,
+            exception.Errors);
+    }
+
+    [Fact]
+    public void Constructor_LowerAndUpperBoundsBeforeMinimum_ThrowsInvalidRangeExceptionWithBothErrors()
+    {
+        // Arrange
+        BoundedRange<DateOnly> boundedRange = new(
+            new DateOnly(1799, 1, 1),
+            new DateOnly(1799, 12, 31));
+
+        // Act
+        Func<DateRange> construct = () => new(boundedRange);
+
+        // Assert
+        InvalidRangeException exception =
+            Assert.Throws<InvalidRangeException>(construct);
+
+        Assert.Equal(2, exception.Errors.Count);
+        Assert.Contains(
+            ValidationErrorCode.LowerBeforeMinimum,
+            exception.Errors);
+        Assert.Contains(
+            ValidationErrorCode.UpperBeforeMinimum,
+            exception.Errors);
     }
 
     [Fact]
@@ -38,7 +75,9 @@ public sealed class DateRangeTests
         // Arrange
         DateOnly lower = new(1800, 1, 1);
 
-        BoundedRange<DateOnly> boundedRange = new(lower, null);
+        BoundedRange<DateOnly> boundedRange = new(
+            lower,
+            null);
 
         // Act
         DateRange result = new(boundedRange);
@@ -71,7 +110,9 @@ public sealed class DateRangeTests
         DateOnly lower = new(2020, 1, 1);
         DateOnly upper = new(2025, 1, 1);
 
-        BoundedRange<DateOnly> boundedRange = new(lower, upper);
+        BoundedRange<DateOnly> boundedRange = new(
+            lower,
+            upper);
 
         // Act
         DateRange result = new(boundedRange);
@@ -86,7 +127,9 @@ public sealed class DateRangeTests
         // Arrange
         DateOnly lower = new(2020, 1, 1);
 
-        BoundedRange<DateOnly> boundedRange = new(lower, null);
+        BoundedRange<DateOnly> boundedRange = new(
+            lower,
+            null);
 
         // Act
         DateRange result = new(boundedRange);
@@ -101,7 +144,9 @@ public sealed class DateRangeTests
         // Arrange
         DateOnly upper = new(2025, 1, 1);
 
-        BoundedRange<DateOnly> boundedRange = new(null, upper);
+        BoundedRange<DateOnly> boundedRange = new(
+            null,
+            upper);
 
         // Act
         DateRange result = new(boundedRange);

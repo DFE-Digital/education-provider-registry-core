@@ -133,6 +133,30 @@ public sealed class SearchAggregateBuilder
         return this;
     }
 
+    public SearchAggregateBuilder WithOpenedDate(DateOnly? date)
+    {
+        _searchAggregate.OpenedDate = date;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithClosedDate(DateOnly? date)
+    {
+        _searchAggregate.ClosedDate = date;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithMinimumAge(int min)
+    {
+        _searchAggregate.AgeLow = min;
+        return this;
+    }
+
+    public SearchAggregateBuilder WithMaximumAge(int max)
+    {
+        _searchAggregate.AgeHigh = max;
+        return this;
+    }
+
     public SearchAggregateBuilder SetValue(string property, string value)
     {
         if (string.IsNullOrWhiteSpace(property))

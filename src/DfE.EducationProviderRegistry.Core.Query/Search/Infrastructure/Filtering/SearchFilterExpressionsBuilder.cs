@@ -2,6 +2,8 @@
 using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using Microsoft.Extensions.Options;
@@ -39,8 +41,7 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
     public Expression<Func<TProjection, bool>> BuildSearchFilterExpression(
         IEnumerable<SearchFilterRequest> searchFilterRequests)
     {
-        // Resolve filter names + requests
-        ReadOnlyCollection<(string, SearchFilterRequest)> resolved =
+        ReadOnlyCollection<(string FilterName, SearchFilterRequest Request)> resolved =
             ResolveFilterRequests(searchFilterRequests);
 
         if (resolved.Count == 0)
@@ -48,21 +49,41 @@ public sealed class SearchFilterExpressionsBuilder<TProjection>
             return projection => true;
         }
 
-        // Delegate composition to the factory
-        ISpecification<TProjection> combined =
-            _filterSpecificationFactory.Create(
-                resolved[0].Item1,
-                resolved[0].Item2);
+        List<ISpecification<TProjection>> specifications = [];
+        List<FilterValidationError> validationErrors = [];
 
-        for (int i = 1; i < resolved.Count; i++)
+        foreach ((string filterName, SearchFilterRequest request) in resolved)
         {
-            ISpecification<TProjection> next =
-                _filterSpecificationFactory.Create(
-                    resolved[i].Item1,
-                    resolved[i].Item2);
+            try
+            {
+                ISpecification<TProjection> specification =
+                    _filterSpecificationFactory.Create(filterName, request);
 
+                specifications.Add(specification);
+            }
+            catch (InvalidRangeException exception)
+            {
+                foreach (ValidationErrorCode error in exception.Errors)
+                {
+                    FilterValidationError filterError =
+                        new(filterName: request.FilterKey, errorMessage: error);
+
+                    validationErrors.Add(filterError);
+                }
+            }
+        }
+
+        if (validationErrors.Count > 0)
+        {
+            throw new FilterValidationException(validationErrors);
+        }
+
+        ISpecification<TProjection> combined = specifications[0];
+
+        for (int i = 1; i < specifications.Count; i++)
+        {
             // TODO assumes these SearchFilterRequests are always combinatorial AND
-            combined = combined.And(next);
+            combined = combined.And(specifications[i]);
         }
 
         return combined.ToExpression();

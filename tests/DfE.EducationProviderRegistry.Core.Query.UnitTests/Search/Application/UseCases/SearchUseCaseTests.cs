@@ -5,6 +5,7 @@ using DfE.EducationProviderRegistry.Core.Query.Search.Application.Models.Search;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Application.UseCases.TestDoubles;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -124,7 +125,7 @@ public sealed class SearchUseCaseTests
                 request: null!,
                 cancellationToken: TestContext.Current.CancellationToken);
 
-        // verify
+        // assert
         adapter.Verify(adapter =>
             adapter.SearchAsync(
                 It.IsAny<SearchServiceAdapterRequest>(),
@@ -134,8 +135,8 @@ public sealed class SearchUseCaseTests
         _logger.VerifyErrorContains("unexpected error");
         _logger.VerifyErrorContains("An unexpected error occurred while processing the search request.");
 
-        // assert
-        AssertFailureResponse(response, "An unexpected error occurred while processing the search request.");
+
+        AssertFailureResponse(response, "An unexpected error occurred while processing the search request.", SearchResponseStatus.NoResultsFound);
     }
 
     [Fact]
@@ -158,12 +159,11 @@ public sealed class SearchUseCaseTests
         UseCaseResponse<SearchResponse> response =
             await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
-        // verify
+        // assert
         _logger.VerifyErrorContains("unexpected error");
         _logger.VerifyErrorContains("An unexpected error occurred while processing the search request.");
 
-        // assert
-        AssertFailureResponse(response, "An unexpected error occurred while processing the search request.");
+        AssertFailureResponse(response, "An unexpected error occurred while processing the search request.", SearchResponseStatus.NoResultsFound);
     }
 
     [Fact]
@@ -189,10 +189,8 @@ public sealed class SearchUseCaseTests
         UseCaseResponse<SearchResponse> response =
             await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
-        // verify
-        _logger.VerifyNoErrors();
-
         // assert
+        _logger.VerifyNoErrors();
         Assert.NotNull(response.Model.SearchProviderResults);
         Assert.Equal(0, response.Model.TotalNumberOfResults);
         Assert.Equal(SearchResponseStatus.NoResultsFound, response.Model.Status);
@@ -219,12 +217,11 @@ public sealed class SearchUseCaseTests
         UseCaseResponse<SearchResponse> response =
             await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
-        // verify
+        // assert
         _logger.VerifyErrorContains("SearchUseCase domain-specific error");
         _logger.VerifyErrorContains("A domain-specific error occurred during search.");
 
-        // assert
-        AssertFailureResponse(response, expectedErrorMessage: "A domain-specific error occurred during search.");
+        AssertFailureResponse(response, expectedErrorMessage: "A domain-specific error occurred during search.", SearchResponseStatus.NoResultsFound);
     }
 
     [Fact]
@@ -247,24 +244,108 @@ public sealed class SearchUseCaseTests
         UseCaseResponse<SearchResponse> response =
             await sut.HandleRequestAsync(request, TestContext.Current.CancellationToken);
 
-        // verify
+        // assert
         _logger.VerifyWarningContains("SearchUseCase execution cancelled");
         _logger.VerifyWarningContains("The search request was cancelled by the caller.");
 
-        // assert
-        AssertFailureResponse(response, "The search request was cancelled by the caller.");
+        AssertFailureResponse(response, "The search request was cancelled by the caller.", SearchResponseStatus.NoResultsFound);
+    }
+
+    [Fact]
+    public async Task HandleRequest_AdapterThrowsFilterValidationException_ReturnsValidationErrors()
+    {
+        // Arrange
+        FilterValidationError validationError = new("OpenedDate", ValidationErrorCode.LowerBeforeMinimum);
+
+        FilterValidationException exception = new(
+        [
+            validationError
+        ]);
+
+        SearchServiceAdapterTestDouble adapterDouble = new();
+
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
+            adapterDouble.Throwing(exception);
+
+        SearchRequest request =
+            new(
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
+                SortOrderTestDouble.Stub());
+
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
+
+        // Act
+        UseCaseResponse<SearchResponse> response =
+            await sut.HandleRequestAsync(
+                request,
+                TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.False(response.SuccessfulRequest);
+
+        Assert.Null(response.Model.FacetedResults);
+        Assert.Null(response.Model.SearchProviderResults);
+        Assert.Equal(0, response.Model.TotalNumberOfResults);
+        Assert.Equal(SearchResponseStatus.InvalidRequest, response.Model.Status);
+
+        FilterValidationError actual = Assert.Single(response.Model.ValidationErrors);
+
+        Assert.Equal(validationError, actual);
+
+        AssertFailureResponse(response, "One or more search filters are invalid.", SearchResponseStatus.InvalidRequest);
+
+        _logger.VerifyNoErrors();
+    }
+
+    [Fact]
+    public async Task HandleRequest_AdapterThrowsFilterValidationExceptionWithMultipleErrors_ReturnsAllValidationErrors()
+    {
+        // Arrange
+        FilterValidationError openedDateError = new("OpenedDate", ValidationErrorCode.LowerBeforeMinimum);
+
+        FilterValidationError closedDateError = new("ClosedDate", ValidationErrorCode.UpperBeforeMinimum);
+
+        FilterValidationException exception = new([openedDateError, closedDateError]);
+
+        SearchServiceAdapterTestDouble adapterDouble = new();
+
+        Mock<ISearchServiceAdapter<SearchAggregateResults, SearchFacets>> adapter =
+            adapterDouble.Throwing(exception);
+
+        SearchRequest request =
+            new(
+                [new SearchTermRequest(Key: "searchKey", Value: "searchkeyword")],
+                SortOrderTestDouble.Stub());
+
+        SearchUseCase sut =
+            CreateSut(_logger, _criteria, adapter.Object);
+
+        // Act
+        UseCaseResponse<SearchResponse> response =
+            await sut.HandleRequestAsync(
+                request,
+                TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.False(response.SuccessfulRequest);
+        Assert.Equal(SearchResponseStatus.InvalidRequest, response.Model.Status);
+        Assert.Equal(exception.ValidationErrors, response.Model.ValidationErrors);
+
+        _logger.VerifyNoErrors();
     }
 
     private static void AssertFailureResponse(
         UseCaseResponse<SearchResponse> response,
-        string expectedErrorMessage)
+        string expectedErrorMessage,
+        SearchResponseStatus expectedStatus)
     {
         Assert.False(response.SuccessfulRequest);
 
         Assert.Null(response.Model.FacetedResults);
         Assert.Null(response.Model.SearchProviderResults);
         Assert.Equal(0, response.Model.TotalNumberOfResults);
-        Assert.Equal(SearchResponseStatus.NoResultsFound, response.Model.Status);
+        Assert.Equal(expectedStatus, response.Model.Status);
 
         Assert.Equal(expectedErrorMessage, response.ErrorMessage);
     }

@@ -152,6 +152,7 @@ public static class CompositionRoot
                 ["AdmissionFilter"] = aggregate => aggregate.Admissions,
                 ["BoardingFilter"] = aggregate => aggregate.Boarding,
                 ["DioceseFilter"] = aggregate => aggregate.Diocese,
+                ["LocalAuthorityFilter"] = aggregate => aggregate.LocalAuthorityName,
                 ["EducationPhaseFilter"] = aggregate => aggregate.EducationPhase,
                 ["EstablishmentStatusFilter"] = aggregate => aggregate.StatusName,
                 ["FurtherEducationTypeFilter"] = aggregate => aggregate.FurtherEducationType,
@@ -211,6 +212,7 @@ public static class CompositionRoot
         {
             ["admissionpolicy"] = Scalar(projection => projection.Admissions),
             ["boarding"] = Scalar(projection => projection.Boarding),
+            ["localauthority"] = Scalar(projection => projection.LocalAuthorityName),
             ["diocese"] = Scalar(projection => projection.Diocese),
             ["educationphase"] = Scalar(projection => projection.EducationPhase),
             ["furthereducationtype"] = Scalar(projection => projection.FurtherEducationType),
