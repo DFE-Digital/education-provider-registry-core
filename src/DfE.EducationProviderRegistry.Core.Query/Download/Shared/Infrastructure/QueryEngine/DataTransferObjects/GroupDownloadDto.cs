@@ -15,6 +15,9 @@ public sealed record GroupDownloadDto
     public string? CompaniesHouseNumber { get; init; }
     public string? UKProviderReferenceNumber { get; init; }
     public string? HeadOfGroupName { get; init; }
+    public string? HeadOfGroupTitle { get; init; }
+    public string? HeadOfGroupFirstName { get; init; }
+    public string? HeadOfGroupLastName { get; init; }
     public string? GroupAddressLine1 { get; init; }
     public string? GroupAddressLine2 { get; init; }
     public string? GroupAddressLine3 { get; init; }

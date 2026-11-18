@@ -22,33 +22,33 @@ public sealed class StubDbContext : IDisposable
 
     private void SeedDatabase()
     {
-        DbContext.EstablishmentAggregate.AddRange(
-            new EstablishmentAggregate
+        DbContext.EstablishmentDownloadAggregate.AddRange(
+            new EstablishmentDownloadAggregate
             {
-                Urn = "100001",
+                Urn = 100001,
                 EstablishmentNumber = "001",
-                Name = "Open School",
-                StatusCode = 1,
-                EstablishmentTypeName = "Academy",
-                EducationPhaseName = "Secondary"
+                ProviderName = "Open School",
+                ProviderStatusId = 1,
+                ProviderType = "Academy",
+                EducationPhase = "Secondary"
             },
-            new EstablishmentAggregate
+            new EstablishmentDownloadAggregate
             {
-                Urn = "100002",
+                Urn = 100002,
                 EstablishmentNumber = "002",
-                Name = "Closed School",
-                StatusCode = 2,
-                EstablishmentTypeName = "School",
-                EducationPhaseName = "Primary"
+                ProviderName = "Closed School",
+                ProviderStatusId = 2,
+                ProviderType = "School",
+                EducationPhase = "Primary"
             });
 
-        DbContext.GroupAggregate.Add(
-            new GroupAggregate
+        DbContext.GroupDownloadAggregate.Add(
+            new GroupDownloadAggregate
             {
                 GroupUid = 500001,
                 GroupId = "G01",
-                Name = "Trust Alpha",
-                GroupTypeName = "Multi-Academy Trust"
+                GroupName = "Trust Alpha",
+                GroupType = "Multi-Academy Trust"
             });
 
         DbContext.SaveChanges();

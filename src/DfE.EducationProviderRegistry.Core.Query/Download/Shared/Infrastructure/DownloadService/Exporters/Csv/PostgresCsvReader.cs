@@ -5,11 +5,8 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructur
 
 public sealed class PostgresCsvReader : IPostgresCsvReader
 {
-    private const string ConnectionStringKey =
-        "eprweb_eprdat_dotnet_db_connection";
-
-    private const string CopyQueryTemplate =
-        "COPY ({0}) TO STDOUT WITH CSV HEADER";
+    private const string ConnectionStringKey = "eprweb_eprdat_dotnet_db_connection";
+    private const string CopyQueryTemplate = "COPY ({0}) TO STDOUT WITH CSV HEADER";
 
     private const int BufferSize = 81920;
 
