@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
+using DfE.EducationProviderRegistry.Core.Query.Search.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Exceptions;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Factories;
 using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Options;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Search.Infrastructure.Filtering.TestDoubles;
@@ -103,6 +105,274 @@ public sealed class SearchFilterExpressionsBuilderUnitTests
                     It.IsAny<string>(),
                     It.IsAny<SearchFilterRequest>()),
             Times.Never());
+    }
+
+    [Fact]
+    public void BuildSearchFilterExpression_InvalidRange_ThrowsFilterValidationException()
+    {
+        // Arrange
+        FilterKeyToFilterExpressionMapOptions options =
+            Options(new Dictionary<string, FilterExpressionOptions>
+            {
+            {
+                "opened_date",
+                new FilterExpressionOptions
+                {
+                    FilterExpressionKey = "DateRangeFilter"
+                }
+            }
+            });
+
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
+            new();
+
+        exprFactoryMock
+            .Setup((x) =>
+                x.Create("DateRangeFilter", It.IsAny<SearchFilterRequest>()))
+            .Throws(
+                new InvalidRangeException([ValidationErrorCode.LowerBeforeMinimum]));
+
+        SearchFilterExpressionsBuilder<DummyProjection> builder =
+            Builder(options, exprFactoryMock.Object);
+
+        SearchFilterRequest[] requests =
+            Requests(
+                new SearchFilterRequest(
+                    "opened_date",
+                    [new DateOnly(1799, 12, 31)]));
+
+        // Act
+        Func<Expression<Func<DummyProjection, bool>>> act =
+            () => builder.BuildSearchFilterExpression(requests);
+
+        // Assert
+        FilterValidationException exception =
+            Assert.Throws<FilterValidationException>(act);
+
+        FilterValidationError error =
+            Assert.Single(exception.ValidationErrors);
+
+        Assert.Equal("opened_date", error.FilterName);
+        Assert.Equal(ValidationErrorCode.LowerBeforeMinimum, error.Error);
+    }
+
+    [Fact]
+    public void BuildSearchFilterExpression_InvalidRangeWithMultipleErrors_PreservesAllErrors()
+    {
+        // Arrange
+        FilterKeyToFilterExpressionMapOptions options =
+            Options(new Dictionary<string, FilterExpressionOptions>
+            {
+            {
+                "opened_date",
+                new FilterExpressionOptions
+                {
+                    FilterExpressionKey = "DateRangeFilter"
+                }
+            }
+            });
+
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
+            new();
+
+        exprFactoryMock
+            .Setup((x) =>
+                x.Create("DateRangeFilter", It.IsAny<SearchFilterRequest>()))
+            .Throws(
+                new InvalidRangeException(
+                [
+                    ValidationErrorCode.LowerBeforeMinimum,
+                    ValidationErrorCode.UpperBeforeMinimum
+                ]));
+
+        SearchFilterExpressionsBuilder<DummyProjection> builder =
+            Builder(options, exprFactoryMock.Object);
+
+        SearchFilterRequest[] requests =
+            Requests(
+                new SearchFilterRequest(
+                    "opened_date",
+                    [new DateOnly(1799, 1, 1), new DateOnly(1799, 12, 31)]));
+
+        // Act
+        Func<Expression<Func<DummyProjection, bool>>> act =
+            () => builder.BuildSearchFilterExpression(requests);
+
+        // Assert
+        FilterValidationException exception =
+            Assert.Throws<FilterValidationException>(act);
+
+        Assert.Equal(2, exception.ValidationErrors.Count);
+
+        Assert.Contains(
+            exception.ValidationErrors,
+            error =>
+                error.FilterName == "opened_date" &&
+                error.Error == ValidationErrorCode.LowerBeforeMinimum);
+
+        Assert.Contains(
+            exception.ValidationErrors,
+            error =>
+                error.FilterName == "opened_date" &&
+                error.Error == ValidationErrorCode.UpperBeforeMinimum);
+    }
+
+    [Fact]
+    public void BuildSearchFilterExpression_MultipleInvalidFilters_AggregatesValidationErrors()
+    {
+        // Arrange
+        FilterKeyToFilterExpressionMapOptions options =
+            Options(new()
+            {
+            {
+                "opened_date",
+                new()
+                {
+                    FilterExpressionKey = "OpenedDateRangeFilter"
+                }
+            },
+            {
+                "closed_date",
+                new()
+                {
+                    FilterExpressionKey = "ClosedDateRangeFilter"
+                }
+            }
+            });
+
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock = new();
+
+        exprFactoryMock
+            .Setup((x) =>
+                x.Create("OpenedDateRangeFilter", It.IsAny<SearchFilterRequest>()))
+            .Throws(
+                new InvalidRangeException([ValidationErrorCode.LowerBeforeMinimum]));
+
+        exprFactoryMock
+            .Setup((x) =>
+                x.Create("ClosedDateRangeFilter", It.IsAny<SearchFilterRequest>()))
+            .Throws(
+                new InvalidRangeException(
+                [
+                    ValidationErrorCode.UpperBeforeMinimum
+                ]));
+
+        SearchFilterExpressionsBuilder<DummyProjection> builder = Builder(options, exprFactoryMock.Object);
+
+        SearchFilterRequest[] requests =
+            Requests(
+                new(
+                    "opened_date",
+                    [new DateOnly(1799, 12, 31)]),
+                new(
+                    "closed_date",
+                    [null!, new DateOnly(1799, 12, 31)]));
+
+        // Act
+        Func<Expression<Func<DummyProjection, bool>>> act =
+            () => builder.BuildSearchFilterExpression(requests);
+
+        // Assert
+        FilterValidationException exception =
+            Assert.Throws<FilterValidationException>(act);
+
+        Assert.Equal(2, exception.ValidationErrors.Count);
+
+        Assert.Contains(
+            exception.ValidationErrors,
+            error =>
+                error.FilterName == "opened_date" &&
+                error.Error == ValidationErrorCode.LowerBeforeMinimum);
+
+        Assert.Contains(
+            exception.ValidationErrors,
+            error =>
+                error.FilterName == "closed_date" &&
+                error.Error == ValidationErrorCode.UpperBeforeMinimum);
+
+        exprFactoryMock.Verify(
+            x => x.Create(
+                "OpenedDateRangeFilter",
+                It.IsAny<SearchFilterRequest>()),
+            Times.Once);
+
+        exprFactoryMock.Verify(
+            x => x.Create(
+                "ClosedDateRangeFilter",
+                It.IsAny<SearchFilterRequest>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public void BuildSearchFilterExpression_InvalidAndValidFilters_AttemptsAllFiltersAndThrowsValidationException()
+    {
+        // Arrange
+        FilterKeyToFilterExpressionMapOptions options =
+            Options(new()
+            {
+                {
+                    "opened_date",
+                    new()
+                    {
+                        FilterExpressionKey = "DateRangeFilter"
+                    }
+                },
+                {
+                    "status",
+                    new()
+                    {
+                        FilterExpressionKey = "Equals"
+                    }
+                }
+            });
+
+        Expression<Func<DummyProjection, bool>> expectedExpression =
+            projection => projection.Value == "Open";
+
+        ISpecification<DummyProjection> specification =
+            SpecificationTestDoubles.Create(expectedExpression);
+
+        Mock<ISearchFilterSpecificationFactory<DummyProjection>> exprFactoryMock =
+            new();
+
+        exprFactoryMock
+            .Setup((x) =>
+                x.Create("DateRangeFilter", It.IsAny<SearchFilterRequest>()))
+            .Throws(
+                new InvalidRangeException([ValidationErrorCode.LowerBeforeMinimum]));
+
+        exprFactoryMock
+            .Setup((x)
+                => x.Create("Equals", It.IsAny<SearchFilterRequest>()))
+            .Returns(specification);
+
+        SearchFilterExpressionsBuilder<DummyProjection> builder =
+            Builder(options, exprFactoryMock.Object);
+
+        SearchFilterRequest[] requests =
+            Requests(
+                new("opened_date", [new DateOnly(1799, 12, 31)]),
+                new("status", ["Open"]));
+
+        // Act
+        Func<Expression<Func<DummyProjection, bool>>> act =
+            () => builder.BuildSearchFilterExpression(requests);
+
+        // Assert
+        FilterValidationException exception =
+            Assert.Throws<FilterValidationException>(act);
+
+        Assert.Single(exception.ValidationErrors);
+
+        exprFactoryMock.Verify(
+            (x) =>
+                x.Create("DateRangeFilter", It.IsAny<SearchFilterRequest>()),
+            Times.Once);
+
+        exprFactoryMock.Verify(
+            (x) =>
+                x.Create("Equals", It.IsAny<SearchFilterRequest>()),
+            Times.Once);
     }
 
     [Fact]

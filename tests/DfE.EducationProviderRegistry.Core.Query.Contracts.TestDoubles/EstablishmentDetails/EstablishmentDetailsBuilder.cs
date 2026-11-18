@@ -14,6 +14,8 @@ public sealed class EstablishmentDetailsBuilder
     private string? _telephoneNumber;
 
     private EstablishmentStatus? _status;
+    private DateOnly? _openedDate;
+    private DateOnly? _closedDate;
     private DateOnly? _statusEffectiveDate;
     private string? _siteName;
     private string? _addressLine1;
@@ -33,9 +35,15 @@ public sealed class EstablishmentDetailsBuilder
     private string? _ageRange;
     private string? _gender;
     private int? _pupilCount;
+    private int? _pupilBoyCount;
+    private int? _pupilGirlCount;
     private string? _religious;
+    private string? _religiousEthos;
+    private string? _diocese;
     private string? _phase;
     private string? _type;
+    private int? _freeSchoolMealsNumber;
+    private int? _freeSchoolMealsPercentage;
 
     public static EstablishmentDetailsBuilder Create() => new();
 
@@ -79,6 +87,18 @@ public sealed class EstablishmentDetailsBuilder
     public EstablishmentDetailsBuilder WithStatus(EstablishmentStatus? status)
     {
         _status = status;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithOpenedDate(DateOnly? date)
+    {
+        _openedDate = date;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithClosedDate(DateOnly? date)
+    {
+        _closedDate = date;
         return this;
     }
 
@@ -184,9 +204,33 @@ public sealed class EstablishmentDetailsBuilder
         return this;
     }
 
+    public EstablishmentDetailsBuilder WithPupilBoyCount(int count)
+    {
+        _pupilBoyCount = count;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithPupilGirlCount(int count)
+    {
+        _pupilGirlCount = count;
+        return this;
+    }
+
     public EstablishmentDetailsBuilder WithReligiousCharacter(string religious)
     {
         _religious = religious;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithReligiousEthos(string religiousEthos)
+    {
+        _religiousEthos = religiousEthos;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithDiocese(string diocese)
+    {
+        _diocese = diocese;
         return this;
     }
 
@@ -199,6 +243,18 @@ public sealed class EstablishmentDetailsBuilder
     public EstablishmentDetailsBuilder WithPhase(string phase)
     {
         _phase = phase;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithFreeSchoolMealsNumber(int count)
+    {
+        _freeSchoolMealsNumber = count;
+        return this;
+    }
+
+    public EstablishmentDetailsBuilder WithFreeSchoolMealsPercentage(int percentage)
+    {
+        _freeSchoolMealsPercentage = percentage;
         return this;
     }
 
@@ -224,6 +280,8 @@ public sealed class EstablishmentDetailsBuilder
             Ofsted = new(_ofstedDate, _ofstedUrl),
             Address = new(_siteName, _addressLine1, _addressLine2, _town, _county, _postcode),
             Status = _status is null ? null : new(_status.Value, _statusEffectiveDate),
+            OpenedDate = _openedDate,
+            ClosedDate = _closedDate,
             Group = _groupName is null || _groupUid is null ?
                 null :
                 new(name: _groupName, uid: _groupUid),
@@ -231,10 +289,17 @@ public sealed class EstablishmentDetailsBuilder
             LocalAuthority = _localAuthorityName is null ? null : new(_localAuthorityName, _localAuthorityCode),
             AgeRange = _ageRange,
             Gender = _gender,
-            Pupils = _pupilCount is null ? null : new(_pupilCount.Value),
+            Pupils = _pupilCount is null || _pupilBoyCount is null || _pupilGirlCount is null ?
+                null :
+                new(_pupilCount.Value, _pupilBoyCount.Value, _pupilGirlCount.Value),
+            FreeSchoolMeals = _freeSchoolMealsNumber is null || _freeSchoolMealsPercentage is null ?
+                null :
+                new(_freeSchoolMealsNumber.Value, _freeSchoolMealsPercentage.Value),
             ReligiousCharacter = _religious,
+            ReligiousEthos = _religiousEthos,
+            Diocese = _diocese,
             Phase = new(_phase),
-            Type = _type is null ? null : new(_type)
+            Type = _type is null ? null : new(_type),
         };
     }
 }

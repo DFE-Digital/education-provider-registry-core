@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using DfE.Core.Libraries.DesignPatterns.Specification;
 using DfE.Core.Libraries.DesignPatterns.Specification.Extensions;
+using DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters.Extensions;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Search.Infrastructure.Filtering.Filters;
@@ -17,8 +18,7 @@ internal sealed class DateRangeFilter : ISearchFilter<SearchAggregate>
 
     public ISpecification<SearchAggregate> CreateSpecification(SearchFilterRequest request)
     {
-        DateRange filter =
-            request.ParseDateRange();
+        DateRange filter = request.ParseDateRange();
 
         BoundedRange<DateOnly> range = filter.Range;
 

@@ -19,11 +19,15 @@ public sealed class SearchResponse
     public SearchResponse(
         SearchAggregateResults? searchProviderResults,
         SearchFacets? facetedResults,
-        int totalNumberOfResults)
+        int totalNumberOfResults,
+        IReadOnlyList<string>? availableFilters,
+        IReadOnlyCollection<FilterValidationError>? validationErrors = null)
     {
         SearchProviderResults = searchProviderResults;
         FacetedResults = facetedResults;
         TotalNumberOfResults = totalNumberOfResults;
+        AvailableFilters = availableFilters ?? [];
+        ValidationErrors = validationErrors ?? [];
     }
 
     /// <summary>
@@ -37,12 +41,26 @@ public sealed class SearchResponse
     public SearchFacets? FacetedResults { get; }
 
     /// <summary>
+    /// Gets the available filters.
+    /// </summary>
+    public IReadOnlyList<string> AvailableFilters { get; }
+
+    /// <summary>
+    /// Gets the filter validation errors.
+    /// </summary>
+    public IReadOnlyCollection<FilterValidationError> ValidationErrors { get; }
+
+    /// <summary>
+    /// Gets the total number of results.
+    /// </summary>
+    public int TotalNumberOfResults { get; }
+
+    /// <summary>
     /// Gets the overall status of the search execution.
     /// </summary>
     public SearchResponseStatus Status =>
-        TotalNumberOfResults > 0
-            ? SearchResponseStatus.Success
-            : SearchResponseStatus.NoResultsFound;
-
-    public int TotalNumberOfResults { get; }
+        ValidationErrors.Count != 0 ? SearchResponseStatus.InvalidRequest :
+            TotalNumberOfResults > 0 ?
+                SearchResponseStatus.Success :
+                    SearchResponseStatus.NoResultsFound;
 }

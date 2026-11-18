@@ -8,6 +8,9 @@ public sealed record EstablishmentDetailsModel
     public required EstablishmentIdentifiersModel Identifiers { get; init; }
 
     public EstablishmentStatusModel? Status { get; init; }
+    public DateOnly? OpenedDate { get; init; }
+    public DateOnly? ClosedDate { get; init; }
+
     public EstablishmentTypeModel? Type { get; init; }
     public PhaseOfEducationModel? Phase { get; init; }
 
@@ -26,13 +29,18 @@ public sealed record EstablishmentDetailsModel
     public string? Gender { get; init; }
 
     public string? ReligiousCharacter { get; init; }
+    public string? ReligiousEthos { get; init; }
+    public string? Diocese { get; init; }
 
     public EstablishmentInspection? Ofsted { get; init; }
 
     public string? Headteacher { get; set; }
 
     public string? SenProvision { get; set; }
+    public List<string>? SenProvisions { get; init; }
 
     public EstablishmentContactDetails? ContactDetails { get; set; }
     public EstablishmentPupils? Pupils { get; set; }
+
+    public EstablishmentFreeSchoolMeals? FreeSchoolMeals { get; set; }
 }

@@ -34,6 +34,7 @@ public sealed class FacetAggregator : IFacetAggregator
                 {
                     Admissions = searchAggregate.Admissions,
                     Boarding = searchAggregate.Boarding,
+                    LocalAuthorityName = searchAggregate.LocalAuthorityName,
                     Diocese = searchAggregate.Diocese,
                     EducationPhase = searchAggregate.EducationPhase,
                     FurtherEducationType = searchAggregate.FurtherEducationType,
@@ -81,6 +82,8 @@ public sealed class FacetProjection
     public string? Admissions { get; init; }
 
     public string? Boarding { get; init; }
+
+    public string? LocalAuthorityName { get; init; }
 
     public string? Diocese { get; init; }
 
