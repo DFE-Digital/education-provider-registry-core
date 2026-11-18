@@ -9,7 +9,7 @@ public sealed record GroupDownloadDto
     public string? GroupTypeID { get; init; }
     public string? GroupStatusID { get; init; }
     public string? GroupStatus { get; init; }
-    public string? OpenDate{ get; init; }
+    public string? OpenDate { get; init; }
     public string? ClosedDate { get; init; }
     public string? IncorporatedOn { get; init; }
     public string? CompaniesHouseNumber { get; init; }

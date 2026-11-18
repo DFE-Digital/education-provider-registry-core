@@ -103,7 +103,7 @@ public sealed class DownloadCompositionRootTests
         Assert.IsType<DatasetDownloadRepository>(resolved);
     }
 
-   
+
     [Fact]
     public void AddDownloadDatasetDependencies_RegistersDependenciesWithScopedLifetime()
     {
