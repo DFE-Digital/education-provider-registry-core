@@ -9,6 +9,9 @@ internal sealed class SearchRequestTermToSearchRequestMapper :
 {
     public IReadOnlyCollection<SearchTerm> Map(IReadOnlyCollection<SearchTermRequest> input)
     {
+        if(input is null || input.Count == 0)
+            return [];
+
         return input
             .Where(searchTerm =>
                 searchTerm is not null &&
