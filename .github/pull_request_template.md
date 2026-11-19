@@ -11,7 +11,3 @@
 - [ ] pipeline – CI/CD changes
 - [ ] tests – Test updates
 - [ ] other – Explain below
-
-## Changes
-- List the key changes introduced.
-- Keep each item short and clear.
