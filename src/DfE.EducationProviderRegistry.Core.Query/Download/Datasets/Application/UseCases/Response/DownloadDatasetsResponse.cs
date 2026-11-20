@@ -4,10 +4,10 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application
 
 public sealed class DownloadDatasetsResponse
 {
-    public DownloadDatasetsResponse(Dataset? downloadedDataset)
+    public DownloadDatasetsResponse(DatasetFile? downloadedDataset)
     {
         DownloadedDataset = downloadedDataset;
     }
 
-    public Dataset? DownloadedDataset { get; }
+    public DatasetFile? DownloadedDataset { get; }
 }

@@ -4,42 +4,42 @@ using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Use
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastructure;
-using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Download;
 
 /// <summary>
-/// Registers all application‑level and infrastructure‑level dependencies
-/// required for all download focussed behaviour within the service.
+/// Registers application-level and infrastructure-level dependencies
+/// required for download-focused behaviour.
 /// </summary>
 public static class CompositionRoot
 {
-    /// <summary>
-    /// Registers application‑layer and infrastructure-layer dataset download
-    /// dependencies, including the <see cref="DownloadDatasetsUseCase"/>.
-    /// </summary>
     public static IServiceCollection AddDownloadDatasetDependencies(
-       this IServiceCollection services)
+        this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services
-            .TryAddScoped<IUseCase<
+        services.TryAddScoped<
+            IUseCase<
                 DownloadDatasetsRequest,
                 UseCaseResponse<DownloadDatasetsResponse>>,
-                DownloadDatasetsUseCase>();
+            DownloadDatasetsUseCase>();
 
-        services
-            .TryAddScoped<
-                IDatasetDownloadRepository,
-                FakeDatasetDownloadRepository>();
+        services.TryAddScoped<
+            IDatasetDownloadRepository,
+            DatasetDownloadRepository>();
 
-        services
-            .TryAddScoped<
-                IFileCompressor,
-                FileCompressor>();
+        services.TryAddScoped<
+            IQueryEngine,
+            StubQueryEngine>();
+
+        services.TryAddTransient<
+            IDownloadExporter,
+            PostgresCsvDownloadExporter>();
 
         return services;
     }

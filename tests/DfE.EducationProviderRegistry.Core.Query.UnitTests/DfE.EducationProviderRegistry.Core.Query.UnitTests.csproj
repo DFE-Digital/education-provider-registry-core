@@ -32,4 +32,8 @@
     <ProjectReference Include="..\DfE.EducationProviderRegistry.Core.Query.Test.Database\DfE.EducationProviderRegistry.Core.Query.Test.Database.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Download\Datasets\Infrastructure\" />
+  </ItemGroup>
+
 </Project>
