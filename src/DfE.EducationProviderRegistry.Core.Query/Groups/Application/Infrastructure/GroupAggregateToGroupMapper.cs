@@ -41,7 +41,9 @@ internal sealed class GroupAggregateToGroupMapper : IMapper<GroupAggregate, Grou
                     null :
                         new GroupStatus(
                             label: input.GroupStatusLabel ?? string.Empty,
-                            effectiveDate: input.GroupStatusEffectiveDate.Value)
+                            effectiveDate: input.GroupStatusEffectiveDate.Value,
+                            openedDate: input.OpenedDate,
+                            closedDate: input.ClosedDate)
         );
 
         return new Group(identity, externalIds, composition, characteristics);
