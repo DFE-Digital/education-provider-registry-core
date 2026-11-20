@@ -1,8 +1,8 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 
-public interface IPostgresCsvReader
+public interface IDownloadExporter
 {
-    Task CopyToStreamAsync(
+    Task ExportToStreamAsync(
         Stream targetStream,
         IQueryable<object> query,
         CancellationToken cancellationToken);

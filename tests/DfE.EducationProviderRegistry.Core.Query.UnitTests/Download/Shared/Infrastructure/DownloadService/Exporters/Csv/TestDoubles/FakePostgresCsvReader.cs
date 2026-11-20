@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.Do
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Shared.Infrastructure.DownloadService.Exporters.Csv.TestDoubles;
 
-public sealed class FakePostgresCsvReader : IPostgresCsvReader
+public sealed class FakePostgresCsvReader : IDownloadExporter
 {
     private readonly string _csv;
     private readonly int _maximumCharactersPerWrite;
@@ -31,7 +31,7 @@ public sealed class FakePostgresCsvReader : IPostgresCsvReader
         private set;
     }
 
-    public async Task CopyToStreamAsync(
+    public async Task ExportToStreamAsync(
         Stream targetStream,
         IQueryable<object> query,
         CancellationToken cancellationToken)

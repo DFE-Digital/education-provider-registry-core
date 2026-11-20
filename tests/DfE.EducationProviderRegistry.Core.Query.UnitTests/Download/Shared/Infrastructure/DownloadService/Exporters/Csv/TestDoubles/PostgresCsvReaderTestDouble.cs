@@ -5,19 +5,19 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Shared.Inf
 
 public static class PostgresCsvReaderTestDouble
 {
-    public static Mock<IPostgresCsvReader> Mock() => new(MockBehavior.Strict);
+    public static Mock<IDownloadExporter> Mock() => new(MockBehavior.Strict);
 
     public static FakePostgresCsvReader CreateFake(string csv) => new(csv);
 
-    public static Mock<IPostgresCsvReader> MockFor(Exception exception)
+    public static Mock<IDownloadExporter> MockFor(Exception exception)
     {
         ArgumentNullException.ThrowIfNull(exception);
 
-        Mock<IPostgresCsvReader> mock =
+        Mock<IDownloadExporter> mock =
             new(MockBehavior.Strict);
 
         mock
-            .Setup(reader => reader.CopyToStreamAsync(
+            .Setup(reader => reader.ExportToStreamAsync(
                 It.IsAny<Stream>(),
                 It.IsAny<IQueryable<object>>(),
                 It.IsAny<CancellationToken>()))

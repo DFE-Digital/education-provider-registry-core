@@ -37,8 +37,8 @@ public static class CompositionRoot
             StubQueryEngine>();
 
         services.TryAddTransient<
-            IPostgresCsvReader,
-            PostgresCsvReader>();
+            IDownloadExporter,
+            PostgresCsvDownloadExporter>();
 
         return services;
     }

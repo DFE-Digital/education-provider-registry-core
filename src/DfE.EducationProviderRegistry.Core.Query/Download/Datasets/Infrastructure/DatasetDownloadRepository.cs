@@ -9,11 +9,11 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastruct
 
 public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
 {
-    private readonly IPostgresCsvReader _postgresCsvReader;
+    private readonly IDownloadExporter _postgresCsvReader;
     private readonly IQueryEngine _queryEngine;
 
     public DatasetDownloadRepository(
-        IPostgresCsvReader postgresCsvReader,
+        IDownloadExporter postgresCsvReader,
         IQueryEngine queryEngine)
     {
         ArgumentNullException.ThrowIfNull(postgresCsvReader);
@@ -63,7 +63,7 @@ public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
 
                     ArgumentNullException.ThrowIfNull(queryable);
 
-                    await _postgresCsvReader.CopyToStreamAsync(
+                    await _postgresCsvReader.ExportToStreamAsync(
                         entryStream,
                         queryable,
                         cancellationToken);

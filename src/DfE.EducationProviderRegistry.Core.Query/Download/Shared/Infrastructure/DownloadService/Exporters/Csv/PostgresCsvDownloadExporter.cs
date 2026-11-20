@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 
-public sealed class PostgresCsvReader : IPostgresCsvReader
+public sealed class PostgresCsvDownloadExporter : IDownloadExporter
 {
     private const string ConnectionStringKey = "eprweb_eprdat_dotnet_db_connection";
     private const string CopyQueryTemplate = "COPY ({0}) TO STDOUT WITH CSV HEADER";
@@ -12,7 +12,7 @@ public sealed class PostgresCsvReader : IPostgresCsvReader
 
     private readonly IConfiguration _configuration;
 
-    public PostgresCsvReader(
+    public PostgresCsvDownloadExporter(
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
@@ -20,7 +20,7 @@ public sealed class PostgresCsvReader : IPostgresCsvReader
         _configuration = configuration;
     }
 
-    public async Task CopyToStreamAsync(
+    public async Task ExportToStreamAsync(
         Stream targetStream,
         IQueryable<object> query,
         CancellationToken cancellationToken)

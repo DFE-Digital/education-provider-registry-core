@@ -14,7 +14,7 @@ public sealed class PostgresCsvReaderUnitTests
         // Act
         ArgumentNullException exception =
             Assert.Throws<ArgumentNullException>(() =>
-                new PostgresCsvReader(null!));
+                new PostgresCsvDownloadExporter(null!));
 
         // Assert
         Assert.Equal(
@@ -30,7 +30,7 @@ public sealed class PostgresCsvReaderUnitTests
             new ConfigurationBuilder()
                 .Build();
 
-        PostgresCsvReader reader =
+        PostgresCsvDownloadExporter reader =
             new(configuration);
 
         IQueryable<object> query =
@@ -40,7 +40,7 @@ public sealed class PostgresCsvReaderUnitTests
         // Act
         ArgumentNullException exception =
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                reader.CopyToStreamAsync(
+                reader.ExportToStreamAsync(
                     null!,
                     query,
                     TestContext.Current.CancellationToken));
@@ -59,7 +59,7 @@ public sealed class PostgresCsvReaderUnitTests
             new ConfigurationBuilder()
                 .Build();
 
-        PostgresCsvReader reader =
+        PostgresCsvDownloadExporter reader =
             new(configuration);
 
         await using MemoryStream targetStream =
@@ -68,7 +68,7 @@ public sealed class PostgresCsvReaderUnitTests
         // Act
         ArgumentNullException exception =
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                reader.CopyToStreamAsync(
+                reader.ExportToStreamAsync(
                     targetStream,
                     null!,
                     TestContext.Current.CancellationToken));
@@ -87,7 +87,7 @@ public sealed class PostgresCsvReaderUnitTests
             new ConfigurationBuilder()
                 .Build();
 
-        PostgresCsvReader reader =
+        PostgresCsvDownloadExporter reader =
             new(configuration);
 
         await using MemoryStream targetStream =
@@ -100,7 +100,7 @@ public sealed class PostgresCsvReaderUnitTests
         // Act
         InvalidOperationException exception =
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                reader.CopyToStreamAsync(
+                reader.ExportToStreamAsync(
                     targetStream,
                     query,
                     TestContext.Current.CancellationToken));
