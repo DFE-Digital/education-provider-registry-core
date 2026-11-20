@@ -16,6 +16,9 @@ public sealed record GroupReadModel
     public string? Address { get; init; }
     public string? Status { get; init; }
     public string? Type { get; init; }
+    public string? StatusLabel { get; init; }
+    public DateOnly? OpenedDate { get; init; }
+    public DateOnly? ClosedDate { get; init; }
 }
 
 public sealed record GroupReadModelResponse
