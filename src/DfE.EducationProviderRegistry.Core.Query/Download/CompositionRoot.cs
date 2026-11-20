@@ -4,6 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Use
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Request;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.UseCases.Response;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastructure;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters;
 using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
 using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;

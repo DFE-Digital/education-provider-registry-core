@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
-using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
+using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters;
 using DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,7 +56,7 @@ public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
                             entryName,
                             CompressionLevel.Optimal);
 
-                    await using Stream entryStream = entry.Open();
+                    await using Stream entryStream = await entry.OpenAsync(cancellationToken);
 
                     IQueryable<object> queryable =
                         _queryEngine.BuildQuery(fileKey);
