@@ -9,21 +9,21 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Infrastruct
 
 public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
 {
-    private readonly IPostgresCsvExporter _exporter;
+    private readonly IPostgresCsvReader _postgresCsvReader;
     private readonly IQueryEngine _queryEngine;
 
     public DatasetDownloadRepository(
-        IPostgresCsvExporter exporter,
+        IPostgresCsvReader postgresCsvReader,
         IQueryEngine queryEngine)
     {
-        ArgumentNullException.ThrowIfNull(exporter);
+        ArgumentNullException.ThrowIfNull(postgresCsvReader);
         ArgumentNullException.ThrowIfNull(queryEngine);
 
-        _exporter = exporter;
+        _postgresCsvReader = postgresCsvReader;
         _queryEngine = queryEngine;
     }
 
-    public async Task<Dataset?> GetDatasetByName(
+    public async Task<DatasetFile?> DownloadDatasetByNameAsync(
         string datasetName,
         string[] fileNameKeys,
         CancellationToken cancellationToken = default)
@@ -63,16 +63,16 @@ public sealed class DatasetDownloadRepository : IDatasetDownloadRepository
 
                     ArgumentNullException.ThrowIfNull(queryable);
 
-                    await _exporter.ExportToStreamAsync(
+                    await _postgresCsvReader.CopyToStreamAsync(
                         entryStream,
-                        queryable.ToQueryString(),
+                        queryable,
                         cancellationToken);
                 }
             }
 
             memoryStream.Position = 0;
 
-            return new Dataset(
+            return new DatasetFile(
                 Filename: $"{datasetName}_{downloadDate:yyyyMMdd}.zip",
                 DataType: datasetName,
                 DataFormat: "ZIP",

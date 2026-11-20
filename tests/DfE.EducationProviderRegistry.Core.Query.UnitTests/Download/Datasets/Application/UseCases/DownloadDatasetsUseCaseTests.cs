@@ -21,7 +21,7 @@ public sealed class DownloadDatasetsUseCaseTests
         string[] fileNameKeys = ["establishment-csv", "contacts-csv"];
 
         using MemoryStream expectedStream = new([1, 2, 3]);
-        Dataset expected = new("dataset.csv", "text/csv", "csv", 3, expectedStream);
+        DatasetFile expected = new("dataset.csv", "text/csv", "csv", 3, expectedStream);
 
         DatasetDownloadRepositoryTestDouble.Capture capture = new();
 
@@ -43,7 +43,7 @@ public sealed class DownloadDatasetsUseCaseTests
         Assert.Equal(fileNameKeys, capture.FileNameKeys);
 
         repository.Verify(datasetDownloadRepository =>
-            datasetDownloadRepository.GetDatasetByName(
+            datasetDownloadRepository.DownloadDatasetByNameAsync(
                 datasetName,
                 fileNameKeys,
                 It.IsAny<CancellationToken>()),
@@ -81,7 +81,7 @@ public sealed class DownloadDatasetsUseCaseTests
 
         // verify
         repository.Verify(datasetDownloadRepository =>
-            datasetDownloadRepository.GetDatasetByName(
+            datasetDownloadRepository.DownloadDatasetByNameAsync(
                 It.IsAny<string>(),
                 It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()),

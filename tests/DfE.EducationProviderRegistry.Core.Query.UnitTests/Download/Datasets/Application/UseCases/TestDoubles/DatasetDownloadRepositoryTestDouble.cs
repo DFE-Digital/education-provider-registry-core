@@ -14,12 +14,12 @@ public static class DatasetDownloadRepositoryTestDouble
 
     public static Mock<IDatasetDownloadRepository> Mock() => new();
 
-    public static Mock<IDatasetDownloadRepository> For(Dataset? result)
+    public static Mock<IDatasetDownloadRepository> For(DatasetFile? result)
     {
         Mock<IDatasetDownloadRepository> mock = Mock();
 
         mock.Setup(downloadDatasetRepository =>
-            downloadDatasetRepository.GetDatasetByName(
+            downloadDatasetRepository.DownloadDatasetByNameAsync(
                 It.IsAny<string>(),
                 It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()))
@@ -28,12 +28,12 @@ public static class DatasetDownloadRepositoryTestDouble
         return mock;
     }
 
-    public static Mock<IDatasetDownloadRepository> ForCapturing(Dataset? result, Capture capture)
+    public static Mock<IDatasetDownloadRepository> ForCapturing(DatasetFile? result, Capture capture)
     {
         Mock<IDatasetDownloadRepository> mock = Mock();
 
         mock.Setup(downloadDatasetRepository =>
-            downloadDatasetRepository.GetDatasetByName(
+            downloadDatasetRepository.DownloadDatasetByNameAsync(
                 It.IsAny<string>(),
                 It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()))
@@ -52,7 +52,7 @@ public static class DatasetDownloadRepositoryTestDouble
         Mock<IDatasetDownloadRepository> mock = Mock();
 
         mock.Setup(downloadDatasetRepository =>
-            downloadDatasetRepository.GetDatasetByName(
+            downloadDatasetRepository.DownloadDatasetByNameAsync(
                 It.IsAny<string>(),
                 It.IsAny<string[]>(),
                 It.IsAny<CancellationToken>()))

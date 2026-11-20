@@ -40,10 +40,6 @@ public static class CompositionRoot
             IPostgresCsvReader,
             PostgresCsvReader>();
 
-        services.TryAddTransient<
-            IPostgresCsvExporter,
-            PostgresCsvExporter>();
-
         return services;
     }
 }

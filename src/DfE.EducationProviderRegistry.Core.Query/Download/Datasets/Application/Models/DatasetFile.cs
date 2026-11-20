@@ -1,6 +1,6 @@
 ﻿namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application.Models;
 
-public sealed record Dataset(
+public sealed record DatasetFile(
     string Filename,
     string DataType,
     string DataFormat,

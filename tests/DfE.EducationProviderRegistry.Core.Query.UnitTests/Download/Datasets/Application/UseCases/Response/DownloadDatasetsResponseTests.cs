@@ -11,7 +11,7 @@ public sealed class DownloadDatasetsResponseTests
         // arrange
         using MemoryStream fileStream = new([1, 2, 3]);
 
-        Dataset dataset =
+        DatasetFile dataset =
             new(
                 "file.csv",
                 "text/csv",
@@ -31,7 +31,7 @@ public sealed class DownloadDatasetsResponseTests
     public void Constructor_WithNullDataset_SetsDownloadedDatasetToNull()
     {
         // arrange
-        Dataset? dataset = null;
+        DatasetFile? dataset = null;
 
         // act
         DownloadDatasetsResponse response = new(dataset);
@@ -46,7 +46,7 @@ public sealed class DownloadDatasetsResponseTests
         // arrange
         using MemoryStream fileStream = new([1, 2, 3]);
 
-        Dataset dataset =
+        DatasetFile dataset =
             new(
                 "file.csv",
                 "text/csv",
@@ -58,7 +58,7 @@ public sealed class DownloadDatasetsResponseTests
         DownloadDatasetsResponse response = new(dataset);
 
         // act
-        Dataset? value = response.DownloadedDataset;
+        DatasetFile? value = response.DownloadedDataset;
 
         // assert
         Assert.Equal(dataset, value);
@@ -86,7 +86,7 @@ public sealed class DownloadDatasetsResponseTests
             .PropertyType;
 
         // act
-        bool isDataset = propertyType == typeof(Dataset);
+        bool isDataset = propertyType == typeof(DatasetFile);
 
         // assert
         Assert.True(isDataset);

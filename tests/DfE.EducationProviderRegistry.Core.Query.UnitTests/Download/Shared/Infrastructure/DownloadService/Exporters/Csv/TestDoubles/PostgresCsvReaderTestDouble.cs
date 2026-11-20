@@ -19,7 +19,7 @@ public static class PostgresCsvReaderTestDouble
         mock
             .Setup(reader => reader.CopyToStreamAsync(
                 It.IsAny<Stream>(),
-                It.IsAny<string>(),
+                It.IsAny<IQueryable<object>>(),
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(exception);
 

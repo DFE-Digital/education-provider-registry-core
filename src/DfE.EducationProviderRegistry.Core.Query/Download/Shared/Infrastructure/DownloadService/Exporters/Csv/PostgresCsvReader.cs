@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructure.DownloadService.Exporters.Csv;
@@ -7,7 +8,6 @@ public sealed class PostgresCsvReader : IPostgresCsvReader
 {
     private const string ConnectionStringKey = "eprweb_eprdat_dotnet_db_connection";
     private const string CopyQueryTemplate = "COPY ({0}) TO STDOUT WITH CSV HEADER";
-
     private const int BufferSize = 81920;
 
     private readonly IConfiguration _configuration;
@@ -22,11 +22,11 @@ public sealed class PostgresCsvReader : IPostgresCsvReader
 
     public async Task CopyToStreamAsync(
         Stream targetStream,
-        string query,
+        IQueryable<object> query,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(targetStream);
-        ArgumentException.ThrowIfNullOrWhiteSpace(query);
+        ArgumentNullException.ThrowIfNull(query);
 
         string connectionString =
             _configuration[ConnectionStringKey]
@@ -34,7 +34,7 @@ public sealed class PostgresCsvReader : IPostgresCsvReader
                 $"Configuration value '{ConnectionStringKey}' is missing.");
 
         string copyQuery =
-            string.Format(CopyQueryTemplate, query);
+            string.Format(CopyQueryTemplate, query.ToQueryString());
 
         await using NpgsqlConnection connection =
             new(connectionString);

@@ -4,6 +4,6 @@ public interface IPostgresCsvReader
 {
     Task CopyToStreamAsync(
         Stream targetStream,
-        string query,
+        IQueryable<object> query,
         CancellationToken cancellationToken);
 }

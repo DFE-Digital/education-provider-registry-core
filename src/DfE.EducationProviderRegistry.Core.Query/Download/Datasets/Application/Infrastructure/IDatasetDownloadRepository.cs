@@ -4,7 +4,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Datasets.Application
 
 public interface IDatasetDownloadRepository
 {
-    Task<Dataset?> GetDatasetByName(
+    Task<DatasetFile?> DownloadDatasetByNameAsync(
         string datasetName,
         string[] fileNameKeys,
         CancellationToken cancellationToken = default);

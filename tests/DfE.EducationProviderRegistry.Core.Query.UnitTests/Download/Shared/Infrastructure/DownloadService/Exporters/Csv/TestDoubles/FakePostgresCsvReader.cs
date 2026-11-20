@@ -21,7 +21,7 @@ public sealed class FakePostgresCsvReader : IPostgresCsvReader
             maximumCharactersPerWrite;
     }
 
-    public string? Query { get; private set; }
+    public IQueryable<object>? Query { get; private set; }
 
     public int CopyCount { get; private set; }
 
@@ -33,11 +33,11 @@ public sealed class FakePostgresCsvReader : IPostgresCsvReader
 
     public async Task CopyToStreamAsync(
         Stream targetStream,
-        string query,
+        IQueryable<object> query,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(targetStream);
-        ArgumentException.ThrowIfNullOrWhiteSpace(query);
+        ArgumentNullException.ThrowIfNull(query);
 
         Query = query;
         CopyCount++;

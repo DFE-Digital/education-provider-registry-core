@@ -33,12 +33,16 @@ public sealed class PostgresCsvReaderUnitTests
         PostgresCsvReader reader =
             new(configuration);
 
+        IQueryable<object> query =
+            Array.Empty<object>()
+                .AsQueryable();
+
         // Act
         ArgumentNullException exception =
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
                 reader.CopyToStreamAsync(
                     null!,
-                    "SELECT * FROM educational_establishments",
+                    query,
                     TestContext.Current.CancellationToken));
 
         // Assert
@@ -75,40 +79,6 @@ public sealed class PostgresCsvReaderUnitTests
             exception.ParamName);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData("   ")]
-    [InlineData("\t")]
-    [InlineData("\r\n")]
-    public async Task CopyToStreamAsync_EmptyOrWhitespaceQuery_ThrowsArgumentException(
-        string invalidQuery)
-    {
-        // Arrange
-        IConfigurationRoot configuration =
-            new ConfigurationBuilder()
-                .Build();
-
-        PostgresCsvReader reader =
-            new(configuration);
-
-        await using MemoryStream targetStream =
-            new();
-
-        // Act
-        ArgumentException exception =
-            await Assert.ThrowsAsync<ArgumentException>(() =>
-                reader.CopyToStreamAsync(
-                    targetStream,
-                    invalidQuery,
-                    TestContext.Current.CancellationToken));
-
-        // Assert
-        Assert.Equal(
-            "query",
-            exception.ParamName);
-    }
-
     [Fact]
     public async Task CopyToStreamAsync_MissingConfiguration_ThrowsInvalidOperationException()
     {
@@ -123,12 +93,16 @@ public sealed class PostgresCsvReaderUnitTests
         await using MemoryStream targetStream =
             new();
 
+        IQueryable<object> query =
+            Array.Empty<object>()
+                .AsQueryable();
+
         // Act
         InvalidOperationException exception =
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 reader.CopyToStreamAsync(
                     targetStream,
-                    "SELECT * FROM educational_establishments",
+                    query,
                     TestContext.Current.CancellationToken));
 
         // Assert
