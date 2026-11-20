@@ -54,7 +54,7 @@ public sealed class SearchRequestTermToSearchRequestMapperTests
     }
 
     [Fact]
-    public void Map_WhenRequestValueIsNull_ReturnsMappedSearchTerm()
+    public void Map_WhenRequestValueIsNull_DoesNotReturnMappedSearchTerm()
     {
         // Arrange
         IReadOnlyCollection<SearchTermRequest> input =
@@ -66,10 +66,7 @@ public sealed class SearchRequestTermToSearchRequestMapperTests
         IReadOnlyCollection<SearchTerm> result = _sut.Map(input);
 
         // Assert
-        SearchTerm term = Assert.Single(result);
-
-        Assert.Equal("name", term.Key);
-        Assert.Equal(string.Empty, term.Value);
+        Assert.Empty(result);
     }
 
     [Fact]
@@ -88,14 +85,11 @@ public sealed class SearchRequestTermToSearchRequestMapperTests
         IReadOnlyCollection<SearchTerm> result = _sut.Map(input);
 
         // Assert
-        Assert.Equal(2, result.Count);
+        Assert.Single(result);
 
         SearchTerm[] terms = result.ToArray();
 
         Assert.Equal("name", terms[0].Key);
         Assert.Equal("john", terms[0].Value);
-
-        Assert.Equal("postcode", terms[1].Key);
-        Assert.Equal(string.Empty, terms[1].Value);
     }
 }
