@@ -84,15 +84,11 @@ public sealed class GroupToGroupReadModelMapperTests
         Assert.Equal("test-ukprn", result.UKPRN);
         Assert.Equal("Corpo", result.CompaniesHouseId);
         Assert.Equal($"{stubAddress.AddressLine1}, {stubAddress.AddressLine2}, {stubAddress.Town}, {stubAddress.County}, {stubAddress.Postcode}", result.Address);
-        Assert.Equal("mat", result.Type);
+        Assert.Equal("mat", result.TypeName);
         Assert.Equal("Closed on 10 October 2020", result.Status);
 
         Assert.Same(memberDtos, result.Members);
         Assert.Same(trusteeDtos, result.Trustees);
-
-        Assert.NotEmpty(result.Academies);
-
-        IEnumerable<Academy> expectaAcademiesSortedByNameAsc = input.Academies.OrderBy(t => t.Name.ToString());
 
         Assert.Equivalent(
             expectaAcademiesSortedByNameAsc,

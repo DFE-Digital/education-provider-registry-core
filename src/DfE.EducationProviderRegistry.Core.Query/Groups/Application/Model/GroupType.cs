@@ -2,10 +2,13 @@
 
 public sealed record GroupType
 {
-    public GroupType(string? groupType)
+    public GroupType(string? name, GroupTypeCode code)
     {
-        Value = groupType ?? string.Empty;
+        ArgumentNullException.ThrowIfNull(code);
+        Name = name ?? string.Empty;
+        Code = code;
     }
 
-    public string Value { get; }
+    public string Name { get; }
+    public GroupTypeCode Code { get; }
 }

@@ -7,7 +7,6 @@ public sealed record GroupReadModel
     public required string Name { get; init; }
     public required long GroupUID { get; init; }
     public required string? GroupId { get; init; }
-    public required IReadOnlyCollection<Academy> Academies { get; init; }
     public required IReadOnlyCollection<MemberReadModel> Members { get; init; }
     public required IReadOnlyCollection<TrusteeReadModel> Trustees { get; init; }
     public required IReadOnlyCollection<EstablishmentReadModel> Establishments { get; init; }
@@ -15,7 +14,10 @@ public sealed record GroupReadModel
     public string? CompaniesHouseId { get; init; }
     public string? Address { get; init; }
     public string? Status { get; init; }
-    public string? Type { get; init; }
+    public required string TypeCode { get; init; }
+    public string? TypeName { get; init; }
+
+
     public string? StatusLabel { get; init; }
     public DateOnly? OpenedDate { get; init; }
     public DateOnly? ClosedDate { get; init; }

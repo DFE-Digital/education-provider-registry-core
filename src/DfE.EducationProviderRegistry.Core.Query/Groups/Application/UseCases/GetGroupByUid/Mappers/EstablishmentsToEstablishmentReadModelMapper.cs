@@ -9,7 +9,7 @@ internal sealed class EstablishmentsToEstablishmentReadModelMapper : IMapper<IEn
     public IReadOnlyCollection<EstablishmentReadModel> Map(IEnumerable<Establishment> input)
     {
         return input
-            .OrderBy((establishment) => establishment.Name)
+            .OrderBy((establishment) => establishment.Name.Value)
             .Select((ordered) => new EstablishmentReadModel()
             {
                 Name = ordered.Name.Value,

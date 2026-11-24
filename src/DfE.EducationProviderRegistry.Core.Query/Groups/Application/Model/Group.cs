@@ -42,7 +42,6 @@ public sealed record Group
     public SiteAddressModel Address { get; }
     public GroupType GroupType { get; }
     public GroupStatus? Status { get; }
-    public IReadOnlyCollection<Academy> Academies => _composition.Academies;
     public IReadOnlyCollection<Member> Members => _composition.Members;
     public IReadOnlyCollection<Trustee> Trustees => _composition.Trustees;
     public IReadOnlyCollection<Establishment> Establishments => _composition.Establishments;
@@ -62,7 +61,6 @@ public sealed record Group
             && Address == other.Address
             && GroupType == other.GroupType
             && Status == other.Status
-            && Academies.SequenceEqual(other.Academies)
             && Members.SequenceEqual(other.Members)
             && Trustees.SequenceEqual(other.Trustees)
             && Establishments.SequenceEqual(other.Establishments);
@@ -79,5 +77,4 @@ public sealed record Group
 
         return hash.ToHashCode();
     }
-
 }

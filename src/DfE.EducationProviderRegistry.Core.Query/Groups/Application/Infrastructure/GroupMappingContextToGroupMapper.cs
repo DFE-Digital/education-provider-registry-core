@@ -29,7 +29,6 @@ internal sealed class GroupMappingContextToGroupMapper : IMapper<GroupMappingCon
           companiesHouseId: input.Group.CompaniesHouseNumber is null ? null : new CompaniesHouseId(input.Group.CompaniesHouseNumber));
 
         GroupComposition composition = new(
-            academies: [],
             members: [],
             trustees: [],
             establishments: _establishmentMapper.Map(input.Establishments)
@@ -44,7 +43,7 @@ internal sealed class GroupMappingContextToGroupMapper : IMapper<GroupMappingCon
                 Town: input.Group.Town ?? string.Empty,
                 County: input.Group.County ?? string.Empty,
                 Postcode: input.Group.Postcode ?? string.Empty),
-            type: new GroupType(input.Group.GroupTypeName),
+            type: new GroupType(input.Group.GroupTypeName, new GroupTypeCode(input.Group.GroupTypeCode)),
             status:
                 input.Group.GroupStatusEffectiveDate is null ?
                     null :

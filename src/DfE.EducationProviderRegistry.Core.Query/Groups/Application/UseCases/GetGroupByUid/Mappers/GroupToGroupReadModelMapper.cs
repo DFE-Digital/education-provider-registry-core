@@ -39,9 +39,9 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
             StatusLabel = input.Status?.Label,
             OpenedDate = input.Status?.OpenedDate,
             ClosedDate = input.Status?.ClosedDate,
-            Type = input.GroupType.Value,
+            TypeName = input.GroupType.Name,
+            TypeCode = input.GroupType.Code.Value,
             Establishments = _establishmentToReadModelMapper.Map(input.Establishments),
-            Academies = input.Academies.OrderBy(t => t.Name.ToString()).ToArray(),
             Members = _memberToReadModelMapper.Map(input.Members),
             Trustees = _trusteeToDtoMapper.Map(input.Trustees)
         };
