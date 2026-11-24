@@ -1,4 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 

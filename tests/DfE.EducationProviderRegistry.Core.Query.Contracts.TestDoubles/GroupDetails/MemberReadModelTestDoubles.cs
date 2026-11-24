@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.GroupDetails;
 

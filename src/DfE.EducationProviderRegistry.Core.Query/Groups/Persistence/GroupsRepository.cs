@@ -12,12 +12,12 @@ internal sealed class GroupsRepository : IGroupsRepository
 {
     private readonly ILogger<GroupsRepository> _logger;
     private readonly EducationProviderRegistryDbContext _dbContext;
-    private readonly IMapper<GroupAggregate, Group> _mapper;
+    private readonly IMapper<GroupMappingContext, Group> _mapper;
 
     public GroupsRepository(
         ILogger<GroupsRepository> logger,
         EducationProviderRegistryDbContext dbContext,
-        IMapper<GroupAggregate, Group> mapper)
+        IMapper<GroupMappingContext, Group> mapper)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(dbContext);
@@ -32,14 +32,14 @@ internal sealed class GroupsRepository : IGroupsRepository
         GroupUID groupUid,
         CancellationToken cancellationToken = default)
     {
-        GroupAggregate? entity =
+        GroupAggregate? group =
             await _dbContext.GroupAggregate
                 .AsNoTracking()
                 .SingleOrDefaultAsync(
                     g => g.GroupUid == groupUid.Value,
                     cancellationToken);
 
-        if (entity is null)
+        if (group is null)
         {
             _logger.LogWarning(
                 "Could not find Group with GroupUID {GroupUID}",
@@ -48,6 +48,14 @@ internal sealed class GroupsRepository : IGroupsRepository
             return null;
         }
 
-        return _mapper.Map(entity);
+        IReadOnlyCollection<GroupEstablishmentAggregate> groupEstablishmentAggregates =
+            await _dbContext.GroupEstablishmentAggregate
+                .AsNoTracking()
+                .Where(t => t.GroupId == group.GroupId)
+                .ToArrayAsync();
+
+        GroupMappingContext context = new(group, groupEstablishmentAggregates);
+
+        return _mapper.Map(context);
     }
 }

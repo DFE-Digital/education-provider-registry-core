@@ -1,6 +1,6 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
 
@@ -8,15 +8,19 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
 {
     private readonly IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> _trusteeToDtoMapper;
     private readonly IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> _memberToReadModelMapper;
+    private readonly IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentReadModel>> _establishmentToReadModelMapper;
 
     public GroupToGroupReadModelMapper(
         IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>> memberToDtoMapper,
-        IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> trusteeToDtoMapper)
+        IMapper<IEnumerable<Trustee>, IReadOnlyCollection<TrusteeReadModel>> trusteeToDtoMapper,
+        IMapper<IEnumerable<Establishment>, IReadOnlyCollection<EstablishmentReadModel>> establishmentToReadModelMapper)
     {
         ArgumentNullException.ThrowIfNull(memberToDtoMapper);
         ArgumentNullException.ThrowIfNull(trusteeToDtoMapper);
+        ArgumentNullException.ThrowIfNull(establishmentToReadModelMapper);
         _trusteeToDtoMapper = trusteeToDtoMapper;
         _memberToReadModelMapper = memberToDtoMapper;
+        _establishmentToReadModelMapper = establishmentToReadModelMapper;
     }
 
     public GroupReadModel Map(Group input)
@@ -26,7 +30,7 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
         return new GroupReadModel
         {
             Name = input.Name.Value,
-            GroupId = input.GroupId.Value,
+            GroupId = input.GroupId?.Value,
             GroupUID = input.GroupUID.Value,
             UKPRN = input.Ukprn?.Value,
             CompaniesHouseId = input.CompaniesHouseId?.Value,
@@ -36,6 +40,7 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
             OpenedDate = input.Status?.OpenedDate,
             ClosedDate = input.Status?.ClosedDate,
             Type = input.GroupType.Value,
+            Establishments = _establishmentToReadModelMapper.Map(input.Establishments),
             Academies = input.Academies.OrderBy(t => t.Name.ToString()).ToArray(),
             Members = _memberToReadModelMapper.Map(input.Members),
             Trustees = _trusteeToDtoMapper.Map(input.Trustees)

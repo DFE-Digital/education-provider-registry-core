@@ -1,5 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 using DfE.EducationProviderRegistry.Core.Query.IntegrationTests.Tests.Group;
 using DfE.EducationProviderRegistry.Core.Query.Test.Database.Data.Groups;
 using Microsoft.Extensions.Configuration;

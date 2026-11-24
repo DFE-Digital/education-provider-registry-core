@@ -1,6 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 public sealed record TrusteeReadModel
 {

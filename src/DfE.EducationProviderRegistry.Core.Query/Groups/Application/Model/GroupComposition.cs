@@ -5,16 +5,19 @@ public sealed record GroupComposition
     public GroupComposition(
         IEnumerable<Academy>? academies = null,
         IEnumerable<Member>? members = null,
-        IEnumerable<Trustee>? trustees = null)
+        IEnumerable<Trustee>? trustees = null,
+        IEnumerable<Establishment>? establishments = null)
     {
         Academies = academies?.ToList() ?? [];
         Members = members?.ToList() ?? [];
         Trustees = trustees?.ToList() ?? [];
+        Establishments = establishments?.ToList() ?? [];
     }
 
     public IReadOnlyCollection<Academy> Academies { get; }
     public IReadOnlyCollection<Member> Members { get; }
     public IReadOnlyCollection<Trustee> Trustees { get; }
+    public IReadOnlyCollection<Establishment> Establishments { get; }
 
     public bool Equals(GroupComposition? other)
     {
@@ -25,7 +28,8 @@ public sealed record GroupComposition
 
         return Academies.SequenceEqual(other.Academies)
             && Members.SequenceEqual(other.Members)
-            && Trustees.SequenceEqual(other.Trustees);
+            && Trustees.SequenceEqual(other.Trustees)
+            && Establishments.SequenceEqual(other.Establishments);
     }
 
     public override int GetHashCode()
@@ -46,6 +50,11 @@ public sealed record GroupComposition
         foreach (Trustee trustee in Trustees)
         {
             hash.Add(trustee);
+        }
+
+        foreach (Establishment establishment in Establishments)
+        {
+            hash.Add(establishment);
         }
 
         return hash.ToHashCode();

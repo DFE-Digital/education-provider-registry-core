@@ -11,7 +11,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Throw_When_Input_Is_Null()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         Func<Group> act = () => sut.Map(null!);
 
@@ -23,7 +23,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_Identity()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithGroupId("TR001")
@@ -42,7 +42,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_ExternalIdentifiers()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithUkprn("10000001")
@@ -61,7 +61,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_Null_CompaniesHouseId()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithCompaniesHouseNumber(null)
@@ -78,7 +78,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Create_Empty_Composition_Collections()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .Build();
@@ -96,7 +96,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_Null_Status_When_No_Status_Date_Is_Present()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithStatus(
@@ -115,7 +115,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_Status()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithStatus("Closed", new DateOnly(2020, 10, 10))
@@ -136,7 +136,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_Null_Address_Values_As_Empty_Strings()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithSiteName(null)
@@ -163,7 +163,7 @@ public sealed class GroupAggregateToGroupMapperTests
     public void Map_Should_Map_Address()
     {
         // Arrange
-        GroupAggregateToGroupMapper sut = new();
+        GroupMappingContextToGroupMapper sut = new();
 
         GroupAggregate input = GroupAggregateBuilder.Create()
             .WithSiteName("Head Office")
