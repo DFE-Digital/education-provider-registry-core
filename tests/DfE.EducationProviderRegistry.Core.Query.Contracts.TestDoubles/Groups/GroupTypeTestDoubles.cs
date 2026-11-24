@@ -4,6 +4,6 @@ namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 
 public static class GroupTypeTestDoubles
 {
-    public static GroupType Stub() => Create("MAT");
-    public static GroupType Create(string input) => new(input);
+    public static GroupType Stub() => Create(type: "MAT", code: "02");
+    public static GroupType Create(string type, string code) => new(type, new GroupTypeCode(code));
 }

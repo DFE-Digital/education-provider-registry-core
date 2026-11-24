@@ -32,7 +32,8 @@ public sealed class GetGroupByIdTests : UseCaseIntegrationTestBase
             .WithGroupId("TR001")
             .WithCompaniesHouseNumber("COMP123")
             .WithUkprn("10000001")
-            .WithGroupType("MAT")
+            .WithTypeName("MAT")
+            .WithTypeCode("02")
             .Build();
 
         await DatabaseFixture.SeedAsync<
@@ -57,6 +58,7 @@ public sealed class GetGroupByIdTests : UseCaseIntegrationTestBase
         Assert.Equal("TR001", actual.GroupId);
         Assert.Equal("COMP123", actual.CompaniesHouseId);
         Assert.Equal("10000001", actual.UKPRN);
-        Assert.Equal("MAT", actual.Type);
+        Assert.Equal("MAT", actual.TypeName);
+        Assert.Equal("02", actual.TypeCode);
     }
 }

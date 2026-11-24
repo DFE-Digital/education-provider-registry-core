@@ -82,13 +82,13 @@ public sealed class GroupCharacteristicsTests
         GroupCharacteristics left = new(
             NameTestDoubles.Create("my-name"),
             AddressTestDoubles.Stub(),
-            GroupTypeTestDoubles.Create("MAT"),
+            GroupTypeTestDoubles.Create("MAT", "02"),
             GroupStatusTestDoubles.Create("Opened"));
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create("my-name"),
             AddressTestDoubles.Stub(),
-            GroupTypeTestDoubles.Create("MAT"),
+            GroupTypeTestDoubles.Create("MAT", "02"),
             GroupStatusTestDoubles.Create("Opened"));
 
         // Act
@@ -151,13 +151,13 @@ public sealed class GroupCharacteristicsTests
         GroupCharacteristics left = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Generate(),
-            GroupTypeTestDoubles.Create("Type A"),
+            GroupTypeTestDoubles.Create("Type A", "1"),
             GroupStatusTestDoubles.Create());
 
         GroupCharacteristics right = new(
             NameTestDoubles.Create(),
             AddressTestDoubles.Generate(),
-            GroupTypeTestDoubles.Create("Type B"),
+            GroupTypeTestDoubles.Create("Type B", "11"),
             GroupStatusTestDoubles.Create());
 
         // Act
