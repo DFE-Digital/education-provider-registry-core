@@ -6,15 +6,15 @@ public static class GroupIdentityTestDoubles
 {
     public static GroupIdentity Stub()
     {
-        return new(id:
-            GroupIdTestDoubles.Stub(),
-            GroupUIDTestDoubles.Stub());
+        return new(
+            uid: GroupUIDTestDoubles.Stub(),
+            id: GroupIdTestDoubles.Stub());
     }
 
     public static GroupIdentity Create(GroupId? id = null, GroupUID? uid = null)
     {
         return new(
-            id ?? GroupIdTestDoubles.Stub(),
-            uid: uid ?? GroupUIDTestDoubles.Create());
+            uid: uid ?? GroupUIDTestDoubles.Create(),
+            id ?? GroupIdTestDoubles.Stub());
     }
 }

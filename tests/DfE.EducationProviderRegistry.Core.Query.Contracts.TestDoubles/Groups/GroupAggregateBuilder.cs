@@ -7,12 +7,13 @@ namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 public sealed class GroupAggregateBuilder
 {
     private long _aggregateId;
-    private string _groupId;
+    private string? _groupId;
     private long _groupUid;
     private string _name;
     private string? _ukprn;
     private string? _companiesHouseNumber;
-    private string? _groupTypeName;
+    private string? _typeCode;
+    private string? _typeName;
     private string? _siteName;
     private string? _addressLine1;
     private string? _addressLine2;
@@ -29,6 +30,7 @@ public sealed class GroupAggregateBuilder
         _groupUid = GroupUIDTestDoubles.Stub().Value;
         _ukprn = UkprnTestDoubles.Stub().Value;
         _name = "Test Group";
+        _typeCode = GroupTypeTestDoubles.Stub().Code.Value;
     }
 
     public static GroupAggregateBuilder Create() => new();
@@ -39,7 +41,7 @@ public sealed class GroupAggregateBuilder
         return this;
     }
 
-    public GroupAggregateBuilder WithGroupId(string groupId)
+    public GroupAggregateBuilder WithGroupId(string? groupId)
     {
         _groupId = groupId;
         return this;
@@ -69,9 +71,15 @@ public sealed class GroupAggregateBuilder
         return this;
     }
 
-    public GroupAggregateBuilder WithGroupType(string? groupType)
+    public GroupAggregateBuilder WithTypeName(string name)
     {
-        _groupTypeName = groupType;
+        _typeName = name;
+        return this;
+    }
+
+    public GroupAggregateBuilder WithTypeCode(string? code)
+    {
+        _typeCode = code;
         return this;
     }
 
@@ -131,7 +139,8 @@ public sealed class GroupAggregateBuilder
             GroupUid = _groupUid,
             Ukprn = _ukprn,
             CompaniesHouseNumber = _companiesHouseNumber,
-            GroupTypeName = _groupTypeName,
+            GroupTypeName = _typeName,
+            GroupTypeCode = _typeCode,
             SiteName = _siteName,
             AddressLine1 = _addressLine1,
             AddressLine2 = _addressLine2,

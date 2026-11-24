@@ -4,6 +4,7 @@ using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 using Microsoft.Extensions.Logging;
 using Moq;
 

@@ -15,9 +15,9 @@ public sealed class GroupBuilder
     private SiteAddressModel _address = AddressTestDoubles.Generate();
     private GroupStatus? _status = new("Open", new(2025, 01, 02), new(2025, 01, 02), null);
 
-    private IEnumerable<Academy> _academies = [];
-    private IEnumerable<Member>? _members = [];
-    private IEnumerable<Trustee>? _trustees = [];
+    private IEnumerable<Member> _members = [];
+    private IEnumerable<Trustee> _trustees = [];
+    private IEnumerable<Establishment> _establishments = [];
 
     public GroupBuilder WithName(string value)
     {
@@ -75,27 +75,27 @@ public sealed class GroupBuilder
         return this;
     }
 
-    public GroupBuilder WithType(string type)
+    public GroupBuilder WithType(string name, string code)
     {
-        _type = new(type);
+        _type = new GroupType(name, new GroupTypeCode(code));
         return this;
     }
 
-    public GroupBuilder WithAcademies(IEnumerable<Academy> academies)
-    {
-        _academies = academies;
-        return this;
-    }
-
-    public GroupBuilder WithMembers(IEnumerable<Member>? members)
+    public GroupBuilder WithMembers(IEnumerable<Member> members)
     {
         _members = members;
         return this;
     }
 
-    public GroupBuilder WithTrustees(IEnumerable<Trustee>? trustees)
+    public GroupBuilder WithTrustees(IEnumerable<Trustee> trustees)
     {
         _trustees = trustees;
+        return this;
+    }
+
+    public GroupBuilder WithEstablishments(IEnumerable<Establishment> establishments)
+    {
+        _establishments = establishments;
         return this;
     }
 
@@ -104,15 +104,15 @@ public sealed class GroupBuilder
         return new Group(
             identity:
                 new GroupIdentity(
-                    new GroupId(_groupId),
-                    new GroupUID(_groupUid)),
+                    new GroupUID(_groupUid),
+                    new GroupId(_groupId)),
             externalIds: new GroupExternalIdentifiers(
                 new Ukprn(_ukprn),
                 new CompaniesHouseId(_companiesHouseId)),
             composition: new GroupComposition(
-                academies: _academies,
                 members: _members,
-                trustees: _trustees),
+                trustees: _trustees,
+                establishments: _establishments),
             characteristics: new GroupCharacteristics(
                 new(_name),
                 _address,
