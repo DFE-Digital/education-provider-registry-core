@@ -53,7 +53,7 @@ internal sealed class GroupsRepository : IGroupsRepository
             await _dbContext.GroupEstablishmentAggregate
                 .AsNoTracking()
                 .Where(t => t.GroupUid == groupUid.Value)
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken);
 
         GroupMappingContext context = new(group, groupEstablishmentAggregates);
 

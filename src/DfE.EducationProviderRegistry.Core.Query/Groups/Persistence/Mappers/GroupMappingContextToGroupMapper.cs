@@ -44,7 +44,7 @@ internal sealed class GroupMappingContextToGroupMapper : IMapper<GroupMappingCon
                 Town: input.Group.Town ?? string.Empty,
                 County: input.Group.County ?? string.Empty,
                 Postcode: input.Group.Postcode ?? string.Empty),
-            type: new GroupType(input.Group.GroupTypeName, new GroupTypeCode(input.Group.GroupTypeCode)),
+            type: new GroupType(input.Group.GroupTypeName, new GroupTypeCode(input.Group.GroupTypeCode!)),
             status:
                 input.Group.GroupStatusEffectiveDate is null ?
                     null :
