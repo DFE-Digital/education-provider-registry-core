@@ -51,7 +51,7 @@ internal sealed class GroupsRepository : IGroupsRepository
         IReadOnlyCollection<GroupEstablishmentAggregate> groupEstablishmentAggregates =
             await _dbContext.GroupEstablishmentAggregate
                 .AsNoTracking()
-                .Where(t => t.GroupId == group.GroupId)
+                .Where(t => t.GroupUid == groupUid.Value)
                 .ToArrayAsync();
 
         GroupMappingContext context = new(group, groupEstablishmentAggregates);
