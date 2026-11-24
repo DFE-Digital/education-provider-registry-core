@@ -6,6 +6,7 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGr
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

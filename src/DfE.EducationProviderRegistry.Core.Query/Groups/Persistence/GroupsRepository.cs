@@ -1,6 +1,7 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Context;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Microsoft.EntityFrameworkCore;

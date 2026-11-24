@@ -1,7 +1,8 @@
 ﻿using DfE.Core.Libraries.CrossCutting.Mapper;
 using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Persistence.Mappers;
 using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 using Moq;

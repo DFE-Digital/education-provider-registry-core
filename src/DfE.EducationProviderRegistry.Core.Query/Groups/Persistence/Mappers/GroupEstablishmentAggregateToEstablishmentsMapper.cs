@@ -3,7 +3,7 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 using DfE.EducationProviderRegistry.Data.DatabaseModels.Models;
 
-namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.Infrastructure;
+namespace DfE.EducationProviderRegistry.Core.Query.Groups.Persistence;
 
 internal sealed class GroupEstablishmentAggregateToEstablishmentsMapper : IMapper<IEnumerable<GroupEstablishmentAggregate>, IReadOnlyCollection<Establishment>>
 {
