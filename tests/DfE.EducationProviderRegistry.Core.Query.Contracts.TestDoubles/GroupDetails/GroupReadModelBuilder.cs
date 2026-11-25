@@ -14,6 +14,8 @@ public sealed class GroupReadModelBuilder
     private string? _address;
     private string? _status;
     private string? _type;
+    private DateOnly? _openedDate;
+    private DateOnly? _closedDate;
     private readonly List<Academy> _academies;
     private readonly List<TrusteeReadModel> _trustees;
     private readonly List<MemberReadModel> _members;
@@ -75,6 +77,18 @@ public sealed class GroupReadModelBuilder
         return this;
     }
 
+    public GroupReadModelBuilder WithOpenedDate(DateOnly? openedDate)
+    {
+        _openedDate = openedDate;
+        return this;
+    }
+
+    public GroupReadModelBuilder WithClosedDate(DateOnly? closedDate)
+    {
+        _closedDate = closedDate;
+        return this;
+    }
+
     public GroupReadModelBuilder WithGroupType(string? type)
     {
         _type = type;
@@ -129,6 +143,8 @@ public sealed class GroupReadModelBuilder
             Address = _address!,
             Status = _status!,
             Type = _type!,
+            OpenedDate = _openedDate,
+            ClosedDate = _closedDate,
             Academies = _academies,
             Trustees = _trustees,
             Members = _members

@@ -37,7 +37,7 @@ internal sealed class GroupAggregateToGroupMapper : IMapper<GroupAggregate, Grou
                 Postcode: input.Postcode ?? string.Empty),
             type: new GroupType(input.GroupTypeName),
             status:
-                input.GroupStatusEffectiveDate is null ?
+                input.GroupStatusLabel is null ?
                     null :
                         new GroupStatus(
                             label: input.GroupStatusLabel ?? string.Empty,
