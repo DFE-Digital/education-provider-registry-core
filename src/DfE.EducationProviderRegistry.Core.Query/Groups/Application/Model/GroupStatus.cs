@@ -4,7 +4,7 @@ public sealed record GroupStatus
 {
     public GroupStatus(
         string label,
-        DateOnly effectiveDate,
+        DateOnly? effectiveDate,
         DateOnly? openedDate,
         DateOnly? closedDate)
     {
@@ -15,7 +15,7 @@ public sealed record GroupStatus
     }
 
     public string Label { get; }
-    public DateOnly EffectiveDate { get; }
+    public DateOnly? EffectiveDate { get; }
     public DateOnly? OpenedDate { get; }
     public DateOnly? ClosedDate { get; }
 }

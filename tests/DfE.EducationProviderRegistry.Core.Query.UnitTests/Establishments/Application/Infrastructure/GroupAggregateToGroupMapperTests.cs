@@ -229,7 +229,7 @@ public sealed class GroupMappingContextToGroupMapperTests
     }
 
     [Fact]
-    public void Map_Should_Map_Null_Status_When_No_Status_Date_Is_Present()
+    public void Map_Should_Map_Null_Status_When_No_Status_Label_Is_Present()
     {
         // Arrange
         GroupMappingContextToGroupMapper sut = new(
@@ -237,8 +237,10 @@ public sealed class GroupMappingContextToGroupMapperTests
 
         GroupAggregate group = GroupAggregateBuilder.Create()
             .WithStatus(
-                label: "Closed",
-                effectiveDate: null)
+                label: null,
+                effectiveDate: null,
+                openedDate: null,
+                closedDate: null)
             .Build();
 
         GroupMappingContext input = CreateMappingContext(group);
@@ -259,8 +261,10 @@ public sealed class GroupMappingContextToGroupMapperTests
 
         GroupAggregate group = GroupAggregateBuilder.Create()
             .WithStatus(
-                label: "Closed",
-                effectiveDate: new DateOnly(2020, 10, 10))
+                label: "Open",
+                effectiveDate: null,
+                closedDate: null,
+                openedDate: new DateOnly(2020, 10, 10))
             .Build();
 
         GroupMappingContext input = CreateMappingContext(group);
@@ -270,10 +274,10 @@ public sealed class GroupMappingContextToGroupMapperTests
 
         // Assert
         Assert.NotNull(result.Status);
-        Assert.Equal("Closed", result.Status.Label);
+        Assert.Equal("Open", result.Status.Label);
         Assert.Equal(
             new DateOnly(2020, 10, 10),
-            result.Status.EffectiveDate);
+            result.Status.OpenedDate);
     }
 
     [Fact]

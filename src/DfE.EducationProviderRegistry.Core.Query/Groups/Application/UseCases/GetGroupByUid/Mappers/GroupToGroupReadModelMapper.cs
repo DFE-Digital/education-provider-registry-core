@@ -50,5 +50,5 @@ internal sealed class GroupToGroupReadModelMapper : IMapper<Group, GroupReadMode
     private static string DisplayStatus(GroupStatus? status) =>
         status is null ?
             string.Empty :
-                $"{status.Label} on {status.EffectiveDate.ToString("d MMMM yyyy")}";
+                $"{status.Label} on {status.EffectiveDate?.ToString("d MMMM yyyy")}";
 }
