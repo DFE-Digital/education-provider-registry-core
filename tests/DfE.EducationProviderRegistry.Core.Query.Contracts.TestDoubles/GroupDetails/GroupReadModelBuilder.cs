@@ -26,6 +26,7 @@ public sealed class GroupReadModelBuilder
         _groupUid = 1000L;
         _address = "1 Test Street, TestVille, TE5 1ST";
         _status = "Open";
+        _openedDate = new(2000, 1, 1);
         _typeName = "Multi-Academy Trust";
         _typeCode = "02";
 
@@ -142,6 +143,7 @@ public sealed class GroupReadModelBuilder
             CompaniesHouseId = _companiesHouseId,
             Address = _address!,
             Status = _status!,
+            StatusLabel = _status!,
             OpenedDate = _openedDate,
             ClosedDate = _closedDate,
             TypeName = _typeName!,
