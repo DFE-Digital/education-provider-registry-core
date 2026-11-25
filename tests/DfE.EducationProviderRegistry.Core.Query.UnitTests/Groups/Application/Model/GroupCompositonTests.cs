@@ -1,5 +1,6 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
+using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -11,46 +12,55 @@ public sealed class GroupCompositionTests
         // Arrange
 
         // Act
-        GroupComposition result = new(academies: null, members: null, trustees: null);
+        GroupComposition result = new(
+            members: null,
+            trustees: null,
+            establishments: null);
 
         // Assert
-        Assert.Empty(result.Academies);
         Assert.Empty(result.Members);
         Assert.Empty(result.Trustees);
+        Assert.Empty(result.Establishments);
     }
 
     [Fact]
     public void Constructor_WhenCollectionsProvided_AssignsValues()
     {
         // Arrange
-        IReadOnlyCollection<Academy> academies = AcademyTestDoubles.Create(2);
+        IReadOnlyCollection<Establishment> establishments = EstablishmentTestDoubles.Create(2);
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(2);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(2);
 
         // Act
-        GroupComposition result = new(academies, members, trustees);
+        GroupComposition result = new(
+            members,
+            trustees,
+            establishments);
 
         // Assert
-        Assert.Equal(academies, result.Academies);
         Assert.Equal(members, result.Members);
         Assert.Equal(trustees, result.Trustees);
+        Assert.Equal(establishments, result.Establishments);
     }
 
     [Fact]
     public void Constructor_WhenCollectionsProvided_CreatesCopies()
     {
         // Arrange
-        IReadOnlyCollection<Academy> academies = AcademyTestDoubles.Create(2);
+        IReadOnlyCollection<Establishment> establishments = EstablishmentTestDoubles.Create(2);
         IReadOnlyCollection<Member> members = MemberTestDoubles.Create(2);
         IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(2);
 
         // Act
-        GroupComposition result = new(academies, members, trustees);
+        GroupComposition result = new(
+            members,
+            trustees,
+            establishments);
 
         // Assert
-        Assert.NotSame(academies, result.Academies);
         Assert.NotSame(members, result.Members);
         Assert.NotSame(trustees, result.Trustees);
+        Assert.NotSame(establishments, result.Establishments);
     }
 
     [Fact]
@@ -58,9 +68,9 @@ public sealed class GroupCompositionTests
     {
         // Arrange
         GroupComposition composition = GroupCompositionTestDoubles.Create(
-            AcademyTestDoubles.Create(),
             MemberTestDoubles.Create(),
-            TrusteeTestDoubles.Create());
+            TrusteeTestDoubles.Create(),
+            EstablishmentTestDoubles.Create());
 
         // Act
         bool result = composition.Equals(null);
@@ -73,12 +83,21 @@ public sealed class GroupCompositionTests
     public void Equals_WhenAllCollectionsMatch_ReturnsTrue()
     {
         // Arrange
-        IReadOnlyCollection<Academy> academies = AcademyTestDoubles.CreateWith(("100001", "Academy A"));
-        IReadOnlyCollection<Member> members = MemberTestDoubles.CreateWith(("1234567", "Member A", new DateTime(2020, 01, 01)));
-        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.CreateWith(("7654321", "Trustee A", new DateTime(2021, 01, 01)));
+        IReadOnlyCollection<Establishment> establishments = EstablishmentTestDoubles.Create(1);
+        IReadOnlyCollection<Member> members = MemberTestDoubles.CreateWith(
+            ("1234567", "Member A", new DateTime(2020, 01, 01)));
+        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.CreateWith(
+            ("7654321", "Trustee A", new DateTime(2021, 01, 01)));
 
-        GroupComposition left = GroupCompositionTestDoubles.Create(academies, members, trustees);
-        GroupComposition right = GroupCompositionTestDoubles.Create(academies, members, trustees);
+        GroupComposition left = GroupCompositionTestDoubles.Create(
+            members,
+            trustees,
+            establishments);
+
+        GroupComposition right = GroupCompositionTestDoubles.Create(
+            members,
+            trustees,
+            establishments);
 
         // Act
         bool result = left.Equals(right);
@@ -88,18 +107,24 @@ public sealed class GroupCompositionTests
     }
 
     [Fact]
-    public void Equals_WhenAcademiesDiffer_ReturnsFalse()
+    public void Equals_WhenEstablishmentsDiffer_ReturnsFalse()
     {
         // Arrange
+        IReadOnlyCollection<Establishment> leftEstablishments =
+            EstablishmentTestDoubles.Create(1);
+
+        IReadOnlyCollection<Establishment> rightEstablishments =
+            EstablishmentTestDoubles.Create(2);
+
         GroupComposition left = new(
-            AcademyTestDoubles.CreateWith((Urn: "100001", Name: "Academy A")),
             MemberTestDoubles.Create(),
-            TrusteeTestDoubles.Create());
+            TrusteeTestDoubles.Create(),
+            leftEstablishments);
 
         GroupComposition right = new(
-            AcademyTestDoubles.CreateWith((Urn: "100001", Name: "Academy B")),
             MemberTestDoubles.Create(),
-            TrusteeTestDoubles.Create());
+            TrusteeTestDoubles.Create(),
+            rightEstablishments);
 
         // Act
         bool result = left.Equals(right);
@@ -113,14 +138,16 @@ public sealed class GroupCompositionTests
     {
         // Arrange
         GroupComposition left = new(
-            AcademyTestDoubles.Create(),
-            MemberTestDoubles.CreateWith((Id: "1111111", Name: "Member A", StartDate: new DateTime(2020, 01, 01))),
-            TrusteeTestDoubles.Create());
+            MemberTestDoubles.CreateWith(
+                (Id: "1111111", Name: "Member A", StartDate: new DateTime(2020, 01, 01))),
+            TrusteeTestDoubles.Create(),
+            EstablishmentTestDoubles.Create());
 
         GroupComposition right = new(
-            AcademyTestDoubles.Create(),
-            MemberTestDoubles.CreateWith((Id: "2222222", Name: "Member B", StartDate: new DateTime(2020, 01, 01))),
-            TrusteeTestDoubles.Create());
+            MemberTestDoubles.CreateWith(
+                (Id: "2222222", Name: "Member B", StartDate: new DateTime(2020, 01, 01))),
+            TrusteeTestDoubles.Create(),
+            EstablishmentTestDoubles.Create());
 
         // Act
         bool result = left.Equals(right);
@@ -134,14 +161,16 @@ public sealed class GroupCompositionTests
     {
         // Arrange
         GroupComposition left = new(
-            AcademyTestDoubles.Create(),
             MemberTestDoubles.Create(),
-            TrusteeTestDoubles.CreateWith((Id: "1111111", Name: "Trustee A", StartDate: new DateTime(2020, 01, 01))));
+            TrusteeTestDoubles.CreateWith(
+                (Id: "1111111", Name: "Trustee A", StartDate: new DateTime(2020, 01, 01))),
+            EstablishmentTestDoubles.Create());
 
         GroupComposition right = new(
-            AcademyTestDoubles.Create(),
             MemberTestDoubles.Create(),
-            TrusteeTestDoubles.CreateWith((Id: "2222222", Name: "Trustee B", StartDate: new DateTime(2020, 01, 01))));
+            TrusteeTestDoubles.CreateWith(
+                (Id: "2222222", Name: "Trustee B", StartDate: new DateTime(2020, 01, 01))),
+            EstablishmentTestDoubles.Create());
 
         // Act
         bool result = left.Equals(right);

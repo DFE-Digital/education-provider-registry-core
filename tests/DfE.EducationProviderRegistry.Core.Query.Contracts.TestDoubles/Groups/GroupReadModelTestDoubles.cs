@@ -1,4 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 
@@ -14,9 +14,10 @@ public static class GroupReadModelTestDoubles
             UKPRN = "ukprn",
             CompaniesHouseId = "A123",
             Address = "123 Test Street",
-            Type = "Multi Academy Trust",
+            TypeName = "Multi Academy Trust",
+            TypeCode = "02",
             Status = "Opened on 12 June 2005",
-            Academies = [],
+            Establishments = [],
             Members = [],
             Trustees = []
         };

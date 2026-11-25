@@ -1,6 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
+using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.GroupDetails;
 
@@ -13,12 +12,13 @@ public sealed class GroupReadModelBuilder
     private string? _companiesHouseId;
     private string? _address;
     private string? _status;
-    private string? _type;
+    private string? _typeName;
+    private string? _typeCode;
     private DateOnly? _openedDate;
     private DateOnly? _closedDate;
-    private readonly List<Academy> _academies;
     private readonly List<TrusteeReadModel> _trustees;
     private readonly List<MemberReadModel> _members;
+    private readonly List<EstablishmentReadModel> _establishments;
 
     public GroupReadModelBuilder()
     {
@@ -27,11 +27,12 @@ public sealed class GroupReadModelBuilder
         _groupUid = 1000L;
         _address = "1 Test Street, TestVille, TE5 1ST";
         _status = "Open";
-        _type = "Multi-Academy Trust";
+        _typeName = "Multi-Academy Trust";
+        _typeCode = "02";
 
-        _academies = [];
         _trustees = [];
         _members = [];
+        _establishments = [];
     }
     public static GroupReadModelBuilder Create() => new();
 
@@ -77,33 +78,15 @@ public sealed class GroupReadModelBuilder
         return this;
     }
 
-    public GroupReadModelBuilder WithOpenedDate(DateOnly? openedDate)
+    public GroupReadModelBuilder WithTypeName(string? name)
     {
-        _openedDate = openedDate;
+        _typeName = name;
         return this;
     }
 
-    public GroupReadModelBuilder WithClosedDate(DateOnly? closedDate)
+    public GroupReadModelBuilder WithTypeCode(string? code)
     {
-        _closedDate = closedDate;
-        return this;
-    }
-
-    public GroupReadModelBuilder WithGroupType(string? type)
-    {
-        _type = type;
-        return this;
-    }
-
-    public GroupReadModelBuilder WithAcademy(Academy academy)
-    {
-        _academies.Add(academy);
-        return this;
-    }
-
-    public GroupReadModelBuilder WithAcademies(IEnumerable<Academy> academies)
-    {
-        _academies.AddRange(academies);
+        _typeCode = code;
         return this;
     }
 
@@ -131,6 +114,12 @@ public sealed class GroupReadModelBuilder
         return this;
     }
 
+    public GroupReadModelBuilder WithEstablishment(EstablishmentReadModel establishment)
+    {
+        _establishments.Add(establishment);
+        return this;
+    }
+
     public GroupReadModel Build()
     {
         return new()
@@ -142,12 +131,11 @@ public sealed class GroupReadModelBuilder
             CompaniesHouseId = _companiesHouseId,
             Address = _address!,
             Status = _status!,
-            Type = _type!,
-            OpenedDate = _openedDate,
-            ClosedDate = _closedDate,
-            Academies = _academies,
+            TypeName = _typeName!,
+            TypeCode = _typeCode!,
             Trustees = _trustees,
-            Members = _members
+            Members = _members,
+            Establishments = _establishments
         };
     }
 }

@@ -2,13 +2,12 @@
 
 public sealed record GroupIdentity
 {
-    public GroupIdentity(GroupId id, GroupUID uid)
+    public GroupIdentity(GroupUID uid, GroupId? id)
     {
-        ArgumentNullException.ThrowIfNull(id);
         Id = id;
         Uid = uid;
     }
 
-    public GroupId Id { get; }
     public GroupUID Uid { get; }
+    public GroupId? Id { get; }
 }
