@@ -22,6 +22,8 @@ public sealed class GroupAggregateBuilder
     private string? _postcode;
     private string? _statusLabel;
     private DateOnly? _statusEffectiveDate;
+    private DateOnly? _openedDate;
+    private DateOnly? _closedDate;
 
     public GroupAggregateBuilder()
     {
@@ -121,10 +123,14 @@ public sealed class GroupAggregateBuilder
 
     public GroupAggregateBuilder WithStatus(
         string? label,
-        DateOnly? effectiveDate)
+        DateOnly? effectiveDate,
+        DateOnly? openedDate,
+        DateOnly? closedDate)
     {
         _statusLabel = label;
         _statusEffectiveDate = effectiveDate;
+        _openedDate = openedDate;
+        _closedDate = closedDate;
 
         return this;
     }
@@ -148,7 +154,9 @@ public sealed class GroupAggregateBuilder
             County = _county,
             Postcode = _postcode,
             GroupStatusLabel = _statusLabel,
-            GroupStatusEffectiveDate = _statusEffectiveDate
+            GroupStatusEffectiveDate = _statusEffectiveDate,
+            OpenedDate = _openedDate,
+            ClosedDate = _closedDate
         };
     }
 }

@@ -50,7 +50,7 @@ internal sealed class GroupMappingContextToGroupMapper : IMapper<GroupMappingCon
                     null :
                         new GroupStatus(
                             label: input.Group.GroupStatusLabel,
-                            effectiveDate: input.Group.GroupStatusEffectiveDate.Value,
+                            effectiveDate: input.Group.GroupStatusEffectiveDate,
                             openedDate: input.Group.OpenedDate,
                             closedDate: input.Group.ClosedDate)
         );
