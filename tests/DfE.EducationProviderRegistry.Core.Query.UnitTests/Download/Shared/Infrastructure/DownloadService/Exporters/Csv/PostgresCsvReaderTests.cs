@@ -5,8 +5,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Download.Shared.Inf
 
 public sealed class PostgresCsvReaderUnitTests
 {
-    private const string ConnectionStringKey =
-        "eprweb_eprdat_dotnet_db_connection";
+    private const string ConnectionStringKey = "eprweb_dotnet_db_connection";
 
     [Fact]
     public void Constructor_NullConfiguration_ThrowsArgumentNullException()
