@@ -6,7 +6,7 @@ namespace DfE.EducationProviderRegistry.Core.Query.Download.Shared.Infrastructur
 
 public sealed class PostgresCsvDownloadExporter : IDownloadExporter
 {
-    private const string ConnectionStringKey = "eprweb_eprdat_dotnet_db_connection";
+    private const string ConnectionStringKey = "eprweb_dotnet_db_connection";
     private const string CopyQueryTemplate = "COPY ({0}) TO STDOUT WITH CSV HEADER";
     private const int BufferSize = 81920;
 
