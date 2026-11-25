@@ -1,5 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.GroupDetails;
 
@@ -78,6 +77,18 @@ public sealed class GroupReadModelBuilder
         return this;
     }
 
+    public GroupReadModelBuilder WithOpenedDate(DateOnly? openedDate)
+    {
+        _openedDate = openedDate;
+        return this;
+    }
+
+    public GroupReadModelBuilder WithClosedDate(DateOnly? closedDate)
+    {
+        _closedDate = closedDate;
+        return this;
+    }
+
     public GroupReadModelBuilder WithTypeName(string? name)
     {
         _typeName = name;
@@ -131,6 +142,8 @@ public sealed class GroupReadModelBuilder
             CompaniesHouseId = _companiesHouseId,
             Address = _address!,
             Status = _status!,
+            OpenedDate = _openedDate,
+            ClosedDate = _closedDate,
             TypeName = _typeName!,
             TypeCode = _typeCode!,
             Trustees = _trustees,

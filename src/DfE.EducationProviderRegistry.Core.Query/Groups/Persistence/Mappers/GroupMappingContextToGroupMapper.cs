@@ -46,10 +46,10 @@ internal sealed class GroupMappingContextToGroupMapper : IMapper<GroupMappingCon
                 Postcode: input.Group.Postcode ?? string.Empty),
             type: new GroupType(input.Group.GroupTypeName, new GroupTypeCode(input.Group.GroupTypeCode!)),
             status:
-                input.Group.GroupStatusEffectiveDate is null ?
+                input.Group.GroupStatusLabel is null ?
                     null :
                         new GroupStatus(
-                            label: input.Group.GroupStatusLabel ?? string.Empty,
+                            label: input.Group.GroupStatusLabel,
                             effectiveDate: input.Group.GroupStatusEffectiveDate.Value,
                             openedDate: input.Group.OpenedDate,
                             closedDate: input.Group.ClosedDate)
