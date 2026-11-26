@@ -4,12 +4,12 @@ using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGr
 
 namespace DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Mappers;
 
-internal sealed class MemberToMemberReadModelMapper : IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>
+internal sealed class MemberToMemberReadModelMapper :
+    IMapper<IEnumerable<Member>, IReadOnlyCollection<MemberReadModel>>
 {
     public IReadOnlyCollection<MemberReadModel> Map(IEnumerable<Member> input)
     {
         return input?
-            .OrderByDescending(member => member.StartDate)
             .Select(MapToReadModel)
             .ToArray() ?? [];
     }
@@ -18,6 +18,9 @@ internal sealed class MemberToMemberReadModelMapper : IMapper<IEnumerable<Member
     {
         Identifier = member.Id.Value,
         FullName = member.Name.Value,
+        Title = member.Title,
+        AppointedBy = member.AppointedBy,
         StartDate = member.StartDate,
+        EndDate = member.EndDate
     };
 }

@@ -61,6 +61,18 @@ public static class CompositionRoot
                 IReadOnlyCollection<Establishment>>,
             GroupEstablishmentAggregateToEstablishmentsMapper>();
 
+        services.TryAddSingleton<
+            IMapper<
+                IEnumerable<GroupGovernorAggregate>,
+                IReadOnlyCollection<Trustee>>,
+            GroupGovernorAggregateToTrusteesMapper>();
+
+        services.TryAddSingleton<
+            IMapper<
+                IEnumerable<GroupGovernorAggregate>,
+                IReadOnlyCollection<Member>>,
+            GroupGovernorAggregateToMembersMapper>();
+
         return services;
     }
 }

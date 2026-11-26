@@ -55,7 +55,17 @@ internal sealed class GroupsRepository : IGroupsRepository
                 .Where(t => t.GroupUid == groupUid.Value)
                 .ToArrayAsync(cancellationToken);
 
-        GroupMappingContext context = new(group, groupEstablishmentAggregates);
+        IReadOnlyCollection<GroupGovernorAggregate> groupGovernorAggregates =
+                await _dbContext.GroupGovernorAggregate
+                    .AsNoTracking()
+                    .Where(t => t.GroupUid == groupUid.Value)
+                    .ToArrayAsync(cancellationToken);
+
+        GroupMappingContext context =
+            new(
+                group,
+                groupEstablishmentAggregates,
+                groupGovernorAggregates);
 
         return _mapper.Map(context);
     }

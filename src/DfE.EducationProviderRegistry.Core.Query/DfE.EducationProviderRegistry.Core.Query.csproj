@@ -10,7 +10,7 @@
     <PackageReference Include="DfE.Core.Libraries.CleanArchitecture" Version="1.0.44" />
     <PackageReference Include="DfE.Core.Libraries.CrossCutting" Version="1.0.44" />
     <PackageReference Include="DfE.Core.Libraries.DesignPatterns" Version="1.0.44" />
-    <PackageReference Include="DfE.EducationProviderRegistry.Data.DatabaseModels" Version="1.0.134" />
+    <PackageReference Include="DfE.EducationProviderRegistry.Data.DatabaseModels" Version="1.0.136" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.15" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.15" />

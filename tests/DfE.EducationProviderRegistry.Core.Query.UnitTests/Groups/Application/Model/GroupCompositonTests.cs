@@ -1,6 +1,5 @@
 ﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.UseCases;
 
 namespace DfE.EducationProviderRegistry.Core.Query.UnitTests.Groups.Application.Model;
 
@@ -27,9 +26,14 @@ public sealed class GroupCompositionTests
     public void Constructor_WhenCollectionsProvided_AssignsValues()
     {
         // Arrange
-        IReadOnlyCollection<Establishment> establishments = EstablishmentTestDoubles.Create(2);
-        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(2);
-        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(2);
+        IReadOnlyCollection<Establishment> establishments =
+            EstablishmentTestDoubles.Create(2);
+
+        IReadOnlyCollection<Member> members =
+            MemberTestDoubles.Create(2);
+
+        IReadOnlyCollection<Trustee> trustees =
+            TrusteeTestDoubles.Create(2);
 
         // Act
         GroupComposition result = new(
@@ -47,9 +51,14 @@ public sealed class GroupCompositionTests
     public void Constructor_WhenCollectionsProvided_CreatesCopies()
     {
         // Arrange
-        IReadOnlyCollection<Establishment> establishments = EstablishmentTestDoubles.Create(2);
-        IReadOnlyCollection<Member> members = MemberTestDoubles.Create(2);
-        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.Create(2);
+        IReadOnlyCollection<Establishment> establishments =
+            EstablishmentTestDoubles.Create(2);
+
+        IReadOnlyCollection<Member> members =
+            MemberTestDoubles.Create(2);
+
+        IReadOnlyCollection<Trustee> trustees =
+            TrusteeTestDoubles.Create(2);
 
         // Act
         GroupComposition result = new(
@@ -83,11 +92,16 @@ public sealed class GroupCompositionTests
     public void Equals_WhenAllCollectionsMatch_ReturnsTrue()
     {
         // Arrange
-        IReadOnlyCollection<Establishment> establishments = EstablishmentTestDoubles.Create(1);
-        IReadOnlyCollection<Member> members = MemberTestDoubles.CreateWith(
-            ("1234567", "Member A", new DateTime(2020, 01, 01)));
-        IReadOnlyCollection<Trustee> trustees = TrusteeTestDoubles.CreateWith(
-            ("7654321", "Trustee A", new DateTime(2021, 01, 01)));
+        IReadOnlyCollection<Establishment> establishments =
+            EstablishmentTestDoubles.Create(1);
+
+        IReadOnlyCollection<Member> members =
+            MemberTestDoubles.CreateWith(
+                ("1234567", "Member A", new DateOnly(2020, 01, 01)));
+
+        IReadOnlyCollection<Trustee> trustees =
+            TrusteeTestDoubles.CreateWith(
+                ("7654321", "Trustee A", "Trustee", new DateOnly(2021, 01, 01)));
 
         GroupComposition left = GroupCompositionTestDoubles.Create(
             members,
@@ -139,13 +153,19 @@ public sealed class GroupCompositionTests
         // Arrange
         GroupComposition left = new(
             MemberTestDoubles.CreateWith(
-                (Id: "1111111", Name: "Member A", StartDate: new DateTime(2020, 01, 01))),
+                (
+                    Id: "1111111",
+                    Name: "Member A",
+                    StartDate: new DateOnly(2020, 01, 01))),
             TrusteeTestDoubles.Create(),
             EstablishmentTestDoubles.Create());
 
         GroupComposition right = new(
             MemberTestDoubles.CreateWith(
-                (Id: "2222222", Name: "Member B", StartDate: new DateTime(2020, 01, 01))),
+                (
+                    Id: "2222222",
+                    Name: "Member B",
+                    StartDate: new DateOnly(2020, 01, 01))),
             TrusteeTestDoubles.Create(),
             EstablishmentTestDoubles.Create());
 
@@ -163,13 +183,21 @@ public sealed class GroupCompositionTests
         GroupComposition left = new(
             MemberTestDoubles.Create(),
             TrusteeTestDoubles.CreateWith(
-                (Id: "1111111", Name: "Trustee A", StartDate: new DateTime(2020, 01, 01))),
+                (
+                    Id: "1111111",
+                    Name: "Trustee A",
+                    Role: "Trustee",
+                    StartDate: new DateOnly(2020, 01, 01))),
             EstablishmentTestDoubles.Create());
 
         GroupComposition right = new(
             MemberTestDoubles.Create(),
             TrusteeTestDoubles.CreateWith(
-                (Id: "2222222", Name: "Trustee B", StartDate: new DateTime(2020, 01, 01))),
+                (
+                    Id: "2222222",
+                    Name: "Trustee B",
+                    Role: "Trustee",
+                    StartDate: new DateOnly(2020, 01, 01))),
             EstablishmentTestDoubles.Create());
 
         // Act

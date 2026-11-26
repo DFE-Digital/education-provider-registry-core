@@ -1,5 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
-using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
+﻿using DfE.EducationProviderRegistry.Core.Query.Groups.Application.UseCases.GetGroupByUid.Response;
 
 namespace DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.GroupDetails;
 
@@ -10,31 +9,22 @@ public static class TrusteeReadModelTestDoubles
     public static TrusteeReadModel CreateWith(
         string id = "trustee-1",
         string fullName = "Test Trustee",
-        DateTime? startDate = null,
-        TrusteeTitleType? title = TrusteeTitleType.Chair)
+        string role = "Trustee",
+        DateOnly? startDate = null,
+        DateOnly? endDate = null,
+        string? title = "Mr",
+        string? appointedBy = "Appointed by academy members")
     {
         return new TrusteeReadModel
         {
             Id = id,
             FullName = fullName,
-            StartDate = startDate ?? new DateTime(2024, 1, 1),
+            Role = role,
+            StartDate = startDate ?? new DateOnly(2024, 1, 1),
+            EndDate = endDate,
             Title = title,
+            AppointedBy = appointedBy
         };
-    }
-
-    public static IReadOnlyCollection<TrusteeReadModel> Create(int count = 1)
-    {
-        List<TrusteeReadModel> trustees = new(count);
-
-        for (int i = 0; i < count; i++)
-        {
-            trustees.Add(
-                TrusteeReadModelTestDoubles.CreateWith(
-                    id: $"trustee-{i}",
-                    fullName: $"{TrusteeNamePrefix} {i}"));
-        }
-
-        return trustees.AsReadOnly();
     }
 
     public static IReadOnlyCollection<TrusteeReadModel> CreateWith(
@@ -46,8 +36,23 @@ public static class TrusteeReadModelTestDoubles
         {
             trustees.Add(
                 CreateWith(
-                    id,
-                    fullName));
+                    id: id,
+                    fullName: fullName));
+        }
+
+        return trustees.AsReadOnly();
+    }
+
+    public static IReadOnlyCollection<TrusteeReadModel> Create(int count = 1)
+    {
+        List<TrusteeReadModel> trustees = new(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            trustees.Add(
+                CreateWith(
+                    id: $"trustee-{i}",
+                    fullName: $"{TrusteeNamePrefix} {i}"));
         }
 
         return trustees.AsReadOnly();
