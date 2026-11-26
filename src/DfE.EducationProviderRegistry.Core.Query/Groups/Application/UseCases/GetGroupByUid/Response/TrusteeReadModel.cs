@@ -6,6 +6,9 @@ public sealed record TrusteeReadModel
 {
     public required string Id { get; init; }
     public required string FullName { get; init; }
-    public required DateTime StartDate { get; init; }
-    public TrusteeTitleType? Title { get; init; }
+    public required DateOnly StartDate { get; init; }
+    public required string Role { get; init; }
+    public string? Title { get; init; }
+    public DateOnly? EndDate { get; init; }
+    public string? AppointedBy { get; init; }
 }

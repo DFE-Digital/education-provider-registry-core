@@ -4,4 +4,5 @@ namespace DfE.EducationProviderRegistry.Core.Query.Groups.Persistence.Mappers;
 
 internal sealed record GroupMappingContext(
     GroupAggregate Group,
-    IReadOnlyCollection<GroupEstablishmentAggregate> Establishments);
+    IReadOnlyCollection<GroupEstablishmentAggregate> Establishments,
+    IReadOnlyCollection<GroupGovernorAggregate> Governors);

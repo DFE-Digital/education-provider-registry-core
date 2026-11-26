@@ -1,5 +1,4 @@
-﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Groups;
-using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Shared;
+﻿using DfE.EducationProviderRegistry.Core.Query.Contracts.TestDoubles.Shared;
 using DfE.EducationProviderRegistry.Core.Query.Groups.Application.Model;
 using DfE.EducationProviderRegistry.Core.Query.Shared;
 
@@ -13,9 +12,11 @@ public sealed class TrusteeTests
         // Arrange
         GovernanceIdentifier id = null!;
         Name name = NameTestDoubles.Create();
-        DateTime startDate = DateTime.UtcNow;
+        string role = "Trustee";
+        DateOnly startDate = new(2024, 01, 01);
 
-        Func<Trustee> construct = () => new Trustee(id, name, startDate);
+        Func<Trustee> construct = () =>
+            new Trustee(id, name, role, startDate);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
@@ -27,12 +28,32 @@ public sealed class TrusteeTests
         // Arrange
         GovernanceIdentifier id = GovernanceIdentifierTestDoubles.Create();
         Name name = null!;
-        DateTime startDate = DateTime.UtcNow;
+        string role = "Trustee";
+        DateOnly startDate = new(2024, 01, 01);
 
-        Func<Trustee> construct = () => new Trustee(id, name, startDate);
+        Func<Trustee> construct = () =>
+            new Trustee(id, name, role, startDate);
 
         // Act & Assert
         Assert.Throws<ArgumentNullException>(construct);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Constructor_GivenInvalidRole_ShouldThrowArgumentException(string? role)
+    {
+        // Arrange
+        GovernanceIdentifier id = GovernanceIdentifierTestDoubles.Create();
+        Name name = NameTestDoubles.Create();
+        DateOnly startDate = new(2024, 01, 01);
+
+        Func<Trustee> construct = () =>
+            new Trustee(id, name, role!, startDate);
+
+        // Act & Assert
+        Assert.ThrowsAny<ArgumentException>(construct);
     }
 
     [Fact]
@@ -41,32 +62,48 @@ public sealed class TrusteeTests
         // Arrange
         GovernanceIdentifier id = GovernanceIdentifierTestDoubles.Create();
         Name name = NameTestDoubles.Create();
-        DateTime startDate = new(2024, 01, 01);
-        TrusteeTitle title = TrusteeTestDoubles.CreateTrusteeTitle();
+        string role = "Chief Financial Officer";
+        string title = "Mrs";
+        string appointedBy = "Appointed by academy members";
+        DateOnly startDate = new(2024, 01, 01);
+        DateOnly endDate = new(2028, 01, 01);
 
         // Act
-        Trustee trustee = new(id, name, startDate, title);
+        Trustee trustee = new(
+            id,
+            name,
+            role,
+            startDate,
+            endDate,
+            title,
+            appointedBy);
 
         // Assert
         Assert.Equal(id, trustee.Id);
         Assert.Equal(name, trustee.Name);
-        Assert.Equal(startDate, trustee.StartDate);
+        Assert.Equal(role, trustee.Role);
         Assert.Equal(title, trustee.Title);
+        Assert.Equal(appointedBy, trustee.AppointedBy);
+        Assert.Equal(startDate, trustee.StartDate);
+        Assert.Equal(endDate, trustee.EndDate);
     }
 
     [Fact]
-    public void Constructor_GivenNoTitle_ShouldSetTitleToNull()
+    public void Constructor_GivenOptionalArgumentsNotProvided_ShouldSetPropertiesToNull()
     {
         // Arrange
         GovernanceIdentifier id = GovernanceIdentifierTestDoubles.Create();
         Name name = NameTestDoubles.Create();
-        DateTime startDate = new(2024, 01, 01);
+        string role = "Trustee";
+        DateOnly startDate = new(2024, 01, 01);
 
         // Act
-        Trustee trustee = new(id, name, startDate);
+        Trustee trustee = new(id, name, role, startDate);
 
         // Assert
         Assert.Null(trustee.Title);
+        Assert.Null(trustee.AppointedBy);
+        Assert.Null(trustee.EndDate);
     }
 
     [Fact]
@@ -75,11 +112,29 @@ public sealed class TrusteeTests
         // Arrange
         GovernanceIdentifier id = GovernanceIdentifierTestDoubles.Create();
         Name name = NameTestDoubles.Create();
-        DateTime startDate = new(2024, 01, 01);
-        TrusteeTitle title = TrusteeTestDoubles.CreateTrusteeTitle();
+        string role = "Trustee";
+        string title = "Mr";
+        string appointedBy = "Appointed by academy members";
+        DateOnly startDate = new(2024, 01, 01);
+        DateOnly endDate = new(2028, 01, 01);
 
-        Trustee first = new(id, name, startDate, title);
-        Trustee second = new(id, name, startDate, title);
+        Trustee first = new(
+            id,
+            name,
+            role,
+            startDate,
+            endDate,
+            title,
+            appointedBy);
+
+        Trustee second = new(
+            id,
+            name,
+            role,
+            startDate,
+            endDate,
+            title,
+            appointedBy);
 
         // Act & Assert
         Assert.Equal(first, second);
@@ -92,12 +147,14 @@ public sealed class TrusteeTests
         Trustee first = new(
             GovernanceIdentifierTestDoubles.Create("1234567"),
             NameTestDoubles.Create(),
-            new DateTime(2024, 01, 01));
+            "Trustee",
+            new DateOnly(2024, 01, 01));
 
         Trustee second = new(
             GovernanceIdentifierTestDoubles.Create("7654321"),
             NameTestDoubles.Create(),
-            new DateTime(2024, 01, 01));
+            "Trustee",
+            new DateOnly(2024, 01, 01));
 
         // Act & Assert
         Assert.NotEqual(first, second);
@@ -110,12 +167,34 @@ public sealed class TrusteeTests
         Trustee first = new(
             GovernanceIdentifierTestDoubles.Create(),
             NameTestDoubles.Create("Name1"),
-            new DateTime(2024, 01, 01));
+            "Trustee",
+            new DateOnly(2024, 01, 01));
 
         Trustee second = new(
             GovernanceIdentifierTestDoubles.Create(),
             NameTestDoubles.Create("Name2"),
-            new DateTime(2024, 01, 01));
+            "Trustee",
+            new DateOnly(2024, 01, 01));
+
+        // Act & Assert
+        Assert.NotEqual(first, second);
+    }
+
+    [Fact]
+    public void Equality_GivenDifferentRole_ShouldNotBeEqual()
+    {
+        // Arrange
+        Trustee first = new(
+            GovernanceIdentifierTestDoubles.Create(),
+            NameTestDoubles.Create(),
+            "Trustee",
+            new DateOnly(2024, 01, 01));
+
+        Trustee second = new(
+            GovernanceIdentifierTestDoubles.Create(),
+            NameTestDoubles.Create(),
+            "Accounting Officer",
+            new DateOnly(2024, 01, 01));
 
         // Act & Assert
         Assert.NotEqual(first, second);
@@ -128,12 +207,36 @@ public sealed class TrusteeTests
         Trustee first = new(
             GovernanceIdentifierTestDoubles.Create(),
             NameTestDoubles.Create(),
-            new DateTime(2024, 01, 01));
+            "Trustee",
+            new DateOnly(2024, 01, 01));
 
         Trustee second = new(
             GovernanceIdentifierTestDoubles.Create(),
             NameTestDoubles.Create(),
-            new DateTime(2025, 01, 01));
+            "Trustee",
+            new DateOnly(2025, 01, 01));
+
+        // Act & Assert
+        Assert.NotEqual(first, second);
+    }
+
+    [Fact]
+    public void Equality_GivenDifferentEndDate_ShouldNotBeEqual()
+    {
+        // Arrange
+        Trustee first = new(
+            GovernanceIdentifierTestDoubles.Create(),
+            NameTestDoubles.Create(),
+            "Trustee",
+            new DateOnly(2024, 01, 01),
+            new DateOnly(2028, 01, 01));
+
+        Trustee second = new(
+            GovernanceIdentifierTestDoubles.Create(),
+            NameTestDoubles.Create(),
+            "Trustee",
+            new DateOnly(2024, 01, 01),
+            new DateOnly(2029, 01, 01));
 
         // Act & Assert
         Assert.NotEqual(first, second);
@@ -146,14 +249,38 @@ public sealed class TrusteeTests
         Trustee first = new(
             GovernanceIdentifierTestDoubles.Create(),
             NameTestDoubles.Create(),
-            new DateTime(2024, 01, 01),
-            TrusteeTestDoubles.CreateTrusteeTitle(TrusteeTitleType.Chair));
+            "Trustee",
+            new DateOnly(2024, 01, 01),
+            title: "Mr");
 
         Trustee second = new(
             GovernanceIdentifierTestDoubles.Create(),
             NameTestDoubles.Create(),
-            new DateTime(2024, 01, 01),
-            TrusteeTestDoubles.CreateTrusteeTitle(TrusteeTitleType.Other));
+            "Trustee",
+            new DateOnly(2024, 01, 01),
+            title: "Mrs");
+
+        // Act & Assert
+        Assert.NotEqual(first, second);
+    }
+
+    [Fact]
+    public void Equality_GivenDifferentAppointedBy_ShouldNotBeEqual()
+    {
+        // Arrange
+        Trustee first = new(
+            GovernanceIdentifierTestDoubles.Create(),
+            NameTestDoubles.Create(),
+            "Trustee",
+            new DateOnly(2024, 01, 01),
+            appointedBy: "Appointed by academy members");
+
+        Trustee second = new(
+            GovernanceIdentifierTestDoubles.Create(),
+            NameTestDoubles.Create(),
+            "Trustee",
+            new DateOnly(2024, 01, 01),
+            appointedBy: "Appointed by GB/board");
 
         // Act & Assert
         Assert.NotEqual(first, second);

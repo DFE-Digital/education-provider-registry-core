@@ -60,8 +60,8 @@ public sealed class MemberToMemberReadModelMapperTests
     public void Map_Should_Order_By_StartDate_Descending()
     {
         // Arrange
-        Member older = MemberTestDoubles.CreateWith(startDate: new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-        Member newer = MemberTestDoubles.CreateWith(startDate: new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        Member older = MemberTestDoubles.CreateWith(startDate: new DateOnly(2020, 1, 1));
+        Member newer = MemberTestDoubles.CreateWith(startDate: new DateOnly(2025, 1, 1));
 
         MemberToMemberReadModelMapper sut = new();
 

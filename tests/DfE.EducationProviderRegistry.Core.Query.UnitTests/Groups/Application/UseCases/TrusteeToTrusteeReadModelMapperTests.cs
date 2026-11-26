@@ -41,97 +41,50 @@ public sealed class TrusteeToTrusteeReadModelMapperTests
     public void Map_Should_Map_All_Properties()
     {
         // Arrange
-        Trustee trustee = TrusteeTestDoubles.Create(1).Single();
+        Trustee trustee = TrusteeTestDoubles.CreateWith(
+            id: "1234567",
+            name: "Test Trustee",
+            role: "Chair of Trustees",
+            startDate: new DateOnly(2024, 1, 1),
+            endDate: new DateOnly(2028, 1, 1),
+            title: "Mr",
+            appointedBy: "Appointed by academy members");
 
         TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(new[] { trustee });
-
-        TrusteeReadModel dto = Assert.Single(result);
+        IReadOnlyCollection<TrusteeReadModel> result = sut.Map([trustee]);
 
         // Assert
-        Assert.Equal(trustee.Id.Value, dto.Id);
-        Assert.Equal(trustee.Name.Value, dto.FullName);
-        Assert.Equal(trustee.StartDate, dto.StartDate);
-        Assert.Equal(trustee.Title?.Type, dto.Title);
-    }
+        TrusteeReadModel readModel = Assert.Single(result);
 
-    [Fact]
-    public void Map_Should_Order_By_Title_Priority()
-    {
-        // Arrange
-        Trustee chair = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Chair);
-        Trustee cfo = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO);
-        Trustee accounting = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
-        Trustee other = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Other);
-
-        TrusteeToTrusteeReadModelMapper sut = new();
-
-        // Act
-        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(new[] { other, cfo, chair, accounting });
-
-        TrusteeReadModel[] ordered = [.. result];
-
-        // Assert
-        Assert.Equal(TrusteeTitleType.Chair, ordered[0].Title);
-        Assert.Equal(TrusteeTitleType.CFO, ordered[1].Title);
-        Assert.Equal(TrusteeTitleType.AccountingOfficer, ordered[2].Title);
-        Assert.Equal(TrusteeTitleType.Other, ordered[3].Title);
-    }
-
-    [Fact]
-    public void Map_Should_Then_Order_By_StartDate_Descending_When_Same_Title()
-    {
-        // Arrange
-        Trustee older = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2020, 1, 1));
-        Trustee newer = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO, startDate: new DateTime(2025, 1, 1));
-
-        TrusteeToTrusteeReadModelMapper sut = new();
-
-        // Act
-        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(new[] { older, newer });
-
-        TrusteeReadModel[] ordered = [.. result];
-
-        // Assert
-        Assert.Equal(newer.Id.Value, ordered[0].Id);
-        Assert.Equal(older.Id.Value, ordered[1].Id);
+        Assert.Equal(trustee.Id.Value, readModel.Id);
+        Assert.Equal(trustee.Name.Value, readModel.FullName);
+        Assert.Equal(trustee.Title, readModel.Title);
+        Assert.Equal(trustee.Role, readModel.Role);
+        Assert.Equal(trustee.AppointedBy, readModel.AppointedBy);
+        Assert.Equal(trustee.StartDate, readModel.StartDate);
+        Assert.Equal(trustee.EndDate, readModel.EndDate);
     }
 
     [Fact]
     public void Map_Should_Map_All_Items()
     {
         // Arrange
-        Trustee chair = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.Chair);
-        Trustee cfo = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.CFO);
-        Trustee accounting = TrusteeTestDoubles.CreateWith(titleType: TrusteeTitleType.AccountingOfficer);
-        IReadOnlyCollection<Trustee> otherTrustees = TrusteeTestDoubles.Create(30);
-
-        IReadOnlyCollection<Trustee> inputMapTrustees = [.. otherTrustees, chair, cfo, accounting];
+        IReadOnlyCollection<Trustee> trustees =
+            TrusteeTestDoubles.Create(30);
 
         TrusteeToTrusteeReadModelMapper sut = new();
 
         // Act
-        IReadOnlyCollection<TrusteeReadModel> result = sut.Map(inputMapTrustees);
+        IReadOnlyCollection<TrusteeReadModel> result =
+            sut.Map(trustees);
 
         // Assert
-        Assert.Equal(inputMapTrustees.Count, result.Count);
-
-
-        Trustee[] expected =
-            [..inputMapTrustees
-                .OrderBy((trustee) => trustee.Title?.Type switch
-                {
-                    TrusteeTitleType.Chair => 0,
-                    TrusteeTitleType.CFO => 1,
-                    TrusteeTitleType.AccountingOfficer => 2,
-                    _ => 99
-                }).ThenByDescending(t => t.StartDate)
-            ];
+        Assert.Equal(trustees.Count, result.Count);
 
         Assert.Equal(
-            expected: expected.Select(t => t.Id.Value),
-            actual: result.Select(t => t.Id));
+            trustees.Select(trustee => trustee.Id.Value),
+            result.Select(readModel => readModel.Id));
     }
 }
