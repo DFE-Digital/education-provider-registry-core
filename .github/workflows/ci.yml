@@ -41,7 +41,7 @@ jobs:
 
     - name: Determine Generated Version Number
       id: version_step
-      uses: gittools/actions/gitversion/execute@7417b1089e2c7de93510f1901d656ddf60bb024f
+      uses: gittools/actions/gitversion/execute@389fe43e6b0189b98c40c43553070ac029304635
 
     - name: Debug GitVersion Output
       run: |
