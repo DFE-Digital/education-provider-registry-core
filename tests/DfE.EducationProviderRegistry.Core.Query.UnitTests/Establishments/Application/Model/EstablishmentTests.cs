@@ -24,6 +24,7 @@ public sealed class EstablishmentTests
             Status = new EstablishmentStatusModel(EstablishmentStatus.Open, new(2026, 3, 1)),
             Type = new EstablishmentTypeModel("Academy"),
             Phase = new PhaseOfEducationModel("Primary"),
+            Governors = []
         };
 
         Assert.Equal("Test School", establishment.Name.Value);
