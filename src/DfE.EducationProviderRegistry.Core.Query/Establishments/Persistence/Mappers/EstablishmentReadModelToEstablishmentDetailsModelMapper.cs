@@ -58,6 +58,7 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
                     Firstname: g.FirstName,
                     Lastname: g.LastName,
                     Role: g.Role,
+                    RoleOrder: g.RoleOrder,
                     AppointedBy: g.AppointingBody,
                     StartDate: g.AppointmentStartDate,
                     EndDate: g.AppointmentEndDate))

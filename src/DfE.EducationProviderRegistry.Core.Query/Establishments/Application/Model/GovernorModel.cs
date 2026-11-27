@@ -8,6 +8,7 @@ public sealed record GovernorModel(
     string? Firstname,
     string Lastname,
     string Role,
+    int RoleOrder,
     string? AppointedBy,
     DateOnly StartDate,
     DateOnly? EndDate);
