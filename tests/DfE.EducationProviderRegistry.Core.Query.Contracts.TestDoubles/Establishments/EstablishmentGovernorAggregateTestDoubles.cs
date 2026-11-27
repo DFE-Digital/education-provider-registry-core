@@ -8,10 +8,15 @@ public static class EstablishmentGovernorAggregateTestDoubles
     {
         return new EstablishmentGovernorAggregate
         {
-            EstablishmentUrn = "123456",
+            EstablishmentUrn = 123456,
             GovernorId = "GOV001",
-            GovernorName = "Joe Bloggs",
-            StartDate = new DateOnly(2023, 1, 1)
+            Title = "Mr",
+            FirstName = "Joe",
+            LastName = "Bloggs",
+            Role = "Member",
+            RoleOrder = 50,
+            AppointmentStartDate = new DateOnly(2023, 1, 1),
+            AppointmentEndDate = null
         };
     }
 
@@ -21,17 +26,27 @@ public static class EstablishmentGovernorAggregateTestDoubles
         [
             new EstablishmentGovernorAggregate
             {
-                EstablishmentUrn = "123456",
+                EstablishmentUrn = 123456,
                 GovernorId = "GOV001",
-                GovernorName = "Joe Bloggs",
-                StartDate = new DateOnly(2023, 1, 1)
+                Title = "Mr",
+                FirstName = "Joe",
+                LastName = "Bloggs",
+                Role = "Member",
+                RoleOrder = 50,
+                AppointmentStartDate = new DateOnly(2023, 1, 1),
+                AppointmentEndDate = null
             },
             new EstablishmentGovernorAggregate
             {
-                EstablishmentUrn = "123456",
+                EstablishmentUrn = 123456,
                 GovernorId = "GOV002",
-                GovernorName = "Jane Smith",
-                StartDate = new DateOnly(2024, 1, 1)
+                Title = "Mrs",
+                FirstName = "Jane",
+                LastName = "Smith",
+                Role = "Member",
+                RoleOrder = 50,
+                AppointmentStartDate = new DateOnly(2023, 1, 1),
+                AppointmentEndDate = null
             }
         ];
     }

@@ -2,4 +2,12 @@
 
 namespace DfE.EducationProviderRegistry.Core.Query.Establishments.Application.Model;
 
-public sealed record GovernorModel(GovernanceIdentifier Identifier, Name Name);
+public sealed record GovernorModel(
+    GovernanceIdentifier Identifier,
+    string? Title,
+    string? Firstname,
+    string Lastname,
+    string Role,
+    string? AppointedBy,
+    DateOnly StartDate,
+    DateOnly? EndDate);
