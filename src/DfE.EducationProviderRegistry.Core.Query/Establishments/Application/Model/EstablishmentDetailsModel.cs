@@ -18,7 +18,7 @@ public sealed record EstablishmentDetailsModel
     public string? GroupType { get; init; }
     public DateOnly? GroupOpenDate { get; init; }
 
-    public IEnumerable<GovernorModel>? Governors { get; init; }
+    public required IEnumerable<GovernorModel> Governors { get; init; }
 
     public SiteAddressModel? Address { get; init; }
 

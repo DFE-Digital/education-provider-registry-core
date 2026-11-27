@@ -276,6 +276,7 @@ public sealed class EstablishmentDetailsBuilder
             ContactDetails = new EstablishmentContactDetails(
                 Website: _website ?? string.Empty,
                 TelephoneNumber: _telephoneNumber ?? string.Empty),
+            Governors = [],
             Headteacher = _headteacher,
             Ofsted = new(_ofstedDate, _ofstedUrl),
             Address = new(_siteName, _addressLine1, _addressLine2, _town, _county, _postcode),

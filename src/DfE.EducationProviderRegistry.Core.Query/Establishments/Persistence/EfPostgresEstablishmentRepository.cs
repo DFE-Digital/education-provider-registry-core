@@ -39,7 +39,7 @@ internal sealed class EfPostgresEstablishmentRepository : IEstablishmentsReposit
 
         List<EstablishmentGovernorAggregate> governors = await _dbContext.EstablishmentGovernorAggregate
             .AsNoTracking()
-            .Where(g => g.EstablishmentUrn == identifier.Value)
+            .Where(g => g.EstablishmentUrn == long.Parse(identifier.Value))
             .ToListAsync(cancellationToken);
 
         EstablishmentReadModel readModel = new(establishment, governors);
@@ -60,11 +60,11 @@ internal sealed class EfPostgresEstablishmentRepository : IEstablishmentsReposit
         List<EstablishmentGovernorAggregate> governors =
             await _dbContext.EstablishmentGovernorAggregate
                 .AsNoTracking()
-                .Where(x => urns.Contains(x.EstablishmentUrn))
+                .Where(x => urns.Contains(x.EstablishmentUrn.ToString()))
                 .ToListAsync(cancellationToken);
 
         ILookup<string, EstablishmentGovernorAggregate> governorsByUrn =
-            governors.ToLookup(x => x.EstablishmentUrn);
+            governors.ToLookup(x => x.EstablishmentUrn.ToString());
 
         List<EstablishmentDetailsModel> results =
         [

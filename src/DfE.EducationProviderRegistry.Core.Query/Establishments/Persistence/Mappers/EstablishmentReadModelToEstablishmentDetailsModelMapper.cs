@@ -54,7 +54,14 @@ internal sealed class EstablishmentReadModelToEstablishmentDetailsModelMapper : 
             .. input.Governors.Select((g) =>
                 new GovernorModel(
                     Identifier: new GovernanceIdentifier(g.GovernorId),
-                    Name: new Name(g.GovernorName)))
+                    Title: g.Title,
+                    Firstname: g.FirstName,
+                    Lastname: g.LastName,
+                    Role: g.Role,
+                    RoleOrder: g.RoleOrder,
+                    AppointedBy: g.AppointingBody,
+                    StartDate: g.AppointmentStartDate,
+                    EndDate: g.AppointmentEndDate))
         ];
 
         EstablishmentContactDetails? contactDetails =
