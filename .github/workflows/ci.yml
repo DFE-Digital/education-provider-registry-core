@@ -35,7 +35,7 @@ jobs:
       run: git config --global --add safe.directory "*"
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@7417b1089e2c7de93510f1901d656ddf60bb024f
+      uses: gittools/actions/gitversion/setup@389fe43e6b0189b98c40c43553070ac029304635
       with: 
         versionSpec: '6.2.x'
 
